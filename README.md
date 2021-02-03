@@ -46,7 +46,7 @@ Web application developers, as well as the developers of router libraries for si
 
 - Intercepting cross-document navigations, replacing them with single-page navigations (i.e. loading content into the appropriate part of the existing document), and then updating the URL bar.
 
-- Performing single-page navigations that create and pushing a new entry onto the history list, to represent a new conceptual history entry.
+- Performing single-page navigations that create and push a new entry onto the history list, to represent a new conceptual history entry.
 
 - Navigating backward or forward through the history list via application-provided UI.
 
