@@ -18,7 +18,7 @@ This new `window.appHistory` API layers on top of the existing API and specifica
     - [Measuring standardized single-page navigations](#measuring-standardized-single-page-navigations)
     - [Example: replacing navigations with single-page app navigations](#example-replacing-navigations-with-single-page-app-navigations)
     - [Example: single-page app "redirects"](#example-single-page-app-redirects)
-    - [Example: affiliate links](#example-affiliate-links)
+    - [Example: cross-origin affiliate links](#example-cross-origin-affiliate-links)
     - [Example: using `navigateInfo`](#example-using-navigateinfo)
   - [Navigations while a navigation is ongoing](#navigations-while-a-navigation-is-ongoing)
   - [Queued up single-page navigations](#queued-up-single-page-navigations)
@@ -347,7 +347,7 @@ In practice, this might be hidden behind a full router framework, e.g. the Angul
 
 NOTE: if you combine this example with the previous one, it's important that this route guard event handler be installed before the general single-page navigation event handler. Additionally, you'd want to either insert a call to `e.stopImmediatePropagation()` in this example, or a check of `e.defaultPrevented` in that example, to stop the other `navigate` event handler from proceeding with the canceled navigation. In practice, we expect there to be one large application- or framework-level `navigate` event handler, which would take care of ensuring that route guards happen before the other parts of the router logic, and preventing that logic from executing.
 
-#### Example: affiliate links
+#### Example: cross-origin affiliate links
 
 A common [query](https://stackoverflow.com/q/11798336/3191) is how to append affiliate IDs onto links. Although this can be done server-side, sometimes it is convenient to do so client side, especially in the case of dynamic content. Today, this requires intercepting `click` events on `<a>` elements, or using a `MutationObserver` to watch for new link insertions. The `navigate` event provides a simpler way to do this:
 
@@ -363,7 +363,7 @@ appHistory.addEventListener("navigate", e => {
 });
 ```
 
-_TODO: it feels like this should be less disruptive than a cancel-and-perform-new-navigation; it's just a tweak to the outgoing navigation. Using the same code as the previous example feels wrong. Some brainstorming needed._
+_TODO: it feels like this should be less disruptive than a cancel-and-perform-new-navigation; it's just a tweak to the outgoing navigation. Using the same code as the previous example feels wrong. See discussion in [#5](https://github.com/WICG/app-history/issues/5)._
 
 #### Example: using `navigateInfo`
 
