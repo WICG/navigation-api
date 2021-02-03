@@ -863,6 +863,8 @@ interface AppHistoryNavigateEvent : Event {
   readonly attribute Element? fragmentTarget;
   readonly attribute FormData? formData;
   readonly attribute any info;
+
+  undefined respondWith(Promise<undefined> newNavigationAction);
 };
 
 dictionary AppHistoryNavigateEventInit : EventInit {
