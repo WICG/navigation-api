@@ -803,7 +803,9 @@ Thanks also to
 [@chrishtr](https://github.com/chrishtr),
 [@dvoytenko](https://github.com/dvoytenko),
 [@housseindjirdeh](https://github.com/housseindjirdeh),
-[@jakearchibald](https://github.com/jakearchibald), and
+[@jakearchibald](https://github.com/jakearchibald),
+[@mmocny](https://github.com/mmocny),
+[@natechapin](https://github.com/natechapin), and
 [@slightlyoff](https://github.com/slightlyoff)
 for their help in exploring this space and providing feedback.
 
