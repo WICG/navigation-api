@@ -231,6 +231,7 @@ Note that you can check if the navigation will be [same-document or cross-docume
 The event is not fired in the following cases:
 
 - User-initiated cross-document navigations via browser UI, such as the URL bar or bookmarks.
+- User-initiated same-document navigations via the browser back/forward buttons.
 - Programmatically-initiated cross-document navigations originating from other windows, such as `window.open(url, "nameOfAnotherWindow")`.
 
 Whenever it is fired, the event is cancelable via `event.preventDefault()`, which prevents the navigation from going through. To name a few notable examples of when the event is fired, i.e. when you can intercept the navigation:
@@ -853,7 +854,7 @@ Here's a summary table:
 
 |Trigger|Cross- vs. same-document|Fires `navigate`?|`event.userInitiated`|
 |-------|------------------------|-----------------|---------------------|
-|Browser UI (URL bar fragment change only)|Always same|Yes|Yes|
+|Browser UI (non-back/forward fragment change only)|Always same|Yes|Yes|
 |Browser UI (other)|Either|No|—|
 |`<a>`/`<area>`|Either|Yes|Yes|
 |`<form>`|Either|Yes|Yes|
