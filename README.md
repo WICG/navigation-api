@@ -818,9 +818,9 @@ for their help in exploring this space and providing feedback.
 
 ## Appendix: types of navigations
 
-The web platform has many ways of initiating a navigation. For the purposes of this API, and in particular the [`navigate` event](#navigation-monitoring-and-interception), the following is intended to be a comprehensive list:
+The web platform has many ways of initiating a navigation. For the purposes of the app history API, the following is intended to be a comprehensive list:
 
-- Users triggering navigations via browser UI, including (but not necessarily limited to):
+- Users can trigger navigations via browser UI, including (but not necessarily limited to):
   - The URL bar
   - The back and forward buttons
   - The reload button
@@ -853,8 +853,8 @@ Here's a summary table:
 
 |Trigger|Cross- vs. same-document|Fires `navigate`?|`event.userInitiated`|
 |-------|------------------------|-----------------|---------------------|
-|Browser UI (fragment change only)|Always same|Yes|Yes|
-|Browser UI (other)|Always cross|No|—|
+|Browser UI (URL bar fragment change only)|Always same|Yes|Yes|
+|Browser UI (other)|Either|No|—|
 |`<a>`/`<area>`|Either|Yes|Yes|
 |`<form>`|Either|Yes|Yes|
 |`<meta http-equiv="refresh">`|Either|Yes|No|
@@ -867,6 +867,8 @@ Here's a summary table:
 |`appHistory.{back,forward,navigateTo}()`|Either|Yes|No|
 |`appHistory.{pushNewEntry,updateCurrentEntry}()`|Always same|Yes|No|
 |`document.open()`|Always same|Yes|No|
+
+(Regarding the "No" values for the "Fires `navigate`?" column: recall that we need to disallow abusive pages from trapping the user by intercepting the back button. To get notified of such non-interceptable cases after the fact, you can use `currententrychange` for same-document navigations, or the `Window` object's `load` event for cross-document navigations.)
 
 _Spec details: the above comprehensive list does not fully match when the HTML Standard's [navigate](https://html.spec.whatwg.org/#navigate) algorithm is called. In particular, HTML does not handle non-fragment-related same-document navigations through the navigate algorithm; instead it uses the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps) for those. Also, HTML calls the navigate algorithm for the initial loads of new browsing contexts as they transition from the initial `about:blank`; our current thinking is that `appHistory` should just not work on the initial `about:blank` so we can avoid that edge case._
 
