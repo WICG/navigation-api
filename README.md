@@ -219,7 +219,7 @@ The event object has several useful properties:
 
 - `sameOrigin`: a convenience boolean indicating whether the navigation is same-origin, and thus will stay in the same app history or not. (I.e., this is `(new URL(e.destinationEntry.url)).origin === self.origin`.)
 
-- `fragmentTarget`: a DOM element or null, indicating the target of the current navigation, if the current navigation is a same-document [fragment navigation](https://html.spec.whatwg.org/#scroll-to-fragid) or [scroll to text fragment navigation](https://github.com/WICG/scroll-to-text-fragment). _TODO I don't this works for scroll to text fragment, which uses ranges, not elements. Maybe make this just a boolean._
+- `hashChange`: a boolean, indicating whether or not this is a same-document [fragment navigation](https://html.spec.whatwg.org/#scroll-to-fragid).
 
 - `formData`: a [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) object containing form submission data, or `null` if the navigation is not a form submission.
 
@@ -286,8 +286,8 @@ appHistory.addEventListener("navigate", e => {
     return;
   }
 
-  // Don't intercept scroll-to-fragment or scroll-to-text-fragment navigations.
-  if (e.fragmentTarget) {
+  // Don't intercept fragment navigations.
+  if (e.hashChange) {
     return;
   }
 
@@ -859,8 +859,8 @@ interface AppHistoryNavigateEvent : Event {
 
   readonly attribute boolean userInitiated;
   readonly attribute boolean sameOrigin;
+  readonly attribute boolean hashChange;
   readonly attribute AppHistoryEntry destinationEntry;
-  readonly attribute Element? fragmentTarget;
   readonly attribute FormData? formData;
   readonly attribute any info;
 
@@ -870,8 +870,8 @@ interface AppHistoryNavigateEvent : Event {
 dictionary AppHistoryNavigateEventInit : EventInit {
   boolean userInitiated = false;
   boolean sameOrigin = false;
+  boolean hashChange = false;
   required AppHistoryEntry destinationEntry;
-  Element? fragmentTarget = null;
   FormData? formData = null;
   any info = null;
 };
