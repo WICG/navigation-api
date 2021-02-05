@@ -169,6 +169,8 @@ As with `history.pushState()` and `history.replaceState()`, the new URL here mus
 
 Note that `appHistory.pushNewEntry()` is asynchronous. As with other [navigations through the app history list](#navigation-through-the-app-history-list), pushing a new entry can be [intercepted or canceled](#navigation-monitoring-and-interception), so it will always be delayed at least one microtask.
 
+Additionally, like `history.pushState()`, `appHistory.pushNewEntry()` will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
+
 In general, you would use `appHistory.updateCurrentEntry()` and `appHistory.pushNewEntry()` in similar scenarios to when you would use `history.pushState()` and `history.replaceState()`. However, note that in the app history API, there are some cases where you don't have to use `appHistory.pushNewEntry()`; see [the discussion below](#using-navigate-handlers-plus-non-history-apis) for more on that subject.
 
 Crucially, `appHistory.currentEntry` stays the same regardless of what iframe navigations happen. It only reflects the current entry for the current frame. The complete list of ways the current app history entry can change are:
@@ -197,7 +199,7 @@ _TODO: realistic example of when you'd use this._
 
 Unlike the existing history API's `history.go()` method, which navigates by offset, navigating by key allows the application to not care about intermediate history entries; it just specifies its desired destination entry.
 
-There are also convenience methods, `appHistory.back()` and `appHistory.forward()`.
+There are also convenience methods, `appHistory.back()` and `appHistory.forward()`. Note that these only navigate through the _app history_ list, not the _joint session history_; that is, they do not navigate frames, and they cannot go back or forward to a cross-origin destination.
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
@@ -617,7 +619,7 @@ Instead of using `history.replaceState(state, uselessTitle, url)`, use `await ap
 
 Instead of using `history.back()` and `history.forward()`, use `await appHistory.back()` and `await appHistory.forward()`. Note that unlike the `history` APIs, the `appHistory` APIs will ignore other frames, and will only control the navigation of your frame. This means it might move through multiple entries in the joint session history, skipping over any entries that were generated purely by other-frame navigations.
 
-Additionally, for same-document navigations, you can test whether the navigation had an effect using a pattern like the following:
+For same-document navigations, you can test whether the navigation had an effect using a pattern like the following:
 
 ```js
 const startingEntry = appHistory.currentEntry;
@@ -626,6 +628,8 @@ if (startingEntry === appHistory.currentEntry) {
   console.log("We weren't able to go back, because there was nothing previous in the app history list");
 }
 ```
+
+Note that unlike the `history` APIs, these `appHistory` APIs will not go to another origin. For example, trying to call `appHistory.back()` when the previous document in the joint session history is cross-origin will just do nothing, and trigger the `console.log()` call above.
 
 Instead of using `history.go(offset)`, use `await appHistory.navigateTo(key)` to navigate to a specific entry. As with `back()` and `forward()`, `appHistory.navigateTo()` will ignore other frames, and will only control the navigation of your frame. If you specifically want to reproduce the pattern of navigating by an offset (not recommended), you can use code such as the following:
 
