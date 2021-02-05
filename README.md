@@ -15,6 +15,7 @@ This new `window.appHistory` API layers on top of the existing API and specifica
   - [Inspection of the app history list](#inspection-of-the-app-history-list)
   - [Navigation through the app history list](#navigation-through-the-app-history-list)
   - [Navigation monitoring and interception](#navigation-monitoring-and-interception)
+    - [Accessibility benefits of standardized single-page navigations](#accessibility-benefits-of-standardized-single-page-navigations)
     - [Measuring standardized single-page navigations](#measuring-standardized-single-page-navigations)
     - [Example: replacing navigations with single-page app navigations](#example-replacing-navigations-with-single-page-app-navigations)
     - [Example: single-page app "redirects"](#example-single-page-app-redirects)
@@ -66,6 +67,8 @@ Overall, our guiding principle is to make it easy for web application developers
 From an API perspective, our primary goals are as follows:
 
 - Allow easy conversion of cross-document navigations into single-page app same-document navigations, without fragile hacks like a global `click` handler.
+
+- Improve the accessibility of single-page app navigations([1](https://github.com/w3c/aria/issues/1353), [2](https://docs.google.com/document/d/1MYClmO3FkjhSuSYKlVPVDnXvtOm-yzG15SY9jopJIxQ/edit#), [3](https://www.gatsbyjs.com/blog/2019-07-11-user-testing-accessible-client-routing/)), ideally to be on par with cross-document navigations, when they are implemented using this API.
 
 - Provide a uniform way to signal single-page app navigations, including their duration.
 
@@ -259,19 +262,25 @@ Additionally, the event has a special method `event.respondWith(promise)`. If ca
 
 _TODO: should we give direct control over when the browser UI updates, in case developers want to update it earlier in the lifecycle before the promise fully settles? E.g. `event.commitNavigation()` or `event.commitNavigationUI()`? Would it be OK to let the UI get out of sync with the history list?_
 
+#### Accessibility benefits of standardized single-page navigations
+
+The `navigate` event's `event.respondWith()` method provides a helpful convenience for implementing single-page navigations, as discussed above. But beyond that, providing a direct signal to the browser as to the duration and outcome of a single-page navigation has benefits for accessibility technology users.
+
+In particular, with [cross-document](#appendix-types-of-navigations) navigations, AT users get clear feedback that a navigation has occurred. But traditionally, single-page navigations have not been communicated in the same way to accessibility technology. This is in part because it is not clear to the browser when a user interaction causes a single-page navigation, because of the app-specific JavaScript that intermediates between such interactions and the eventual call to `history.pushState()`/`history.replaceState()`. In particular, it's unclear exactly when the navigation begins and ends: trying to use the URL change as a signal doesn't work, since when applications call `history.pushState()` during the content loading process varies.
+
+Implementing single-page navigations by using the `navigate` event and its `respondWith()` function solves this part of the problem. It gives the browser clear insight into when a navigation is being handled as a single-page navigation, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds. We expect browsers to use these to update their own UI (including any loading indicators; see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330) for previous feature requests). And we expect browsers to communicate these signals to accessibility technology, in the same way they do for traditional cross-document navigations.
+
+This does not yet solve all accessibility problems with single-page navigations. In particular, this proposal doesn't currently have a solution for focus management and placing the user's keyboard focus in the relevant place after navigation. However, we are very interested in finding a way to make usage of the app history API guide web developers toward creating accessible experiences, and would like to explore additions or changes that would help with these aspects of the problem as well. Please join us to discuss and brainstorm in [#25](https://github.com/WICG/app-history/issues/25).
+
 #### Measuring standardized single-page navigations
 
-The `navigate` event's `event.respondWith()` method provides a helpful convenience for implementing single-page navigations, as discussed above. But beyond that, providing a direct signal to the browser as to the duration and outcome of a single-page navigation has wider ecosystem benefits in regards to metrics gathering.
+Continuing with the theme of `respondWith()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
 
-In particular, today it is not clear to the browser when a user interaction causes a single-page navigation, because of the app-specific JavaScript that intermediates between such interactions and the eventual call to `history.pushState()`/`history.replaceState()`. In particular, it's unclear exactly when the navigation begins: trying to use the URL change as a signal doesn't work, since some applications wait to call `history.pushState()` until all the content is loaded.
-
-Using `respondWith()` solves these problems. It gives the browser clear insight into when a navigation is being handled as a single-page navigation, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds. We expect browsers to use these to update their own UI (including any loading indicators; see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330) for previous feature requests).
-
-Additionally, analytics frameworks would be able to consume this information from the browser in a way that works across all applications using the app history API. See the example in the [Current entry change monitoring](#current-entry-change-monitoring) section for one way this could look; other possibilities include integrating into the existing [performance APIs](https://w3c.github.io/performance-timeline/).
+In particular, analytics frameworks would be able to consume this information from the browser in a way that works across all applications using the app history API. See the example in the [Current entry change monitoring](#current-entry-change-monitoring) section for one way this could look; other possibilities include integrating into the existing [performance APIs](https://w3c.github.io/performance-timeline/).
 
 This standardized notion of single-page navigations also gives a hook for other useful metrics to build off of. For example, you could imagine variants of the `"first-paint"` and `"first-contentful-paint"` APIs which are collected after the `navigate` event is fired. Or, you could imagine vendor-specific or application-specific measurements like [Cumulative Layout Shift](https://web.dev/cls/) or React hydration time being reset after such navigations begin.
 
-This isn't a complete panacea: in particular, such metrics are gameable by bad actors. In particular, bad actors could try to drive down average measured "load time" by generating excessive `navigate` events that don't actually do anything. So in scenarios where the web application is less interested in measuring itself, and more interested in driving down specific metrics, those creating the metrics will need to take into account such misuse of the API. Some potential countermeasures against such gaming could include:
+This isn't a complete panacea: in particular, such metrics are gameable by bad actors. Such bad actors could try to drive down average measured "load time" by generating excessive `navigate` events that don't actually do anything. So in scenarios where the web application is less interested in measuring itself, and more interested in driving down specific metrics, those creating the metrics will need to take into account such misuse of the API. Some potential countermeasures against such gaming could include:
 
 - Only using the start time of the navigation in creating such metrics, and not using the promise-settling time. This avoids gaming via code such as `event.respondWith(Promise.resolve()); await doActualNavigation()` which makes the navigation appear instant to the browser.
 
@@ -813,6 +822,7 @@ Thanks also to
 [@housseindjirdeh](https://github.com/housseindjirdeh),
 [@jakearchibald](https://github.com/jakearchibald),
 [@matt-buland-sfdc](https://github.com/matt-buland-sfdc),
+[@MelSumner](https://github.com/MelSumner),
 [@mmocny](https://github.com/mmocny),
 [@natechapin](https://github.com/natechapin), and
 [@slightlyoff](https://github.com/slightlyoff)
