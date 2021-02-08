@@ -869,7 +869,7 @@ Here's a summary table:
 |`appHistory.{pushNewEntry,updateCurrentEntry}()`|Always same|Yes|No|
 |`document.open()`|Always same|Yes|No|
 
-(Regarding the "No" values for the "Fires `navigate`?" column: recall that we need to disallow abusive pages from trapping the user by intercepting the back button. To get notified of such non-interceptable cases after the fact, you can use `currententrychange` for same-document navigations, or the `Window` object's `load` event for cross-document navigations.)
+(Regarding the "No" values for the "Fires `navigate`?" column: recall that we need to disallow abusive pages from trapping the user by intercepting the back button. To get notified of such non-interceptable cases after the fact, you can use `currententrychange`.)
 
 _Spec details: the above comprehensive list does not fully match when the HTML Standard's [navigate](https://html.spec.whatwg.org/#navigate) algorithm is called. In particular, HTML does not handle non-fragment-related same-document navigations through the navigate algorithm; instead it uses the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps) for those. Also, HTML calls the navigate algorithm for the initial loads of new browsing contexts as they transition from the initial `about:blank`; our current thinking is that `appHistory` should just not work on the initial `about:blank` so we can avoid that edge case._
 
