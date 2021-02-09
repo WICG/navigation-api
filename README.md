@@ -36,6 +36,7 @@ This new `window.appHistory` API layers on top of the existing API and specifica
 - [Security and privacy considerations](#security-and-privacy-considerations)
 - [Stakeholder feedback](#stakeholder-feedback)
 - [Acknowledgments](#acknowledgments)
+- [Appendix: types of navigations](#appendix-types-of-navigations)
 - [Appendix: full API surface, in Web IDL format](#appendix-full-api-surface-in-web-idl-format)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -82,7 +83,7 @@ From an API perspective, our primary goals are as follows:
 
 Non-goals:
 
-- Allow web applications to intercept navigations which they cannot intercept today (e.g., URL bar or back button navigations).
+- Allow web applications to intercept user-initiated navigations in a way that would trap the user (e.g., disabling the URL bar or back button).
 
 - Provide applications knowledge of cross-origin history entries or state.
 
@@ -209,11 +210,11 @@ All of these methods return promises, because navigations can be intercepted and
 
 ### Navigation monitoring and interception
 
-The most interesting event on `window.appHistory` is the one which allows monitoring and interception of navigations: the `navigate` event. It fires on any navigation, either user-initiated or application-initiated, which would update the value of `appHistory.currentEntry`. This includes cross-origin navigations (which will take us out of the current app history list), but it does _not_ include navigations which target other windows, e.g. right click/open in new tab. **We expect this to be the main event used by application- or framework-level routers.**
+The most interesting event on `window.appHistory` is the one which allows monitoring and interception of navigations: the `navigate` event. It fires on almost any navigation, either user-initiated or application-initiated, which would update the value of `appHistory.currentEntry`. This includes cross-origin navigations (which will take us out of the current app history list); see [below](#example-cross-origin-affiliate-links) for an example of how this is useful. **We expect this to be the main event used by application- or framework-level routers.**
 
 The event object has several useful properties:
 
-- `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigateTo(...)`, etc.).
+- `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.pushNewEntry(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.pushNewEntry(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
 - `destinationEntry`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries`; if it is not, then its `state` will be `null`.
 
@@ -225,21 +226,26 @@ The event object has several useful properties:
 
 - `info`: any value passed by `appHistory.pushNewEntry({ url, state, navigateInfo })` or `appHistory.updateCurrentEntry({ url, state, navigateInfo })`, if the navigation was initiated by one of those methods and the `navigateInfo` option was supplied; otherwise, null. See [the example below](#example-using-navigateinfo) for more.
 
-Note that you can check if the navigation will be same-document via `event.destinationEntry.sameDocument`.
+Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destinationEntry.sameDocument`.
 
-In some cases, the event is cancelable via `event.preventDefault()`, which prevents the navigation from going through. Specifically:
+The event is not fired in the following cases:
 
-- It is cancelable for user-initiated navigations via `<a>` and `<form>` elements, including both same-document fragment navigations and cross-document navigations.
-- It is cancelable for programmatically-initiated navigations, via mechanisms such as `location.href = ...` or `aElement.click()`, including both same-document fragment navigations and cross-document navigations.
-- It is cancelable for programmatically-initiated same-document navigations initiated via `appHistory.pushNewEntry()`, `appHistory.updateCurrentEntry()`, or their old counterparts `history.pushState()` and `history.replaceState()`.
-- It is _not_ cancelable for user-initiated navigations via browser UI, such as the URL bar or bookmarks.
-- It is _not_ cancelable for programmatically-initiated navigations originating from other windows, such as `window.open(url, "nameOfAnotherWindow")`.
+- User-initiated cross-document navigations via browser UI, such as the URL bar, back/forward button, or bookmarks.
+- User-initiated same-document navigations via the browser back/forward buttons. (See discussion in [#32](https://github.com/WICG/app-history/issues/32).)
 
-_TODO: should the event even fire at all, for these latter two cases?_
+Whenever it is fired, the event is cancelable via `event.preventDefault()`, which prevents the navigation from going through. To name a few notable examples of when the event is fired, i.e. when you can intercept the navigation:
 
-These restrictions are designed so that canceling the `navigate` event gives web developers an easier mechanism to do things they can already do. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`. It does not give them any new powers, and in particular it does not allow trapping the user on a page by intercepting the back button or URL bar navigations.
+- User-initiated navigations via `<a>` and `<form>` elements, including both same-document fragment navigations and cross-document navigations.
+- Programmatically-initiated navigations, via mechanisms such as `location.href = ...` or `aElement.click()`, including both same-document fragment navigations and cross-document navigations.
+- Programmatically-initiated same-document navigations initiated via `appHistory.pushNewEntry()`, `appHistory.updateCurrentEntry()`, or their old counterparts `history.pushState()` and `history.replaceState()`.
 
-Additionally, the event has a special method `event.respondWith(promise)`. This can only be called when the event is cancelable; in other cases it will throw an exception. If called, this will:
+(This list is not comprehensive; for the complete list of possible navigations on the web platform, see [this appendix](#appendix-types-of-navigations).)
+
+Although the ability to intercept cross-document navigations, especially cross-origin ones, might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
+
+On the other hand, cases that are not interceptable today, where the user is the instigator of the navigation through browser UI, are not interceptable. This ensures that web applications cannot trap the user on a given document by intercepting cross-document URL bar navigations, or disable the user's back/forward buttons. Note that, in the case of the back/forward buttons, even same-document interception isn't allowed. This is because it's easy to generate same-document app history entries (e.g., using `appHistory.pushNewEntry()` or `history.pushState()`); if we allowed intercepting traversal to them, this would allow sites to disable the back/forward buttons. We realize that this limits the utility of the `navigate` event in some cases, and are open to exploring other ways of combating abusive: see the discussion in [#32](https://github.com/WICG/app-history/issues/32).
+
+Additionally, the event has a special method `event.respondWith(promise)`. If called, this will:
 
 - Cancel the navigation (but see below).
 - Wait for the promise to settle.
@@ -739,6 +745,8 @@ _TODO: actually, we should probably expose scroll restoration mode, like `histor
 
 Finally, all the higher-level mechanisms of session history entry management, such as the interaction with navigation, continue to work as they did before; the correspondence to `AppHistoryEntry` APIs does not change the processing there.
 
+To understand how navigation interception and queuing interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). Also note the open questions in [#19](https://github.com/WICG/app-history/issues/19).
+
 ## Impact on the back button and user agent UI
 
 The app history API doesn't change anything about how user agents implement their UI: it's really about developer-facing affordances. Users still care about the joint session history, and so that will continue to be presented in UI surfaces like holding down the back button. Similarly, pressing the back button will continue to navigate through the joint session history, potentially across origins and out of the current app history (into a new app history, on the new origin).
@@ -782,7 +790,7 @@ One particular point of interest is the user-agent generated `appHistoryEntry.ke
 
 (Collaborating cross-origin same-site pages can inspect each other's `AppHistoryEntry`s using `document.domain`, but they can also inspect every other aspect of each others' global objects.)
 
-Security-wise, this feature has been carefully designed to give no new abilities that might be disruptive to the user or to delicate parts of browser code. See, for example, the restrictions on [navigation monitoring and interception](#navigation-monitoring-and-interception) to ensure that it is no more powerful than today's techniques, or the discussion of how this proposal [does not impact how browser UI presents session history](#impact-on-back-button-and-user-agent-ui).
+Security-wise, this feature has been carefully designed to give no new abilities that might be disruptive to the user or to delicate parts of browser code. See, for example, the restrictions on [navigation monitoring and interception](#navigation-monitoring-and-interception) to ensure that it does not allow trapping the user, or the discussion of how this proposal [does not impact how browser UI presents session history](#impact-on-back-button-and-user-agent-ui).
 
 See also the [W3C TAG security and privacy questionnaire answers](./security-and-privacy-questionnaire.md).
 
@@ -804,10 +812,71 @@ Thanks also to
 [@dvoytenko](https://github.com/dvoytenko),
 [@housseindjirdeh](https://github.com/housseindjirdeh),
 [@jakearchibald](https://github.com/jakearchibald),
+[@matt-buland-sfdc](https://github.com/matt-buland-sfdc),
 [@mmocny](https://github.com/mmocny),
 [@natechapin](https://github.com/natechapin), and
 [@slightlyoff](https://github.com/slightlyoff)
 for their help in exploring this space and providing feedback.
+
+## Appendix: types of navigations
+
+The web platform has many ways of initiating a navigation. For the purposes of the app history API, the following is intended to be a comprehensive list:
+
+- Users can trigger navigations via browser UI, including (but not necessarily limited to):
+  - The URL bar
+  - The back and forward buttons
+  - The reload button
+  - Bookmarks
+- `<a>` and `<area>` elements (both directly by users, and programmatically via `element.click()` etc.)
+- `<form>` elements (both directly by users, and programmatically via `element.submit()` etc.)
+- `<meta http-equiv="refresh">`
+- The `Refresh` HTTP response header
+- The `window.location` setter, the various `location.*` setters, and the `location.replace()`, `location.assign()`, and `location.reload()` methods
+- Calling `window.open(url, nameOfSomeWindow)` will navigate a window whose `window.name` is `nameOfSomeWindow`
+- `history.back()`, `history.forward()`, and `history.go()`
+- `history.pushState()` and `history.replaceState()`
+- `appHistory.back()`, `appHistory.forward()`, `appHistory.navigateTo()`
+- `appHistory.pushNewEntry()` and `appHistory.updateCurrentEntry()`
+- [`document.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/open)
+
+**Cross-document navigations** are navigations where, after the navigation completes, you end up in a different `Document` object than the one you are curently on. Notably, these unload the old document, and stop running any JavaScript code from there.
+
+**Same-document** navigations are ones where, after the navigation completes, you stay on the same `Document`, with the same JavaScript environment.
+
+Most navigations are cross-document navigations. Same-document navigations can happen due to:
+
+- Any of the above navigation mechanisms only updating the URL's fragment, e.g. `location.hash = "foo"` or clicking on `<a href="#bar">` or calling `history.back()` after either of those two actions
+- `history.pushState()` and `history.replaceState()`
+- `appHistory.pushNewEntry()` and `appHistory.updateCurrentEntry()`
+- `document.open()`
+- [Intercepting a cross-document navigation](#navigation-monitoring-and-interception) using the `appHistory` object's `navigate` event, and calling `event.respondWith()`
+
+Here's a summary table:
+
+|Trigger|Cross- vs. same-document|Fires `navigate`?|`event.userInitiated`|
+|-------|------------------------|-----------------|---------------------|
+|Browser UI (back/forward)|Either|No|—|
+|Browser UI (non-back/forward fragment change only)|Always same|Yes|Yes|
+|Browser UI (non-back/forward other)|Always cross|No|—|
+|`<a>`/`<area>`|Either|Yes|Yes|
+|`<form>`|Either|Yes|Yes|
+|`<meta http-equiv="refresh">`|Either|Yes|No|
+|`Refresh` header|Either|Yes|No|
+|`window.location`|Either|Yes|No|
+|`window.open(url, name)`|Either|Yes|No|
+|`history.{back,forward,go}()`|Either|Yes|No|
+|`history.{pushState,replaceState}()`|Always same|Yes|No|
+|`appHistory.{back,forward,navigateTo}()`|Either|Yes|No|
+|`appHistory.{pushNewEntry,updateCurrentEntry}()`|Always same|Yes|No|
+|`document.open()`|Always same|Yes|No|
+
+Some notes:
+
+- Regarding the "No" values for the "Fires `navigate`?" column: recall that we need to disallow abusive pages from trapping the user by intercepting the back button. To get notified of such non-interceptable cases after the fact, you can use `currententrychange`.
+
+- Today it is not possible to intercept cases where other frames or windows programatically navigate your frame, e.g. via `window.open(url, name)`, or `history.back()` happening in a subframe. So, firing the `navigate` event and allowing interception in such cases represents a new capability. We believe this is OK, but will report back after some implementation experience. See also [#32](https://github.com/WICG/app-history/issues/32).
+
+_Spec details: the above comprehensive list does not fully match when the HTML Standard's [navigate](https://html.spec.whatwg.org/#navigate) algorithm is called. In particular, HTML does not handle non-fragment-related same-document navigations through the navigate algorithm; instead it uses the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps) for those. Also, HTML calls the navigate algorithm for the initial loads of new browsing contexts as they transition from the initial `about:blank`; our current thinking is that `appHistory` should just not work on the initial `about:blank` so we can avoid that edge case._
 
 ## Appendix: full API surface, in Web IDL format
 
