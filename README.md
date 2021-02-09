@@ -83,7 +83,7 @@ From an API perspective, our primary goals are as follows:
 
 Non-goals:
 
-- Allow web applications to intercept navigations which they cannot intercept today (e.g., URL bar or back button navigations).
+- Allow web applications to intercept user-initiated navigations in a way that would trap the user (e.g., disabling the URL bar or back button).
 
 - Provide applications knowledge of cross-origin history entries or state.
 
@@ -230,9 +230,8 @@ Note that you can check if the navigation will be [same-document or cross-docume
 
 The event is not fired in the following cases:
 
-- User-initiated cross-document navigations via browser UI, such as the URL bar or bookmarks.
-- User-initiated same-document navigations via the browser back/forward buttons.
-- Programmatically-initiated cross-document navigations originating from other windows, such as `window.open(url, "nameOfAnotherWindow")`.
+- User-initiated cross-document navigations via browser UI, such as the URL bar, back/forward button, or bookmarks.
+- User-initiated same-document navigations via the browser back/forward buttons. (See discussion in [#32](https://github.com/WICG/app-history/issues/32).)
 
 Whenever it is fired, the event is cancelable via `event.preventDefault()`, which prevents the navigation from going through. To name a few notable examples of when the event is fired, i.e. when you can intercept the navigation:
 
@@ -242,7 +241,9 @@ Whenever it is fired, the event is cancelable via `event.preventDefault()`, whic
 
 (This list is not comprehensive; for the complete list of possible navigations on the web platform, see [this appendix](#appendix-types-of-navigations).)
 
-These restrictions are designed so that canceling the `navigate` event gives web developers an easier mechanism to do things they can already do. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`. It does not give them any new powers, and in particular it does not allow trapping the user on a page by intercepting the back button or URL bar navigations.
+Although the ability to intercept cross-document navigations, especially cross-origin ones, might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
+
+On the other hand, cases that are not interceptable today, where the user is the instigator of the navigation through browser UI, are not interceptable. This ensures that web applications cannot trap the user on a given document by intercepting cross-document URL bar navigations, or disable the user's back/forward buttons. Note that, in the case of the back/forward buttons, even same-document interception isn't allowed. This is because it's easy to generate same-document app history entries (e.g., using `appHistory.pushNewEntry()` or `history.pushState()`); if we allowed intercepting traversal to them, this would allow sites to disable the back/forward buttons. We realize that this limits the utility of the `navigate` event in some cases, and are open to exploring other ways of combating abusive: see the discussion in [#32](https://github.com/WICG/app-history/issues/32).
 
 Additionally, the event has a special method `event.respondWith(promise)`. If called, this will:
 
@@ -789,7 +790,7 @@ One particular point of interest is the user-agent generated `appHistoryEntry.ke
 
 (Collaborating cross-origin same-site pages can inspect each other's `AppHistoryEntry`s using `document.domain`, but they can also inspect every other aspect of each others' global objects.)
 
-Security-wise, this feature has been carefully designed to give no new abilities that might be disruptive to the user or to delicate parts of browser code. See, for example, the restrictions on [navigation monitoring and interception](#navigation-monitoring-and-interception) to ensure that it is no more powerful than today's techniques, or the discussion of how this proposal [does not impact how browser UI presents session history](#impact-on-back-button-and-user-agent-ui).
+Security-wise, this feature has been carefully designed to give no new abilities that might be disruptive to the user or to delicate parts of browser code. See, for example, the restrictions on [navigation monitoring and interception](#navigation-monitoring-and-interception) to ensure that it does not allow trapping the user, or the discussion of how this proposal [does not impact how browser UI presents session history](#impact-on-back-button-and-user-agent-ui).
 
 See also the [W3C TAG security and privacy questionnaire answers](./security-and-privacy-questionnaire.md).
 
@@ -826,8 +827,8 @@ The web platform has many ways of initiating a navigation. For the purposes of t
   - The back and forward buttons
   - The reload button
   - Bookmarks
-- `<a>` and `<area>` elements (both directly by users, and programmatically via `element.click()`)
-- `<form>` elements (both directly by users, and programmatically via `element.submit()`)
+- `<a>` and `<area>` elements (both directly by users, and programmatically via `element.click()` etc.)
+- `<form>` elements (both directly by users, and programmatically via `element.submit()` etc.)
 - `<meta http-equiv="refresh">`
 - The `Refresh` HTTP response header
 - The `window.location` setter, the various `location.*` setters, and the `location.replace()`, `location.assign()`, and `location.reload()` methods
@@ -854,22 +855,26 @@ Here's a summary table:
 
 |Trigger|Cross- vs. same-document|Fires `navigate`?|`event.userInitiated`|
 |-------|------------------------|-----------------|---------------------|
+|Browser UI (back/forward)|Either|No|—|
 |Browser UI (non-back/forward fragment change only)|Always same|Yes|Yes|
-|Browser UI (other)|Either|No|—|
+|Browser UI (non-back/forward other)|Always cross|No|—|
 |`<a>`/`<area>`|Either|Yes|Yes|
 |`<form>`|Either|Yes|Yes|
 |`<meta http-equiv="refresh">`|Either|Yes|No|
 |`Refresh` header|Either|Yes|No|
 |`window.location`|Either|Yes|No|
-|`window.open(url, name)` (fragment change only)|Always same|Yes|No|
-|`window.open(url, name)` (other)|Always cross|No|—|
+|`window.open(url, name)`|Either|Yes|No|
 |`history.{back,forward,go}()`|Either|Yes|No|
 |`history.{pushState,replaceState}()`|Always same|Yes|No|
 |`appHistory.{back,forward,navigateTo}()`|Either|Yes|No|
 |`appHistory.{pushNewEntry,updateCurrentEntry}()`|Always same|Yes|No|
 |`document.open()`|Always same|Yes|No|
 
-(Regarding the "No" values for the "Fires `navigate`?" column: recall that we need to disallow abusive pages from trapping the user by intercepting the back button. To get notified of such non-interceptable cases after the fact, you can use `currententrychange`.)
+Some notes:
+
+- Regarding the "No" values for the "Fires `navigate`?" column: recall that we need to disallow abusive pages from trapping the user by intercepting the back button. To get notified of such non-interceptable cases after the fact, you can use `currententrychange`.
+
+- Today it is not possible to intercept cases where other frames or windows programatically navigate your frame, e.g. via `window.open(url, name)`, or `history.back()` happening in a subframe. So, firing the `navigate` event and allowing interception in such cases represents a new capability. We believe this is OK, but will report back after some implementation experience. See also [#32](https://github.com/WICG/app-history/issues/32).
 
 _Spec details: the above comprehensive list does not fully match when the HTML Standard's [navigate](https://html.spec.whatwg.org/#navigate) algorithm is called. In particular, HTML does not handle non-fragment-related same-document navigations through the navigate algorithm; instead it uses the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps) for those. Also, HTML calls the navigate algorithm for the initial loads of new browsing contexts as they transition from the initial `about:blank`; our current thinking is that `appHistory` should just not work on the initial `about:blank` so we can avoid that edge case._
 

@@ -48,7 +48,7 @@ No.
 
 **Do features in this specification allow an origin some measure of control over a user agent’s native UI?**
 
-Importantly, no. Navigations through native UI such as the URL bar or back button do not trigger a cancelable `navigate` event. See also the section ["Impact on the back button and user agent UI"](./README.md#impact-on-the-back-button-and-user-agent-ui) for more discussion.
+Importantly, no. Navigations through native UI such as the URL bar or back button do not trigger a cancelable `navigate` event. See the abuse prevention discussion in the ["Navigation monitoring and interception"](./README.md#navigation-monitoring-and-interception) section as well as the ["Impact on the back button and user agent UI"](./README.md#impact-on-the-back-button-and-user-agent-ui) section.
 
 **What temporary identifiers do the features in this specification create or expose to the web?**
 
