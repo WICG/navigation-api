@@ -550,14 +550,14 @@ This can be useful for cleaning up any information in secondary stores, such as 
 
 The `window.appHistory` object has an event, `currententrychange`, which allows the application to react to any updates to the `appHistory.currentEntry` property. This includes both navigations that change its value, and calls to `appHistory.updateCurrentEntry()` that change its `state` or `url` properties. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
 
-This event has one special property, `event.navigationStart`, which for [same-document](#appendix-types-of-navigations) navigations gives the value of `performance.now()` when the navigation was initiated. This includes for navigations that were originally [cross-document](#appendix-types-of-navigations), like the user clicking on `<a href="https://example.com/another-page">`, but were transformed into same-document navigations by [navigation interception](#navigation-monitoring-and-interception). For completely cross-document navigations, `navigationStart` will be `null`.
+This event has one special property, `event.startTime`, which for [same-document](#appendix-types-of-navigations) navigations gives the value of `performance.now()` when the navigation was initiated. This includes for navigations that were originally [cross-document](#appendix-types-of-navigations), like the user clicking on `<a href="https://example.com/another-page">`, but were transformed into same-document navigations by [navigation interception](#navigation-monitoring-and-interception). For completely cross-document navigations, `startTime` will be `null`.
 
 "Initiated" means either when the corresponding API was called (like `location.href` or `appHistory.pushNewEntry()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`. This allows it to be used for determining the overall time from navigation initiation to navigation completion, including the time it took for a promise passed to `e.respondWith()` to settle:
 
 ```js
 appHistory.addEventListener("currententrychange", e => {
-  if (e.navigationStart) {
-    const loadTime = e.timeStamp - e.navigationStart;
+  if (e.startTime) {
+    const loadTime = e.timeStamp - e.startTime;
 
     document.querySelector("#status-bar").textContent = `Loaded in ${loadTime} ms!`;
     analyticsPackage.sendEvent("single-page-app-nav", { loadTime });
@@ -567,7 +567,9 @@ appHistory.addEventListener("currententrychange", e => {
 });
 ```
 
-_TODO: reconsider cross-document navigations. There will only be one (the initial load of the page); should we even fire this event in that case? Could we give `navigationStart` a useful value there, if we do?_
+_TODO: reconsider cross-document navigations. There will only be one (the initial load of the page); should we even fire this event in that case? (That's [#31](https://github.com/WICG/app-history/issues/31).) Could we give `startTime` a useful value there, if we do?_
+
+_TODO: is this property-on-the-event design the right one, or should we integrate with the performance timeline APIs, or...? Discuss in [#33](https://github.com/WICG/app-history/issues/33)._
 
 _TODO: Add a non-analytics examples, similar to how people use `popstate` today._
 
@@ -898,10 +900,10 @@ dictionary AppHistoryUpcomingNavigateEventInit : EventInit {
 interface AppHistoryCurrentEntryChangeEvent : Event {
   constructor(DOMString type, optional AppHistoryCurrentEntryChangeEventInit eventInit = {});
 
-  readonly attribute DOMHighResTimeStamp? navigationStart;
+  readonly attribute DOMHighResTimeStamp? startTime;
 };
 
 dictionary AppHistoryCurrentEntryChangeEventInit : EventInit {
-  DOMHighResTimeStamp? navigationStart = null;
+  DOMHighResTimeStamp? startTime = null;
 };
 ```
