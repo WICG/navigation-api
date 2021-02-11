@@ -2,7 +2,7 @@
 
 The web's existing [history API](https://developer.mozilla.org/en-US/docs/Web/API/History) is problematic for a number of reasons, which makes it hard to use for web applications. This proposal introduces a new one, which is more directly usable by web application developers to address the use cases they have for history introspection, mutation, and observation/interception.
 
-This new `window.appHistory` API layers on top of the existing API and specification infrastructure, with well-defined interaction points. The main differences are that it is scoped to the current origin and frame, and it is designed to be pleasant to use instead of being a historical accident with many sharp edges.
+This new `window.appHistory` API [layers](#integration-with-the-existing-history-api-and-spec) on top of the existing API and specification infrastructure, with well-defined interaction points. The main differences are that it is scoped to the current origin and frame, and it is designed to be pleasant to use instead of being a historical accident with many sharp edges.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -33,6 +33,9 @@ This new `window.appHistory` API layers on top of the existing API and specifica
   - [Introspecting the history list](#introspecting-the-history-list)
   - [Watching for navigations](#watching-for-navigations)
 - [Integration with the existing history API and spec](#integration-with-the-existing-history-api-and-spec)
+  - [Correspondence with session history entries](#correspondence-with-session-history-entries)
+  - [Correspondence with the joint session history](#correspondence-with-the-joint-session-history)
+  - [Integration with navigation](#integration-with-navigation)
 - [Impact on the back button and user agent UI](#impact-on-the-back-button-and-user-agent-ui)
 - [Security and privacy considerations](#security-and-privacy-considerations)
 - [Stakeholder feedback](#stakeholder-feedback)
@@ -197,9 +200,7 @@ The way for an application to navigate through the app history list is using `ap
 
 _TODO: realistic example of when you'd use this._
 
-Unlike the existing history API's `history.go()` method, which navigates by offset, navigating by key allows the application to not care about intermediate history entries; it just specifies its desired destination entry.
-
-There are also convenience methods, `appHistory.back()` and `appHistory.forward()`. Note that these only navigate through the _app history_ list, not the _joint session history_; that is, they do not navigate frames, and they cannot go back or forward to a cross-origin destination.
+Unlike the existing history API's `history.go()` method, which navigates by offset, navigating by key allows the application to not care about intermediate history entries; it just specifies its desired destination entry. There are also convenience methods, `appHistory.back()` and `appHistory.forward()`.
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
@@ -212,6 +213,8 @@ All of these methods return promises, because navigations can be intercepted and
 - The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `appHistory.currentEntry` (as well as the URL bar, if appropriate) will update.
 
 - The navigation succeeds, and it was a different-document navigation. Then the promise will never settle, because the entire document and all its promises will disappear.
+
+As discussed in more detail in the section on [integration with the existing history API and spec](#integration-with-the-existing-history-api-and-spec), navigating through the app history list does navigate through the joint session history. This means it _can_ impact other frames on the page. It's just that, unlike `history.back()` and friends, such other-frame navigations always happen as a side effect of navigating your own frame; they are never the sole result of an app history traversal.
 
 ### Navigation monitoring and interception
 
@@ -727,18 +730,28 @@ The app history API provides several replacements that subsume these events:
 
 ## Integration with the existing history API and spec
 
-An `AppHistoryEntry` corresponds directly to a [session history entry](https://html.spec.whatwg.org/#session-history-entry) from the existing HTML specification. However, not every session history entry would have a corresponding `AppHistoryEntry`: `AppHistoryEntry` objects only exist for session history entries which are same-origin to the current one, and contiguous.
+At a high level, app history is meant to be a layer on top of the HTML Standard's existing concepts. It does not require a novel model for session history, either in implementations or specifications. (Although, it will only be possible to specify it rigorously once the existing specification gets cleaned up, per the work we're doing in [whatwg/html#5767](https://github.com/whatwg/html/issues/5767).)
 
-Example: if a browsing context contains history entries with the URLs
+This is done through:
 
-1. `https://example.com/foo`
-1. `https://example.com/bar`
-1. `https://other.example.com/whatever`
-1. `https://example.com/baz`
+- Ensuring that app history entries map directly to the specification's existing history entries. The `appHistory.entries` API only presents a subset of them, namely same-frame, same-origin contiguous ones, but each is backed by an existing entry.
 
-then, if the current entry is (4), there would only be one `AppHistoryEntry` in `appHistory.entries`, corresponding to (4) itself. If the current entry is (2), then there would be two `AppHistoryEntries` in `appHistory.entries`, corresponding to (1) and (2).
+- Ensuring that traversal through app history always maps to a traversal through the joint session history, i.e. a traversal which is already possible today.
 
-Furthermore, unlike the view of history presented by `window.history`, `window.appHistory` only gives a view onto session history entries for the current browsing context; it does not present the joint session history, i.e. it is not impacted by frames.
+### Correspondence with session history entries
+
+An `AppHistoryEntry` corresponds directly to a [session history entry](https://html.spec.whatwg.org/#session-history-entry) from the existing HTML specification. However, not every session history entry would have a corresponding `AppHistoryEntry` in a given `Window`: `AppHistoryEntry` objects only exist for session history entries which are same-origin to the current one, and contiguous.
+
+Example: if a browsing context contains session history entries with the URLs
+
+```
+1. https://example.com/foo
+2. https://example.com/bar
+3. https://other.example.com/whatever
+4. https://example.com/baz
+```
+
+then, if the current entry is 4, there would only be one `AppHistoryEntry` in `appHistory.entries`, corresponding to 4 itself. If the current entry is 2, then there would be two `AppHistoryEntries` in `appHistory.entries`, corresponding to 1 and 2.
 
 To make this correspondence work, every spec-level session history entry would gain two new fields:
 
@@ -756,38 +769,67 @@ Apart from these new fields, the session history entries which correspond to `Ap
 
 _TODO: actually, we should probably expose scroll restoration mode, like `history.scrollRestoration`? That API has legitimate use cases, and we'd like to allow people to never touch `window.history`..._
 
-Finally, all the higher-level mechanisms of session history entry management, such as the interaction with navigation, continue to work as they did before; the correspondence to `AppHistoryEntry` APIs does not change the processing there.
+### Correspondence with the joint session history
 
-To understand how navigation interception and queuing interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). Also note the open questions in [#19](https://github.com/WICG/app-history/issues/19).
+The view of history which the user sees, and which is traversable with existing APIs like `history.go()`, is the joint session history.
 
-## Impact on the back button and user agent UI
+Unlike the view of history presented by `window.history`, `window.appHistory` only gives a view onto session history entries for the current browsing context. This view does not present the joint session history, i.e. it is not impacted by frames. Notably, this means `appHistory.entries.length` is likely to be quite different from `history.length`.
 
-The app history API doesn't change anything about how user agents implement their UI: it's really about developer-facing affordances. Users still care about the joint session history, and so that will continue to be presented in UI surfaces like holding down the back button. Similarly, pressing the back button will continue to navigate through the joint session history, potentially across origins and out of the current app history (into a new app history, on the new origin).
+Example: consider the following setup.
 
-An important consequence of this is that when iframes are involved, the back button may navigate through the joint session history, without changing the current _app history_ entry. For example, consider the following sequence:
-
-1. `https://example.com/start` loads
+1. `https://example.com/start` loads.
 1. The user navigates to `https://example.com/outer` by clicking a link. This page contains an iframe with `https://example.com/inner-start`.
+1. Code on `https://example.com/outer` calls `appHistory.pushNewEntry({ url: "/outer-pushed" })`
 1. The iframe navigates to `https://example.com/inner-end`.
 
-The app history list for the outer frame contains two entries:
-
-```
-1. https://example.com/start
-2. https://example.com/outer
-```
-
-The joint session session history contains three entries:
+The joint session session history contains four entries:
 
 ```
 A. https://example.com/start
 B. https://example.com/outer
    ┗ https://example.com/inner-start
-C. https://example.com/outer
+C. https://example.com/outer-pushed
+   ┗ https://example.com/inner-start
+D. https://example.com/outer-pushed
    ┗ https://example.com/inner-end
 ```
 
-The user's back button, as well as the `history.back()` API, will navigate the joint session history back to (B). However, they will have no effect on the app history list; that will stay on (2). Pressing the back button or calling `history.back()` a second time would then move the joint session history back to (A), and the app history list back to (1).
+The app history list (which also matches the existing spec's session history) for the outer frame looks like:
+
+```
+O1. https://example.com/start        (associated to A)
+O2. https://example.com/outer        (associated to B)
+O3. https://example.com/outer-pushed (associated to C and D)
+```
+
+The app history list for the inner frame looks like:
+
+```
+I1. https://example.com/inner-start  (associated to C)
+I2. https://example.com/inner-end    (associated to D)
+```
+
+Traversal operates on the joint session history, which means that it's possible to impact other frames. Continuing with our previous setup, and assuming the current entry in the joint session history is D, then
+
+- If code in the outer frame calls `appHistory.back()`, this will take us back to O2, and thus take the joint session history back to B. This means the inner frame will be navigated from `/inner-end` to `/inner-start`, changing its current app history entry from I2 to I1.
+
+- If code in the inner frame calls `appHistory.back()`, this will take us back to I1, and take the joint session history back to C. (This does not impact the outer frame.)
+
+- If code in either the inner frame or the outer frame calls `history.back()`, this will take the joint session history back to C, and thus update the inner frame's current app history entry from I2 to I1. (There is no impact on the outer frame.)
+
+Note that as currently planned, any such programmatic navigations, including ones originating from other frames, are [interceptable and cancelable](#navigation-monitoring-and-interception) as part of the `navigate` event part of the proposal.
+
+### Integration with navigation
+
+To understand how navigation interception and queuing interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). Also note the open questions in [#19](https://github.com/WICG/app-history/issues/19).
+
+The way in which navigation interacts with session history entries generally is not meant to change; the correspondence of a session history entry to an `AppHistoryEntry` does not introduce anything novel there.
+
+## Impact on the back button and user agent UI
+
+The app history API doesn't change anything about how user agents implement their UI: it's really about developer-facing affordances. Users still care about the joint session history, and so that will continue to be presented in UI surfaces like holding down the back button. Similarly, pressing the back button will continue to navigate through the joint session history, potentially across origins and out of the current app history (into a new app history, on the new origin). The design discussed in [the previous section](#correspondence-with-the-joint-session-history) ensures that app history cannot get the browser into a strange novel state that has not previously been seen in the joint session history.
+
+One consequence of this is that when iframes are involved, the back button may navigate through the joint session history, without changing the current _app history_ entry. This is because, for the most part, the behavior of the back button is the same as that of `history.back()`, which as the previous section showed, only impacts one frame (and thus one app history list) at a time.
 
 Finally, note that user agents can continue to refine their mapping of UI to joint session history to give a better experience. For example, in some cases user agents today have the back button skip joint session history entries which were created without user interaction. We expect this heuristic would continue to be applied for `appHistory.pushNewEntry()`, just like it is for today's `history.pushState()`.
 
@@ -822,6 +864,7 @@ This proposal is based on [an earlier revision](https://github.com/slightlyoff/h
 
 Thanks also to
 [@chrishtr](https://github.com/chrishtr),
+[@creis](https://github.com/creis),
 [@dvoytenko](https://github.com/dvoytenko),
 [@housseindjirdeh](https://github.com/housseindjirdeh),
 [@jakearchibald](https://github.com/jakearchibald),
