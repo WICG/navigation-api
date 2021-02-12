@@ -742,7 +742,7 @@ This is done through:
 
 An `AppHistoryEntry` corresponds directly to a [session history entry](https://html.spec.whatwg.org/#session-history-entry) from the existing HTML specification. However, not every session history entry would have a corresponding `AppHistoryEntry` in a given `Window`: `AppHistoryEntry` objects only exist for session history entries which are same-origin to the current one, and contiguous.
 
-Example: if a browsing context contains session history entries with the URLs
+Example: if a browsing session contains session history entries with the URLs
 
 ```
 1. https://example.com/foo
@@ -773,7 +773,7 @@ _TODO: actually, we should probably expose scroll restoration mode, like `histor
 
 The view of history which the user sees, and which is traversable with existing APIs like `history.go()`, is the joint session history.
 
-Unlike the view of history presented by `window.history`, `window.appHistory` only gives a view onto session history entries for the current browsing context. This view does not present the joint session history, i.e. it is not impacted by frames. Notably, this means `appHistory.entries.length` is likely to be quite different from `history.length`.
+Unlike the view of history presented by `window.history`, `window.appHistory` only gives a view onto session history entries for the current browsing session. This view does not present the joint session history, i.e. it is not impacted by frames. Notably, this means `appHistory.entries.length` is likely to be quite different from `history.length`.
 
 Example: consider the following setup.
 
@@ -813,7 +813,7 @@ Traversal operates on the joint session history, which means that it's possible 
 
 - If code in the outer frame calls `appHistory.back()`, this will take us back to O2, and thus take the joint session history back to B. This means the inner frame will be navigated from `/inner-end` to `/inner-start`, changing its current app history entry from I2 to I1.
 
-- If code in the inner frame calls `appHistory.back()`, this will take us back to I1, and take the joint session history back to C. (This does not impact the outer frame.)
+- If code in the inner frame calls `appHistory.back()`, this will take us back to I1, and take the joint session history back to C. (This does not impact the outer frame.) The rule here for choosing C, instead of B, is that it moves the joint session history the fewest number of steps necessary to make I1 active.
 
 - If code in either the inner frame or the outer frame calls `history.back()`, this will take the joint session history back to C, and thus update the inner frame's current app history entry from I2 to I1. (There is no impact on the outer frame.)
 
