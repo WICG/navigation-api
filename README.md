@@ -734,13 +734,13 @@ At a high level, app history is meant to be a layer on top of the HTML Standard'
 
 This is done through:
 
-- Ensuring that app history entries map directly to the specification's existing history entries. The `appHistory.entries` API only presents a subset of them, namely same-frame, same-origin contiguous ones, but each is backed by an existing entry.
+- Ensuring that app history entries map directly to the specification's existing history entries. The `appHistory.entries` API only presents a subset of them, namely same-frame contiguous, same-origin ones, but each is backed by an existing entry.
 
 - Ensuring that traversal through app history always maps to a traversal through the joint session history, i.e. a traversal which is already possible today.
 
 ### Correspondence with session history entries
 
-An `AppHistoryEntry` corresponds directly to a [session history entry](https://html.spec.whatwg.org/#session-history-entry) from the existing HTML specification. However, not every session history entry would have a corresponding `AppHistoryEntry` in a given `Window`: `AppHistoryEntry` objects only exist for session history entries which are same-origin to the current one, and contiguous.
+An `AppHistoryEntry` corresponds directly to a [session history entry](https://html.spec.whatwg.org/#session-history-entry) from the existing HTML specification. However, not every session history entry would have a corresponding `AppHistoryEntry` in a given `Window`: `AppHistoryEntry` objects only exist for session history entries which are same-origin to the current one, and contiguous within that frame.
 
 Example: if a browsing session contains session history entries with the URLs
 
