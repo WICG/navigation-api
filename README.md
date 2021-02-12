@@ -779,7 +779,7 @@ Example: consider the following setup.
 
 1. `https://example.com/start` loads.
 1. The user navigates to `https://example.com/outer` by clicking a link. This page contains an iframe with `https://example.com/inner-start`.
-1. Code on `https://example.com/outer` calls `appHistory.pushNewEntry({ url: "/outer-pushed" })`
+1. Code on `https://example.com/outer` calls `appHistory.pushNewEntry({ url: "/outer-pushed" })`.
 1. The iframe navigates to `https://example.com/inner-end`.
 
 The joint session session history contains four entries:
@@ -805,11 +805,11 @@ O3. https://example.com/outer-pushed (associated to C and D)
 The app history list for the inner frame looks like:
 
 ```
-I1. https://example.com/inner-start  (associated to C)
+I1. https://example.com/inner-start  (associated to B and C)
 I2. https://example.com/inner-end    (associated to D)
 ```
 
-Traversal operates on the joint session history, which means that it's possible to impact other frames. Continuing with our previous setup, and assuming the current entry in the joint session history is D, then
+Traversal operates on the joint session history, which means that it's possible to impact other frames. Continuing with our previous setup, and assuming the current entry in the joint session history is D, then:
 
 - If code in the outer frame calls `appHistory.back()`, this will take us back to O2, and thus take the joint session history back to B. This means the inner frame will be navigated from `/inner-end` to `/inner-start`, changing its current app history entry from I2 to I1.
 
