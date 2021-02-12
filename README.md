@@ -204,11 +204,11 @@ Unlike the existing history API's `history.go()` method, which navigates by offs
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
-- The `navigate` event handler marks the navigation as failed, in which case the promise rejects as they indicate, and `appHistory.current` stays the same.
+- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise passed to `respondWith()`. If the promise fulfills, `appHistory.current` will update; if it rejects, `appHistory.current` will stay the same.
 
-- The `navigate` event cancels the navigation, in which case the promise fulfills with `undefined` and `appHistory.current` stays the same.
+- The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException` and `appHistory.current` stays the same.
 
-- It's not possible to navigate to the given entry, e.g. `appHistory.navigateTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case also, the promise fulfills with `undefined` and `appHistory.current` stays the same.
+- It's not possible to navigate to the given entry, e.g. `appHistory.navigateTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, the promise rejects with an `"InvalidStateError"` `DOMException` and `appHistory.current` stays the same.
 
 - The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `appHistory.current` (as well as the URL bar, if appropriate) will update.
 
@@ -600,7 +600,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, the
 1. `window.appHistory.current` fires `navigatefrom`.
 1. `window.appHistory` fires `navigate`. (Cancelable/`respondWith()`-able)
 1. If the event is canceled:
-    1. If this whole process was initiated by a call to `appHistory.navigateTo()`, `appHistory.back()`, or `appHistory.forward()`, fulfill that promise with `undefined`.
+    1. If this whole process was initiated by a call to `appHistory.navigateTo()`, `appHistory.back()`, or `appHistory.forward()`, reject that promise with an `"AbortError"` `DOMException`.
     1. Return.
 1. If `navigateEvent.respondWith()` is called with a rejected promise:
     1. If this whole process was initiated by a call to `appHistory.navigateTo()`, `appHistory.back()`, or `appHistory.forward()`, reject that promise with the same rejection reason.
@@ -626,17 +626,19 @@ Instead of using `history.replaceState(state, uselessTitle, url)`, use `await ap
 
 Instead of using `history.back()` and `history.forward()`, use `await appHistory.back()` and `await appHistory.forward()`. Note that unlike the `history` APIs, the `appHistory` APIs will ignore other frames, and will only control the navigation of your frame. This means it might move through multiple entries in the joint session history, skipping over any entries that were generated purely by other-frame navigations.
 
-For same-document navigations, you can test whether the navigation had an effect using a pattern like the following:
+Also note that if the navigation doesn't have an effect, the `appHistory` traversal methods will return a rejected promise, unlike the `history` traversal methods which silently do nothing. You can detect this as follows:
 
 ```js
-const startingEntry = appHistory.current;
-await appHistory.back();
-if (startingEntry === appHistory.current) {
-  console.log("We weren't able to go back, because there was nothing previous in the app history list");
+try {
+  await appHistory.back();
+} catch (e) {
+  if (e.name === "InvalidStateError") {
+    console.log("We weren't able to go back, because there was nothing previous in the app history list");
+  }
 }
 ```
 
-Note that unlike the `history` APIs, these `appHistory` APIs will not go to another origin. For example, trying to call `appHistory.back()` when the previous document in the joint session history is cross-origin will just do nothing, and trigger the `console.log()` call above.
+Note that unlike the `history` APIs, these `appHistory` APIs will not go to another origin. For example, trying to call `appHistory.back()` when the previous document in the joint session history is cross-origin will return a rejected promise, and trigger the `console.log()` call above.
 
 Instead of using `history.go(offset)`, use `await appHistory.navigateTo(key)` to navigate to a specific entry. As with `back()` and `forward()`, `appHistory.navigateTo()` will ignore other frames, and will only control the navigation of your frame. If you specifically want to reproduce the pattern of navigating by an offset (not recommended), you can use code such as the following:
 
