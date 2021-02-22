@@ -184,7 +184,7 @@ Crucially, `appHistory.current` stays the same regardless of what iframe navigat
 
 - A full-page navigation to a different document. This could be an existing document in the browser's back/forward cache, or a new document. In the latter case, this will generate a new entry on the new page's `window.appHistory` object, somewhat similar to `appHistory.push({ url: navigatedToURL, state: null })`. Note that if the navigation is cross-origin, then we'll end up in a separate app history list for that other origin.
 
-Finally, note that these two APIs also have some more advanced features, which are easier to discuss after we have introduced other parts of the app history API. The first is a callback-based variant for dealing with queued navigations, discussed in [its own section](#queued-up-single-page-navigations), and the second is the `info` option, discussed as part of [navigation monitoring and interception](#navigation-monitoring-and-interception).
+Finally, note that these two APIs also have some more advanced features, which are easier to discuss after we have introduced other parts of the app history API. The first is a callback-based variant for dealing with queued navigations, discussed in [its own section](#queued-up-single-page-navigations), and the second is the `navigateInfo` option, discussed [as part of navigation monitoring and interception](#example-using-navigateinfo).
 
 ### Inspection of the app history list
 
