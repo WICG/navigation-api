@@ -260,7 +260,7 @@ Additionally, the event has a special method `event.respondWith(promise)`. If ca
 - Cancel any fragment navigation or cross-document navigation.
 - Immediately update the URL bar, `location.href`, and `appHistory.current`, but with `appHistory.current.finished` set to false.
 - Wait for the promise to settle.
-  - If it rejects, revert the URL bar, `location.href`, and `appHistory.current` to their previous values.
+  - If it rejects, revert the URL bar, `location.href`, and `appHistory.current` to their previous values. (See discussion in [#47](https://github.com/WICG/app-history/issues/47).)
   - If it fulfills, update `appHistory.current.finished` to true, and fire [a variety of events](./interception-details.md).
 - For the duration of the promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
