@@ -893,6 +893,7 @@ Thanks also to
 [@creis](https://github.com/creis),
 [@dvoytenko](https://github.com/dvoytenko),
 [@esprehn](https://github.com/esprehn),
+[@frehner](https://github.com/frehner),
 [@housseindjirdeh](https://github.com/housseindjirdeh),
 [@jakearchibald](https://github.com/jakearchibald),
 [@matt-buland-sfdc](https://github.com/matt-buland-sfdc),
