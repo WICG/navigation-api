@@ -135,19 +135,19 @@ For single-page applications that want to update the current entry in the same m
 
 ```js
 // Updates the URL shown in the address bar, as well as the url property. `state` stays the same.
-appHistory.update({ url });
+await appHistory.update({ url });
 
 // You can also explicitly null out the state, instead of carrying it over:
-appHistory.update({ url, state: null });
+await appHistory.update({ url, state: null });
 
 // Only updates the state property.
-appHistory.update({ state });
+await appHistory.update({ state });
 
 // Update both at once.
-appHistory.update({ url, state });
+await appHistory.update({ url, state });
 ```
 
-_TODO: more realistic example, maybe something Redux-esque like `appHistory.update({ state: {...appHistory.current.state, newKey: newValue } })`._
+_TODO: more realistic example, maybe something Redux-esque like `await appHistory.update({ state: {...appHistory.current.state, newKey: newValue } })`._
 
 Similarly, to push a new entry in the same manner as today's `history.pushState()`, we have the following:
 
@@ -170,7 +170,7 @@ await appHistory.push({ url, state });
 
 As with `history.pushState()` and `history.replaceState()`, the new URL here must be same-origin and only differ in the path, query, or fragment portions from the current document's current URL. And as with those, you can use relative URLs.
 
-Note that `appHistory.push()` is asynchronous. As with other [navigations through the app history list](#navigation-through-the-app-history-list), pushing a new entry can be [intercepted or canceled](#navigation-monitoring-and-interception), so it will always be delayed at least one microtask.
+Note that `appHistory.update()` and `appHistory.push()` are asynchronous. As with other [navigations through the app history list](#navigation-through-the-app-history-list), pushing a new entry or updating the current one can be [intercepted or canceled](#navigation-monitoring-and-interception), with the returned promise used to signal the completion of the navigation.
 
 Additionally, like `history.pushState()`, `appHistory.push()` will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
 
@@ -204,13 +204,13 @@ Unlike the existing history API's `history.go()` method, which navigates by offs
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
-- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise passed to `respondWith()`. If the promise fulfills, `appHistory.current` will update; if it rejects, `appHistory.current` will stay the same.
+- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise passed to `respondWith()`. If the promise rejects, then as part of the failed navigation, `location.href` and `appHistory.current` will roll back to their old values.
 
-- The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException` and `appHistory.current` stays the same.
+- The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
-- It's not possible to navigate to the given entry, e.g. `appHistory.navigateTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, the promise rejects with an `"InvalidStateError"` `DOMException` and `appHistory.current` stays the same.
+- It's not possible to navigate to the given entry, e.g. `appHistory.navigateTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, the promise rejects with an `"InvalidStateError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
-- The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `appHistory.current` (as well as the URL bar, if appropriate) will update.
+- The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `location.href` and `appHistory.current` will stay on their new value.
 
 - The navigation succeeds, and it was a different-document navigation. Then the promise will never settle, because the entire document and all its promises will disappear.
 
@@ -234,6 +234,8 @@ The event object has several useful properties:
 
 - `info`: any value passed by `appHistory.push({ url, state, navigateInfo })` or `appHistory.update({ url, state, navigateInfo })`, if the navigation was initiated by one of those methods and the `navigateInfo` option was supplied; otherwise, null. See [the example below](#example-using-navigateinfo) for more.
 
+- `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
+
 Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`.
 
 The event is not fired in the following cases:
@@ -251,21 +253,20 @@ Whenever it is fired, the event is cancelable via `event.preventDefault()`, whic
 
 Although the ability to intercept cross-document navigations, especially cross-origin ones, might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
 
-On the other hand, cases that are not interceptable today, where the user is the instigator of the navigation through browser UI, are not interceptable. This ensures that web applications cannot trap the user on a given document by intercepting cross-document URL bar navigations, or disable the user's back/forward buttons. Note that, in the case of the back/forward buttons, even same-document interception isn't allowed. This is because it's easy to generate same-document app history entries (e.g., using `appHistory.push()` or `history.pushState()`); if we allowed intercepting traversal to them, this would allow sites to disable the back/forward buttons. We realize that this limits the utility of the `navigate` event in some cases, and are open to exploring other ways of combating abusive: see the discussion in [#32](https://github.com/WICG/app-history/issues/32).
+On the other hand, cases that are not interceptable today, where the user is the instigator of the navigation through browser UI, are not interceptable. This ensures that web applications cannot trap the user on a given document by intercepting cross-document URL bar navigations, or disable the user's back/forward buttons. Note that, in the case of the back/forward buttons, even same-document interception isn't allowed. This is because it's easy to generate same-document app history entries (e.g., using `appHistory.push()` or `history.pushState()`); if we allowed intercepting traversal to them, this would allow sites to disable the back/forward buttons. We realize that this limits the utility of the `navigate` event in some cases, and are open to exploring other ways of combating abuse: see the discussion in [#32](https://github.com/WICG/app-history/issues/32).
 
-Additionally, the event has a special method `event.respondWith(promise)`. If called, this will:
+Additionally, the event has a special method `event.respondWith(promise)`. If called for a same-origin navigation, this will:
 
-- Cancel the navigation (but see below).
+- Cancel any fragment navigation or cross-document navigation.
+- Immediately update the URL bar, `location.href`, and `appHistory.current`, but with `appHistory.current.finished` set to false.
 - Wait for the promise to settle.
-  - If it rejects, stay on the current app history entry.
-  - If it fulfills, push/replace the destination app history entry onto/in the app history list.
-    - Note that this means that some parts of the navigation, namely updating the URL and state, do go through, just in a delayed manner.
-    - But other parts, like unloading the document and fetching a new one, or scrolling to a fragment, were indeed canceled.
-    - Notably, this means that for navigations caused by `appHistory.push()`, `appHistory.update()`, `history.pushState()`, or `history.replaceState()`, whose only effect is updating the history entry, the navigation was just delayed, not really canceled.
+  - If it rejects, revert the URL bar, `location.href`, and `appHistory.current` to their previous values.
+  - If it fulfills, update `appHistory.current.finished` to true, and fire [a variety of events](./interception-details.md).
 - For the duration of the promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
-- After the promise settles, the browser will update its UI (such as URL bar or back button) to reflect the new current history entry.
 
-_TODO: should we give direct control over when the browser UI updates, in case developers want to update it earlier in the lifecycle before the promise fully settles? E.g. `event.commitNavigation()` or `event.commitNavigationUI()`? Would it be OK to let the UI get out of sync with the history list?_
+Note that the browser does not wait for the promise to settle in order to update its UI (such as URL bar or back button).
+
+_TODO: should we give direct control over when the browser UI updates, in case developers want to update it later in the lifecycle after they're sure the navigation will be a success? Would it be OK to let the UI get out of sync with the history list?_
 
 #### Accessibility benefits of standardized single-page navigations
 
@@ -312,9 +313,9 @@ appHistory.addEventListener("navigate", e => {
   }
 
   if (e.formData) {
-    e.respondWith(processFormDataAndUpdateUI(e.formData));
+    e.respondWith(processFormDataAndUpdateUI(e.formData, e.signal));
   } else {
-    e.respondWith(doSinglePageAppNav(e.destination));
+    e.respondWith(doSinglePageAppNav(e.destination, e.signal));
   }
 });
 ```
@@ -322,27 +323,29 @@ appHistory.addEventListener("navigate", e => {
 Here, `doSinglePageAppNav` and `processFormDataAndUpdateUI` are functions that can return a promise. For example:
 
 ```js
-async function doSinglePageAppNav(destination) {
-  const htmlFromTheServer = await (await fetch(destination.url)).text();
+async function doSinglePageAppNav(destination, signal) {
+  const htmlFromTheServer = await (await fetch(destination.url, { signal })).text();
   document.querySelector("main").innerHTML = htmlFromTheServer;
 }
 ```
 
 Note how this example responds to various types of navigations:
 
-- Cross-origin navigations: let the browser handle it as usual
-- Same-document fragment navigations: let the browser handle it as usual
+- Cross-origin navigations: let the browser handle it as usual.
+- Same-document fragment navigations: let the browser handle it as usual.
 - Same-document URL/state updates (via `history.pushState()`, `appHistory.update()`, etc.):
-  1. Send the information about the URL/state update to `doSinglePageAppNav()`, which will use it to modify the current document
-  1. After that UI update is done, potentially asynchronously, update the history list and browser UI
+  1. Send the information about the URL/state update to `doSinglePageAppNav()`, which will use it to modify the current document.
+  1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
 - Cross-document normal navigations:
-  1. Prevent the browser handling, which would unload the document and create a new one from the network
-  1. Instead, send the information about the navigation to `doSinglePageAppNav()`, which will use it to modify the current document
-  1. After that UI update is done, potentially asynchronously, update the history list and browser UI
+  1. Prevent the browser handling, which would unload the document and create a new one from the network.
+  1. Instead, send the information about the navigation to `doSinglePageAppNav()`, which will use it to modify the current document.
+  1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
 - Cross-document form submissions:
-  1. Prevent the browser handling, which would unload the document and create a new one from the network
-  1. Instead, send the form data to `processFormDataAndUpdateUI()`, which will use it to modify the current document
-  1. After that UI update is done, potentially asynchronously, update the history list and browser UI
+  1. Prevent the browser handling, which would unload the document and create a new one from the network.
+  1. Instead, send the form data to `processFormDataAndUpdateUI()`, which will use it to modify the current document.
+  1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
+
+Notice also how by passing through the `AbortSignal` found in `e.signal`, we ensure that any aborted navigations abort the associated fetch as well.
 
 #### Example: single-page app "redirects"
 
@@ -439,6 +442,8 @@ appHistory.addEventListener("navigate", e => {
 
 ### Navigations while a navigation is ongoing
 
+**This section is under heavy construction. There are several open issues on it and it's not fully integrated with the latest thinking on the [detailed navigation interception lifecycle](./interception-details.md).**
+
 Because this proposal makes the web-developer-facing concept of a navigation always asynchronous, i.e. from the start of the `navigate` event through to the end of any promise passed to `respondWith()` settling, it's possible for navigations to happen while an existing navigation is ongoing. Even very simple code like the following would trigger this:
 
 ```js
@@ -461,6 +466,8 @@ appHistory.addEventListener("upcomingnavigate", e => {
 ```
 
 ### Queued up single-page navigations
+
+**This section is under heavy construction. There are several open issues on it and it's not fully integrated with the latest thinking on the [detailed navigation interception lifecycle](./interception-details.md).**
 
 Consider trying to code a "next" button that performs a single-page navigation. This can be prone to race conditions, since with the app history API, single-page navigations are asynchronous. For example, if you're on `/photos/1` and click the next button twice, the intended behavior is to end up at `photos/3`, even if `photos/2` takes a long time to load and the click handler executes while the URL bar still reads `/photos/1`.
 
@@ -549,17 +556,17 @@ Additionally, there's a `dispose` event, which occurs when an app history entry 
 ```js
 const startingKey = appHistory.current.key;
 
-appHistory.pushNewState();
+appHistory.push();
 appHistory.current.addEventListener("dispose", () => console.log(1));
 
-appHistory.pushNewState();
+appHistory.push();
 appHistory.current.addEventListener("dispose", () => console.log(2));
 
-appHistory.pushNewState();
+appHistory.push();
 appHistory.current.addEventListener("dispose", () => console.log(3));
 
 appHistory.navigateTo(startingKey);
-appHistory.pushNewState();
+appHistory.push();
 
 // Logs 1, 2, 3 as that branch of the tree gets pruned.
 ```
@@ -595,24 +602,37 @@ _TODO: Add a non-analytics examples, similar to how people use `popstate` today.
 
 ### Complete event sequence
 
-Between the per-`AppHistoryEntry` events and the `window.appHistory` events, there's a lot of events floating around. Here's how they all come together for a typical same-document navigation (e.g. a fragment navigation, or a navigation initiated by `appHistory.push()`):
+Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as well as promise return values, there's a lot of events floating around. Here's how they all come together:
 
-1. `window.appHistory.current` fires `navigatefrom`.
-1. `window.appHistory` fires `navigate`. (Cancelable/`respondWith()`-able)
-1. If the event is canceled:
-    1. If this whole process was initiated by a call to `appHistory.navigateTo()`, `appHistory.back()`, or `appHistory.forward()`, reject that promise with an `"AbortError"` `DOMException`.
-    1. Return.
-1. If `navigateEvent.respondWith()` is called with a rejected promise:
-    1. If this whole process was initiated by a call to `appHistory.navigateTo()`, `appHistory.back()`, or `appHistory.forward()`, reject that promise with the same rejection reason.
-    1. Return.
-1. After the promise argument to `navigateEvent.respondWith()` fulfills, or after one microtask if `respondWith()` is not called:
-    1. `window.appHistory.current` is updated to its new value.
-    1. `window.appHistory.current` fires `navigateto`.
-    1. `window.appHistory` fires `currentchange`.
-    1. Any `AppHistoryEntry` instances which are now unreachable fire `dispose` events.
-    1. If this whole process was initiated by a call to `appHistory.navigateTo()`, `appHistory.back()`, or `appHistory.forward()`, fulfill that promise with `undefined`.
+1. `navigate` fires on `window.appHistory`.
+1. If the event is canceled using `event.preventDefault()`, then:
+    1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with an `"AbortError"` `DOMException`.
+1. Otherwise:
+    1. `appHistory.current` fires `navigatefrom`.
+    1. `location.href` updates.
+    1. `appHistory.current` updates. `appHistory.current.finished` is `false`.
+    1. `currentchange` fires on `window.appHistory`.
+    1. `appHistory.current` fires `navigateto`.
+    1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
+    1. The URL bar updates.
+    1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.respondWith()`.
+    1. After the promise passed to `event.respondWith()` fulfills, or after one microtask if `event.respondWith()` was not called:
+        1. `appHistory.current.finished` changes to `true`.
+        1. `appHistory.current` fires `finish`.
+        1. `navigatefinish` is fired on `appHistory`.
+        1. Any loading spinner UI stops.
+        1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets fulfilled.
+    1. Alternately, if the promise passed to `event.respondWith()` rejects:
+        1. `navigateerror` fires on `window.appHistory`.
+        1. `location.href` changes back to the value it had previously.
+        1. `appHistory.current` changes back to the previous entry, before the navigation.
+        1. `currentchange` fires on `window.appHistory`.
+        1. `appHistory.current` fires `navigateto`.
+        1. The no-longer current `AppHistoryEntry` that was being navigated to fires `dispose`.
+        1. Any loading spinner UI stops.
+        1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same rejection reason.
 
-For a cross-document navigation, the sequence is very similar, except if `navigateEvent.respondWith()` is not called, then we indeed proceed to the destination document, and steps (5.i)–(5.iii) happen in that destination document. (Step (5.iv) is not applicable, and step (5.v) does not happen at all since the promise has gone away, along with the old document.) Note that this destination document could be being restored from the browser's back/forward cache, in which case these events happen after the `pageshow` event, or the destination document could be created from scratch, in which case these events happen after the `DOMContentLoaded` event. _TODO not so sure about that last part._
+For more detailed analysis, including specific code examples, see [this dedicated document](./interception-details.md).
 
 ## Guide for migrating from the existing history API
 
@@ -827,7 +847,7 @@ Note that as currently planned, any such programmatic navigations, including one
 
 ### Integration with navigation
 
-To understand how navigation interception and queuing interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). Also note the open questions in [#19](https://github.com/WICG/app-history/issues/19).
+To understand when navigation interception and queuing interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). In cases where interception is allowed and takes place, it is essentially equivalent to preventing the normal navigation and instead performing the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps). See more detail in the [dedicated document](./interception-details.md).
 
 The way in which navigation interacts with session history entries generally is not meant to change; the correspondence of a session history entry to an `AppHistoryEntry` does not introduce anything novel there.
 
@@ -955,8 +975,8 @@ interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry current;
   readonly attribute FrozenArray<AppHistoryEntry> entries;
 
-  undefined update(optional AppHistoryEntryOptions options = {});
-  undefined update(AppHistoryNavigationCallback);
+  Promise<undefined> update(optional AppHistoryEntryOptions options = {});
+  Promise<undefined> update(AppHistoryNavigationCallback);
 
   Promise<undefined> push(optional AppHistoryEntryOptions options = {});
   Promise<undefined> push(AppHistoryNavigationCallback callback);
@@ -997,6 +1017,7 @@ interface AppHistoryNavigateEvent : Event {
   readonly attribute boolean sameOrigin;
   readonly attribute boolean hashChange;
   readonly attribute AppHistoryEntry destination;
+  readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
   readonly attribute any info;
 
@@ -1008,6 +1029,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean sameOrigin = false;
   boolean hashChange = false;
   required AppHistoryEntry destination;
+  required AbortSignal signal;
   FormData? formData = null;
   any info = null;
 };
