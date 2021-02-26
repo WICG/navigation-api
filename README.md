@@ -4,6 +4,26 @@ The web's existing [history API](https://developer.mozilla.org/en-US/docs/Web/AP
 
 This new `window.appHistory` API [layers](#integration-with-the-existing-history-api-and-spec) on top of the existing API and specification infrastructure, with well-defined interaction points. The main differences are that it is scoped to the current origin and frame, and it is designed to be pleasant to use instead of being a historical accident with many sharp edges.
 
+## Summary
+
+There's a lot going on here, and this explainer tries to really explain it! Here's the short version.
+
+The existing [history API](https://developer.mozilla.org/en-US/docs/Web/API/History) is bad, especially for single-page applications. This leads to user-facing pain in the form of lost state and broken back buttons, and developer-facing pain in the form of maintaining lots of hacky code to achieve the desired user experience.
+
+The proposed `window.appHistory` API solves this by providing the following:
+
+- Robust introspection and state tracking for your web application's entire history list. For example, instead of a single `history.state` value which disappears whenever the user performs a fragment navigation, and an unreliable `length` property, you can inspect the URL and state of any past or future history entry. Instead of [unreliable](https://github.com/whatwg/html/issues/5562) `popstate` and `hashchange` events, you get a `currentchange` event which fires on any change in the current history entry.
+
+- Built-in interception of all navigations, no matter how they are initiated. This means that instead of forcing all parts of your application through a router-library-supplied navigation function, or adding a global `click` handler to catch `<a>` clicks and convert them into single-page navigations, you can listen to a central `navigate` event and use that to update the DOM to perform a single-page app navigation. This `navigate` event gets all sorts of useful information, such as the destiniation URL and state, whether the navigation was user-initiated, any form data that was submitted, and more.
+
+- More ergonomic navigation methods. For example, instead of `history.pushState(undefined, undefined, url)`, you can use `appHistory.push({ url })`. And the latter will return a promise, to signal when the navigation completes! Similarly, instead of `history.go(n)`, you can use `appHistory.navigateTo(key)`, where `key` is a unique identifier that each app history entry has.
+
+A key reason for this new API, as opposed to extending the `window.history` API, is because we need to avoid `window.history`'s original sin: its over-broad scope. In particular, if an iframe navigates, this contributes to the user's view of session history, e.g. what happens when they press the back button. But for application code, this is not helpful: iframe navigations are generally independent of the application, so the fact that they can mess with session history makes `history.back()` and `history.state` unreliable. Similarly, because clicking back can cause the user to move across origins, `window.history` includes cross-origin information, which means we can't add better introspection facilities (such as the [previously-proposed `history.index`](https://github.com/whatwg/html/issues/2710)) without leaking cross-origin information. App history separates the user's view of history from the web application's, by giving a view onto the same-origin, same-frame, contiguous history entries only. This opens the door to allow in-depth introspection and manipulation of the history list.
+
+Additionally, when single-page navigations are implemented by intercepting the `navigate` event, they become first-class citizens. Browser features like the loading spinner, or accessibility technology, can key off of this standardized entry point. And other APIs like performance timing APIs can measure the duration of such navigations.
+
+If this sounds intriguing, read on for the details!
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
