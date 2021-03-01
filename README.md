@@ -6,23 +6,58 @@ This new `window.appHistory` API [layers](#integration-with-the-existing-history
 
 ## Summary
 
-There's a lot going on here, and this explainer tries to really explain it! Here's the short version.
+The existing [history API](https://developer.mozilla.org/en-US/docs/Web/API/History) is hard to deal with in practice, especially for single-page applications. In the best case, developers can work around this with various hacks. In the worst case, it causes user-facing pain in the form of lost state and broken back buttons, or the inability to achieve the desired navigation flow for a web app.
 
-The existing [history API](https://developer.mozilla.org/en-US/docs/Web/API/History) is bad, especially for single-page applications. This leads to user-facing pain in the form of lost state and broken back buttons, and developer-facing pain in the form of maintaining lots of hacky code to achieve the desired user experience.
+The main problems are:
 
-The proposed `window.appHistory` API solves this by providing the following:
+- Managing and introspecting your application's history list, and associated application state, is fragile. State can be lost sometimes (e.g. due to fragment navigations); the browser will spontaneously insert entries due to iframe navigations; and the existing `popstate` and `hashchange` events are [unreliable](https://github.com/whatwg/html/issues/5562). We solve this by providing a view only onto the history entries created directly by the application, and the ability to look at all previous entries for your app so that no state is ever lost.
 
-- Robust introspection and state tracking for your web application's entire history list. For example, instead of a single `history.state` value which disappears whenever the user performs a fragment navigation, and an unreliable `length` property, you can inspect the URL and state of any past or future history entry. Instead of [unreliable](https://github.com/whatwg/html/issues/5562) `popstate` and `hashchange` events, you get a `currentchange` event which fires on any change in the current history entry.
+- It's hard to figure out all the ways that navigations can occur, so that an application can synchronize its state or convert those navigations into single-page navigations. We solve this by exposing events that allow the application to observe all navigation actions, and substitute their own behavior in place of the default.
 
-- Built-in interception of all navigations, no matter how they are initiated. This means that instead of forcing all parts of your application through a router-library-supplied navigation function, or adding a global `click` handler to catch `<a>` clicks and convert them into single-page navigations, you can listen to a central `navigate` event and use that to update the DOM to perform a single-page app navigation. This `navigate` event gets all sorts of useful information, such as the destiniation URL and state, whether the navigation was user-initiated, any form data that was submitted, and more.
+- Various parts of the platform, e.g. accessibility technology, the browser's UI, and performance APIs, do not have good visibility into single-page navigations. We solve this by providing a standardized API for telling the browser when a single-page navigation starts and finishes.
 
-- More ergonomic navigation methods. For example, instead of `history.pushState(undefined, undefined, url)`, you can use `appHistory.push({ url })`. And the latter will return a promise, to signal when the navigation completes! Similarly, instead of `history.go(n)`, you can use `appHistory.navigateTo(key)`, where `key` is a unique identifier that each app history entry has.
+- Some of the history APIs are clunky and hard to understand. We solve this by providing a new interface that is easy for developers to use and understand.
 
-A key reason for this new API, as opposed to extending the `window.history` API, is because we need to avoid `window.history`'s original sin: its over-broad scope. In particular, if an iframe navigates, this contributes to the user's view of session history, e.g. what happens when they press the back button. But for application code, this is not helpful: iframe navigations are generally independent of the application, so the fact that they can mess with session history makes `history.back()` and `history.state` unreliable. Similarly, because clicking back can cause the user to move across origins, `window.history` includes cross-origin information, which means we can't add better introspection facilities (such as the [previously-proposed `history.index`](https://github.com/whatwg/html/issues/2710)) without leaking cross-origin information. App history separates the user's view of history from the web application's, by giving a view onto the same-origin, same-frame, contiguous history entries only. This opens the door to allow in-depth introspection and manipulation of the history list.
+## Sample code
 
-Additionally, when single-page navigations are implemented by intercepting the `navigate` event, they become first-class citizens. Browser features like the loading spinner, or accessibility technology, can key off of this standardized entry point. And other APIs like performance timing APIs can measure the duration of such navigations.
+An application or framework's centralized router can use the `navigate` event to implement single-page app routing:
 
-If this sounds intriguing, read on for the details!
+```js
+appHistory.addEventListener("navigate", e => {
+  if (!e.sameOrigin || e.hashChange) {
+    return;
+  }
+
+  if (routesTable.has(e.destination.url)) {
+    const routeHandler = routesTable.get(e.destination.url);
+    e.respondWith(routeHandler());
+  }
+});
+```
+
+A page-supplied "back" button can actually take you back, even after reload, by inspecting the previous history entries:
+
+```js
+backButtonEl.addEventListener("click", () => {
+  if (appHistory.entries[appHistory.entries.current.index - 1]?.url === "/product-listing") {
+    // Go back to that entry
+    appHistory.back();
+  } else {
+    // Go "forward" to that entry, e.g. if the user arrived here by typing the URL directly.
+    appHistory.push("/product-listing");
+  }
+});
+```
+
+The new `currentchange` event fires whenever the current history entry changes, and includes the time it took for a single-page application nav to settle:
+
+```js
+appHistory.addEventListener("currentchange", e => {
+  if (e.startTime) {
+    analyticsPackage.sendEvent("single-page-app-nav", { loadTime: e.timeStamp - e.startTime });
+  }
+});
+```
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
