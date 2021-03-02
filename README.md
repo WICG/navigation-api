@@ -40,11 +40,10 @@ A page-supplied "back" button can actually take you back, even after reload, by 
 ```js
 backButtonEl.addEventListener("click", () => {
   if (appHistory.entries[appHistory.entries.current.index - 1]?.url === "/product-listing") {
-    // Go back to that entry
     appHistory.back();
   } else {
-    // Go "forward" to that entry, e.g. if the user arrived here by typing the URL directly.
-    appHistory.push("/product-listing");
+    // If the user arrived here by typing the URL directly:
+    appHistory.replace("/product-listing");
   }
 });
 ```
