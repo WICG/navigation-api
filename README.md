@@ -4,6 +4,60 @@ The web's existing [history API](https://developer.mozilla.org/en-US/docs/Web/AP
 
 This new `window.appHistory` API [layers](#integration-with-the-existing-history-api-and-spec) on top of the existing API and specification infrastructure, with well-defined interaction points. The main differences are that it is scoped to the current origin and frame, and it is designed to be pleasant to use instead of being a historical accident with many sharp edges.
 
+## Summary
+
+The existing [history API](https://developer.mozilla.org/en-US/docs/Web/API/History) is hard to deal with in practice, especially for single-page applications. In the best case, developers can work around this with various hacks. In the worst case, it causes user-facing pain in the form of lost state and broken back buttons, or the inability to achieve the desired navigation flow for a web app.
+
+The main problems are:
+
+- Managing and introspecting your application's history list, and associated application state, is fragile. State can be lost sometimes (e.g. due to fragment navigations); the browser will spontaneously insert entries due to iframe navigations; and the existing `popstate` and `hashchange` events are [unreliable](https://github.com/whatwg/html/issues/5562). We solve this by providing a view only onto the history entries created directly by the application, and the ability to look at all previous entries for your app so that no state is ever lost.
+
+- It's hard to figure out all the ways that navigations can occur, so that an application can synchronize its state or convert those navigations into single-page navigations. We solve this by exposing events that allow the application to observe all navigation actions, and substitute their own behavior in place of the default.
+
+- Various parts of the platform, e.g. accessibility technology, the browser's UI, and performance APIs, do not have good visibility into single-page navigations. We solve this by providing a standardized API for telling the browser when a single-page navigation starts and finishes.
+
+- Some of the history APIs are clunky and hard to understand. We solve this by providing a new interface that is easy for developers to use and understand.
+
+## Sample code
+
+An application or framework's centralized router can use the `navigate` event to implement single-page app routing:
+
+```js
+appHistory.addEventListener("navigate", e => {
+  if (!e.sameOrigin || e.hashChange) {
+    return;
+  }
+
+  if (routesTable.has(e.destination.url)) {
+    const routeHandler = routesTable.get(e.destination.url);
+    e.respondWith(routeHandler());
+  }
+});
+```
+
+A page-supplied "back" button can actually take you back, even after reload, by inspecting the previous history entries:
+
+```js
+backButtonEl.addEventListener("click", () => {
+  if (appHistory.entries[appHistory.entries.current.index - 1]?.url === "/product-listing") {
+    appHistory.back();
+  } else {
+    // If the user arrived here by typing the URL directly:
+    appHistory.replace("/product-listing");
+  }
+});
+```
+
+The new `currentchange` event fires whenever the current history entry changes, and includes the time it took for a single-page application nav to settle:
+
+```js
+appHistory.addEventListener("currentchange", e => {
+  if (e.startTime) {
+    analyticsPackage.sendEvent("single-page-app-nav", { loadTime: e.timeStamp - e.startTime });
+  }
+});
+```
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
