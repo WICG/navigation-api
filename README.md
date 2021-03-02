@@ -1035,7 +1035,7 @@ interface AppHistory : EventTarget {
   readonly attribute FrozenArray<AppHistoryEntry> entries;
 
   Promise<undefined> update(USVString url, optional AppHistoryEntryOptions options = {});
-  Promise<undefined> update(optional AppHistoryEntryFullOptions options = {});
+  Promise<undefined> update(optional AppHistoryEntryFullOptions options = {}); // one member required: see issue #52
   Promise<undefined> update(AppHistoryNavigationCallback);
 
   Promise<undefined> push(USVString url, optional AppHistoryEntryOptions options = {});
