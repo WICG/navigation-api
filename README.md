@@ -313,10 +313,10 @@ Note how this example responds to various types of navigations:
 
 - Cross-origin navigations: let the browser handle it as usual.
 - Same-document fragment navigations: let the browser handle it as usual.
-- Same-document URL/state updates (via `history.pushState()`, `appHistory.update()`, etc.):
+- Same-document URL or state updates (via `history.pushState()` or `history.replaceState()`):
   1. Send the information about the URL/state update to `doSinglePageAppNav()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
-- Cross-document normal navigations:
+- Cross-document normal navigations (including those via `appHistory.push()` or `appHistory.update()`):
   1. Prevent the browser handling, which would unload the document and create a new one from the network.
   1. Instead, send the information about the navigation to `doSinglePageAppNav()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
