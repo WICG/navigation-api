@@ -1046,9 +1046,9 @@ interface AppHistory : EventTarget {
   Promise<undefined> back();
   Promise<undefined> forward();
 
-  readonly attribute EventHandler onnavigate;
-  readonly attribute EventHandler onupcomingnavigate;
-  readonly attribute EventHandler oncurrentchange;
+  attribute EventHandler onnavigate;
+  attribute EventHandler onupcomingnavigate;
+  attribute EventHandler oncurrentchange;
 };
 
 [Exposed=Window]
@@ -1057,9 +1057,9 @@ interface AppHistoryEntry : EventTarget {
   readonly attribute USVString url;
   readonly attribute any state;
 
-  readonly attribute EventHandler onnavigateto;
-  readonly attribute EventHandler onnavigatefrom;
-  readonly attribute EventHandler ondispose;
+  attribute EventHandler onnavigateto;
+  attribute EventHandler onnavigatefrom;
+  attribute EventHandler ondispose;
 };
 
 dictionary AppHistoryEntryOptions {
