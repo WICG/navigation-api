@@ -363,7 +363,7 @@ First, the following navigations **will not fire `navigate`** at all:
 - User-initiated [cross-document](#appendix-types-of-navigations) navigations via browser UI, such as the URL bar, back/forward button, or bookmarks.
 - [`document.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/open), which can strip off the fragment from the current document's URL.
 
-User-initiated navigations of this sort are outside the scope of the webpage, and can never be intercepted or prevented, even if they are to same-origin documents. On the other hand, we do allow the page to intercept user-initiated _same_-document navigations via browser UI, e.g. if the user changes the fragment component in the URL bar.
+Navigations of the first sort are outside the scope of the webpage, and can never be intercepted or prevented. This is true even if they are to same-origin documents, e.g. if the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/bar` and presses enter. On the other hand, we do allow the page to intercept user-initiated _same_-document navigations via browser UI, e.g. if the the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/foo#fragment` and presses enter.
 
 As for `document.open()`, it is a terrible legacy API with lots of strange side effects, which makes supporting it not worth the implementation cost. Modern sites which use the app history API should never be using `document.open()`.
 
