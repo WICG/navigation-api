@@ -443,7 +443,9 @@ await appHistory.push();
 await appHistory.push({ state });
 ```
 
-Note how unlike `history.pushState()`, `appHistory.push()` will by default perform a cross-document navigation. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
+Note how unlike `history.pushState()`, `appHistory.push()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
+
+Regardless of whether the navigation gets converted or not, calling `appHistory.push()` will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
 
 The counterpart API to `appHistory.push()` is `appHistory.update()`. It is used as follows:
 
@@ -457,7 +459,9 @@ await appHistory.update(url);
 await appHistory.update(url, { state, navigateInfo });
 ```
 
-Again, unlike `history.replaceState()`, `appHistory.update()` will by default perform a cross-document navigation. And again, single-page apps will usually intercept these using `navigate`.
+Again, unlike `history.replaceState()`, `appHistory.update()` will by default perform a full navigation. And again, single-page apps will usually intercept these using `navigate`.
+
+Note that both of these methods return promises. In the event that the navigations get converted into same-document navigations via `event.respondWith(promise)` in a `navigate` handler, these returned promises will settle in the same way that `promise` does. This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, then the promises will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promise, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
 
 #### Example: using `navigateInfo`
 
