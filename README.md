@@ -369,7 +369,7 @@ As for `document.open()`, it is a terrible legacy API with lots of strange side 
 
 Second, the following navigations **cannot be canceled** using `event.preventDefault()`, and as such will have `event.cancelable` equal to false:
 
-- User-initiated navigations (cross- or same-document) via the browser's back/forward buttons.
+- User-initiated same-document navigations via the browser's back/forward buttons.
 
 This is important to avoid abusive pages trapping the user by disabling their back button. Note that adding a same-origin restriction would not help here: imagine a user which navigates to `https://evil-in-disguise.example/`, and then clicks a link to `https://evil-in-disguise.example/2`. If `https://evil-in-disguise.example/2` were allowed to cancel same-origin browser back button navigations, they have effectively disabled the user's back button.
 
