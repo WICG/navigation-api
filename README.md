@@ -455,7 +455,11 @@ The counterpart API to `appHistory.push()` is `appHistory.update()`. It is used 
 // (equivalent to `location.replace(url)`)
 await appHistory.update(url);
 
-// Similarly you can pass along state and navigateInfo:
+// Set the state at the same time
+// (equivalent to `appHistory.update(url)` + `appHistory.current.setState(state)`)
+await appHistory.update(url, { state });
+
+// Similarly you can pass along navigateInfo:
 await appHistory.update(url, { state, navigateInfo });
 ```
 
@@ -597,7 +601,7 @@ In general, the idea of these callback variants is that there are cases where th
 
 ### Per-entry events
 
-Each `AppHistoryEntry` has a series of events which the application can react to. **We expect these to mostly be used by decentralized parts of the application's codebase, such as components, to synchronize their state with the history list.** Unlike the `navigate` event, these events are not cancelable. They are used only for reacting to state changes, not intercepting or preventing navigations.
+Each `AppHistoryEntry` has a series of events which the application can react to. **We expect these to mostly be used by decentralized parts of the application's codebase, such as components, to synchronize their state with the history list.** Unlike the `navigate` event, these events are not cancelable. They are used only for reacting to changes, not intercepting or preventing navigations.
 
 The application can use the `navigateto` and `navigatefrom` events to update the UI in response to a given entry becoming the current app history entry. For example, consider a photo gallery application. One way of implementing this would be to store metadata about the photo in the corresponding `AppHistoryEntry`'s `state` property. This might look something like this:
 
@@ -627,9 +631,22 @@ async function showPhoto(photoId) {
 }
 ```
 
-Note how in the event handler for these events, `event.target` is the relevant `AppHistoryEntry`, so that the event handler can use its properties (like `state`, `key`, or `url`) as needed.
+Similarly, the application can use the `statechange` event to be notified of changes to the history state caused by the `setState()` or `appHistory.update()` methods:
 
-Additionally, there's a `dispose` event, which occurs when an app history entry is permanently evicted and unreachable: for example, in the following scenario.
+```js
+// If some other part of the app updates the state, synchronize it.
+appHistory.current.addEventListener("statechange", e => {
+  const { dateTaken, caption } = appHistory.current.getState();
+  document.querySelector("#photo-container > .date-taken").value = dateTaken;
+  document.querySelector("#photo-container > .caption").value = caption;
+});
+```
+
+(`statechange` only fires on changes to a given entry's state. It does not fire when the current entry itself changes. So, it generally would be used in addition to the entry's `navigateto`/`navigatefrom` events, or [`window.appHistory`'s `currentchange` event](#current-entry-change-monitoring).)
+
+Note how in the event handler for these events, `appHistory.current` will be set as expected (and equal to `e.target`), so that the event handler can use its properties (like `state`, `key`, or `url`) as needed.
+
+Finally, there's a `dispose` event, which occurs when an app history entry is permanently evicted and unreachable: for example, in the following scenario.
 
 ```js
 const startingKey = appHistory.current.key;
@@ -804,6 +821,8 @@ To update the current entry's state, instead of using `history.replaceState(newS
 To create a new entry with the same URL but a new state value, instead of using `history.pushState(newState)`, use `appHistory.push({ state: newState })`.
 
 To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, use `appHistory.current.setState()`.
+
+To watch for changes to an entry's state that occur without the entry itself changing, you can use the `statechange` event on a given `AppHistoryEntry`. (This isn't possible with the `window.history` API.)
 
 In general, state in app history is expected to be more useful than state in the `window.history` API, because:
 
@@ -1080,6 +1099,7 @@ interface AppHistoryEntry : EventTarget {
   attribute EventHandler onnavigateto;
   attribute EventHandler onnavigatefrom;
   attribute EventHandler ondispose;
+  attribute EventHandler onstatechange;
 };
 
 dictionary AppHistoryNavigateOptions {
