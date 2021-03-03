@@ -178,6 +178,8 @@ The entry point for the app history API is `window.appHistory`. Let's start with
 
 - `key`: a user-agent-generated UUID identifying this history entry. In the past, applications have used the URL as such a key, but the URL is not guaranteed to be unique.
 
+- `index`: the index of this `AppHistoryEntry` within the app history list. (Or, `-1` if the entry is no longer in the list, or not yet in the list.)
+
 - `url`: the URL of this history entry (as a string).
 
 - `sameDocument`: a boolean indicating whether this entry is for the current document, or whether navigating to it will require a full navigation (either from the network, or from the browser's back/forward cache). Note: for `appHistory.current`, this will always be `true`.
@@ -221,7 +223,7 @@ The way for an application to navigate through the app history list is using `ap
 
 _TODO: realistic example of when you'd use this._
 
-Unlike the existing history API's `history.go()` method, which navigates by offset, navigating by key allows the application to not care about intermediate history entries; it just specifies its desired destination entry. There are also convenience methods, `appHistory.back()` and `appHistory.forward()`.
+Unlike the existing history API's `history.go()` method, which navigates by offset, navigating by key allows the application to not care about intermediate history entries; it just specifies its desired destination entry. There are also convenience methods, `appHistory.back()` and `appHistory.forward()`, and convenience booleans, `appHistory.canGoBack` and `appHistory.canGoForward`.
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
@@ -753,6 +755,14 @@ try {
 }
 ```
 
+or you can avoid it using the `canGoBack` property:
+
+```js
+if (appHistory.canGoBack) {
+  await appHistory.back();
+}
+```
+
 Note that unlike the `history` APIs, these `appHistory` APIs will not go to another origin. For example, trying to call `appHistory.back()` when the previous document in the joint session history is cross-origin will return a rejected promise, and trigger the `console.log()` call above.
 
 Instead of using `history.go(offset)`, use `await appHistory.navigateTo(key)` to navigate to a specific entry. As with `back()` and `forward()`, `appHistory.navigateTo()` will ignore other frames, and will only control the navigation of your frame. If you specifically want to reproduce the pattern of navigating by an offset (not recommended), you can use code such as the following:
@@ -997,6 +1007,7 @@ Thanks also to
 [@MelSumner](https://github.com/MelSumner),
 [@mmocny](https://github.com/mmocny),
 [@natechapin](https://github.com/natechapin),
+[@SetTrend](https://github.com/SetTrend),
 [@slightlyoff](https://github.com/slightlyoff), and
 [@Yay295](https://github.com/Yay295)
 for their help in exploring this space and providing feedback.
@@ -1071,6 +1082,8 @@ partial interface Window {
 interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry current;
   readonly attribute FrozenArray<AppHistoryEntry> entries;
+  readonly attribute boolean canGoBack;
+  readonly attribute boolean canGoForward;
 
   Promise<undefined> update(USVString url, optional AppHistoryNavigateOptions options = {});
   Promise<undefined> update(AppHistoryUpdateCallback);
@@ -1092,6 +1105,8 @@ interface AppHistory : EventTarget {
 interface AppHistoryEntry : EventTarget {
   readonly attribute DOMString key;
   readonly attribute USVString url;
+
+  readonly attribute long long index;
 
   any getState();
   undefined setState(any state);
