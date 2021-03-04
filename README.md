@@ -1086,8 +1086,8 @@ Here's a summary table:
 |Browser UI (non-back/forward other)|Always cross|No|—|—|—|
 |`<a>`/`<area>`|Either|Yes|Yes ‡|Yes|Yes *|
 |`<form>`|Either|Yes|Yes ‡|Yes|Yes *|
-|`<meta http-equiv="refresh">`|Either|Yes|No|Yes|Yes *|
-|`Refresh` header|Either|Yes|No|Yes|Yes *|
+|`<meta http-equiv="refresh">`|Either ◊|Yes|No|Yes|Yes *|
+|`Refresh` header|Either ◊|Yes|No|Yes|Yes *|
 |`window.location`|Either|Yes|No|Yes|Yes *|
 |`window.open(url, name)`|Either|Yes|No|Yes|Yes *|
 |`history.{back,forward,go}()`|Either|Yes|No|Yes|Yes †*|
@@ -1099,6 +1099,7 @@ Here's a summary table:
 - † = No if cross-document
 - ‡ = No if triggered via, e.g., `element.click()`
 - \* = No if the URL differs in components besides path/fragment/query
+- ◊ = fragment navigations initiated by `<meta http-equiv="refresh">` or the `Refresh` header are only same-document in some browsers: [whatwg/html#6451](https://github.com/whatwg/html/issues/6451)
 
 See the discussion on [restrictions](#restrictions-on-firing-canceling-and-responding) to understand the reasons why the last few columns are filled out in the way they are.
 
