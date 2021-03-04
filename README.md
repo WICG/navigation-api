@@ -338,19 +338,21 @@ appHistory.addEventListener("navigate", e => {
     return;
   }
 
-  if (myFramework.currentPage) {
-    await myFramework.currentPage.transitionOut();
-  }
+  e.respondWith((async () => {
+    if (myFramework.currentPage) {
+      await myFramework.currentPage.transitionOut();
+    }
 
-  const isBackForward = appHistory.entries.includes(event.destination);
-  let { key } = event.destination;
+    const isBackForward = appHistory.entries.includes(event.destination);
+    let { key } = event.destination;
 
-  if (isBackForward && myFramework.previousPages.has(key)) {
-    await myFramework.previousPages.get(key).transitionIn();
-  } else {
-    // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
-    await myFramework.renderPage(event.destination);
-  }
+    if (isBackForward && myFramework.previousPages.has(key)) {
+      await myFramework.previousPages.get(key).transitionIn();
+    } else {
+      // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
+      await myFramework.renderPage(event.destination);
+    }
+  })());
 });
 ```
 
