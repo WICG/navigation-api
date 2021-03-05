@@ -74,6 +74,7 @@ appHistory.addEventListener("currentchange", e => {
     - [Restrictions on firing, canceling, and responding](#restrictions-on-firing-canceling-and-responding)
     - [Accessibility benefits of standardized single-page navigations](#accessibility-benefits-of-standardized-single-page-navigations)
     - [Measuring standardized single-page navigations](#measuring-standardized-single-page-navigations)
+    - [Example: handling failed navigations](#example-handling-failed-navigations)
     - [Example: single-page app "redirects"](#example-single-page-app-redirects)
     - [Example: cross-origin affiliate links](#example-cross-origin-affiliate-links)
   - [New navigation APIs](#new-navigation-apis)
@@ -229,13 +230,13 @@ Unlike the existing history API's `history.go()` method, which navigates by offs
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
-- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise passed to `respondWith()`. If the promise rejects, then as part of the failed navigation, `location.href` and `appHistory.current` will roll back to their old values.
+- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise passed to `respondWith()`. (However, even if the promise rejects, `location.href` and `appHistory.current` will change.)
 
 - The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
 - It's not possible to navigate to the given entry, e.g. `appHistory.navigateTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, the promise rejects with an `"InvalidStateError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
-- The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `location.href` and `appHistory.current` will stay on their new value.
+- The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `location.href` and `appHistory.current` will have been set to their new value.
 
 - The navigation succeeds, and it was a different-document navigation. Then the promise will never settle, because the entire document and all its promises will disappear.
 
@@ -269,12 +270,13 @@ The event object has a special method `event.respondWith(promise)`. This works o
 
 - Cancel any fragment navigation or cross-document navigation.
 - Immediately update the URL bar, `location.href`, and `appHistory.current`, but with `appHistory.current.finished` set to false.
-- Wait for the promise to settle.
-  - If it rejects, revert the URL bar, `location.href`, and `appHistory.current` to their previous values. (See discussion in [#47](https://github.com/WICG/app-history/issues/47).)
-  - If it fulfills, update `appHistory.current.finished` to true, and fire [a variety of events](./interception-details.md).
+- Wait for the promise to settle. Once it does:
+  - Update `appHistory.current.finished` to true and fire `finish` on `appHistory.current`.
+  - If it rejects, fire `navigateerror` on `appHistory`.
+  - If it fulfills, fire `navigatesuccess` on `appHistory`.
 - For the duration of the promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
-Note that the browser does not wait for the promise to settle in order to update its UI (such as URL bar or back button).
+Note that the browser does not wait for the promise to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `appHistory.current`.
 
 _TODO: should we give direct control over when the browser UI updates, in case developers want to update it later in the lifecycle after they're sure the navigation will be a success? Would it be OK to let the UI get out of sync with the history list?_
 
@@ -319,12 +321,12 @@ Note how this example responds to various types of navigations:
   1. Send the information about the URL/state update to `doSinglePageAppNav()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
 - Cross-document normal navigations (including those via `appHistory.push()` or `appHistory.update()`):
-  1. Prevent the browser handling, which would unload the document and create a new one from the network.
-  1. Instead, send the information about the navigation to `doSinglePageAppNav()`, which will use it to modify the current document.
+  1. Prevent the browser handling, which would unload the document and create a new one from the network. Instead, immediately change the URL bar/`location.href`/`appHistory.current`, while staying on the same document.
+  1. Send the information about the navigation to `doSinglePageAppNav()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
 - Cross-document form submissions:
-  1. Prevent the browser handling, which would unload the document and create a new one from the network.
-  1. Instead, send the form data to `processFormDataAndUpdateUI()`, which will use it to modify the current document.
+  1. Prevent the browser handling, which would unload the document and create a new one from the network. Instead, immediately change the URL bar/`location.href`/`appHistory.current`, while staying on the same document.
+  1. Send the form data to `processFormDataAndUpdateUI()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
 
 Notice also how by passing through the `AbortSignal` found in `e.signal`, we ensure that any aborted navigations abort the associated fetch as well.
@@ -413,6 +415,29 @@ This isn't a complete panacea: in particular, such metrics are gameable by bad a
 - Filtering to only count navigations where the URL changes (i.e., `appHistory.current.url !== event.destination.url`).
 
 - We hope that most analytics vendors will come to automatically track `navigate` events as page views, and measure their duration. Then, apps using such analytics vendors would have an incentive to keep their page view statistics meaningful, and thus be disincentivized to generate spurious navigations.
+
+#### Example: handling failed navigations
+
+To handle failed navigations, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
+
+```js
+appHistory.addEventListener("navigateerror", e => {
+  document.body.textContent = `Could not load ${location.href}: ${e.message}`;
+  analyticsPackage.send("navigateerror", { stack: e.error.stack });
+});
+```
+
+To perform a rollback to where the user was previously, with a toast notification, you could do something like:
+
+```js
+appHistory.addEventListener("navigateerror", e => {
+  // Our `navigate` handler will convert this into a same-document navigation.
+  appHistory.back();
+
+
+  showErrorToast(`Could not load ${location.href}: ${e.message}`);
+});
+```
 
 #### Example: single-page app "redirects"
 
@@ -760,16 +785,13 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
     1. After the promise passed to `event.respondWith()` fulfills, or after one microtask if `event.respondWith()` was not called:
         1. `appHistory.current.finished` changes to `true`.
         1. `appHistory.current` fires `finish`.
-        1. `navigatefinish` is fired on `appHistory`.
+        1. `navigatesuccess` is fired on `appHistory`.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets fulfilled.
     1. Alternately, if the promise passed to `event.respondWith()` rejects:
+        1. `appHistory.current.finished` changes to `true`.
+        1. `appHistory.current` fires `finish`.
         1. `navigateerror` fires on `window.appHistory`.
-        1. `location.href` changes back to the value it had previously.
-        1. `appHistory.current` changes back to the previous entry, before the navigation.
-        1. `currentchange` fires on `window.appHistory`.
-        1. `appHistory.current` fires `navigateto`.
-        1. The no-longer current `AppHistoryEntry` that was being navigated to fires `dispose`.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same rejection reason.
 
@@ -1144,6 +1166,8 @@ interface AppHistory : EventTarget {
   Promise<undefined> forward();
 
   attribute EventHandler onnavigate;
+  attribute EventHandler onnavigatesuccess;
+  attribute EventHandler onnavigateerror;
   attribute EventHandler onupcomingnavigate;
   attribute EventHandler oncurrentchange;
 };
@@ -1152,14 +1176,15 @@ interface AppHistory : EventTarget {
 interface AppHistoryEntry : EventTarget {
   readonly attribute DOMString key;
   readonly attribute USVString url;
-
   readonly attribute long long index;
+  readonly attribute boolean finished;
 
   any getState();
   undefined setState(any state);
 
   attribute EventHandler onnavigateto;
   attribute EventHandler onnavigatefrom;
+  attribute EventHandler onfinish;
   attribute EventHandler ondispose;
   attribute EventHandler onstatechange;
 };
