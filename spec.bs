@@ -210,7 +210,7 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
   1. If [=this=]'s {{Event/isTrusted}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s {{AppHistoryNavigateEvent/canRespond}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
-  1. If [=this=]'s [=Event/canceled flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=Event/canceled flag=] is set, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. Set [=this=]'s [=Event/canceled flag=].
   1. Run the <a spec="HTML">URL and history update steps</a> given [=this=]'s [=relevant global object=]'s [=associated document=] and [=this=]'s [=AppHistoryNavigateEvent/destination URL=], with <i>[=URL and history update steps/serializedData=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API serialized data=], <i>[=URL and history update steps/title=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API title=], and <i>[=URL and history update steps/isPush=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/is push=].
   1. Let |appHistory| be [=this=]'s [=relevant global object=]'s [=Window/app history=].
