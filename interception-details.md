@@ -36,7 +36,7 @@ After the promise settles in one microtask:
 
 1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
-1. `navigatefinish` is fired on `appHistory`.
+1. `navigatesuccess` is fired on `appHistory`.
 
 ### No interception
 
@@ -102,12 +102,10 @@ After the promise fulfills in ten seconds:
 
 1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
-1. `navigatefinish` is fired on `appHistory`.
+1. `navigatesuccess` is fired on `appHistory`.
 1. Any loading spinner UI stops.
 
 ### Delayed failure
-
-**The behavior here is being debated in [#47](https://github.com/WICG/app-history/issues/47) and is not finalized.**
 
 ```js
 appHistory.addEventListener("navigate", e => {
@@ -116,10 +114,6 @@ appHistory.addEventListener("navigate", e => {
 
 location.href = "/foo";
 console.log(location.href);
-
-setTimeout(() => {
-  console.log(location.href);
-}, 10_000);
 ```
 
 Synchronously:
@@ -140,14 +134,10 @@ Asynchronously but basically immediately:
 
 After the promise rejects in ten seconds:
 
-1. `navigateerror` fires on `window.appHistory`.
-1. `location.href` changes back to the value it had previously.
-1. `appHistory.current` changes back to the previous entry, before the navigation.
-1. `currentchange` fires on `window.appHistory`.
-1. `appHistory.current` fires `navigateto`.
-1. The no-longer current `AppHistoryEntry` representing `/foo` fires `dispose`.
+1. `appHistory.current.finished` changes to `true`.
+1. `appHistory.current` fires `finish`.
+1. `navigateerror` is fired on `window.appHistory`.
 1. Any loading spinner UI stops.
-1. The second `console.log()` outputs `""` (or whatever the old URL was).
 
 Note: any unreachable `AppHistoryEntry`s disposed as part of the synchronous block do not get resurrected.
 
@@ -215,5 +205,5 @@ After eleven seconds:
 1. Since `e.signal.aborted` is `false`, the code inside the `navigate` handler updates `document.body.innerHTML`.
 1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
-1. `navigatefinish` is fired on `appHistory`.
+1. `navigatesuccess` is fired on `appHistory`.
 1. Any loading spinner UI stops.
