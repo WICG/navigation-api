@@ -29,6 +29,10 @@ spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
     text: serializedData; url: history.html#uhus-serializeddata
     text: title; url: history.html#uhus-title
     text: isPush; url: history.html#uhus-ispush
+  for: session history entry
+    text: document; url: history.html#she-document
+  for: history handling behavior
+    text: default; url: browsing-the-web.html#hh-default
 </pre>
 
 <style>
@@ -40,6 +44,10 @@ spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
   font-size: smaller;
   padding: 4px 10px;
   z-index: 4;
+}
+
+dfn var {
+  font-style: italic;
 }
 
 /* domintro from https://resources.whatwg.org/standard.css */
@@ -210,8 +218,8 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
 
 <hr>
 
-<div algorithm>
-  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, a boolean |isPush|, a boolean |isCrossDocument|, a boolean |isBackForward|, a boolean |isBrowserUI|, a boolean |isUserInitiated|, a boolean |isFragmentNavigation|, an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] |formDataEntryList|, an optional [=serialized state=]-or-null |classicHistoryAPISerializedData| (default null), and an optional string-or-null |classicHistoryAPITitle| (default null):
+<div algorithm="fire a navigate event">
+  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, a boolean <dfn for="fire a navigate event">|isPush|</dfn>, a boolean <dfn for="fire a navigate event">|isCrossDocument|</dfn>, a boolean <dfn for="fire a navigate event">|isBackForward|</dfn> (default false), a boolean <dfn for="fire a navigate event">|isBrowserUI|</dfn> (default false), a boolean <dfn for="fire a navigate event">|isUserInitiated|</dfn> (default false), a boolean <dfn for="fire a navigate event">|isFragmentNavigation|</dfn> (default false), an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] |formDataEntryList|, an optional [=serialized state=]-or-null <dfn for="fire a navigate event">|classicHistoryAPISerializedData|</dfn> (default null), and an optional string-or-null <dfn for="fire a navigate event">|classicHistoryAPITitle|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in the [=relevant Realm=] of |appHistory|.
   1. Set |event|'s [=AppHistoryNavigateEvent/destination URL=] to |destinationURL|.
@@ -247,4 +255,47 @@ A [=URL=] is <dfn>rewritable</dfn> relative to another [=URL=] if they differ in
 
 The following section details monkeypatches to [[!HTML]] that cause the {{AppHistory/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation.
 
-TODO!
+<div algorithm="shared history push/replace steps">
+  Modify the <a spec="HTML">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a spec="HTML">URL and history update steps</a>:
+
+  1. Let |appHistory| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/app history=].
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>newURL</var>, with <i>[=fire a navigate event/isPush=]</i> set to <var ignore>isPush</var>, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>, and <i>[=fire a navigate event/classicHistoryAPITitle=]</i> set to <var ignore>title</var>.
+  1. If |continue| is false, return.
+</div>
+
+TODO what about the last three steps of the <a spec="HTML">shared history push/replace state steps</a>? Probably those should run if respondWith() goes through?
+
+<div algorithm="navigate to a fragment">
+  Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps:
+
+  1. Let |appHistory| be the <a spec="HTML">current entry</a>'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
+  1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, false.
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/isUserInitiated=]</i> set to ???TODO, and <i>[=fire a navigate event/isFragmentNavigation=]</i> set to true.
+  1. If |continue| is false, return.
+</div>
+
+<div algorithm="navigate">
+  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]:
+
+  1. If this navigation was not initiated by the user explictly causing <var ignore>browsingContext</var> to navigate using [=user agent=]-specific mechanisms, but instead was initiated by algorithms elsewhere in this specification, then:
+    1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
+    1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, false.
+    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isUserInitiated=]</i> set to ???TODO, and <i>[=fire a navigate event/isCrossDocument=]</i> set to true.
+    1. If |continue| is false, return.
+
+    <p class="note">[=User agent=]-specific mechanisms that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm, which does not have this condition.
+
+  TODO: exclude `about:blank` initial navigation cases.
+
+  TODO: form data??
+</div>
+
+<div algorithm="traverse the history by a delta">
+  Modify the <a spec="HTML">traverse the history by a delta</a> algorithm by inserting the following steps inside the queued task, before the call to <a spec="HTML">traverse the history</a>:
+
+  1. Let |appHistory| be <var ignore>specified browsing context</var>'s [=browsing context/active window=]'s [=Window/app history=].
+  1. Let |isBrowserUI| be true if this traversal was initiated by the user explictly causing <var ignore>browsingContext</var> to navigate using [=user agent=]-specific mechanisms (e.g., the browser's back and forward buttons); otherwise, false.
+  1. Let |isCrossDocument| be true if <var ignore>specified browsing context</var>'s [=active document=] is different from <var ignore>specified entry</var>'s [=session history entry/document=]; otherwise, false.
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isBackForward=]</i> set to true, <i>[=fire a navigate event/isCrossDocument=]</i> set to |isCrossDocument|, and <i>[=fire a navigate event/isBrowserUI=]</i> and <i>[=fire a navigate event/isUserInitiated=]</i> both set to |isBrowserUI|.
+  1. If |continue| is false, abort these steps.
+</div>
