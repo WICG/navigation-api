@@ -187,10 +187,10 @@ The entry point for the app history API is `window.appHistory`. Let's start with
 
 - `sameDocument`: a boolean indicating whether this entry is for the current document, or whether navigating to it will require a full navigation (either from the network, or from the browser's back/forward cache). Note: for `appHistory.current`, this will always be `true`.
 
-It also has two methods, `getState()` and `setState()`, which retrieve the app history state for the entry. This is somewhat similar to `history.state`, but it will survive fragment navigations. Note that `getState()` always returns a fresh clone of the state:
+It also has a method `getState()`, which retrieve the app history state for the entry. This is somewhat similar to `history.state`, but it will survive fragment navigations, and `getState()` always returns a fresh clone of the state to avoid the [misleading nature of `history.state`](https://github.com/WICG/app-history/issues/36):
 
 ```js
-appHistory.current.setState({ test: 2 });
+appHistory.update({ state: { test: 2 } });
 
 // Don't do this: it won't be saved to the stored state.
 appHistory.current.getState().test = 3;
@@ -198,10 +198,7 @@ appHistory.current.getState().test = 3;
 console.assert(appHistory.current.getState().test === 2);
 
 // Instead do this:
-appHistory.current.setState({
-  ...appHistory.current.getState(),
-  test: 3
-});
+appHistory.current.update({ state: { ...appHistory.current.getState(), test: 3 });
 ```
 
 Crucially, `appHistory.current` stays the same regardless of what iframe navigations happen. It only reflects the current entry for the current frame. The complete list of ways the current app history entry can change are:
@@ -254,7 +251,7 @@ The event object has several useful properties:
 
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.push(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.push(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
-- `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries`; if it is not, then its `state` will be `null`.
+- `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries`.
 
 - `hashChange`: a boolean, indicating whether or not this is a same-document [fragment navigation](https://html.spec.whatwg.org/#scroll-to-fragid).
 
@@ -507,7 +504,7 @@ await appHistory.push(url, { state });
 await appHistory.push(url, { state, navigateInfo });
 
 // Performs a navigation to the same URL as the current history entry,
-// but with new app history state.
+// but with a nulled-out app history state.
 await appHistory.push();
 
 // Navigate to the same URL, but with a new state value:
@@ -526,11 +523,10 @@ The counterpart API to `appHistory.push()` is `appHistory.update()`. It is used 
 // (equivalent to `location.replace(url)`)
 await appHistory.update(url);
 
-// Set the state at the same time
-// (equivalent to `appHistory.update(url)` + `appHistory.current.setState(state)`)
-await appHistory.update(url, { state });
+// Set the state, without changing the URL.
+await appHistory.update({ state });
 
-// Similarly you can pass along navigateInfo:
+// Similarly to `push()`, you can pass along navigateInfo:
 await appHistory.update(url, { state, navigateInfo });
 ```
 
@@ -674,7 +670,7 @@ In general, the idea of these callback variants is that there are cases where th
 
 Each `AppHistoryEntry` has a series of events which the application can react to. **We expect these to mostly be used by decentralized parts of the application's codebase, such as components, to synchronize their state with the history list.** Unlike the `navigate` event, these events are not cancelable. They are used only for reacting to changes, not intercepting or preventing navigations.
 
-The application can use the `navigateto` and `navigatefrom` events to update the UI in response to a given entry becoming the current app history entry. For example, consider a photo gallery application. One way of implementing this would be to store metadata about the photo in the corresponding `AppHistoryEntry`'s `state` property. This might look something like this:
+The application can use the `navigateto` and `navigatefrom` events to update the UI in response to a given entry becoming the current app history entry. For example, consider a photo gallery application. One way of implementing this would be to store metadata about the photo in the corresponding `AppHistoryEntry`'s state. This might look something like this:
 
 ```js
 async function showPhoto(photoId) {
@@ -686,10 +682,10 @@ async function showPhoto(photoId) {
 
   // When we navigate away from this photo, save any changes the user made.
   appHistory.current.addEventListener("navigatefrom", e => {
-    appHistory.current.setState({
+    appHistory.update({ state: {
       dateTaken: document.querySelector("#photo-container > .date-taken").value,
       caption: document.querySelector("#photo-container > .caption").value
-    });
+    } });
   });
 
   // If we ever navigate back to this photo, e.g. using the browser back button or
@@ -702,20 +698,7 @@ async function showPhoto(photoId) {
 }
 ```
 
-Similarly, the application can use the `statechange` event to be notified of changes to the history state caused by the `setState()` or `appHistory.update()` methods:
-
-```js
-// If some other part of the app updates the state, synchronize it.
-appHistory.current.addEventListener("statechange", e => {
-  const { dateTaken, caption } = appHistory.current.getState();
-  document.querySelector("#photo-container > .date-taken").value = dateTaken;
-  document.querySelector("#photo-container > .caption").value = caption;
-});
-```
-
-(`statechange` only fires on changes to a given entry's state. It does not fire when the current entry itself changes. So, it generally would be used in addition to the entry's `navigateto`/`navigatefrom` events, or [`window.appHistory`'s `currentchange` event](#current-entry-change-monitoring).)
-
-Note how in the event handler for these events, `appHistory.current` will be set as expected (and equal to `e.target`), so that the event handler can use its properties (like `state`, `key`, or `url`) as needed.
+Note how in the event handler for these events, `appHistory.current` will be set as expected (and equal to `e.target`), so that the event handler can use its properties and methods (like `key`, `url`, or `getState()`) as needed.
 
 Finally, there's a `dispose` event, which occurs when an app history entry is permanently evicted and unreachable: for example, in the following scenario.
 
@@ -741,7 +724,7 @@ This can be useful for cleaning up any information in secondary stores, such as 
 
 ### Current entry change monitoring
 
-The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property. This includes both navigations that change its value, and calls to `appHistory.update()` that change its `state` or `url` properties. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
+The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property. This includes both navigations that change its value, and calls to `appHistory.update()` that change its state or URL. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
 
 This event has one special property, `event.startTime`, which for [same-document](#appendix-types-of-navigations) navigations gives the value of `performance.now()` when the navigation was initiated. This includes for navigations that were originally [cross-document](#appendix-types-of-navigations), like the user clicking on `<a href="https://example.com/another-page">`, but were transformed into same-document navigations by [navigation interception](#navigation-monitoring-and-interception). For completely cross-document navigations, `startTime` will be `null`.
 
@@ -892,13 +875,11 @@ Note how in this case we don't need to use `appHistory.push()`, even though the 
 
 ### Attaching and using history state
 
-To update the current entry's state, instead of using `history.replaceState(newState)`, use `appHistory.current.setState(newState)`.
+To update the current entry's state, instead of using `history.replaceState(newState)`, use `appHistory.update({ state:  newState })`.
 
 To create a new entry with the same URL but a new state value, instead of using `history.pushState(newState)`, use `appHistory.push({ state: newState })`.
 
-To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, use `appHistory.current.setState()`.
-
-To watch for changes to an entry's state that occur without the entry itself changing, you can use the `statechange` event on a given `AppHistoryEntry`. (This isn't possible with the `window.history` API.)
+To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, use `appHistory.update()`.
 
 In general, state in app history is expected to be more useful than state in the `window.history` API, because:
 
@@ -955,14 +936,14 @@ then, if the current entry is 4, there would only be one `AppHistoryEntry` in `a
 To make this correspondence work, every spec-level session history entry would gain two new fields:
 
 - key, containing a browser-generated UUID. This is what backs `appHistoryEntry.key`.
-- app history state, containing a JavaScript value. This is what backs `appHistoryEntry.getState()` and `appHistoryEntry.setState()`.
+- app history state, containing a JavaScript value. This is what backs `appHistoryEntry.getState()`.
 
 Note that the "app history state" field has no interaction with the existing "serialized state" field, which is what backs `history.state`. This route was chosen for a few reasons:
 
 - The desired semantics of app history state is that it be carried over on fragment navigations, whereas `history.state` is not carried over. (This is a hard blocker.)
 - A clean separation can help when a page contains code that uses both `window.history` and `window.appHistory`. That is, it's convenient that existing code using `window.history` does not inadvertently mess with new code that does state management using `window.appHistory`.
-- Today, the serialized state of a session history entry is only exposed when that entry is the current one. The app history API exposes `appHistoryEntry.getState()` and `appHistoryEntry.setState()` for all entries in `appHistory.entries`. This is not a security issue since all app history entries are same-origin contiguous, but if we exposed the serialized state value even for non-current entries, it might break some assumptions of existing code.
-- Switching to a separate field, accessible only via `getState()` and `setState()` methods, avoids the mutability problems discussed in [#36](https://github.com/WICG/app-history/issues/36). If the object was shared with `history.state`, those problems would be carried over.
+- Today, the serialized state of a session history entry is only exposed when that entry is the current one. The app history API exposes `appHistoryEntry.getState()` for all entries in `appHistory.entries`. This is not a security issue since all app history entries are same-origin contiguous, but if we exposed the serialized state value even for non-current entries, it might break some assumptions of existing code.
+- Switching to a separate field, accessible only via the `getState()` method, avoids the mutability problems discussed in [#36](https://github.com/WICG/app-history/issues/36). If the object was shared with `history.state`, those problems would be carried over.
 
 Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state, title, and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
 
@@ -1154,12 +1135,13 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  Promise<undefined> update(USVString url, optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> update(AppHistoryUpdateCallback);
+  Promise<undefined> update(USVString url, optional AppHistoryEntryOptions options = {});
+  Promise<undefined> update(optional AppHistoryEntryFullOptions options = {}); // one member required: see issue #52
+  Promise<undefined> update(AppHistoryNavigationCallback);
 
-  Promise<undefined> push(USVString url, optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> push(optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> push(AppHistoryPushCallback callback);
+  Promise<undefined> push(USVString url, optional AppHistoryEntryOptions options = {});
+  Promise<undefined> push(optional AppHistoryEntryFullOptions options = {});
+  Promise<undefined> push(AppHistoryNavigationCallback callback);
 
   Promise<undefined> navigateTo(DOMString key);
   Promise<undefined> back();
@@ -1180,30 +1162,23 @@ interface AppHistoryEntry : EventTarget {
   readonly attribute boolean finished;
 
   any getState();
-  undefined setState(any state);
 
   attribute EventHandler onnavigateto;
   attribute EventHandler onnavigatefrom;
   attribute EventHandler onfinish;
   attribute EventHandler ondispose;
-  attribute EventHandler onstatechange;
 };
 
-dictionary AppHistoryNavigateOptions {
+dictionary AppHistoryEntryOptions {
   any state;
   any navigateInfo;
 };
 
-dictionary AppHistoryUpdateCallbackOptions : AppHistoryNavigateOptions {
-  required USVString url;
-};
-
-dictionary AppHistoryPushCallbackOptions : AppHistoryNavigateOptions {
+dictionary AppHistoryEntryFullOptions : AppHistoryEntryOptions {
   USVString url;
 };
 
-callback AppHistoryUpdateCallback = AppHistoryUpdateCallbackOptions ();
-callback AppHistoryPushCallback = AppHistoryPushCallbackOptions ();
+callback AppHistoryNavigationCallback = AppHistoryEntryFullOptions ();
 
 [Exposed=Window]
 interface AppHistoryNavigateEvent : Event {
