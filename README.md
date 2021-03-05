@@ -586,6 +586,8 @@ appHistory.addEventListener("navigate", e => {
 });
 ```
 
+Note that in addition to `appHistory.push()` and `appHistory.replace()`, the [previously-discussed](#navigation-through-the-app-history-list) `appHistory.back()`, `appHistory.forward()`, and `appHistory.navigateTo()` methods can also take a `navigateInfo` option.
+
 #### Navigations while a navigation is ongoing
 
 **This section is under heavy construction. There are several open issues on it and it's not fully integrated with the latest thinking on the [detailed navigation interception lifecycle](./interception-details.md).**
@@ -1135,17 +1137,17 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  Promise<undefined> update(USVString url, optional AppHistoryEntryOptions options = {});
-  Promise<undefined> update(optional AppHistoryEntryFullOptions options = {}); // one member required: see issue #52
+  Promise<undefined> update(USVString url, optional AppHistoryPushOrUpdateOptions options = {});
+  Promise<undefined> update(optional AppHistoryPushOrUpdateFullOptions options = {}); // one member required: see issue #52
   Promise<undefined> update(AppHistoryNavigationCallback);
 
-  Promise<undefined> push(USVString url, optional AppHistoryEntryOptions options = {});
-  Promise<undefined> push(optional AppHistoryEntryFullOptions options = {});
+  Promise<undefined> push(USVString url, optional AppHistoryPushOrUpdateOptions options = {});
+  Promise<undefined> push(optional AppHistoryPushOrUpdateFullOptions options = {});
   Promise<undefined> push(AppHistoryNavigationCallback callback);
 
-  Promise<undefined> navigateTo(DOMString key);
-  Promise<undefined> back();
-  Promise<undefined> forward();
+  Promise<undefined> navigateTo(DOMString key, optional AppHistoryNavigationOptions = {});
+  Promise<undefined> back(optional AppHistoryNavigationOptions = {});
+  Promise<undefined> forward(optional AppHistoryNavigationOptions = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
@@ -1169,12 +1171,15 @@ interface AppHistoryEntry : EventTarget {
   attribute EventHandler ondispose;
 };
 
-dictionary AppHistoryEntryOptions {
-  any state;
+dictionary AppHistoryNavigationOptions {
   any navigateInfo;
 };
 
-dictionary AppHistoryEntryFullOptions : AppHistoryEntryOptions {
+dictionary AppHistoryPushOrUpdateOptions : AppHistoryNavigationOptions {
+  any state;
+};
+
+dictionary AppHistoryPushOrUpdateFullOptions : AppHistoryPushOrUpdateOptions {
   USVString url;
 };
 
