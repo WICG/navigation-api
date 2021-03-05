@@ -266,8 +266,6 @@ The following section details monkeypatches to [[!HTML]] that cause the {{AppHis
   1. If |continue| is false, return.
 </div>
 
-TODO what about the last three steps of the <a spec="HTML">shared history push/replace state steps</a>? Probably those should run if respondWith() goes through?
-
 <div algorithm="navigate to a fragment">
   Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps:
 
