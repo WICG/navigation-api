@@ -33,6 +33,7 @@ spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
     text: document; url: history.html#she-document
   for: history handling behavior
     text: default; url: browsing-the-web.html#hh-default
+    text: entry update; url: browsing-the-web.html#hh-entry-update
   for: navigate
     text: historyHandling; url: browsing-the-web.html#navigation-hh
     text: navigationType; url: browsing-the-web.html#navigation-navigationtype
@@ -278,13 +279,15 @@ The following section details monkeypatches to [[!HTML]] that cause the {{AppHis
 <div algorithm="navigate" id="navigate-modifications">
   Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]:
 
-  1. If this navigation was not initiated by the user explictly causing <var ignore>browsingContext</var> to navigate using [=user agent=]-specific mechanisms, but instead was initiated by algorithms elsewhere in this specification, then:
+  1. If <var ignore>historyHandling</var> is not "<a for="history handling behavior">`entry update`</a>", and this navigation was not initiated by the user explictly causing <var ignore>browsingContext</var> to navigate using [=user agent=]-specific mechanisms but instead was initiated by algorithms elsewhere in this specification, then:
     1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
-    1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, false.
+    1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a for="history handling behavior">`default`</a>"; otherwise, false.
     1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isUserInitiated=]</i> set to ???TODO, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, and <i>[=fire a navigate event/formDataEntryList=]</i> set to <var ignore>entryList</var>.
     1. If |continue| is false, return.
 
     <p class="note">[=User agent=]-specific mechanisms that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm, which does not have this condition.
+
+    <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{AppHistory/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
 
   TODO: exclude `about:blank` initial navigation cases.
 </div>
