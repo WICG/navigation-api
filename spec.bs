@@ -16,6 +16,19 @@ Complain About: accidental-2119 yes, missing-example-ids yes
 Indent: 2
 Default Biblio Status: current
 Markup Shorthands: markdown yes
+Assume Explicit For: yes
+</pre>
+
+<pre class="link-defaults">
+spec: html; type: element; text: a
+</pre>
+<pre class="anchors">
+spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
+  text: serialized state; url: history.html#serialized-state
+  for: URL and history update steps
+    text: serializedData; url: history.html#uhus-serializeddata
+    text: title; url: history.html#uhus-title
+    text: isPush; url: history.html#uhus-ispush
 </pre>
 
 <style>
@@ -28,8 +41,210 @@ Markup Shorthands: markdown yes
   padding: 4px 10px;
   z-index: 4;
 }
+
+/* domintro from https://resources.whatwg.org/standard.css */
+.domintro {
+  position: relative;
+  color: green;
+  background: #DDFFDD;
+  margin: 2.5em 0 2em 0;
+  padding: 1.5em 1em 0.5em 2em;
+}
+
+.domintro dt, .domintro dt * {
+  color: black;
+  font-size: inherit;
+}
+.domintro dd {
+  margin: 0.5em 0 1em 2em; padding: 0;
+}
+.domintro dd p {
+  margin: 0.5em 0;
+}
+.domintro::before {
+  content: 'For web developers (non-normative)';
+  background: green;
+  color: white;
+  padding: 0.15em 0.25em;
+  font-style: normal;
+  position: absolute;
+  top: -0.8em;
+  left: -0.8em;
+}
 </style>
 
 <script src="https://resources.whatwg.org/file-issue.js" async></script>
 
-TODO write some spec text!
+<h2 id="global">The {{AppHistory}} interface</h2>
+
+<xmp class="idl">
+partial interface Window {
+  readonly attribute AppHistory appHistory;
+};
+</xmp>
+
+Each {{Window}} object has an associated <dfn for="Window">app history</dfn>, which is a new {{AppHistory}} instance created alongside the {{Window}}.
+
+The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=this=]'s [=Window/app history=].
+
+<xmp class="idl">
+[Exposed=Window]
+interface AppHistory : EventTarget {
+  attribute EventHandler onnavigate;
+  attribute EventHandler onnavigatesuccess;
+  attribute EventHandler onnavigateerror;
+};
+</xmp>
+
+The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
+
+<table>
+  <thead>
+    <th>[=Event handler=]
+    <th>[=Event handler event type=]
+  <tbody>
+    <tr>
+      <td><dfn attribute for="AppHistory">onnavigate</dfn>
+      <td><dfn event for="AppHistory">navigate</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistory">onnavigatesuccess</dfn>
+      <td><dfn event for="AppHistory">navigatesuccess</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistory">onnavigateerror</dfn>
+      <td><dfn event for="AppHistory">navigateerror</dfn>
+</table>
+
+<h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
+
+<xmp class="idl">
+[Exposed=Window]
+interface AppHistoryNavigateEvent : Event {
+  constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
+
+  readonly attribute boolean canRespond;
+  readonly attribute boolean userInitiated;
+  readonly attribute boolean hashChange;
+//  readonly attribute AppHistoryEntry destination;
+  readonly attribute AbortSignal signal;
+  readonly attribute FormData? formData;
+  readonly attribute any info;
+
+  undefined respondWith(Promise<undefined> newNavigationAction);
+};
+
+dictionary AppHistoryNavigateEventInit : EventInit {
+  boolean canRespond = false;
+  boolean userInitiated = false;
+  boolean hashChange = false;
+//  required AppHistoryEntry destination;
+  required AbortSignal signal;
+  FormData? formData = null;
+  any info = null;
+};
+</xmp>
+
+<dl class="domintro non-normative">
+  <dt><code>event . {{AppHistoryNavigateEvent/canRespond}}</code>
+  <dd>
+    <p>True if {{AppHistoryNavigateEvent/respondWith()}} can be called to convert this navigation into a single-page navigation; false otherwise.
+
+    <p>Generally speaking, this will be true whenever the destination URL is [=rewritable=] relative to the page's current URL, except for cross-document back/forward navigations, where it will always be false.
+  </dd>
+
+  <dt><code>event . {{AppHistoryNavigateEvent/userInitiated}}</code>
+  <dd>
+    <p>True if this navigation was due to a user clicking on an <{a}> element, submitting a <{form}> element, or using the browser UI to navigate; false otherwise.
+  </dd>
+
+  <dt><code>event . {{AppHistoryNavigateEvent/hashChange}}</code>
+  <dd>
+    <p>True if this navigation is a <a spec="HTML" lt="navigate to a fragment">fragment navigation</a>; false otherwise.
+  </dd>
+
+  <dt><code>event . {{AppHistoryNavigateEvent/signal}}</code>
+  <dd>
+    <p>An {{AbortSignal}} which will become aborted if the navigation gets canceled, e.g. by the user pressing their browser's "Stop" button, or another higher-priority navigation interrupting this one.
+
+    <p>The expected pattern is for developers to pass this along to any async operations, such as {{WindowOrWorkerGlobalScope/fetch()}}, which they perform as part of handling this navigation.
+  </dd>
+
+  <dt><code>event . {{AppHistoryNavigateEvent/formData}}</code>
+  <dd>
+    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation was a <a spec="HTML" lt="submit">form submission</a>; null otherwise.
+  </dd>
+
+  <dt><code>event . {{AppHistoryNavigateEvent/info}}</code>
+  <dd>
+    <p>An arbitrary JavaScript value passed via other app history APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-app history API.
+  </dd>
+
+  <dt><code>event . {{AppHistoryNavigateEvent/respondWith()|respondWith}}( |newNavigationAction| )</code>
+  <dd>
+    <p>Synchronously converts this navigation into a same-document navigation to the destination URL.
+
+    <p>The given |newNavigationAction| promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events as appropriate, which other parts of the web application can respond to.
+
+    <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{AppHistoryNavigateEvent/canRespond}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
+  </dd>
+</dl>
+
+The <dfn attribute for="AppHistoryNavigateEvent">canRespond</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn>, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
+
+An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNavigateEvent">destination URL</dfn>, an associated boolean <dfn for="AppHistoryNavigateEvent">is push</dfn>, an associated [=serialized state=]-or-null <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, and an optional string-or-null <dfn for="AppHistoryNavigateEvent">classic history API title</dfn>. All of these are set when the event is [=fire a navigate event|fired=].
+
+<div algorithm>
+  The <dfn method for="AppHistoryNavigateEvent">respondWith(|newNavigationAction|)</dfn> method steps are:
+
+  1. If [=this=]'s {{Event/isTrusted}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
+  1. If [=this=]'s {{AppHistoryNavigateEvent/canRespond}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
+  1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=Event/canceled flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. Set [=this=]'s [=Event/canceled flag=].
+  1. Run the <a spec="HTML">URL and history update steps</a> given [=this=]'s [=relevant global object=]'s [=associated document=] and [=this=]'s [=AppHistoryNavigateEvent/destination URL=], with <i>[=URL and history update steps/serializedData=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API serialized data=], <i>[=URL and history update steps/title=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API title=], and <i>[=URL and history update steps/isPush=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/is push=].
+  1. Let |appHistory| be [=this=]'s [=relevant global object=]'s [=Window/app history=].
+  1. [=promise/React=] to |newNavigationAction| with the following fulfillment steps:
+      1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
+    and the following rejection steps given reason |rejectionReason|:
+      1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+</div>
+
+<hr>
+
+<div algorithm>
+  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, a boolean |isPush|, a boolean |isCrossDocument|, a boolean |isBackForward|, a boolean |isBrowserUI|, a boolean |isUserInitiated|, a boolean |isFragmentNavigation|, an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] |formDataEntryList|, an optional [=serialized state=]-or-null |classicHistoryAPISerializedData| (default null), and an optional string-or-null |classicHistoryAPITitle| (default null):
+
+  1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in the [=relevant Realm=] of |appHistory|.
+  1. Set |event|'s [=AppHistoryNavigateEvent/destination URL=] to |destinationURL|.
+  1. Set |event|'s [=AppHistoryNavigateEvent/is push=] to |isPush|.
+  1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
+  1. Set |event|'s [=AppHistoryNavigateEvent/classic history API title=] to |classicHistoryAPITitle|.
+  1. Initialize |event|'s {{Event/type}} to {{AppHistory/navigate}}.
+  1. Initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to |isUserInitiated|.
+  1. Initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to |isFragmentNavigation|.
+  1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in the [=relevant Realm=] of |appHistory|.
+  1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |navigateInfo|.
+  1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
+  1. If |destinationURL| is [=rewritable=] relative to |currentURL|, and either |isCrossDocument| is false or |isBackForward| is false, then initialize |event|'s {{AppHistoryNavigateEvent/canRespond}} to true. Otherwise, initialize it to false.
+  1. If either |isBrowserUI| is false or |isBackForward| is false, then initialize |event|'s {{Event/cancelable}} to true.
+  1. If |formDataEntryList| is given, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in the [=relevant Realm=] of |appHistory|, associated to |formDataEntryList|. Otherwise, initialize it to null.
+  1. Return the result of [=dispatching=] |event| at |appHistory|.
+</div>
+
+TODO should canRespond become false after calling respondWith? Should it incorporate the other error conditions?
+
+<!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
+A [=URL=] is <dfn>rewritable</dfn> relative to another [=URL=] if they differ in only the [=url/path=], [=url/query=], or [=url/fragment=] components.
+
+<div class="example" id="example-rewritable-url">
+  `https://example.com/foo?bar#baz` is rewritable relative to `https://example.com/qux`.
+
+  However, the concept is not the same as the two URLs' [=url/origins=] being [=same origin|the same=]: `https://user:password@example.com/qux` is not rewritable relative to `https://example.com/qux`.
+
+  Similarly, `about:blank` or `blob:` URLs are not rewritable relative to `https:` URLs, despite there being cases where a `https`:-[=Document/URL=] {{Document}} is [=same origin=] with an `about:blank` or `blob:`-derived {{Document}}.
+</div>
+
+<h2 id="navigate-patches">Patches to fire the {{AppHistory/navigate}} event</h2>
+
+The following section details monkeypatches to [[!HTML]] that cause the {{AppHistory/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation.
+
+TODO!
