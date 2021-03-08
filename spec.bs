@@ -270,7 +270,7 @@ A [=URL=] is <dfn>rewritable</dfn> relative to another [=URL=] if they differ in
 
 <h2 id="navigate-patches">Patches to fire the {{AppHistory/navigate}} event</h2>
 
-The following section details monkeypatches to [[!HTML]] that cause the {{AppHistory/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation. The first couple of sections detail slight tweaks to existing algorithms to pass through useful information. Then, [[#navigate-algorithm-patches]] contains the actual firing of the event.
+The following section details monkeypatches to [[!HTML]] that cause the {{AppHistory/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, [[#navigate-algorithm-patches]] contains the actual firing of the event.
 
 <h3 id="form-patches">Form submission patches</h3>
 
@@ -292,9 +292,9 @@ To properly thread the form entry list from its creation through to {{AppHistory
   Modify the <a spec="HTML">submit as entity body</a> algorithm to pass <var ignore>entry list</var> along to <a spec="HTML">plan to navigate</a> as a second argument.
 </div>
 
-<h3 id="user-initiated-patches">User-initiated patches</h3>
+<h3 id="user-initiated-patches">Browser UI/user-initiated patches</h3>
 
-To more rigorously specify when a navigation is user-initiated, both for the purposes of the {{AppHistoryNavigateEvent}}'s {{AppHistoryNavigateEvent/userInitiated}} property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:
+To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <{a}>, <{area}>, and <{form}> elements, both for the purposes of the {{AppHistoryNavigateEvent}}'s {{AppHistoryNavigateEvent/userInitiated}} property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:
 
 Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>fromBrowserUI</var></dfn> (default false). Then, update the paragraph talking about user-initiated navigation as follows:
 
@@ -302,15 +302,39 @@ Modify the <a spec="HTML">traverse the history by a delta</a> argument to take a
   When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with a delta equivalent to the action specified by the user<del> and</del><ins>,</ins> the browsing context being operated on<ins>, and <i>[=traverse the history by a delta/fromBrowserUI=]</i> set to true</ins>.
 </blockquote>
 
-Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argument <dfn for="navigate"><var ignore>fromBrowserUI</var></dfn> (default false). Then, update the paragraph talking about user-initiated navigation as follows:
+Modify the <a spec="HTML">navigate</a> algorithm to take two optional named arguments <dfn for="navigate"><var ignore>fromBrowserUI</var></dfn> (default false) and <dfn for="navigate"><var ignore>isUserInitiated</var></dfn> (default false). Then, update the paragraph talking about browser-UI initiated navigation as follows:
 
 <blockquote>
-  A user agent may provide various ways for the user to explicitly cause a browsing context to navigate, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/fromBrowserUI=]</i> argument to true.
+  A user agent may provide various ways for the user to explicitly cause a browsing context to <a spec="HTML">navigate</a>, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/fromBrowserUI=]</i> and <i>[=navigate/isUserInitiated=]</i> arguments to true.</ins>
 </blockquote>
 
-<p class="note">This partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Dest</code></a>\` spec at the same time.</p>
+<p class="note">The <i>[=navigate/fromBrowserUI=]</i> argument partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Dest</code></a>\` spec at the same time.</p>
 
-Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take a new <var ignore>fromBrowserUI</var> argument as its last argument. Then, update the call to it from <a spec="HTML">navigate</a> to pass along its own <var ignore>fromBrowserUI</var> value.
+Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take new <var ignore>fromBrowserUI</var> and <var ignore>isUserInitiated</var> arguments as its last arguments. Then, update the call to it from <a spec="HTML">navigate</a> to pass along its own <var ignore>fromBrowserUI</var> and <var ignore>isUserInitiated</var> values.
+
+Modify the <a spec="HTML">follows a hyperlink</a> algorithm to take optional named arguments <dfn for="follows a hyperlink"><var ignore>isUserInitiated</var></dfn> (default false) and <dfn for="follows a hyperlink"><var ignore>fromBrowserUI</var></dfn> (default false). Then in the final step, pass these along as the value of the <i>[=navigate/isUserInitiated=]</i> and <i>[=navigate/fromBrowserUI=]</i> arguments to the <a spec="HTML">navigate</a> call.
+
+<div algorithm="area activation behavior">
+  Modify the [=EventTarget/activation behavior=] of <{area}> elements by introducing the |event| argument and replacing the <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> step with the following:
+
+  1. Otherwise:
+    1. Let |isUserInitiated| be true if |event|'s {{Event/isTrusted}} attribute is initialized to true; otherwise, false.
+    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by |element| with <i>[=follows a hyperlink/isUserInitiated=]</i> set to |isUserInitiated|.
+</div>
+
+<div algorithm="area activation behavior">
+  Modify the [=EventTarget/activation behavior=] of <{a}> elements by replacing its <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> step with the following:
+
+  1. Otherwise:
+    1. Let |isUserInitiated| be true if |event|'s {{Event/isTrusted}} attribute is initialized to true; otherwise, false.
+    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by |element| with <i>[=follows a hyperlink/isUserInitiated=]</i> set to |isUserInitiated|.
+</div>
+
+Expand the section on "<a href="https://html.spec.whatwg.org/multipage/semantics.html#providing-users-with-a-means-to-follow-hyperlinks-created-using-the-link-element">Providing users with a means to follow hyperlinks created using the `link` element</a>" by adding the following sentence:
+
+<blockquote><ins>Such invocations of <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> algorithm must set the <i>[=navigate/fromBrowserUI=]</i> argument to true.</ins></blockquote>
+
+TODO form submission user-initiated.
 
 <h3 id="navigate-algorithm-patches">Navigation algorithm updates</h3>
 
@@ -329,7 +353,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
   1. Let |appHistory| be the <a spec="HTML">current entry</a>'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, false.
-  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/isUserInitiated=]</i> set to ???TODO, and <i>[=fire a navigate event/isFragmentNavigation=]</i> set to true.
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/isUserInitiated=]</i> set to <var ignore>isUserInitiated</var>, and <i>[=fire a navigate event/isFragmentNavigation=]</i> set to true.
   1. If |continue| is false, return.
 </div>
 
@@ -339,7 +363,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   1. If <var ignore>historyHandling</var> is not "<a for="history handling behavior">`entry update`</a>", and <var ignore>fromBrowserUI</var> is false, then:
     1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
     1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a for="history handling behavior">`default`</a>"; otherwise, false.
-    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isUserInitiated=]</i> set to ???TODO, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, and <i>[=fire a navigate event/formDataEntryList=]</i> set to <var ignore>entryList</var>.
+    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isUserInitiated=]</i> set to <var ignore>isUserInitiated</var>, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, and <i>[=fire a navigate event/formDataEntryList=]</i> set to <var ignore>entryList</var>.
     1. If |continue| is false, return.
 
     <p class="note">[=User agent=]-specific mechanisms that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm, which does not have this condition.
