@@ -150,7 +150,7 @@ interface AppHistoryNavigateEvent : Event {
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
 //  readonly attribute AppHistoryEntry destination;
-  readonly attribute AbortSignal signal;
+//  readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
   readonly attribute any info;
 
@@ -162,7 +162,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean userInitiated = false;
   boolean hashChange = false;
 //  required AppHistoryEntry destination;
-  required AbortSignal signal;
+//  required AbortSignal signal;
   FormData? formData = null;
   any info = null;
 };
@@ -186,12 +186,14 @@ dictionary AppHistoryNavigateEventInit : EventInit {
     <p>True if this navigation is a <a spec="HTML" lt="navigate to a fragment">fragment navigation</a>; false otherwise.
   </dd>
 
+<!--
   <dt><code>event . {{AppHistoryNavigateEvent/signal}}</code>
   <dd>
     <p>An {{AbortSignal}} which will become aborted if the navigation gets canceled, e.g. by the user pressing their browser's "Stop" button, or another higher-priority navigation interrupting this one.
 
     <p>The expected pattern is for developers to pass this along to any async operations, such as {{WindowOrWorkerGlobalScope/fetch()}}, which they perform as part of handling this navigation.
   </dd>
+-->
 
   <dt><code>event . {{AppHistoryNavigateEvent/formData}}</code>
   <dd>
@@ -213,7 +215,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   </dd>
 </dl>
 
-The <dfn attribute for="AppHistoryNavigateEvent">canRespond</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn>, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
+The <dfn attribute for="AppHistoryNavigateEvent">canRespond</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn><!--, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>-->, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
 An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNavigateEvent">destination URL</dfn>, an associated boolean <dfn for="AppHistoryNavigateEvent">is push</dfn>, an associated [=serialized state=]-or-null <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, and an optional string-or-null <dfn for="AppHistoryNavigateEvent">classic history API title</dfn>. All of these are set when the event is [=fire a navigate event|fired=].
 
@@ -245,7 +247,7 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API title=] to |classicHistoryAPITitle|.
   1. Initialize |event|'s {{Event/type}} to {{AppHistory/navigate}}.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to |isFragmentNavigation|.
-  1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in the [=relevant Realm=] of |appHistory|.
+<!--  1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in the [=relevant Realm=] of |appHistory|.-->
   1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |navigateInfo|.
   1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
   1. If |destinationURL| is [=rewritable=] relative to |currentURL|, and either |isCrossDocument| is false or |isHistoryTraversal| is false, then initialize |event|'s {{AppHistoryNavigateEvent/canRespond}} to true. Otherwise, initialize it to false.
@@ -371,17 +373,21 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 <div algorithm="navigate" id="navigate-modifications">
   Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]. Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced a |entryList| argument.
 
-  1. If <var ignore>historyHandling</var> is not "<a for="history handling behavior">`entry update`</a>", and <var ignore>userInvolvement</var> is not "<code>[=user navigation involvement/browser UI=]</code>", then:
-    1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
-    1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a for="history handling behavior">`default`</a>"; otherwise, false.
-    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/formDataEntryList=]</i> set to |entryList|.
-    1. If |continue| is false, return.
+  1. If none of the following are true:
+    * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
+    * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
+    * <var ignore>browsingContext</var>'s only entry in its <a spec="HTML">session history</a> is the `about:blank` {{Document}} that was added when <var ignore>browsingContext</var> was <a spec="HTML" lt="create a new browsing context">created</a>
+
+    then:
+
+      1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
+      1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a for="history handling behavior">`default`</a>"; otherwise, false.
+      1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/formDataEntryList=]</i> set to |entryList|.
+      1. If |continue| is false, return.
 
     <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
 
     <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{AppHistory/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
-
-  TODO: exclude `about:blank` initial navigation cases.
 </div>
 
 <div algorithm="traverse the history by a delta">
