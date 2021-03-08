@@ -236,7 +236,7 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
 <hr>
 
 <div algorithm="fire a navigate event">
-  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, a boolean <dfn for="fire a navigate event">|isPush|</dfn>, a boolean <dfn for="fire a navigate event">|isCrossDocument|</dfn>, a boolean <dfn for="fire a navigate event">|isBackForward|</dfn> (default false), a boolean <dfn for="fire a navigate event">|isBrowserUI|</dfn> (default false), a boolean <dfn for="fire a navigate event">|isUserInitiated|</dfn> (default false), a boolean <dfn for="fire a navigate event">|isFragmentNavigation|</dfn> (default false), an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] or null <dfn for="fire a navigate event">|formDataEntryList|</dfn> (default null), an optional [=serialized state=]-or-null <dfn for="fire a navigate event">|classicHistoryAPISerializedData|</dfn> (default null), and an optional string-or-null <dfn for="fire a navigate event">|classicHistoryAPITitle|</dfn> (default null):
+  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, an optional boolean <dfn for="fire a navigate event">|isPush|</dfn>, an optional boolean <dfn for="fire a navigate event">|isCrossDocument|</dfn>, an optional boolean <dfn for="fire a navigate event">|isBackForward|</dfn> (default false), an optional [=user navigation involvement=] <dfn for="fire a navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional boolean <dfn for="fire a navigate event">|isFragmentNavigation|</dfn> (default false), an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] or null <dfn for="fire a navigate event">|formDataEntryList|</dfn> (default null), an optional [=serialized state=]-or-null <dfn for="fire a navigate event">|classicHistoryAPISerializedData|</dfn> (default null), and an optional string-or-null <dfn for="fire a navigate event">|classicHistoryAPITitle|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in the [=relevant Realm=] of |appHistory|.
   1. Set |event|'s [=AppHistoryNavigateEvent/destination URL=] to |destinationURL|.
@@ -244,13 +244,13 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API title=] to |classicHistoryAPITitle|.
   1. Initialize |event|'s {{Event/type}} to {{AppHistory/navigate}}.
-  1. Initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to |isUserInitiated|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to |isFragmentNavigation|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in the [=relevant Realm=] of |appHistory|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |navigateInfo|.
   1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
   1. If |destinationURL| is [=rewritable=] relative to |currentURL|, and either |isCrossDocument| is false or |isBackForward| is false, then initialize |event|'s {{AppHistoryNavigateEvent/canRespond}} to true. Otherwise, initialize it to false.
-  1. If either |isBrowserUI| is false or |isBackForward| is false, then initialize |event|'s {{Event/cancelable}} to true.
+  1. If either |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or |isBackForward| is false, then initialize |event|'s {{Event/cancelable}} to true.
+  1. If |userInvolvement| is "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to false. Otherwise, initialize it to true.
   1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in the [=relevant Realm=] of |appHistory|, associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. Return the result of [=dispatching=] |event| at |appHistory|.
 </div>
@@ -296,43 +296,52 @@ To properly thread the form entry list from its creation through to {{AppHistory
 
 To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <{a}>, <{area}>, and <{form}> elements, both for the purposes of the {{AppHistoryNavigateEvent}}'s {{AppHistoryNavigateEvent/userInitiated}} property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:
 
-Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>fromBrowserUI</var></dfn> (default false). Then, update the paragraph talking about user-initiated navigation as follows:
+Introduce (right before the definition of the <a spec="HTML">navigate</a> algorithm) the concept of a <dfn>user navigation involvement</dfn>, which is one of the following:
+
+: "<dfn for="user navigation involvement"><code>browser UI</code></dfn>"
+:: The navigation was initiated by the user via browser UI mechanisms
+: "<dfn for="user navigation involvement"><code>activation</code></dfn>"
+:: The navigation was initiated by the user via the [=EventTarget/activation behavior=] of an element
+: "<dfn for="user navigation involvement"><code>none</code></dfn>"
+:: The navigation was not initiated by the user
+
+Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about user-initiated navigation as follows:
 
 <blockquote>
-  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with a delta equivalent to the action specified by the user<del> and</del><ins>,</ins> the browsing context being operated on<ins>, and <i>[=traverse the history by a delta/fromBrowserUI=]</i> set to true</ins>.
+  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with a delta equivalent to the action specified by the user<del> and</del><ins>,</ins> the browsing context being operated on<ins>, and <i>[=traverse the history by a delta/userInvolvement=]</i> set to "<code>[=user navigation involvement/browser UI=]</code>"</ins>.
 </blockquote>
 
-Modify the <a spec="HTML">navigate</a> algorithm to take two optional named arguments <dfn for="navigate"><var ignore>fromBrowserUI</var></dfn> (default false) and <dfn for="navigate"><var ignore>isUserInitiated</var></dfn> (default false). Then, update the paragraph talking about browser-UI initiated navigation as follows:
+Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argument <dfn for="navigate"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about browser-UI initiated navigation as follows:
 
 <blockquote>
-  A user agent may provide various ways for the user to explicitly cause a browsing context to <a spec="HTML">navigate</a>, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/fromBrowserUI=]</i> and <i>[=navigate/isUserInitiated=]</i> arguments to true.</ins>
+  A user agent may provide various ways for the user to explicitly cause a browsing context to <a spec="HTML">navigate</a>, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins>
 </blockquote>
 
-<p class="note">The <i>[=navigate/fromBrowserUI=]</i> argument partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Dest</code></a>\` spec at the same time.</p>
+<p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Dest</code></a>\` spec at the same time.</p>
 
-Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take new <var ignore>fromBrowserUI</var> and <var ignore>isUserInitiated</var> arguments as its last arguments. Then, update the call to it from <a spec="HTML">navigate</a> to pass along its own <var ignore>fromBrowserUI</var> and <var ignore>isUserInitiated</var> values.
+Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
-Modify the <a spec="HTML">follows a hyperlink</a> algorithm to take optional named arguments <dfn for="follows a hyperlink"><var ignore>isUserInitiated</var></dfn> (default false) and <dfn for="follows a hyperlink"><var ignore>fromBrowserUI</var></dfn> (default false). Then in the final step, pass these along as the value of the <i>[=navigate/isUserInitiated=]</i> and <i>[=navigate/fromBrowserUI=]</i> arguments to the <a spec="HTML">navigate</a> call.
+Modify the <a spec="HTML">follows a hyperlink</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
 <div algorithm="area activation behavior">
   Modify the [=EventTarget/activation behavior=] of <{area}> elements by introducing the |event| argument and replacing the <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> step with the following:
 
   1. Otherwise:
-    1. Let |isUserInitiated| be true if |event|'s {{Event/isTrusted}} attribute is initialized to true; otherwise, false.
-    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by |element| with <i>[=follows a hyperlink/isUserInitiated=]</i> set to |isUserInitiated|.
+    1. Let |userInvolvement| be "<code>[=user navigation involvement/activation=]</code>" if |event|'s {{Event/isTrusted}} attribute is initialized to true; otherwise, "<code>[=user navigation involvement/none=]</code>".
+    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by <var ignore>element</var> with |userInvolvement|.
 </div>
 
-<div algorithm="area activation behavior">
+<div algorithm="a activation behavior">
   Modify the [=EventTarget/activation behavior=] of <{a}> elements by replacing its <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> step with the following:
 
   1. Otherwise:
-    1. Let |isUserInitiated| be true if |event|'s {{Event/isTrusted}} attribute is initialized to true; otherwise, false.
-    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by |element| with <i>[=follows a hyperlink/isUserInitiated=]</i> set to |isUserInitiated|.
+    1. Let |userInvolvement| be "<code>[=user navigation involvement/activation=]</code>" if <var ignore>event</var>'s {{Event/isTrusted}} attribute is initialized to true; otherwise, "<code>[=user navigation involvement/none=]</code>".
+    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by <var ignore>element</var> with |userInvolvement|.
 </div>
 
 Expand the section on "<a href="https://html.spec.whatwg.org/multipage/semantics.html#providing-users-with-a-means-to-follow-hyperlinks-created-using-the-link-element">Providing users with a means to follow hyperlinks created using the `link` element</a>" by adding the following sentence:
 
-<blockquote><ins>Such invocations of <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> algorithm must set the <i>[=navigate/fromBrowserUI=]</i> argument to true.</ins></blockquote>
+<blockquote><ins>Such invocations of <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> algorithm must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins></blockquote>
 
 TODO form submission user-initiated.
 
@@ -341,7 +350,7 @@ TODO form submission user-initiated.
 With the above infrastructure in place, we can actually fire and handle the {{AppHistory/navigate}} event in the following locations:
 
 <div algorithm="shared history push/replace steps">
-  Modify the <a spec="HTML">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a spec="HTML">URL and history update steps</a>:
+  Modify the <a spec="HTML">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a spec="HTML">URL and history update steps</a>.
 
   1. Let |appHistory| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>newURL</var>, with <i>[=fire a navigate event/isPush=]</i> set to <var ignore>isPush</var>, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>, and <i>[=fire a navigate event/classicHistoryAPITitle=]</i> set to <var ignore>title</var>.
@@ -349,24 +358,24 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 </div>
 
 <div algorithm="navigate to a fragment">
-  Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps:
+  Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
 
   1. Let |appHistory| be the <a spec="HTML">current entry</a>'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, false.
-  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/isUserInitiated=]</i> set to <var ignore>isUserInitiated</var>, and <i>[=fire a navigate event/isFragmentNavigation=]</i> set to true.
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isCrossDocument=]</i> set to false, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/isFragmentNavigation=]</i> set to true.
   1. If |continue| is false, return.
 </div>
 
 <div algorithm="navigate" id="navigate-modifications">
-  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]:
+  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]. Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced a |entryList| argument.
 
-  1. If <var ignore>historyHandling</var> is not "<a for="history handling behavior">`entry update`</a>", and <var ignore>fromBrowserUI</var> is false, then:
+  1. If <var ignore>historyHandling</var> is not "<a for="history handling behavior">`entry update`</a>", and <var ignore>userInvolvement</var> is not "<code>[=user navigation involvement/browser UI=]</code>", then:
     1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
     1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a for="history handling behavior">`default`</a>"; otherwise, false.
-    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isUserInitiated=]</i> set to <var ignore>isUserInitiated</var>, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, and <i>[=fire a navigate event/formDataEntryList=]</i> set to <var ignore>entryList</var>.
+    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a navigate event/isCrossDocument=]</i> set to true, and <i>[=fire a navigate event/formDataEntryList=]</i> set to |entryList|.
     1. If |continue| is false, return.
 
-    <p class="note">[=User agent=]-specific mechanisms that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm, which does not have this condition.
+    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
 
     <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{AppHistory/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
 
@@ -374,10 +383,10 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 </div>
 
 <div algorithm="traverse the history by a delta">
-  Modify the <a spec="HTML">traverse the history by a delta</a> algorithm by inserting the following steps inside the queued task, before the call to <a spec="HTML">traverse the history</a>:
+  Modify the <a spec="HTML">traverse the history by a delta</a> algorithm by inserting the following steps inside the queued task, before the call to <a spec="HTML">traverse the history</a>. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
 
   1. Let |appHistory| be <var ignore>specified browsing context</var>'s [=browsing context/active window=]'s [=Window/app history=].
   1. Let |isCrossDocument| be true if <var ignore>specified browsing context</var>'s [=active document=] is different from <var ignore>specified entry</var>'s [=session history entry/document=]; otherwise, false.
-  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isBackForward=]</i> set to true, <i>[=fire a navigate event/isCrossDocument=]</i> set to |isCrossDocument|, and <i>[=fire a navigate event/isBrowserUI=]</i> and <i>[=fire a navigate event/isUserInitiated=]</i> both set to <var ignore>fromBrowserUI</var>.
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isBackForward=]</i> set to true, <i>[=fire a navigate event/isCrossDocument=]</i> set to |isCrossDocument|, and <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|.
   1. If |continue| is false, abort these steps.
 </div>
