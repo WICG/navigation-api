@@ -303,12 +303,6 @@ Introduce (right before the definition of the <a spec="HTML">navigate</a> algori
 : "<dfn for="user navigation involvement"><code>none</code></dfn>"
 :: The navigation was not initiated by the user
 
-Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about user-initiated navigation as follows:
-
-<blockquote>
-  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with a delta equivalent to the action specified by the user<del> and</del><ins>,</ins> the browsing context being operated on<ins>, and <i>[=traverse the history by a delta/userInvolvement=]</i> set to "<code>[=user navigation involvement/browser UI=]</code>"</ins>.
-</blockquote>
-
 Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argument <dfn for="navigate"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about browser-UI initiated navigation as follows:
 
 <blockquote>
@@ -318,6 +312,14 @@ Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argum
 <p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Dest</code></a>\` spec at the same time.</p>
 
 Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
+
+Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about user-initiated navigation as follows:
+
+<blockquote>
+  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with a delta equivalent to the action specified by the user<del> and</del><ins>,</ins> the browsing context being operated on<ins>, and <i>[=traverse the history by a delta/userInvolvement=]</i> set to "<code>[=user navigation involvement/browser UI=]</code>"</ins>.
+</blockquote>
+
+<hr>
 
 Modify the <a spec="HTML">follows a hyperlink</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
@@ -340,6 +342,8 @@ Modify the <a spec="HTML">follows a hyperlink</a> algorithm to take a new <var i
 Expand the section on "<a href="https://html.spec.whatwg.org/multipage/semantics.html#providing-users-with-a-means-to-follow-hyperlinks-created-using-the-link-element">Providing users with a means to follow hyperlinks created using the `link` element</a>" by adding the following sentence:
 
 <blockquote><ins>Such invocations of <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> algorithm must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins></blockquote>
+
+<hr>
 
 TODO form submission user-initiated.
 
