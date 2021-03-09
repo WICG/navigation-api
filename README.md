@@ -381,7 +381,7 @@ We're discussing this restriction in [#32](https://github.com/WICG/app-history/i
 Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.respondWith()`, and as such will have `event.canRespond` equal to false:
 
 - Any navigation to a URL which differs in scheme, username, password, host, or port. (I.e., you can only intercept URLs which differ in path, query, or fragment.)
-- Any [cross-document](#appendix-types-of-navigations) back/forward navigations. Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
+- Any programmatically-initiated [cross-document](#appendix-types-of-navigations) back/forward navigations. (Recall that _user_-initiated cross-document navigations will not fire the `navigate` event at all.) Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
 
 We'll note that these restrictions still allow canceling cross-origin non-back/forward navigations. Although this might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
 
@@ -1097,9 +1097,10 @@ Here's a summary table:
 
 |Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canRespond`|
 |-------|------------------------|-----------------|-----------------|--------------|--------------|
-|Browser UI (back/forward)|Either|Yes|Yes|No|Yes †*|
-|Browser UI (non-back/forward fragment change only)|Always same|Yes|Yes|Yes|Yes *|
-|Browser UI (non-back/forward other)|Always cross|No|—|—|—|
+|Browser UI (back/forward,<br>same-document)|Same|Yes|Yes|No|Yes|
+|Browser UI (back/forward,<br>cross-document)|Cross|No|—|—|—|
+|Browser UI (non-back/forward<br>fragment change only)|Same|Yes|Yes|Yes|Yes|
+|Browser UI (non-back/forward<br>other)|Cross|No|—|—|—|
 |`<a>`/`<area>`|Either|Yes|Yes ‡|Yes|Yes *|
 |`<form>`|Either|Yes|Yes ‡|Yes|Yes *|
 |`<meta http-equiv="refresh">`|Either ◊|Yes|No|Yes|Yes *|
@@ -1107,10 +1108,10 @@ Here's a summary table:
 |`window.location`|Either|Yes|No|Yes|Yes *|
 |`window.open(url, name)`|Either|Yes|No|Yes|Yes *|
 |`history.{back,forward,go}()`|Either|Yes|No|Yes|Yes †*|
-|`history.{pushState,replaceState}()`|Always same|Yes|No|Yes|Yes *|
+|`history.{pushState,replaceState}()`|Same|Yes|No|Yes|Yes|
 |`appHistory.{back,forward,navigateTo}()`|Either|Yes|No|Yes|Yes †*|
 |`appHistory.{push,update}()`|Either|Yes|No|Yes|Yes *|
-|`document.open()`|Always same|No|—|—|—|
+|`document.open()`|Same|No|—|—|—|
 
 - † = No if cross-document
 - ‡ = No if triggered via, e.g., `element.click()`
