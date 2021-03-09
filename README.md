@@ -1029,7 +1029,7 @@ One particular point of interest is the user-agent generated `appHistoryEntry.ke
 
 Security-wise, this feature has been carefully designed to give no new abilities that might be disruptive to the user or to delicate parts of browser code. See, for example, the restrictions on [navigation monitoring and interception](#navigation-monitoring-and-interception) to ensure that it does not allow trapping the user, or the discussion of how this proposal [does not impact how browser UI presents session history](#impact-on-back-button-and-user-agent-ui).
 
-See also the [W3C TAG security and privacy questionnaire answers](./security-and-privacy-questionnaire.md).
+See also the [W3C TAG security and privacy questionnaire answers](./security-privacy-questionnaire.md).
 
 ## Stakeholder feedback
 
