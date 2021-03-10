@@ -305,13 +305,15 @@ Introduce (right before the definition of the <a spec="HTML">navigate</a> algori
 : "<dfn for="user navigation involvement"><code>none</code></dfn>"
 :: The navigation was not initiated by the user
 
+Define the <dfn for="Event">user navigation involvement</dfn> for an {{Event}} |event| as "<code>[=user navigation involvement/activation=]</code>" if |event|'s {{Event/isTrusted}} attribute is initialized to true, and "<code>[=user navigation involvement/none=]</code>" otherwise.
+
 Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argument <dfn for="navigate"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about browser-UI initiated navigation as follows:
 
 <blockquote>
   A user agent may provide various ways for the user to explicitly cause a browsing context to <a spec="HTML">navigate</a>, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins>
 </blockquote>
 
-<p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Dest</code></a>\` spec at the same time.</p>
+<p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Site</code></a>\` spec at the same time.</p>
 
 Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
@@ -323,31 +325,41 @@ Modify the <a spec="HTML">traverse the history by a delta</a> argument to take a
 
 <hr>
 
-Modify the <a spec="HTML">follows a hyperlink</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
+Modify the <a spec="HTML">follow the hyperlink</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
 <div algorithm="area activation behavior">
-  Modify the [=EventTarget/activation behavior=] of <{area}> elements by introducing the |event| argument and replacing the <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> step with the following:
+  Modify the [=EventTarget/activation behavior=] of <{area}> elements by introducing the |event| argument and replacing the <a spec="HTML">follow the hyperlink</a> step with the following:
 
-  1. Otherwise:
-    1. Let |userInvolvement| be "<code>[=user navigation involvement/activation=]</code>" if |event|'s {{Event/isTrusted}} attribute is initialized to true; otherwise, "<code>[=user navigation involvement/none=]</code>".
-    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by <var ignore>element</var> with |userInvolvement|.
+  1. Otherwise, <a spec="HTML">follow the hyperlink</a> created by <var ignore>element</var> with the [=Event/user navigation involvement=] for |event|.
 </div>
 
 <div algorithm="a activation behavior">
-  Modify the [=EventTarget/activation behavior=] of <{a}> elements by replacing its <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> step with the following:
+  Modify the [=EventTarget/activation behavior=] of <{a}> elements by replacing its <a spec="HTML">follow the hyperlink</a> step with the following:
 
-  1. Otherwise:
-    1. Let |userInvolvement| be "<code>[=user navigation involvement/activation=]</code>" if <var ignore>event</var>'s {{Event/isTrusted}} attribute is initialized to true; otherwise, "<code>[=user navigation involvement/none=]</code>".
-    1. <a spec="HTML" lt="follows a hyperlink">Follow the hyperlink</a> created by <var ignore>element</var> with |userInvolvement|.
+  1. Otherwise, <a spec="HTML">follow the hyperlink</a> created by <var ignore>element</var> with the [=Event/user navigation involvement=] for <var ignore>event</var>.
 </div>
 
 Expand the section on "<a href="https://html.spec.whatwg.org/multipage/semantics.html#providing-users-with-a-means-to-follow-hyperlinks-created-using-the-link-element">Providing users with a means to follow hyperlinks created using the `link` element</a>" by adding the following sentence:
 
-<blockquote><ins>Such invocations of <a spec="HTML" lt="follows a hyperlink">follow the hyperlink</a> algorithm must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins></blockquote>
+<blockquote><ins>Such invocations of <a spec="HTML">follow the hyperlink</a> algorithm must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins></blockquote>
 
 <hr>
 
-TODO form submission user-initiated.
+Modify the <a spec="HTML">plan to navigate</a> algorithm to take a <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
+
+Modify the <a spec="HTML" lt="submitted">submit</a> algorithm to take an optional <var ignore>userInvolvement</var> argument (default "<code>[=user navigation involvement/none=]</code>").  Have the <a spec="HTML" lt="submitted">submit</a> algorithm pass along its value to all invocations of <a spec="HTML">plan to navigate</a>.
+
+Modify the definition of the [=EventTarget/activation behavior=] for <{input}> elements to take an <var ignore>event</var> argument. Then, pass along this argument to the invocation of the <a spec="HTML">input activation behavior</a>.
+
+Modify the Submit Button state's <a spec="HTML">input activation behavior</a> by having it take an <var ignore>event<var> argument and pass along the [=Event/user navigation involvement=] for <var ignore>event</var> as the final argument when it calls <a spec="HTML" lt="submitted">submit</a>.
+
+Modify the Image Button state's <a spec="HTML">input activation behavior</a> by having it take an <var ignore>event<var> argument and pass along the [=Event/user navigation involvement=] for <var ignore>event</var> as the final argument when it calls <a spec="HTML" lt="submitted">submit</a>.
+
+Modify the <{button}> element's [=EventTarget/activation behavior=] by having it take an <var ignore>event</var> argument and, in the Submit Button case, to pass along the [=Event/user navigation involvement=] for <var ignore>event</var> as the final argument when it calls <a spec="HTML" lt="submitted">submit</a>.
+
+Modify the no-<a spec="HTML">submit button</a> case for <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission">implicit form submission</a> to pass along "<code>[=user navigation involvement/activation=]</code>" as the final argument when it calls <a spec="HTML" lt="submitted">submit</a>.
+
+<p class="note">The case of implicit submission when a submit button is present is automatically taken care of because it fires a (trusted) click event at the submit button.</p>
 
 <h3 id="navigate-algorithm-patches">Navigation algorithm updates</h3>
 
