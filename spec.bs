@@ -395,6 +395,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
   1. Let |appHistory| be <var ignore>specified browsing context</var>'s [=browsing context/active window=]'s [=Window/app history=].
   1. Let |isCrossDocument| be true if <var ignore>specified browsing context</var>'s [=active document=] is different from <var ignore>specified entry</var>'s [=session history entry/document=]; otherwise, false.
-  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isCrossDocument=]</i> set to |isCrossDocument|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/isHistoryTraversal=]</i> set to true.
-  1. If |continue| is false, abort these steps.
+  1. If either |isCrossDocument| is false or |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
+    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isCrossDocument=]</i> set to |isCrossDocument|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/isHistoryTraversal=]</i> set to true.
+    1. If |continue| is false, abort these steps.
 </div>
