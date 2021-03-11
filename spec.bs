@@ -239,7 +239,7 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
 <hr>
 
 <div algorithm="fire a navigate event">
-  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, a boolean <dfn for="fire a navigate event">|isPush|</dfn>, a boolean <dfn for="fire a navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional boolean <dfn for="fire a navigate event">|isHistoryTraversal|</dfn> (default false), an optional boolean <dfn for="fire a navigate event">|hashChange|</dfn> (default false), an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] or null <dfn for="fire a navigate event">|formDataEntryList|</dfn> (default null), an optional [=serialized state=]-or-null <dfn for="fire a navigate event">|classicHistoryAPISerializedData|</dfn> (default null), and an optional string-or-null <dfn for="fire a navigate event">|classicHistoryAPITitle|</dfn> (default null):
+  To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=URL=] |destinationURL|, a boolean <dfn for="fire a navigate event">|isPush|</dfn>, a boolean <dfn for="fire a navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional boolean <dfn for="fire a navigate event">|isHistoryTraversal|</dfn> (default false), an optional value |navigateInfo| (default null), an optional [=list=] of [=FormData/entries=] or null <dfn for="fire a navigate event">|formDataEntryList|</dfn> (default null), an optional [=serialized state=]-or-null <dfn for="fire a navigate event">|classicHistoryAPISerializedData|</dfn> (default null), and an optional string-or-null <dfn for="fire a navigate event">|classicHistoryAPITitle|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in the [=relevant Realm=] of |appHistory|.
   1. Set |event|'s [=AppHistoryNavigateEvent/destination URL=] to |destinationURL|.
@@ -247,10 +247,15 @@ An {{AppHistoryNavigateEvent}} has an associated [=URL=] <dfn for="AppHistoryNav
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API title=] to |classicHistoryAPITitle|.
   1. Initialize |event|'s {{Event/type}} to {{AppHistory/navigate}}.
-  1. Initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to |hashChange|.
 <!--  1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in the [=relevant Realm=] of |appHistory|.-->
   1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |navigateInfo|.
   1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
+  1. If all of the following are true:
+    * |isSameDocument| is true;
+    * |destinationURL| [=url/equals=] |currentURL| with <i>[=url/equals/exclude fragments=]</i> set to true; and
+    * |destinationURL|'s [=url/fragment=] is not [=string/is|identical to=] |currentURL|'s [=url/fragment=]
+
+    then initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to true. Otherwise, initialize it to false.
   1. If |destinationURL| is [=rewritable=] relative to |currentURL|, and either |isSameDocument| is true or |isHistoryTraversal| is false, then initialize |event|'s {{AppHistoryNavigateEvent/canRespond}} to true. Otherwise, initialize it to false.
   1. If either |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or |isHistoryTraversal| is false, then initialize |event|'s {{Event/cancelable}} to true.
   1. If |userInvolvement| is "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to false. Otherwise, initialize it to true.
@@ -379,7 +384,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
   1. Let |appHistory| be the <a spec="HTML">current entry</a>'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |isPush| be true if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, false.
-  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isSameDocument=]</i> set to true, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/hashChange=]</i> set to true.
+  1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isSameDocument=]</i> set to true, and <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|.
   1. If |continue| is false, return.
 </div>
 
@@ -409,12 +414,6 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   1. Let |appHistory| be <var ignore>specified browsing context</var>'s [=browsing context/active window=]'s [=Window/app history=].
   1. Let |isSameDocument| be true if <var ignore>specified browsing context</var>'s [=active document=] equals <var ignore>specified entry</var>'s [=session history entry/document=]; otherwise, false.
   1. If either |isSameDocument| is true or |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
-    1. Let |hashChange| be true if all of the following are true:
-      * |isSameDocument| is true;
-      * <var ignore>specified browsing context</var>'s [=active document=]'s [=Document/URL=] [=url/equals=] <var ignore>specified entry</var>'s [=session history entry/URL=] with <i>[=url/equals/exclude fragments=]</i> set to true; and
-      * <var ignore>specified browsing context</var>'s [=active document=]'s [=Document/URL=]'s [=url/fragment=] is not [=string/is|identical to=] <var ignore>specified entry</var>'s [=session history entry/URL=]'s [=url/fragment=].
-
-      Otherwise, let it be false.
-    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isSameDocument=]</i> set to |isSameDocument|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a navigate event/isHistoryTraversal=]</i> set to true,  and <i>[=fire a navigate event/hashChange=]</i> set to |hashChange|.
+    1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to false, <i>[=fire a navigate event/isSameDocument=]</i> set to |isSameDocument|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/isHistoryTraversal=]</i> set to true.
     1. If |continue| is false, abort these steps.
 </div>
