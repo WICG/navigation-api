@@ -77,10 +77,10 @@ appHistory.addEventListener("currentchange", e => {
     - [Example: handling failed navigations](#example-handling-failed-navigations)
     - [Example: single-page app "redirects"](#example-single-page-app-redirects)
     - [Example: cross-origin affiliate links](#example-cross-origin-affiliate-links)
+    - [Aborted navigations](#aborted-navigations)
   - [New navigation APIs](#new-navigation-apis)
     - [Example: using `navigateInfo`](#example-using-navigateinfo)
-    - [Navigations while a navigation is ongoing](#navigations-while-a-navigation-is-ongoing)
-    - [Queued up single-page navigations](#queued-up-single-page-navigations)
+    - [Example: next/previous buttons](#example-nextprevious-buttons)
   - [Per-entry events](#per-entry-events)
   - [Current entry change monitoring](#current-entry-change-monitoring)
   - [Complete event sequence](#complete-event-sequence)
@@ -477,6 +477,33 @@ appHistory.addEventListener("navigate", e => {
 
 _TODO: it feels like this should be less disruptive than a cancel-and-perform-new-navigation; it's just a tweak to the outgoing navigation. Using the same code as the previous example feels wrong. See discussion in [#5](https://github.com/WICG/app-history/issues/5)._
 
+#### Aborted navigations
+
+As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event come with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `respondWith()` settles:
+
+- The user presses their browser's stop button (or similar UI, such as the <kbd>Esc</kbd> key).
+- Another navigation is started, either by the user or programmatically. This includes back/forward navigations, e.g. the user pressing their browser's back button.
+
+The signal will not transition to the aborted state if `respondWith()` is not called. This means it cannot be used to observe the interruption of a [cross-document](#appendix-types-of-navigations) navigation, if that cross-document navigation was left alone and not converted into a same-document navigation by using `respondWith()`. Similarly, `window.stop()` will not impact `respondWith()`-derived same-document navigations.
+
+Whether and how the application responds to this abort is up to the web developer. In many cases, such as in [the example above](#example-replacing-navigations-with-single-page-app-navigations), this will automatically work: by passing the `event.signal` through to any `AbortSignal`-consuming APIs like `fetch()`, those APIs will get aborted, and the resulting `"AbortError"` `DOMException` propagated to be the rejection reason for the promise passed to `respondWith()`. But it's possible to ignore it completely, as in the following example:
+
+```js
+appHistory.addEventListener("navigate", event => {
+  event.respondWith((async () => {
+    await new Promise(r => setTimeout(r, 10_000));
+    document.body.innerHTML = `Navigated to ${event.destination.url}`;
+  }());
+});
+```
+
+In this case:
+
+- The user pressing the stop button will have no effect, and after ten seconds `document.body` will get updated anyway with the destination URL of the original navigation.
+- Navigation to another URL will not prevent the fact that in ten seconds `document.body.innerHTML`  will be updated to show the original destination URL.
+
+See [the companion document](./interception-details.md#trying-to-interrupt-a-slow-navigation-but-the-navigate-handler-doesnt-care) for full details on exactly what happens in such scenarios.
+
 ### New navigation APIs
 
 In a single-page app using `window.history`, the typical flow is:
@@ -588,85 +615,84 @@ appHistory.addEventListener("navigate", e => {
 
 Note that in addition to `appHistory.push()` and `appHistory.replace()`, the [previously-discussed](#navigation-through-the-app-history-list) `appHistory.back()`, `appHistory.forward()`, and `appHistory.navigateTo()` methods can also take a `navigateInfo` option.
 
-#### Navigations while a navigation is ongoing
+#### Example: next/previous buttons
 
-**This section is under heavy construction. There are several open issues on it and it's not fully integrated with the latest thinking on the [detailed navigation interception lifecycle](./interception-details.md).**
+Consider trying to code next/previous buttons that perform single-page navigations, for example in a photo gallery application. This has some interesting properties:
 
-Because this proposal makes the web-developer-facing concept of a navigation always asynchronous, i.e. from the start of the `navigate` event through to the end of any promise passed to `respondWith()` settling, it's possible for navigations to happen while an existing navigation is ongoing. Even very simple code like the following would trigger this:
+- If the user presses next five times quickly, you want to be sure to skip them ahead five photos, and not to waste work on the intermediate four.
+- If the user presses next five times and then previous twice, you want to load the third photo, not wasting work on any others.
+- If the user presses previous/next and the previous/next item in their app history is the previous/next photo, then you want to just navigate them through the app history list, like their browser back and forward buttons.
+- You'll want to make sure any "permalink" or "share" UI is updated ASAP after such button presses, even if the photo is still loading.
 
-```js
-appHistory.push("/first"); // intentionally no `await`
-appHistory.push("/second");
-```
-
-In this proposal, any [interceptable](#navigation-monitoring-and-interception) navigations are queued up, one after the other: thus, in the above code example, first one complete navigation (including the `navigate` event and any of its work) finishes for `/first`, and only after that's done does the navigation to `/second` go through. This is true regardless of how the navigation is triggered: i.e., the `location.href` setter, `<a>` clicks, and `history.pushState()` all result in such queued-up navigations.
-
-Note that non-interceptable navigations, such as user-initiated navigations via the URL bar or back button, jump the queue and interrupt any ongoing or queued-up navigations. This prevents a deep queue from being used to trap the user on a page.
-
-To give visibility into this queuing process, and allow applications and frameworks to manage the queue, there's an `upcomingnavigate` event. Inside the event handler, you can inspect both the upcoming (queued) navigation's `AppHistoryEntry`, and the `AppHistoryEntry` of the ongoing navigation. You can also discard the upcoming entry. It might be used as follows:
+All of this basically "just works" with the `navigate` event and other app history APIs. A large part of this is because `navigate`-event created single-page navigations [synchronously update the current URL](#navigation-monitoring-and-interception), and [abort any ongoing navigations](#aborted-navigations). The code to handle it would look like the following:
 
 ```js
-appHistory.addEventListener("upcomingnavigate", e => {
-  if (isNotImportant(e.upcoming.url) && isImportant(e.ongoing.url)) {
-    e.discardUpcoming();
+const appState = {
+  currentPhoto: 0,
+  totalPhotos: 10
+};
+const next = document.querySelector("button#next");
+const previous = document.querySelector("button#previous");
+const permalink = document.querySelector("span#permalink");
+
+next.onclick = () => {
+  const nextPhotoInHistory = photoNumberFromURL(appHistory.entries[appHistory.current.index + 1]?.url);
+  if (nextPhotoInHistory === appState.currentPhoto + 1) {
+    appHistory.forward();
+  } else {
+    appHistory.push(`/photos/${appState.currentPhoto + 1}`);
   }
-});
-```
-
-#### Queued up single-page navigations
-
-**This section is under heavy construction. There are several open issues on it and it's not fully integrated with the latest thinking on the [detailed navigation interception lifecycle](./interception-details.md).**
-
-Consider trying to code a "next" button that performs a single-page navigation. This can be prone to race conditions, since with the app history API, single-page navigations are asynchronous. For example, if you're on `/photos/1` and click the next button twice, the intended behavior is to end up at `photos/3`, even if `photos/2` takes a long time to load and the click handler executes while the URL bar still reads `/photos/1`.
-
-Concretely, code such as the following is buggy:
-
-```js
-let currentPhoto = 1;
-
-document.querySelector("#next").onclick = async () => {
-  await appHistory.push(`/photos/${currentPhoto + 1}`);
 };
 
-appHistory.addEventListener("navigate", e => {
+previous.onclick = () => {
+  const prevPhotoInHistory = photoNumberFromURL(appHistory.entries[appHistory.current.index - 1]?.url);
+  if (nextPhotoInHistory === appState.currentPhoto - 1) {
+    appHistory.back();
+  } else {
+    appHistory.push(`/photos/${appState.currentPhoto - 1}`);
+  }
+};
+
+appHistory.addEventListener("navigate", event => {
   const photoNumber = photoNumberFromURL(e.destination.url);
 
-  if (photoNumber) {
+  if (photoNumber && e.canRespond) {
     e.respondWith((async () => {
-      const blob = await (await fetch(`/raw-photos/${photoNumber}.jpg`)).blob();
+      // Synchronously update app state and next/previous/permalink UI:
+      appState.currentPhoto = photoNumber;
+      previous.disabled = appState.currentPhoto === 0;
+      next.disabled = appState.currentPhoto === appState.totalPhotos - 1;
+      permalink.textContent = e.destination.url;
+
+      // Asynchronously update the photo, passing along the signal so that
+      // it all gets aborted if another navigation interrupts us:
+      const blob = await (await fetch(`/raw-photos/${photoNumber}.jpg`, { signal: e.signal })).blob();
       const url = URL.createObjectURL(blob);
       document.querySelector("#current-photo").src = url;
-
-      currentPhoto = photoNumber;
-    })());
+    }());
   }
 });
 
 function photoNumberFromURL(url) {
+  if (!url) {
+    return null;
+  }
+
   const result = /\/photos/(\d+)/.exec((new URL(url)).pathname);
   if (result) {
     return Number(result[1]);
   }
+
   return null;
 }
 ```
 
-To fix this, the `appHistory.push()` and `appHistory.update()` APIs have callback variants. The callback will only be called after all ongoing navigations have finished. This allows non-buggy code such as the following:
+Let's look at our scenarios again:
 
-```js
-document.querySelector("#next").onclick = async () => {
-  await appHistory.push(() => {
-    const photoNumber = photoNumberFromURL(appHistory.current.url);
-    return { url: `/photos/${photoNumber + 1}` };
-  });
-};
-```
-
-Although not shown in the above example, the callback could also return a `state` value.
-
-_TODO: should the callback be able to say "nevermind, I don't care anymore, please don't navigate"? We could let the *caller* do that by passing an `AbortSignal` after the callback... And the general *app* can do it using `upcomingnavigate`... Maybe throwing an exception??_
-
-In general, the idea of these callback variants is that there are cases where the new URL or state is not determined synchronously, and is a function of the current state of the world at the time the navigation is ready to be performed.
+- If the user presses next five times quickly, you want to be sure to skip them ahead five photos, and not to waste work on the intermediate four: this works as intended, as the first four fetches (for photos 1, 2, 3, 4) get aborted via their `e.signal`, while the last one (for photo 5) completes.
+- If the user presses next five times and then previous twice, you want to load the third photo, not wasting work on any others: this works as intended, as the first six fetches (for photos 1, 2, 3, 4, 5, 4 again) get aborted via their `e.signal`, while the last one (for photo 3 again) completes.
+- If the user presses previous/next and the previous/next item in their app history is the previous/next photo, then you want to just navigate them through the app history list, like their browser back and forward buttons: this works as intended, due to the if statements inside the `click` handlers for the next and previous buttons.
+- You'll want to make sure any "permalink" or "share" UI is updated ASAP after such button presses, even if the photo is still loading: this works as intended, since we can do this work synchronously before loading the photo.
 
 ### Per-entry events
 
@@ -776,9 +802,14 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
     1. Alternately, if the promise passed to `event.respondWith()` rejects:
         1. `appHistory.current.finished` changes to `true`.
         1. `appHistory.current` fires `finish`.
-        1. `navigateerror` fires on `window.appHistory`.
+        1. `navigateerror` fires on `window.appHistory` with the rejection reason as its `error` property.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same rejection reason.
+    1. Alternately, if the navigation gets [aborted](#aborted-navigations) before either of those two things occur:
+        1. `appHistory.current.finished` stays `false`, and `appHistory.current` never fires the `finish` event.
+        1. `navigateerror` fires on `window.appHistory` with an `"AbortError"` `DOMException` as its `error` property.
+        1. Any loading spinner UI stops. (But potentially restarts, or maybe doesn't stop at all, if the navigation was aborted due to a second navigation starting.)
+        1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same  with an `"AbortError"` `DOMException`.
 
 For more detailed analysis, including specific code examples, see [this dedicated document](./interception-details.md).
 
@@ -1003,7 +1034,7 @@ Note that as currently planned, any such programmatic navigations, including one
 
 ### Integration with navigation
 
-To understand when navigation interception and queuing interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). In cases where interception is allowed and takes place, it is essentially equivalent to preventing the normal navigation and instead performing the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps). See more detail in the [dedicated document](./interception-details.md).
+To understand when navigation interception interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). In cases where interception is allowed and takes place, it is essentially equivalent to preventing the normal navigation and instead synchronously performing the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps). See more detail in the [dedicated document](./interception-details.md).
 
 The way in which navigation interacts with session history entries generally is not meant to change; the correspondence of a session history entry to an `AppHistoryEntry` does not introduce anything novel there.
 
@@ -1056,6 +1087,7 @@ Thanks also to
 [@MelSumner](https://github.com/MelSumner),
 [@mmocny](https://github.com/mmocny),
 [@natechapin](https://github.com/natechapin),
+[@pshrmn](https://github.com/pshrmn),
 [@SetTrend](https://github.com/SetTrend),
 [@slightlyoff](https://github.com/slightlyoff), and
 [@Yay295](https://github.com/Yay295)
@@ -1140,11 +1172,9 @@ interface AppHistory : EventTarget {
 
   Promise<undefined> update(USVString url, optional AppHistoryPushOrUpdateOptions options = {});
   Promise<undefined> update(optional AppHistoryPushOrUpdateFullOptions options = {}); // one member required: see issue #52
-  Promise<undefined> update(AppHistoryNavigationCallback);
 
   Promise<undefined> push(USVString url, optional AppHistoryPushOrUpdateOptions options = {});
   Promise<undefined> push(optional AppHistoryPushOrUpdateFullOptions options = {});
-  Promise<undefined> push(AppHistoryNavigationCallback callback);
 
   Promise<undefined> navigateTo(DOMString key, optional AppHistoryNavigationOptions = {});
   Promise<undefined> back(optional AppHistoryNavigationOptions = {});
@@ -1184,8 +1214,6 @@ dictionary AppHistoryPushOrUpdateOptions : AppHistoryNavigationOptions {
 dictionary AppHistoryPushOrUpdateFullOptions : AppHistoryPushOrUpdateOptions {
   USVString url;
 };
-
-callback AppHistoryNavigationCallback = AppHistoryEntryFullOptions ();
 
 [Exposed=Window]
 interface AppHistoryNavigateEvent : Event {
