@@ -1163,6 +1163,7 @@ interface AppHistoryEntry : EventTarget {
   readonly attribute USVString url;
   readonly attribute long long index;
   readonly attribute boolean finished;
+  readonly attribute boolean sameDocument;
 
   any getState();
 
