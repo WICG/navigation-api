@@ -198,7 +198,7 @@ appHistory.current.getState().test = 3;
 console.assert(appHistory.current.getState().test === 2);
 
 // Instead do this:
-appHistory.current.update({ state: { ...appHistory.current.getState(), test: 3 });
+appHistory.update({ state: { ...appHistory.current.getState(), test: 3 });
 ```
 
 Crucially, `appHistory.current` stays the same regardless of what iframe navigations happen. It only reflects the current entry for the current frame. The complete list of ways the current app history entry can change are:
@@ -1046,7 +1046,7 @@ This proposal is based on [an earlier revision](https://github.com/slightlyoff/h
 
 Thanks also to
 [@chrishtr](https://github.com/chrishtr),
-[@creis](https://github.com/creis),
+[@csreis](https://github.com/csreis),
 [@dvoytenko](https://github.com/dvoytenko),
 [@esprehn](https://github.com/esprehn),
 [@frehner](https://github.com/frehner),
