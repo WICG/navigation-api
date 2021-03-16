@@ -1060,6 +1060,8 @@ One particular point of interest is the user-agent generated `appHistoryEntry.ke
 
 Security-wise, this feature has been carefully designed to give no new abilities that might be disruptive to the user or to delicate parts of browser code. See, for example, the restrictions on [navigation monitoring and interception](#navigation-monitoring-and-interception) to ensure that it does not allow trapping the user, or the discussion of how this proposal [does not impact how browser UI presents session history](#impact-on-back-button-and-user-agent-ui).
 
+In particular, note that navigation interception can only update the URL bar to perform single-page app navigations to the same extent as `history.pushState()` does: the destination URL must only differ from the page's current URL in path, query, or fragment components. Thus, the `navigate` event does not allow URL spoofing by updating the URL bar to a cross-origin destination while providing your own origin's content.
+
 See also the [W3C TAG security and privacy questionnaire answers](./security-privacy-questionnaire.md).
 
 ## Stakeholder feedback
@@ -1089,7 +1091,8 @@ Thanks also to
 [@natechapin](https://github.com/natechapin),
 [@pshrmn](https://github.com/pshrmn),
 [@SetTrend](https://github.com/SetTrend),
-[@slightlyoff](https://github.com/slightlyoff), and
+[@slightlyoff](https://github.com/slightlyoff),
+[@torgo](https://github.com/torgo), and
 [@Yay295](https://github.com/Yay295)
 for their help in exploring this space and providing feedback.
 
