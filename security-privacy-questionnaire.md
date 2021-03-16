@@ -48,7 +48,13 @@ No.
 
 **Do features in this specification allow an origin some measure of control over a user agent’s native UI?**
 
-Importantly, no. Navigations through native UI such as the URL bar or back button do not trigger a cancelable `navigate` event. See the abuse prevention discussion in the ["Navigation monitoring and interception"](./README.md#navigation-monitoring-and-interception) section as well as the ["Impact on the back button and user agent UI"](./README.md#impact-on-the-back-button-and-user-agent-ui) section.
+No more than is possible today.
+
+Navigations through native UI such as the URL bar or back button do not trigger a cancelable `navigate` event. See the abuse prevention discussion in the ["Navigation monitoring and interception"](./README.md#navigation-monitoring-and-interception) section as well as the ["Impact on the back button and user agent UI"](./README.md#impact-on-the-back-button-and-user-agent-ui) section.
+
+The API does provide pages the ability to update the contents of the browser's URL bar, by intercepting the `navigate` event and converting what would normally be a cross-document navigation into a same-document one. But, this capability is restricted in the same way that `history.pushState()` is: the new URL being navigated to must differ from the current one only in the path/query/fragment components.
+
+So, this can't be used for spoofing the URL by, for example, responding to a navigation from `https://evil.example/` to `https://good.example/` with custom contents from `https://evil.example/`. Since the URLs differ in their host component, such a navigation cannot be intercepted by `https://evil.example/`. In other words, when the URL bar reads `https://good.example/`, only `https://good.example/` controls the contents displayed.
 
 **What temporary identifiers do the features in this specification create or expose to the web?**
 
