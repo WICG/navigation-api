@@ -129,7 +129,7 @@ From an API perspective, our primary goals are as follows:
 
 - Allow easy conversion of cross-document navigations into single-page app same-document navigations, without fragile hacks like a global `click` handler.
 
-- Improve the accessibility of single-page app navigations([1](https://github.com/w3c/aria/issues/1353), [2](https://docs.google.com/document/d/1MYClmO3FkjhSuSYKlVPVDnXvtOm-yzG15SY9jopJIxQ/edit#), [3](https://www.gatsbyjs.com/blog/2019-07-11-user-testing-accessible-client-routing/)), ideally to be on par with cross-document navigations, when they are implemented using this API.
+- Improve the accessibility of single-page app navigations ([1](https://github.com/w3c/aria/issues/1353), [2](https://docs.google.com/document/d/1MYClmO3FkjhSuSYKlVPVDnXvtOm-yzG15SY9jopJIxQ/edit#), [3](https://www.gatsbyjs.com/blog/2019-07-11-user-testing-accessible-client-routing/)), ideally to be on par with cross-document navigations, when they are implemented using this API.
 
 - Provide a uniform way to signal single-page app navigations, including their duration.
 
@@ -159,7 +159,7 @@ Non-goals:
 
 - Provide any handling for preventing navigations that might lose data: this is already handled orthogonally by the platform's `beforeunload` event.
 
-- Provide an elegant layering onto or integration with the existing `window.history` API. That API is quite problematic, and we can't be tied down by a need to make every operation in the new API isomorphic to one in the old API.
+- Provide an _elegant_ layering onto or integration with the existing `window.history` API. That API is quite problematic, and we can't be tied down by a need to make every operation in the new API isomorphic to one in the old API.
 
 A goal that might not be possible, but we'd like to try:
 
@@ -205,9 +205,11 @@ Crucially, `appHistory.current` stays the same regardless of what iframe navigat
 
 - A fragment navigation, which will copy over the app history state.
 
-- Via the same-document navigation APIs `history.pushState()` and `appHistory.push()`. (Not `history.replaceState()` or `appHistory.update()`.)
+- Via the same-document navigation API `history.pushState()`. (Not `history.replaceState()`.)
 
 - A full-page navigation to a different document. This could be an existing document in the browser's back/forward cache, or a new document. In the latter case, this will generate a new entry on the new page's `window.appHistory` object, somewhat similar to `appHistory.push(navigatedToURL, { state: null })`. Note that if the navigation is cross-origin, then we'll end up in a separate app history list for that other origin.
+
+- When using the `navigate` event to [convert a cross-document navigation into a same-document navigation](#navigation-monitoring-and-interception).
 
 ### Inspection of the app history list
 
@@ -275,7 +277,7 @@ The event object has a special method `event.respondWith(promise)`. This works o
 
 Note that the browser does not wait for the promise to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `appHistory.current`.
 
-_TODO: should we give direct control over when the browser UI updates, in case developers want to update it later in the lifecycle after they're sure the navigation will be a success? Would it be OK to let the UI get out of sync with the history list?_
+_TODO: is it OK for web developers that the URL bar updates immediately? See [#66](https://github.com/WICG/app-history/issues/66)._
 
 #### Example: replacing navigations with single-page app navigations
 
@@ -344,14 +346,14 @@ appHistory.addEventListener("navigate", e => {
       await myFramework.currentPage.transitionOut();
     }
 
-    const isBackForward = appHistory.entries.includes(event.destination);
-    let { key } = event.destination;
+    const isBackForward = appHistory.entries.includes(e.destination);
+    let { key } = e.destination;
 
     if (isBackForward && myFramework.previousPages.has(key)) {
       await myFramework.previousPages.get(key).transitionIn();
     } else {
       // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
-      await myFramework.renderPage(event.destination);
+      await myFramework.renderPage(e.destination);
     }
   })());
 });
@@ -438,6 +440,8 @@ appHistory.addEventListener("navigateerror", e => {
 
 #### Example: single-page app "redirects"
 
+**This example is likely to get updated per discussions in [#5](https://github.com/WICG/app-history/issues/5).**
+
 A common scenario in web applications with a client-side router is to perform a "redirect" to a login page if you try to access login-guarded information. The following is an example of how one could implement this using the `navigate` event:
 
 ```js
@@ -460,6 +464,8 @@ In practice, this might be hidden behind a full router framework, e.g. the Angul
 NOTE: if you combine this example with the previous one, it's important that this route guard event handler be installed before the general single-page navigation event handler. Additionally, you'd want to either insert a call to `e.stopImmediatePropagation()` in this example, or a check of `e.defaultPrevented` in that example, to stop the other `navigate` event handler from proceeding with the canceled navigation. In practice, we expect there to be one large application- or framework-level `navigate` event handler, which would take care of ensuring that route guards happen before the other parts of the router logic, and preventing that logic from executing.
 
 #### Example: cross-origin affiliate links
+
+**This example is likely to get updated per discussions in [#5](https://github.com/WICG/app-history/issues/5). Also it currently causes infinite recursion.**
 
 A common [query](https://stackoverflow.com/q/11798336/3191) is how to append affiliate IDs onto links. Although this can be done server-side, sometimes it is convenient to do so client side, especially in the case of dynamic content. Today, this requires intercepting `click` events on `<a>` elements, or using a `MutationObserver` to watch for new link insertions. The `navigate` event provides a simpler way to do this:
 
@@ -752,6 +758,8 @@ This can be useful for cleaning up any information in secondary stores, such as 
 
 ### Current entry change monitoring
 
+**Although the basic idea of an event for when `appHistory.current` changes will probably survive, much of this section needs revamping. See the several discussions linked below.**
+
 The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property. This includes both navigations that change its value, and calls to `appHistory.update()` that change its state or URL. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
 
 This event has one special property, `event.startTime`, which for [same-document](#appendix-types-of-navigations) navigations gives the value of `performance.now()` when the navigation was initiated. This includes for navigations that were originally [cross-document](#appendix-types-of-navigations), like the user clicking on `<a href="https://example.com/another-page">`, but were transformed into same-document navigations by [navigation interception](#navigation-monitoring-and-interception). For completely cross-document navigations, `startTime` will be `null`.
@@ -773,9 +781,9 @@ appHistory.addEventListener("currentchange", e => {
 
 _TODO: reconsider cross-document navigations. There will only be one (the initial load of the page); should we even fire this event in that case? (That's [#31](https://github.com/WICG/app-history/issues/31).) Could we give `startTime` a useful value there, if we do?_
 
-_TODO: is this property-on-the-event design the right one, or should we integrate with the performance timeline APIs, or...? Discuss in [#33](https://github.com/WICG/app-history/issues/33)._
+_TODO: this property-on-the-event design is not good and does not work, per [#59](https://github.com/WICG/app-history/issues/59). We should probably integrate with the performance timeline APIs instead? Discuss in [#33](https://github.com/WICG/app-history/issues/33)._
 
-_TODO: Add a non-analytics examples, similar to how people use `popstate` today._
+_TODO: Add a non-analytics examples, similar to how people use `popstate` today. [#14](https://github.com/WICG/app-history/issues/14)_
 
 ### Complete event sequence
 
@@ -980,7 +988,7 @@ Note that the "app history state" field has no interaction with the existing "se
 
 Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state, title, and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
 
-_TODO: actually, we should probably expose scroll restoration mode, like `history.scrollRestoration`? That API has legitimate use cases, and we'd like to allow people to never touch `window.history`..._
+_TODO: actually, we should probably expose scroll restoration mode, like `history.scrollRestoration`? That API has legitimate use cases, and we'd like to allow people to never touch `window.history`... Discuss in [#67](https://github.com/WICG/app-history/issues/67)._
 
 ### Correspondence with the joint session history
 
