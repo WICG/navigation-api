@@ -1118,7 +1118,7 @@ The web platform has many ways of initiating a navigation. For the purposes of t
   - Bookmarks
 - `<a>` and `<area>` elements (both directly by users, and programmatically via `element.click()` etc.)
 - `<form>` elements (both directly by users, and programmatically via `element.submit()` etc.)
-- As as special case of the above, the `target="nameOfSomeWindow"` attribute on `<a>`, `<area>`, and `<form>` will navigate a window whose `window.name` is `nameOfSomeWindow`
+- As a special case of the above, the `target="nameOfSomeWindow"` attribute on `<a>`, `<area>`, and `<form>` will navigate a window whose `window.name` is `nameOfSomeWindow`
 - `<meta http-equiv="refresh">`
 - The `Refresh` HTTP response header
 - The `window.location` setter, the various `location.*` setters, and the `location.replace()`, `location.assign()`, and `location.reload()` methods. Note that these can be called from other frames, including cross-origin ones.
