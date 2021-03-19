@@ -387,11 +387,12 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 </div>
 
 <div algorithm="navigate" id="navigate-modifications">
-  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]. Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced a |entryList| argument.
+  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]. Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.
 
   1. If none of the following are true:
     * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
     * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
+    * <var ignore>browsingContext</var>'s [=active document=]'s [=Document/origin=] is not [=same origin-domain=] with the [=source browsing context=]'s [=active document=]'s [=Document/origin=]
     * <var ignore>browsingContext</var>'s only entry in its <a spec="HTML">session history</a> is the `about:blank` {{Document}} that was added when <var ignore>browsingContext</var> was <a spec="HTML" lt="create a new browsing context">created</a>
 
     then:
@@ -401,9 +402,9 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
       1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given <var ignore>url</var>, with <i>[=fire a navigate event/isPush=]</i> set to |isPush|, <i>[=fire a navigate event/isSameDocument=]</i> set to false, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/formDataEntryList=]</i> set to |entryList|.
       1. If |continue| is false, return.
 
-    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
-
     <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{AppHistory/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
+
+    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
 </div>
 
 <div algorithm="traverse the history by a delta">

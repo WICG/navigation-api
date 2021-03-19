@@ -366,9 +366,12 @@ There are many types of navigations a given page can experience; see [this appen
 First, the following navigations **will not fire `navigate`** at all:
 
 - User-initiated [cross-document](#appendix-types-of-navigations) navigations via browser UI, such as the URL bar, back/forward button, or bookmarks.
+- [Cross-document](#appendix-types-of-navigations) navigations initiated from other [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) windows, e.g. via `window.open(url, nameOfYourWindow)`, or clicking on `<a href="..." target="nameOfYourWindow">`
 - [`document.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/open), which can strip off the fragment from the current document's URL.
 
 Navigations of the first sort are outside the scope of the webpage, and can never be intercepted or prevented. This is true even if they are to same-origin documents, e.g. if the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/bar` and presses enter. On the other hand, we do allow the page to intercept user-initiated _same_-document navigations via browser UI, e.g. if the the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/foo#fragment` and presses enter.
+
+Similarly, cross-document navigations initiated from other windows are not something that can be intercepted today, and for security reasons, we don't want to introduce the ability for your origin to mess with the operation of another origin's scripts. (Even if the purpose of those scripts is to navigate your frame.)
 
 As for `document.open()`, it is a terrible legacy API with lots of strange side effects, which makes supporting it not worth the implementation cost. Modern sites which use the app history API should never be using `document.open()`.
 
@@ -1038,7 +1041,7 @@ Traversal operates on the joint session history, which means that it's possible 
 
 - If code in either the inner frame or the outer frame calls `history.back()`, this will take the joint session history back to C, and thus update the inner frame's current app history entry from I2 to I1. (There is no impact on the outer frame.)
 
-Note that as currently planned, any such programmatic navigations, including ones originating from other frames, are [interceptable and cancelable](#navigation-monitoring-and-interception) as part of the `navigate` event part of the proposal.
+Note that as currently planned, any such programmatic navigations, including ones originating from other frames, are [interceptable and cancelable](#navigation-monitoring-and-interception) as part of the `navigate` event part of the proposal. However, this will probably be revised; see [#78](https://github.com/WICG/app-history/issues/78).
 
 ### Integration with navigation
 
@@ -1115,9 +1118,10 @@ The web platform has many ways of initiating a navigation. For the purposes of t
   - Bookmarks
 - `<a>` and `<area>` elements (both directly by users, and programmatically via `element.click()` etc.)
 - `<form>` elements (both directly by users, and programmatically via `element.submit()` etc.)
+- As a special case of the above, the `target="nameOfSomeWindow"` attribute on `<a>`, `<area>`, and `<form>` will navigate a window whose `window.name` is `nameOfSomeWindow`
 - `<meta http-equiv="refresh">`
 - The `Refresh` HTTP response header
-- The `window.location` setter, the various `location.*` setters, and the `location.replace()`, `location.assign()`, and `location.reload()` methods
+- The `window.location` setter, the various `location.*` setters, and the `location.replace()`, `location.assign()`, and `location.reload()` methods. Note that these can be called from other frames, including cross-origin ones.
 - Calling `window.open(url, nameOfSomeWindow)` will navigate a window whose `window.name` is `nameOfSomeWindow`
 - `history.back()`, `history.forward()`, and `history.go()`
 - `history.pushState()` and `history.replaceState()`
@@ -1144,26 +1148,28 @@ Here's a summary table:
 |Browser UI (back/forward,<br>cross-document)|Cross|No|—|—|—|
 |Browser UI (non-back/forward<br>fragment change only)|Same|Yes|Yes|Yes|Yes|
 |Browser UI (non-back/forward<br>other)|Cross|No|—|—|—|
-|`<a>`/`<area>`|Either|Yes|Yes ‡|Yes|Yes *|
-|`<form>`|Either|Yes|Yes ‡|Yes|Yes *|
+|`<a>`/`<area>`/`<form>` (`target="_self"` or no `target=""`)|Either|Yes|Yes ‡|Yes|Yes *|
+|`<a>`/`<area>`/`<form>`<br>(non-`_self` `target=""`)|Either|Yes Δ|Yes ‡|Yes|Yes *|
 |`<meta http-equiv="refresh">`|Either ◊|Yes|No|Yes|Yes *|
 |`Refresh` header|Either ◊|Yes|No|Yes|Yes *|
-|`window.location`|Either|Yes|No|Yes|Yes *|
-|`window.open(url, name)`|Either|Yes|No|Yes|Yes *|
+|`window.location`|Either|Yes Δ|No|Yes|Yes *|
 |`history.{back,forward,go}()`|Either|Yes|No|Yes|Yes †*|
 |`history.{pushState,replaceState}()`|Same|Yes|No|Yes|Yes|
 |`appHistory.{back,forward,navigateTo}()`|Either|Yes|No|Yes|Yes †*|
 |`appHistory.{push,update}()`|Either|Yes|No|Yes|Yes *|
+|`window.open(url, "_self")`|Either|Yes|No|Yes|Yes *|
+|`window.open(url, name)`|Either|Yes Δ|No|Yes|Yes *|
 |`document.open()`|Same|No|—|—|—|
 
 - † = No if cross-document
 - ‡ = No if triggered via, e.g., `element.click()`
-- \* = No if the URL differs in components besides path/fragment/query
+- \* = No if the URL differs from the page's current one in components besides path/fragment/query
+- Δ = No if cross-document and initiated from a [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) window, e.g. `frames['cross-origin-frame'].location.href = ...` or `<a target="cross-origin-frame">`
 - ◊ = fragment navigations initiated by `<meta http-equiv="refresh">` or the `Refresh` header are only same-document in some browsers: [whatwg/html#6451](https://github.com/whatwg/html/issues/6451)
 
 See the discussion on [restrictions](#restrictions-on-firing-canceling-and-responding) to understand the reasons why the last few columns are filled out in the way they are.
 
-Note that today it is not possible to intercept cases where other frames or windows programatically navigate your frame, e.g. via `window.open(url, name)`, or `history.back()` happening in a subframe. So, firing the `navigate` event and allowing interception in such cases represents a new capability. We believe this is OK, but will report back after some implementation experience.
+Note that today it is not possible to intercept or cancel cases where `history.back()` in a subframe or outer frame causes your frame to navigate, but this proposal currently allows that. We may further restrict that per discussions in [#78](https://github.com/WICG/app-history/issues/78).
 
 _Spec details: the above comprehensive list does not fully match when the HTML Standard's [navigate](https://html.spec.whatwg.org/#navigate) algorithm is called. In particular, HTML does not handle non-fragment-related same-document navigations through the navigate algorithm; instead it uses the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps) for those. Also, HTML calls the navigate algorithm for the initial loads of new browsing contexts as they transition from the initial `about:blank`; our current thinking is that `appHistory` should just not work on the initial `about:blank` so we can avoid that edge case._
 
