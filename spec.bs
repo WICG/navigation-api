@@ -25,19 +25,25 @@ spec: html; type: element; text: a
 <pre class="anchors">
 spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
   text: serialized state; url: history.html#serialized-state
+  text: session history; url: history.html#session-history
   text: session history entry; url: history.html#session-history-entry
   for: URL and history update steps
     text: serializedData; url: history.html#uhus-serializeddata
     text: isPush; url: history.html#uhus-ispush
+  for: session history
+    text: current entry; url: history.html#current-entry
   for: session history entry
     text: document; url: history.html#she-document
     text: URL; url: history.html#she-url
   for: history handling behavior
     text: default; url: browsing-the-web.html#hh-default
+    text: replace; url: browsing-the-web.html#hh-replace
     text: entry update; url: browsing-the-web.html#hh-entry-update
   for: navigate
     text: historyHandling; url: browsing-the-web.html#navigation-hh
     text: navigationType; url: browsing-the-web.html#navigation-navigationtype
+spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
+  text: generate a random UUID; url: #dfn-generate-a-random-uuid
 </pre>
 
 <style>
@@ -53,6 +59,10 @@ spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
 
 dfn var {
   font-style: italic;
+}
+
+table {
+  margin: 1em 0;
 }
 
 /* WHATWG-style <hr>s, instead of WICG-style. Specific selector is necessary to override WICG styles. */
@@ -101,7 +111,7 @@ dfn var {
 
 <script src="https://resources.whatwg.org/file-issue.js" async></script>
 
-<h2 id="global">The {{AppHistory}} interface</h2>
+<h2 id="global">The {{AppHistory}} class</h2>
 
 <xmp class="idl">
 partial interface Window {
@@ -116,11 +126,48 @@ The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=th
 <xmp class="idl">
 [Exposed=Window]
 interface AppHistory : EventTarget {
+  attribute AppHistoryEntry? current;
+  attribute FrozenArray<AppHistoryEntry> entries;
+
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
 };
 </xmp>
+
+<dl class="domintro non-normative">
+  <dt><code>{{Window/appHistory}} . {{AppHistory/current}}</code>
+  <dd>
+    <p>The current {{AppHistoryEntry}}.
+  </dd>
+
+  <dt><code>{{Window/appHistory}} . {{AppHistory/entries}}</code>
+  <dd>
+    <p>A frozen array of {{AppHistoryEntry}} instances represent all entries in the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current one.
+  </dd>
+</dl>
+
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects.
+
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">entries frozen array</dfn>, a {{FrozenArray}} of {{AppHistoryEntry}} objects.
+
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer.
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">current</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
+
+  1. Return [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">entries</dfn> getter steps are:
+
+  1. TODO need to handle non-active case? Can we guarantee that it returns the same empty frozen array each time though? We were talking about making this a method anyway??
+
+  1. Return [=this=]'s [=AppHistory/entries frozen array=].
+</div>
 
 The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
 
@@ -139,6 +186,72 @@ The following are the [=event handlers=] (and their corresponding [=event handle
       <td><dfn attribute for="AppHistory">onnavigateerror</dfn>
       <td><dfn event for="AppHistory">navigateerror</dfn>
 </table>
+
+<div algoithm>
+  To <dfn for="AppHistory">update the entries</dfn> for an {{AppHistory}} instance |appHistory|:
+
+  1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=associated Document=]'s [=Document/browsing context=].
+
+  1. [=Assert=]: |browsingContext| is not null.
+
+  1. Let |sessionHistory| be |browsingContext|'s [=session history=].
+
+  1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
+
+  1. Let |appHistorySHEs| be a new empty list.
+
+  1. Let |backwardIndex| be the index of |currentSHE| within |sessionHistory|, minus 1.
+
+  1. While |backwardIndex| > 0:
+
+    1. Let |she| be |sessionHistory|[|backwardIndex|].
+
+    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/prepend=] |she| to |appHistorySHEs|.
+
+    1. Set |backwardIndex| to |backwardIndex| &minus; 1.
+
+  1. Let |forwardIndex| be the index of |currentSHE| within |sessionHistory|.
+
+  1. While |forwardIndex| &lt; |sessionHistory|'s [=list/size=]:
+
+    1. Let |she| be |sessionHistory|[|forwardIndex|].
+
+    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/append=] |she| to |appHistorySHEs|.
+
+    1. Set |forwardIndex| to |forwardIndex| + 1.
+
+  1. Let |newCurrentIndex| be the index of |currentSHE| within |appHistorySHEs|.
+
+  1. Let |newEntryList| be an empty list.
+
+  1. [=list/For each=] |oldAHE| of |appHistory|'s [=AppHistory/entry list=]:
+
+    1. Set |oldAHE|'s [=AppHistoryEntry/index=] to &minus;1.
+
+  1. Let |index| be 0.
+
+  1. [=list/For each=] |she| of |appHistorySHEs|:
+
+    1. If |appHistory|'s [=AppHistory/entry list=] [=list/contains=] an {{AppHistoryEntry}} |existingAHE| whose [=AppHistoryEntry/session history entry=] is |she|, then [=list/append=] |existingAHE| to |newEntryList|.
+
+    1. Otherwise:
+
+      1. Let |newAHE| be a [=new=] {{AppHistoryEntry}} created in the [=relevant realm=] of |appHistory|.
+
+      1. Set |newAHE|'s [=AppHistoryEntry/session history entry=] to |she|.
+
+      1. [=list/Append=] |newAHE| to |newEntryList|.
+
+    1. Set |newEntryList|[|index|]'s [=AppHistoryEntry/index=] to |index|.
+
+    1. Set |index| to |index| + 1.
+
+  1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
+
+  1. Set |appHistory|'s [=AppHistory/entries frozen array=] to the result of [=creating a frozen array=] from |newEntryList|.
+
+  1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
+</div>
 
 <h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
 
@@ -317,6 +430,116 @@ A [=URL=] is <dfn>rewritable</dfn> relative to another [=URL=] if they differ in
   Similarly, `about:blank` or `blob:` URLs are not rewritable relative to `https:` URLs, despite there being cases where a `https`:-[=Document/URL=] {{Document}} is [=same origin=] with an `about:blank` or `blob:`-derived {{Document}}.
 </div>
 
+<h2 id="apphistoryentry-class">App history entries</h2>
+
+<xmp class="idl">
+[Exposed=Window]
+interface AppHistoryEntry : EventTarget {
+  readonly attribute DOMString key;
+  readonly attribute DOMString id;
+  readonly attribute USVString url;
+  readonly attribute long long index;
+  readonly attribute boolean sameDocument;
+
+  any getState();
+
+  // TODO event handlers
+};
+</xmp>
+
+<dl class="domintro non-normative">
+  <dt><code>entry . {{AppHistoryEntry/key}}</code>
+  <dd>
+    <p>A [=user agent=]-generated random UUID string representing this app history entry's place in the app history list. This value will be reused by other {{AppHistoryEntry}} instances that replace this one due to replace-style navigations. This value will survive session restores.
+
+    <!-- TODO proper cross-link -->
+    <p>This is useful for navigating back to this location in the app history entry list, using `appHistory.goTo(key)`.
+  </dd>
+
+  <dt><code>entry . {{AppHistoryEntry/id}}</code>
+  <dd>
+    <p>A [=user agent=]-generated random UUID string representing this specific app history entry. This value will <em>not</em> be reused by other {{AppHistoryEntry}} instances. This value will survive session restores.
+
+    <p>This is useful for associating data with this app history entry using other storage APIs.
+  </dd>
+
+  <dt><code>entry . {{AppHistoryEntry/url}}</code>
+  <dd>
+    <p>The URL of this app history entry.
+  </dd>
+
+  <dt><code>entry . {{AppHistoryEntry/index}}</code>
+  <dd>
+    <p>The index of this app history entry within {{AppHistory/entries|appHistory.entries}}, or &minus;1 if the entry is not in the app history list.
+  </dd>
+
+  <dt><code>entry . {{AppHistoryEntry/sameDocument}}</code>
+  <dd>
+    <p>Indicates whether or not this app history entry is for the same {{Document}} as the current {{Window/document}} object, or not. This will be true, for example, in cases of fragment navigations or single-page app navigations.
+  </dd>
+
+  <dt><code>entry . {{AppHistoryEntry/getState()}}</code>
+  <dd>
+    <!-- TODO proper cross-link -->
+    <p>Returns the deserialization of the state stored in this entry, which was added to the entry using `appHistory.navigate()`. This state survives session restores.
+
+    <p>Note that in general, unless the state value is a primitive, <code>entry.getState() !== entry.getState()</code>, since a fresh copy is returned each time.
+
+    <p>This state is unrelated to the classic history API's {{History/state|history.state}}.
+  </dd>
+</dl>
+
+Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">session history entry</dfn>, which is a [=session history entry=].
+
+Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn>, which is an integer.
+
+<div algorithm>
+  The <dfn attribute for="AppHistoryEntry">key</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty string.
+  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistoryEntry">id</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty string.
+  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history id=].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistoryEntry">url</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty string.
+  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/URL=], [=URL serializer|serialized=].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistoryEntry">index</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return &minus;1.
+  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=AppHistoryEntry/index=].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistoryEntry">sameDocument</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return false.
+  1. Return true if [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/document=] equals [=this=]'s [=relevant global object=]'s [=associated Document=], and false otherwise.
+</div>
+
+<div algorithm>
+  The <dfn method for="AppHistoryEntry">getState()</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
+  1. If [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] is null, then return null.
+  1. Return [$StructuredDeserialize$]([=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=]).
+
+  <p class="note">Unlike {{History/state|history.state}}, this will deserialize upon each access.
+
+  <p class="note">This can in theory throw an exception, if attempting to deserialize a large {{ArrayBuffer}} when not enough memory is available.
+</div>
+
 <h2 id="navigate-patches">Patches to fire the {{AppHistory/navigate}} event</h2>
 
 The following section details monkeypatches to [[!HTML]] that cause the {{AppHistory/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, [[#navigate-algorithm-patches]] contains the actual firing of the event.
@@ -461,4 +684,48 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   1. If either |isSameDocument| is true or |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
     1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| with <i>[=fire a navigate event/navigationType=]</i> set to "{{AppHistoryNavigationType/traverse}}", <i>[=fire a navigate event/isSameDocument=]</i> set to |isSameDocument|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/destinationEntry=]</i> set to <var ignore>specified entry</var>.
     1. If |continue| is false, abort these steps.
+</div>
+
+<h2 id="session-history-patches">Patches to session history</h2>
+
+This section details monkeyaptches to [[!HTML]] to track appropriate data for associating an {{AppHistory}} with a [=session history entry=].
+
+<h3 id="session-history-new-she-fields">New [=session history entry=] items</h3>
+
+Each [=session history entry=] gains the following new [=struct/items=]:
+
+* <dfn for="session history entry">origin</dfn>, an [=origin=]
+
+* <dfn for="session history entry">app history key</dfn>, a string, initially set to the result of [=generating a random UUID=]
+
+* <dfn for="session history entry">app history id</dfn>, a string, initially set to the result of [=generating a random UUID=]
+
+* <dfn for="session history entry">app history state</dfn>, which is [=serialized state=] or null, initially null
+
+<h3 id="session-history-patches-key">Carrying over the app history key</h3>
+
+Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" case to set <var ignore>newEntry</var>'s [=session history entry/app history key=] to <var ignore>sessionHistory</var>'s [=session history/current entry=]'s [=session history entry/app history key=].
+
+<h3 id="session-history-patches-origin">Tracking the [=session history entry/origin=] member</h3>
+
+Update the <a spec="HTML">update the session history with the new page</a> algorithm to set the [=session history entry=]'s [=session history entry/origin=] to <var ignore>newDocument</var>'s [=Document/origin=].
+
+Update the <a spec="HTML">navigate to a fragment</a> algorithm to set the new [=session history entry=]'s [=session history entry/origin=] to the [=session history/current entry=]'s [=session history entry/document=]'s [=Document/origin=].
+
+Update the <a spec="HTML">URL and history update steps</a> algorithm to set the new [=session history entry=]'s [=session history entry/origin=] to <var ignore>document</var>'s [=Document/origin=].
+
+Potentially update the <a spec="HTML">traverse the history</a> algorithm to consult the new [=session history entry/origin=] field, instead of checking the [=session history entry/document=]'s [=Document/origin=], since the [=session history entry/document=] can disappear?? Needs further investigation.
+
+<h3 id="session-history-patches-update">Updating the {{AppHistory}} object</h3>
+
+<div algorithm="traverse the history update patch">
+  Update the <a spec="HTML">traverse the history</a> algorithm by adding the following step before the final step which fires various events:
+
+  1. [=AppHistory/Update the entries=] of <var ignore>newDocument</var>'s [=relevant global object=]'s [=Window/app history=].
+</div>
+
+<div algorithm="URL and history update steps update patch">
+  Update the <a spec="HTML">URL and history update steps</a> by appending the following final step:
+
+  1. [=AppHistory/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/app history=].
 </div>
