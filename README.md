@@ -1200,7 +1200,6 @@ interface AppHistory : EventTarget {
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
-  attribute EventHandler onupcomingnavigate;
   attribute EventHandler oncurrentchange;
 };
 
@@ -1255,21 +1254,6 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   required AbortSignal signal;
   FormData? formData = null;
   any info = null;
-};
-
-[Exposed=Window]
-interface AppHistoryUpcomingNavigateEvent : Event {
-  constructor(DOMString type, optional AppHistoryUpcomingNavigateEventInit eventInit = {});
-
-  readonly attribute AppHistoryEntry upcoming;
-  readonly attribute AppHistoryEntry ongoing;
-};
-
-dictionary AppHistoryUpcomingNavigateEventInit : EventInit {
-  required AppHistoryEntry upcoming;
-  required AppHistoryEntry ongoing;
-
-  undefined discardUpcoming();
 };
 
 [Exposed=Window]
