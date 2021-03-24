@@ -820,7 +820,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. `appHistory.current.finished` stays `false`, and `appHistory.current` never fires the `finish` event.
         1. `navigateerror` fires on `window.appHistory` with an `"AbortError"` `DOMException` as its `error` property.
         1. Any loading spinner UI stops. (But potentially restarts, or maybe doesn't stop at all, if the navigation was aborted due to a second navigation starting.)
-        1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same  with an `"AbortError"` `DOMException`.
+        1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same `"AbortError"` `DOMException`.
 
 For more detailed analysis, including specific code examples, see [this dedicated document](./interception-details.md).
 
