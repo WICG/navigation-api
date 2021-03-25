@@ -546,7 +546,7 @@ Note how unlike `history.pushState()`, `appHistory.navigate()` will by default p
 
 Regardless of whether the navigation gets converted or not, calling `appHistory.navigate()` in this form will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
 
-`appHistory.update` also takes a `replace` option, which indicates that it will replace the current history entry in a similar manner to `location.replace()`. It is used as follows:
+`appHistory.navigate()` also takes a `replace` option, which indicates that it will replace the current history entry in a similar manner to `location.replace()`. It is used as follows:
 
 ```js
 // Performs a navigation to the given URL, but replace the current history entry
@@ -831,9 +831,9 @@ For web developers using the API, here's a guide to explain how you would replac
 
 ### Performing navigations
 
-Instead of using `history.pushState(state, uselessTitle, url)`, use `await appHistory.navigate(url, { state })` and combine it with a `navigate` handler to convert the default cross-document navigation into a same-document navigation.
+Instead of using `history.pushState(state, "", url)`, use `await appHistory.navigate(url, { state })` and combine it with a `navigate` handler to convert the default cross-document navigation into a same-document navigation.
 
-Instead of using `history.replaceState(state, uselessTitle, url)`, use `await appHistory.navigate(url, { replace: true, state })`, again combined with a `navigate` handler. Note that if you omit the state value, i.e. if you say `appHistory.navigate(url, { replace: true })`, then unlike `history.replaceState()`, this will copy over the current entry's state.
+Instead of using `history.replaceState(state, "", url)`, use `await appHistory.navigate(url, { replace: true, state })`, again combined with a `navigate` handler. Note that if you omit the state value, i.e. if you say `appHistory.navigate(url, { replace: true })`, then unlike `history.replaceState()`, this will copy over the current entry's state.
 
 Instead of using `history.back()` and `history.forward()`, use `await appHistory.back()` and `await appHistory.forward()`. Note that unlike the `history` APIs, the `appHistory` APIs will ignore other frames, and will only control the navigation of your frame. This means it might move through multiple entries in the joint session history, skipping over any entries that were generated purely by other-frame navigations.
 
@@ -990,7 +990,7 @@ Note that the "app history state" field has no interaction with the existing "se
 - Today, the serialized state of a session history entry is only exposed when that entry is the current one. The app history API exposes `appHistoryEntry.getState()` for all entries in `appHistory.entries`. This is not a security issue since all app history entries are same-origin contiguous, but if we exposed the serialized state value even for non-current entries, it might break some assumptions of existing code.
 - Switching to a separate field, accessible only via the `getState()` method, avoids the mutability problems discussed in [#36](https://github.com/WICG/app-history/issues/36). If the object was shared with `history.state`, those problems would be carried over.
 
-Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state, title, and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
+Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
 
 _TODO: actually, we should probably expose scroll restoration mode, like `history.scrollRestoration`? That API has legitimate use cases, and we'd like to allow people to never touch `window.history`... Discuss in [#67](https://github.com/WICG/app-history/issues/67)._
 
@@ -1191,7 +1191,7 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoForward;
 
   Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> navigate(optional AppHistoryNavigateOptions options = {}); // one member required: see issue #52
+  Promise<undefined> navigate(optional AppHistoryNavigateOptions options = {}); // one non-replace member required: see issue #52
 
   Promise<undefined> goTo(DOMString key, optional AppHistoryNavigationOptions = {});
   Promise<undefined> back(optional AppHistoryNavigationOptions = {});
@@ -1225,6 +1225,7 @@ dictionary AppHistoryNavigationOptions {
 
 dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
   any state;
+  boolean replace = false;
 };
 
 [Exposed=Window]
