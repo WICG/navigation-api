@@ -43,7 +43,7 @@ backButtonEl.addEventListener("click", () => {
     appHistory.back();
   } else {
     // If the user arrived here by typing the URL directly:
-    appHistory.replace("/product-listing");
+    appHistory.navigate("/product-listing", { replace: true });
   }
 });
 ```
@@ -190,7 +190,7 @@ The entry point for the app history API is `window.appHistory`. Let's start with
 It also has a method `getState()`, which retrieve the app history state for the entry. This is somewhat similar to `history.state`, but it will survive fragment navigations, and `getState()` always returns a fresh clone of the state to avoid the [misleading nature of `history.state`](https://github.com/WICG/app-history/issues/36):
 
 ```js
-appHistory.update({ state: { test: 2 } });
+appHistory.navigate({ state: { test: 2 } });
 
 // Don't do this: it won't be saved to the stored state.
 appHistory.current.getState().test = 3;
@@ -198,7 +198,7 @@ appHistory.current.getState().test = 3;
 console.assert(appHistory.current.getState().test === 2);
 
 // Instead do this:
-appHistory.update({ state: { ...appHistory.current.getState(), test: 3 });
+appHistory.navigate({ state: { ...appHistory.current.getState(), test: 3 });
 ```
 
 Crucially, `appHistory.current` stays the same regardless of what iframe navigations happen. It only reflects the current entry for the current frame. The complete list of ways the current app history entry can change are:
@@ -207,7 +207,7 @@ Crucially, `appHistory.current` stays the same regardless of what iframe navigat
 
 - Via the same-document navigation API `history.pushState()`. (Not `history.replaceState()`.)
 
-- A full-page navigation to a different document. This could be an existing document in the browser's back/forward cache, or a new document. In the latter case, this will generate a new entry on the new page's `window.appHistory` object, somewhat similar to `appHistory.push(navigatedToURL, { state: null })`. Note that if the navigation is cross-origin, then we'll end up in a separate app history list for that other origin.
+- A full-page navigation to a different document. This could be an existing document in the browser's back/forward cache, or a new document. In the latter case, this will generate a new entry on the new page's `window.appHistory` object, somewhat similar to `appHistory.navigate(navigatedToURL, { state: null })`. Note that if the navigation is cross-origin, then we'll end up in a separate app history list for that other origin.
 
 - When using the `navigate` event to [convert a cross-document navigation into a same-document navigation](#navigation-monitoring-and-interception).
 
@@ -221,7 +221,7 @@ In combination with the following section, the `entries` API also allows applica
 
 ### Navigation through the app history list
 
-The way for an application to navigate through the app history list is using `appHistory.navigateTo(key)`. For example:
+The way for an application to navigate through the app history list is using `appHistory.goTo(key)`. For example:
 
 _TODO: realistic example of when you'd use this._
 
@@ -233,7 +233,7 @@ All of these methods return promises, because navigations can be intercepted and
 
 - The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
-- It's not possible to navigate to the given entry, e.g. `appHistory.navigateTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, the promise rejects with an `"InvalidStateError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
+- It's not possible to navigate to the given entry, e.g. `appHistory.goTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, the promise rejects with an `"InvalidStateError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
 - The navigation succeeds, and was a same-document navigation. Then the promise fulfills with `undefined`,  and `location.href` and `appHistory.current` will have been set to their new value.
 
@@ -251,7 +251,7 @@ The event object has several useful properties:
 
 - `canRespond`: indicates whether `respondWith()`, discussed below, is allowed for this navigation.
 
-- `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.push(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.push(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
+- `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
 - `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries`.
 
@@ -259,7 +259,7 @@ The event object has several useful properties:
 
 - `formData`: a [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) object containing form submission data, or `null` if the navigation is not a form submission.
 
-- `info`: any value passed by `appHistory.push(url, { state, navigateInfo })` or `appHistory.update(url, { state, navigateInfo })`, if the navigation was initiated by one of those methods and the `navigateInfo` option was supplied; otherwise, null. See [the example below](#example-using-navigateinfo) for more.
+- `info`: any value passed by `appHistory.navigate(url, { state, navigateInfo })`, `appHistory.back({ navigateInfo })`, or similar, if the navigation was initiated by one of those methods and the `navigateInfo` option was supplied. Otherwise, null. See [the example below](#example-using-navigateinfo) for more.
 
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
 
@@ -319,7 +319,7 @@ Note how this example responds to various types of navigations:
 - Same-document URL or state updates (via `history.pushState()` or `history.replaceState()`):
   1. Send the information about the URL/state update to `doSinglePageAppNav()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
-- Cross-document normal navigations (including those via `appHistory.push()` or `appHistory.update()`):
+- Cross-document normal navigations (including those via `appHistory.navigate()`):
   1. Prevent the browser handling, which would unload the document and create a new one from the network. Instead, immediately change the URL bar/`location.href`/`appHistory.current`, while staying on the same document.
   1. Send the information about the navigation to `doSinglePageAppNav()`, which will use it to modify the current document.
   1. After that UI update is done, potentially asynchronously, notify the app and the browser about the navigation's success or failure.
@@ -436,7 +436,6 @@ appHistory.addEventListener("navigateerror", e => {
   // Our `navigate` handler will convert this into a same-document navigation.
   appHistory.back();
 
-
   showErrorToast(`Could not load ${location.href}: ${e.message}`);
 });
 ```
@@ -513,7 +512,7 @@ In this case:
 
 See [the companion document](./interception-details.md#trying-to-interrupt-a-slow-navigation-but-the-navigate-handler-doesnt-care) for full details on exactly what happens in such scenarios.
 
-### New navigation APIs
+### New navigation API
 
 In a single-page app using `window.history`, the typical flow is:
 
@@ -525,54 +524,53 @@ In a single-page app using `window.history`, the typical flow is:
 
 In a single-page app using the app history API, instead the router listens to the `navigate` event. This automatically takes care of step (2), and provides a centralized place for the router and framework to perform step (3). And now the application code can use traditional navigation mechanisms, like `<a>` or `location.href`, without any extra code; the browser takes care of sending all of those to the `navigate` event!
 
-There's one gap remaining, which is the ability to send additional state or info along with a navigation. We solve this by introducing new APIs, `appHistory.push()` and `appHistory.update()`, which can be thought of as augmented versions of `location.assign()` and `location.replace()`. The basic usage of `appHistory.push()` is as follows:
+There's one gap remaining, which is the ability to send additional state or info along with a navigation. We solve this by introducing a new API, `appHistory.navigate()`, which can be thought of as an augmented and combined version of `location.assign()` and `location.replace()`. The non-replace usage of `appHistory.navigate()` is as follows:
 
 ```js
-
 // Navigate to a new URL, resetting the state to null:
 // (equivalent to `location.assign(url)`)
-await appHistory.push(url);
+await appHistory.navigate(url);
 
 // Use a new URL and state.
-await appHistory.push(url, { state });
+await appHistory.navigate(url, { state });
 
 // You can also pass navigateInfo for the navigate event handler to receive:
-await appHistory.push(url, { state, navigateInfo });
+await appHistory.navigate(url, { state, navigateInfo });
 
-// Performs a navigation to the same URL as the current history entry,
-// but with a nulled-out app history state.
-await appHistory.push();
-
-// Navigate to the same URL, but with a new state value:
-await appHistory.push({ state });
+// Navigate to the same URL as the current one, but with a new state value:
+// (Probably not very common.)
+await appHistory.navigate({ state });
 ```
 
-Note how unlike `history.pushState()`, `appHistory.push()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
+Note how unlike `history.pushState()`, `appHistory.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
 
-Regardless of whether the navigation gets converted or not, calling `appHistory.push()` will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
+Regardless of whether the navigation gets converted or not, calling `appHistory.navigate()` in this form will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
 
-The counterpart API to `appHistory.push()` is `appHistory.update()`. It is used as follows:
+`appHistory.navigate()` also takes a `replace` option, which indicates that it will replace the current history entry in a similar manner to `location.replace()`. It is used as follows:
 
 ```js
-// Performs a navigation to the given URL, but updating the current history entry
+// Performs a navigation to the given URL, but replace the current history entry
 // instead of pushing a new one.
 // (equivalent to `location.replace(url)`)
-await appHistory.update(url);
+await appHistory.navigate(url, { replace: true });
 
-// Set the state, without changing the URL.
-await appHistory.update({ state });
+// Update the state, without changing the URL.
+await appHistory.navigate({ replace: true, state });
 
-// Similarly to `push()`, you can pass along navigateInfo:
-await appHistory.update(url, { state, navigateInfo });
+// Replace the URL and state at the same time.
+await appHistory.navigate(url, { replace: true, state });
+
+// You can still pass along navigateInfo:
+await appHistory.navigate(url, { replace: true, state, navigateInfo });
 ```
 
-Again, unlike `history.replaceState()`, `appHistory.update()` will by default perform a full navigation. And again, single-page apps will usually intercept these using `navigate`.
+Again, unlike `history.replaceState()`, `appHistory.navigate(url, { replace: true })` will by default perform a full navigation. And again, single-page apps will usually intercept these using `navigate`.
 
 Note that both of these methods return promises. In the event that the navigations get converted into same-document navigations via `event.respondWith(promise)` in a `navigate` handler, these returned promises will settle in the same way that `promise` does. This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, then the promises will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promise, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
 
 #### Example: using `navigateInfo`
 
-The `navigateInfo` option to `appHistory.push()` and `appHistory.replace()` gets passed to the `navigate` event handler as the `event.info` property. The intended use of this value is to convey transient information about this particular navigation, such as how it happened. In this way, it's different from the persisted value retrievable using `event.destination.getState()`.
+The `navigateInfo` option to `appHistory.navigate()` gets passed to the `navigate` event handler as the `event.info` property. The intended use of this value is to convey transient information about this particular navigation, such as how it happened. In this way, it's different from the persisted value retrievable using `event.destination.getState()`.
 
 One example of how this might be used is to trigger different single-page navigation renderings depending on how a certain route was reached. For example, consider a photo gallery app, where you can reach the same photo URL and state via various routes:
 
@@ -585,16 +583,16 @@ Each of these wants a different animation at navigate time. This information doe
 ```js
 document.addEventListener("keydown", async e => {
   if (e.key === "ArrowLeft" && hasPreviousPhoto()) {
-    await appHistory.push(getPreviousPhotoURL(), { navigateInfo: { via: "go-left" } });
+    await appHistory.navigate(getPreviousPhotoURL(), { navigateInfo: { via: "go-left" } });
   }
   if (e.key === "ArrowRight" && hasNextPhoto()) {
-    await appHistory.push(getNextPhotoURL(), { navigateInfo: { via: "go-right" } });
+    await appHistory.navigate(getNextPhotoURL(), { navigateInfo: { via: "go-right" } });
   }
 });
 
 photoGallery.addEventListener("click", e => {
   if (e.target.closest(".photo-thumbnail")) {
-    await appHistory.push(getPhotoURL(e.target), { navigateInfo: { via: "gallery", thumbnail: e.target } });
+    await appHistory.navigate(getPhotoURL(e.target), { navigateInfo: { via: "gallery", thumbnail: e.target } });
   }
 });
 
@@ -622,7 +620,7 @@ appHistory.addEventListener("navigate", e => {
 });
 ```
 
-Note that in addition to `appHistory.push()` and `appHistory.replace()`, the [previously-discussed](#navigation-through-the-app-history-list) `appHistory.back()`, `appHistory.forward()`, and `appHistory.navigateTo()` methods can also take a `navigateInfo` option.
+Note that in addition to `appHistory.navigate()`, the [previously-discussed](#navigation-through-the-app-history-list) `appHistory.back()`, `appHistory.forward()`, and `appHistory.goTo()` methods can also take a `navigateInfo` option.
 
 #### Example: next/previous buttons
 
@@ -649,7 +647,7 @@ next.onclick = () => {
   if (nextPhotoInHistory === appState.currentPhoto + 1) {
     appHistory.forward();
   } else {
-    appHistory.push(`/photos/${appState.currentPhoto + 1}`);
+    appHistory.navigate(`/photos/${appState.currentPhoto + 1}`);
   }
 };
 
@@ -658,7 +656,7 @@ previous.onclick = () => {
   if (nextPhotoInHistory === appState.currentPhoto - 1) {
     appHistory.back();
   } else {
-    appHistory.push(`/photos/${appState.currentPhoto - 1}`);
+    appHistory.navigate(`/photos/${appState.currentPhoto - 1}`);
   }
 };
 
@@ -712,21 +710,24 @@ The application can use the `navigateto` and `navigatefrom` events to update the
 ```js
 async function showPhoto(photoId) {
   // In our app, the `navigate` handler will take care of actually showing the photo and updating the content area.
-  await appHistory.push(`/photos/${photoId}`, { state: {
+  await appHistory.navigate(`/photos/${photoId}`, { state: {
     dateTaken: null,
     caption: null
   } });
 
   // When we navigate away from this photo, save any changes the user made.
   appHistory.current.addEventListener("navigatefrom", e => {
-    appHistory.update({ state: {
-      dateTaken: document.querySelector("#photo-container > .date-taken").value,
-      caption: document.querySelector("#photo-container > .caption").value
-    } });
+    appHistory.navigate({
+      replace: true,
+      state: {
+        dateTaken: document.querySelector("#photo-container > .date-taken").value,
+        caption: document.querySelector("#photo-container > .caption").value
+      }
+    });
   });
 
   // If we ever navigate back to this photo, e.g. using the browser back button or
-  // appHistory.navigateTo(), restore the input values.
+  // appHistory.goTo(), restore the input values.
   appHistory.current.addEventListener("navigateto", e => {
     const { dateTaken, caption } = appHistory.current.getState();
     document.querySelector("#photo-container > .date-taken").value = dateTaken;
@@ -742,17 +743,17 @@ Finally, there's a `dispose` event, which occurs when an app history entry is pe
 ```js
 const startingKey = appHistory.current.key;
 
-await appHistory.push();
+await appHistory.navigate("/1");
 appHistory.current.addEventListener("dispose", () => console.log(1));
 
-await appHistory.push();
+await appHistory.navigate("/2");
 appHistory.current.addEventListener("dispose", () => console.log(2));
 
-await appHistory.push();
+await appHistory.navigate("/3");
 appHistory.current.addEventListener("dispose", () => console.log(3));
 
-await appHistory.navigateTo(startingKey);
-await appHistory.push();
+await appHistory.goTo(startingKey);
+await appHistory.navigate("/1-b");
 
 // Logs 1, 2, 3 as that branch of the tree gets pruned.
 ```
@@ -763,11 +764,11 @@ This can be useful for cleaning up any information in secondary stores, such as 
 
 **Although the basic idea of an event for when `appHistory.current` changes will probably survive, much of this section needs revamping. See the several discussions linked below.**
 
-The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property. This includes both navigations that change its value, and calls to `appHistory.update()` that change its state or URL. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
+The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property. This includes both navigations that change its value, and calls to `appHistory.navigate()` that change its state or URL. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
 
 This event has one special property, `event.startTime`, which for [same-document](#appendix-types-of-navigations) navigations gives the value of `performance.now()` when the navigation was initiated. This includes for navigations that were originally [cross-document](#appendix-types-of-navigations), like the user clicking on `<a href="https://example.com/another-page">`, but were transformed into same-document navigations by [navigation interception](#navigation-monitoring-and-interception). For completely cross-document navigations, `startTime` will be `null`.
 
-"Initiated" means either when the corresponding API was called (like `location.href` or `appHistory.push()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`. This allows it to be used for determining the overall time from navigation initiation to navigation completion, including the time it took for a promise passed to `e.respondWith()` to settle:
+"Initiated" means either when the corresponding API was called (like `location.href` or `appHistory.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`. This allows it to be used for determining the overall time from navigation initiation to navigation completion, including the time it took for a promise passed to `e.respondWith()` to settle:
 
 ```js
 appHistory.addEventListener("currentchange", e => {
@@ -830,9 +831,9 @@ For web developers using the API, here's a guide to explain how you would replac
 
 ### Performing navigations
 
-Instead of using `history.pushState(state, uselessTitle, url)`, use `await appHistory.push(url, { state })`.
+Instead of using `history.pushState(state, "", url)`, use `await appHistory.navigate(url, { state })` and combine it with a `navigate` handler to convert the default cross-document navigation into a same-document navigation.
 
-Instead of using `history.replaceState(state, uselessTitle, url)`, use `await appHistory.update(url, { state })`. Note that if you omit the state value, i.e. if you say `appHistory.update(url)`, then unlike `history.replaceState()`, this will copy over the current entry's state.
+Instead of using `history.replaceState(state, "", url)`, use `await appHistory.navigate(url, { replace: true, state })`, again combined with a `navigate` handler. Note that if you omit the state value, i.e. if you say `appHistory.navigate(url, { replace: true })`, then unlike `history.replaceState()`, this will copy over the current entry's state.
 
 Instead of using `history.back()` and `history.forward()`, use `await appHistory.back()` and `await appHistory.forward()`. Note that unlike the `history` APIs, the `appHistory` APIs will ignore other frames, and will only control the navigation of your frame. This means it might move through multiple entries in the joint session history, skipping over any entries that were generated purely by other-frame navigations.
 
@@ -858,13 +859,13 @@ if (appHistory.canGoBack) {
 
 Note that unlike the `history` APIs, these `appHistory` APIs will not go to another origin. For example, trying to call `appHistory.back()` when the previous document in the joint session history is cross-origin will return a rejected promise, and trigger the `console.log()` call above.
 
-Instead of using `history.go(offset)`, use `await appHistory.navigateTo(key)` to navigate to a specific entry. As with `back()` and `forward()`, `appHistory.navigateTo()` will ignore other frames, and will only control the navigation of your frame. If you specifically want to reproduce the pattern of navigating by an offset (not recommended), you can use code such as the following:
+Instead of using `history.go(offset)`, use `await appHistory.goTo(key)` to navigate to a specific entry. As with `back()` and `forward()`, `appHistory.goTo()` will ignore other frames, and will only control the navigation of your frame. If you specifically want to reproduce the pattern of navigating by an offset (not recommended), you can use code such as the following:
 
 ```js
 const offsetIndex = appHistory.entries.indexOf(appHistory.current) + offset;
 const entry = appHistory.entries[offsetIndex];
 if (entry) {
-  await appHistory.navigateTo(entry.key);
+  await appHistory.goTo(entry.key);
 }
 ```
 
@@ -902,7 +903,7 @@ you could instead use a `navigate` handler like so:
 <script>
 window.doStuff = async () => {
   await doTheStuff();
-  location.href = "/success-page"; // or appHistory.push("/success-page")
+  location.href = "/success-page"; // or appHistory.navigate("/success-page")
 };
 
 document.addEventListener("navigate", e => {
@@ -915,15 +916,15 @@ document.addEventListener("navigate", e => {
 </script>
 ```
 
-Note how in this case we don't need to use `appHistory.push()`, even though the original code used `history.pushState()`.
+Note how in this case we don't need to use `appHistory.navigate()`, even though the original code used `history.pushState()`.
 
 ### Attaching and using history state
 
-To update the current entry's state, instead of using `history.replaceState(newState)`, use `appHistory.update({ state:  newState })`.
+To update the current entry's state, instead of using `history.replaceState(newState)`, use `appHistory.navigate({ state:  newState })`, combined with a `navigate` handler to convert the cross-document navigation into a same-document one.
 
-To create a new entry with the same URL but a new state value, instead of using `history.pushState(newState)`, use `appHistory.push({ state: newState })`.
+To create a new entry with the same URL but a new state value, instead of using `history.pushState(newState)`, use `appHistory.navigate({ state: newState })`, again combined with a `navigate` handler.
 
-To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, use `appHistory.update()`.
+To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, use `appHistory.navigate()`.
 
 In general, state in app history is expected to be more useful than state in the `window.history` API, because:
 
@@ -989,7 +990,7 @@ Note that the "app history state" field has no interaction with the existing "se
 - Today, the serialized state of a session history entry is only exposed when that entry is the current one. The app history API exposes `appHistoryEntry.getState()` for all entries in `appHistory.entries`. This is not a security issue since all app history entries are same-origin contiguous, but if we exposed the serialized state value even for non-current entries, it might break some assumptions of existing code.
 - Switching to a separate field, accessible only via the `getState()` method, avoids the mutability problems discussed in [#36](https://github.com/WICG/app-history/issues/36). If the object was shared with `history.state`, those problems would be carried over.
 
-Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state, title, and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
+Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
 
 _TODO: actually, we should probably expose scroll restoration mode, like `history.scrollRestoration`? That API has legitimate use cases, and we'd like to allow people to never touch `window.history`... Discuss in [#67](https://github.com/WICG/app-history/issues/67)._
 
@@ -1003,7 +1004,7 @@ Example: consider the following setup.
 
 1. `https://example.com/start` loads.
 1. The user navigates to `https://example.com/outer` by clicking a link. This page contains an iframe with `https://example.com/inner-start`.
-1. Code on `https://example.com/outer` calls `appHistory.push("/outer-pushed")`.
+1. Code on `https://example.com/outer` calls `history.pushState(null, "", "/outer-pushed")`.
 1. The iframe navigates to `https://example.com/inner-end`.
 
 The joint session session history contains four entries:
@@ -1055,7 +1056,7 @@ The app history API doesn't change anything about how user agents implement thei
 
 One consequence of this is that when iframes are involved, the back button may navigate through the joint session history, without changing the current _app history_ entry. This is because, for the most part, the behavior of the back button is the same as that of `history.back()`, which as the previous section showed, only impacts one frame (and thus one app history list) at a time.
 
-Finally, note that user agents can continue to refine their mapping of UI to joint session history to give a better experience. For example, in some cases user agents today have the back button skip joint session history entries which were created without user interaction. We expect this heuristic would continue to be applied for `appHistory.push()`, just like it is for today's `history.pushState()`.
+Finally, note that user agents can continue to refine their mapping of UI to joint session history to give a better experience. For example, in some cases user agents today have the back button skip joint session history entries which were created without user interaction. We expect this heuristic would continue to be applied for same-document entries generated by intercepting the `navigate` event, just like it is for today's `history.pushState()`.
 
 ## Security and privacy considerations
 
@@ -1089,6 +1090,7 @@ See also the [W3C TAG security and privacy questionnaire answers](./security-pri
 This proposal is based on [an earlier revision](https://github.com/slightlyoff/history_api/blob/55b1d7a933cfd2dccddb16668b13dbc9ff06a3f2/navigator.md) by [@tbondwilkinson](https://github.com/tbondwilkinson), which outlined all the same capabilities in a different form. It also incorporates the ideas from [philipwalton@](https://github.com/philipwalton)'s [navigation event proposal](https://github.com/philipwalton/navigation-event-proposal/tree/aa0b688eab37f906660e60af8dc49df04d33c17f).
 
 Thanks also to
+[@annevk](https://github.com/annevk),
 [@chrishtr](https://github.com/chrishtr),
 [@csreis](https://github.com/csreis),
 [@dvoytenko](https://github.com/dvoytenko),
@@ -1103,6 +1105,7 @@ Thanks also to
 [@pshrmn](https://github.com/pshrmn),
 [@SetTrend](https://github.com/SetTrend),
 [@slightlyoff](https://github.com/slightlyoff),
+[@smaug----](https://github.com/smaug----),
 [@torgo](https://github.com/torgo), and
 [@Yay295](https://github.com/Yay295)
 for their help in exploring this space and providing feedback.
@@ -1125,8 +1128,8 @@ The web platform has many ways of initiating a navigation. For the purposes of t
 - Calling `window.open(url, nameOfSomeWindow)` will navigate a window whose `window.name` is `nameOfSomeWindow`
 - `history.back()`, `history.forward()`, and `history.go()`
 - `history.pushState()` and `history.replaceState()`
-- `appHistory.back()`, `appHistory.forward()`, `appHistory.navigateTo()`
-- `appHistory.push()` and `appHistory.update()`
+- `appHistory.back()`, `appHistory.forward()`, `appHistory.goTo()`
+- `appHistory.navigate()`
 - [`document.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/open)
 
 **Cross-document navigations** are navigations where, after the navigation completes, you end up in a different `Document` object than the one you are curently on. Notably, these unload the old document, and stop running any JavaScript code from there.
@@ -1155,8 +1158,8 @@ Here's a summary table:
 |`window.location`|Either|Yes Δ|No|Yes|Yes *|
 |`history.{back,forward,go}()`|Either|Yes|No|Yes|Yes †*|
 |`history.{pushState,replaceState}()`|Same|Yes|No|Yes|Yes|
-|`appHistory.{back,forward,navigateTo}()`|Either|Yes|No|Yes|Yes †*|
-|`appHistory.{push,update}()`|Either|Yes|No|Yes|Yes *|
+|`appHistory.{back,forward,goTo}()`|Either|Yes|No|Yes|Yes †*|
+|`appHistory.navigate()`|Either|Yes|No|Yes|Yes *|
 |`window.open(url, "_self")`|Either|Yes|No|Yes|Yes *|
 |`window.open(url, name)`|Either|Yes Δ|No|Yes|Yes *|
 |`document.open()`|Same|No|—|—|—|
@@ -1187,13 +1190,10 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  Promise<undefined> update(USVString url, optional AppHistoryPushOrUpdateOptions options = {});
-  Promise<undefined> update(optional AppHistoryPushOrUpdateFullOptions options = {}); // one member required: see issue #52
+  Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
+  Promise<undefined> navigate(optional AppHistoryNavigateOptions options = {}); // one non-replace member required: see issue #52
 
-  Promise<undefined> push(USVString url, optional AppHistoryPushOrUpdateOptions options = {});
-  Promise<undefined> push(optional AppHistoryPushOrUpdateFullOptions options = {});
-
-  Promise<undefined> navigateTo(DOMString key, optional AppHistoryNavigationOptions = {});
+  Promise<undefined> goTo(DOMString key, optional AppHistoryNavigationOptions = {});
   Promise<undefined> back(optional AppHistoryNavigationOptions = {});
   Promise<undefined> forward(optional AppHistoryNavigationOptions = {});
 
@@ -1223,12 +1223,9 @@ dictionary AppHistoryNavigationOptions {
   any navigateInfo;
 };
 
-dictionary AppHistoryPushOrUpdateOptions : AppHistoryNavigationOptions {
+dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
   any state;
-};
-
-dictionary AppHistoryPushOrUpdateFullOptions : AppHistoryPushOrUpdateOptions {
-  USVString url;
+  boolean replace = false;
 };
 
 [Exposed=Window]
