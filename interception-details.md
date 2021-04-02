@@ -22,7 +22,7 @@ Synchronously:
 1. `navigate` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
-1. `appHistory.current` updates. `appHistory.current.finished` is `false`.
+1. `appHistory.current` and `appHistory.transition` update.
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
@@ -34,9 +34,10 @@ Asynchronously but basically immediately:
 
 After the promise settles in one microtask:
 
-1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
 1. `navigatesuccess` is fired on `appHistory`.
+1. `appHistory.transition.finished` fulfills.
+1. `appHistory.transition` updates back to null.
 
 ### No interception
 
@@ -87,7 +88,7 @@ Synchronously:
 1. `navigate` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
-1. `appHistory.current` updates. `appHistory.current.finished` is `false`.
+1. `appHistory.current` and `appHistory.transition` update.
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
@@ -100,9 +101,10 @@ Asynchronously but basically immediately:
 
 After the promise fulfills in ten seconds:
 
-1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
 1. `navigatesuccess` is fired on `appHistory`.
+1. `appHistory.transition.finished` fulfills.
+1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
 
 ### Delayed failure
@@ -121,7 +123,7 @@ Synchronously:
 1. `navigate` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
-1. `appHistory.current` updates. `appHistory.current.finished` is `false`.
+1. `appHistory.current` and `appHistory.transition` update.
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
@@ -134,9 +136,10 @@ Asynchronously but basically immediately:
 
 After the promise rejects in ten seconds:
 
-1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
 1. `navigateerror` is fired on `window.appHistory`, with the `new Error("bad")` exception.
+1. `appHistory.transition.finished` rejects, with the `new Error("bad")` exception.
+1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
 
 Note: any unreachable `AppHistoryEntry`s disposed as part of the synchronous block do not get resurrected.
@@ -170,7 +173,7 @@ Synchronously:
 1. `navigate` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/foo"`.
-1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`. `appHistory.current.finished` is `false`.
+1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`, and `appHistory.transition` updates to represent the transition from the starting URL to `/foo`.
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
@@ -184,9 +187,10 @@ Asynchronously but basically immediately:
 After one second:
 
 1. `navigateerror` fires on `window.appHistory`, with an `"AbortError"` `DOMException`.
+1. `appHistory.transition.finished` rejects with that `"AbortError"` `DOMException`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/bar"`.
-1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`. `appHistory.current.finished` is `false`.
+1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`, and `appHistory.transition` updates to represent the transition from `/foo` to `/bar` (_not_ from the starting URL to `/bar`).
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. The `event.signal` for the navigation to `/foo` fires an `"abort"` event.
@@ -202,9 +206,10 @@ After eleven seconds:
 
 1. The `setTimeout()` promise inside the navigation to `/bar` fulfills.
 1. Since `e.signal.aborted` is `false`, the code inside the `navigate` handler updates `document.body.innerHTML`.
-1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
 1. `navigatesuccess` is fired on `appHistory`.
+1. `appHistory.transition.finished` fulfills.
+1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
 
 ### Trying to interrupt a slow navigation, but the `navigate` handler doesn't care
@@ -233,7 +238,7 @@ Synchronously:
 1. `navigate` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/foo"`.
-1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`. `appHistory.current.finished` is `false`.
+1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`, and `appHistory.transition` updates to represent the transition from the starting URL to `/foo`.
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
@@ -249,7 +254,7 @@ After one second:
 1. `navigateerror` fires on `window.appHistory`, with an `"AbortError"` `DOMException`.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/bar"`.
-1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`. `appHistory.current.finished` is `false`.
+1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`, and `appHistory.transition` updates to represent the transition from `/foo` to `/bar` (_not_ from the starting URL to `/bar`).
 1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. The `event.signal` for the navigation to `/foo` fires an `"abort"` event. (But nobody is listening to it.)
@@ -265,7 +270,8 @@ After eleven seconds:
 
 1. The `setTimeout()` promise inside the navigation to `/bar` fulfills.
 1. The code inside the `navigate` handler updates the body to `"navigated to /bar"`. (Now it matches `location.href` again.)
-1. `appHistory.current.finished` changes to `true`.
 1. `appHistory.current` fires `finish`.
 1. `navigatesuccess` is fired on `appHistory`.
+1. `appHistory.transition.finished` fulfills.
+1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
