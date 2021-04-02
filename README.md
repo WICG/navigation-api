@@ -460,6 +460,8 @@ Although calling `event.respondWith()` to [intercept a navigation](#navigation-m
 
 Note that `appHistory.transition.rollback()` is not the same as `appHistory.back()`: for example, if the user navigates two steps back, then `appHistory.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and app history state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
 
+Also note that `appHistory.transition.rollback()` will itself trigger a `navigate` event. This means you can continue to centralize your response to navigations in the `navigate` event handler, i.e. rollback-initiated pushes/replaces/traversals go down the same application code path as other pushes/replaces/traversals.
+
 #### Example: handling failed navigations
 
 To handle failed single-page navigations, i.e. navigations where the promise passed to `event.respondWith()` eventually rejects, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
