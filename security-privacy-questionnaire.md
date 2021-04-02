@@ -58,7 +58,7 @@ So, this can't be used for spoofing the URL by, for example, responding to a nav
 
 **What temporary identifiers do the features in this specification create or expose to the web?**
 
-Each app history entry has an associated auto-generated `key` property, which is a UUID. We believe this is not problematic; see more discussion in [the main explainer](./README.md#security-and-privacy-considerations).
+Each app history entry has associated auto-generated `key` and `id` properties, which are random UUIDs. We believe this is not problematic; see more discussion in [the main explainer](./README.md#security-and-privacy-considerations).
 
 **How does this specification distinguish between behavior in first-party and third-party contexts?**
 
