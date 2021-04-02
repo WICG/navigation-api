@@ -252,7 +252,7 @@ The event object has several useful properties:
 
 - `canRespond`: indicates whether `respondWith()`, discussed below, is allowed for this navigation.
 
-- `type`: either `"push"`, `"replace"`, or `"traversal"`.
+- `type`: either `"push"`, `"replace"`, or `"traverse"`.
 
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
@@ -353,7 +353,7 @@ appHistory.addEventListener("navigate", e => {
 
     let { key } = e.destination;
 
-    if (e.type === "traversal" && myFramework.previousPages.has(key)) {
+    if (e.type === "traverse" && myFramework.previousPages.has(key)) {
       await myFramework.previousPages.get(key).transitionIn();
     } else {
       // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
@@ -424,7 +424,7 @@ This isn't a complete panacea: in particular, such metrics are gameable by bad a
 
 #### Aborted navigations
 
-As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event come with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `respondWith()` settles:
+As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event comes with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `respondWith()` settles:
 
 - The user presses their browser's stop button (or similar UI, such as the <kbd>Esc</kbd> key).
 - Another navigation is started, either by the user or programmatically. This includes back/forward navigations, e.g. the user pressing their browser's back button.
@@ -453,12 +453,12 @@ See [the companion document](./interception-details.md#trying-to-interrupt-a-slo
 
 Although calling `event.respondWith()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `respondWith()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
 
-- `type`: either `"replace"`, `"push"`, or `"traversal"` indicating what type of navigation this is
+- `type`: either `"replace"`, `"push"`, or `"traverse"` indicating what type of navigation this is
 - `previous`: the `AppHistoryEntry` that was the current one before the transition
 - `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `appHistory`, or rejects with the corresponding error when the `navigateerror` event fires on `appHistory`
 - `rollback()`: a promise-returning method which allows easy rollback to the `previous` entry
 
-Note that `appHistory.transition.rollback()` is not the same as `appHistory.back()`: for example, if the user goes back two steps, then `appHistory.rollback()` will actually go forward to steps. Similarly, it handles rolling back replace navigations by doing another replace back to the previous URL and app history state, and it rolls back push navigations by actually removing the entry that was previously pushed instead of leaving it there for the user to reach by pressing their forward button.
+Note that `appHistory.transition.rollback()` is not the same as `appHistory.back()`: for example, if the user navigates two steps back, then `appHistory.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and app history state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
 
 #### Example: handling failed navigations
 
@@ -1251,7 +1251,7 @@ interface AppHistoryEntry : EventTarget {
 enum AppHistoryNavigationType {
   "push",
   "replace",
-  "traversal"
+  "traverse"
 };
 
 dictionary AppHistoryNavigationOptions {
