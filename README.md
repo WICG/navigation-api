@@ -1029,9 +1029,10 @@ Example: if a browsing session contains session history entries with the URLs
 
 then, if the current entry is 4, there would only be one `AppHistoryEntry` in `appHistory.entries`, corresponding to 4 itself. If the current entry is 2, then there would be two `AppHistoryEntries` in `appHistory.entries`, corresponding to 1 and 2.
 
-To make this correspondence work, every spec-level session history entry would gain two new fields:
+To make this correspondence work, every spec-level session history entry would gain three new fields:
 
 - key, containing a browser-generated UUID. This is what backs `appHistoryEntry.key`.
+- id, containing a browser-generated UUID. This is what backs `appHistoryEntry.id`.
 - app history state, containing a JavaScript value. This is what backs `appHistoryEntry.getState()`.
 
 Note that the "app history state" field has no interaction with the existing "serialized state" field, which is what backs `history.state`. This route was chosen for a few reasons:
