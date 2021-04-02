@@ -454,9 +454,9 @@ See [the companion document](./interception-details.md#trying-to-interrupt-a-slo
 Although calling `event.respondWith()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `respondWith()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
 
 - `type`: either `"replace"`, `"push"`, or `"traverse"` indicating what type of navigation this is
-- `previous`: the `AppHistoryEntry` that was the current one before the transition
+- `from`: the `AppHistoryEntry` that was the current one before the transition
 - `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `appHistory`, or rejects with the corresponding error when the `navigateerror` event fires on `appHistory`
-- `rollback()`: a promise-returning method which allows easy rollback to the `previous` entry
+- `rollback()`: a promise-returning method which allows easy rollback to the `from` entry
 
 Note that `appHistory.transition.rollback()` is not the same as `appHistory.back()`: for example, if the user navigates two steps back, then `appHistory.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and app history state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
 
@@ -1229,7 +1229,7 @@ interface AppHistory : EventTarget {
 [Exposed=Window]
 interface AppHistoryTransition {
   readonly attribute AppHistoryNavigationType type;
-  readonly attribute AppHistoryEntry previous;
+  readonly attribute AppHistoryEntry from;
   readonly attribute Promise<undefined> finished;
 
   Promise<undefined> rollback(optional AppHistoryNavigationOptions = {});
