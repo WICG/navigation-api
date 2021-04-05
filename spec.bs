@@ -127,7 +127,7 @@ The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=th
 [Exposed=Window]
 interface AppHistory : EventTarget {
   attribute AppHistoryEntry? current;
-  attribute FrozenArray<AppHistoryEntry> entries;
+  sequence<AppHistoryEntry> entries();
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
@@ -141,15 +141,13 @@ interface AppHistory : EventTarget {
     <p>The current {{AppHistoryEntry}}.
   </dd>
 
-  <dt><code>{{Window/appHistory}} . {{AppHistory/entries}}</code>
+  <dt><code>{{Window/appHistory}} . {{AppHistory/entries()}}</code>
   <dd>
-    <p>A frozen array of {{AppHistoryEntry}} instances represent all entries in the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current one.
+    <p>Returns an array of {{AppHistoryEntry}} instances representing the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
   </dd>
 </dl>
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects.
-
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">entries frozen array</dfn>, a {{FrozenArray}} of {{AppHistoryEntry}} objects.
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer.
 
@@ -162,11 +160,11 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistory">entries</dfn> getter steps are:
+  The <dfn method for="AppHistory">entries()</dfn> method steps are:
 
-  1. TODO need to handle non-active case? Can we guarantee that it returns the same empty frozen array each time though? We were talking about making this a method anyway??
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty list.
 
-  1. Return [=this=]'s [=AppHistory/entries frozen array=].
+  1. Return [=this=]'s [=AppHistory/entries list=].
 </div>
 
 The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
@@ -247,8 +245,6 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     1. Set |index| to |index| + 1.
 
   1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
-
-  1. Set |appHistory|'s [=AppHistory/entries frozen array=] to the result of [=creating a frozen array=] from |newEntryList|.
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
 </div>
@@ -470,7 +466,7 @@ interface AppHistoryEntry : EventTarget {
 
   <dt><code>entry . {{AppHistoryEntry/index}}</code>
   <dd>
-    <p>The index of this app history entry within {{AppHistory/entries|appHistory.entries}}, or &minus;1 if the entry is not in the app history list.
+    <p>The index of this app history entry within {{AppHistory/entries()|appHistory.entries()}}, or &minus;1 if the entry is not in the app history list.
   </dd>
 
   <dt><code>entry . {{AppHistoryEntry/sameDocument}}</code>
