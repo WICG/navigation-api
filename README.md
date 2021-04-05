@@ -75,10 +75,11 @@ appHistory.addEventListener("currentchange", e => {
     - [Restrictions on firing, canceling, and responding](#restrictions-on-firing-canceling-and-responding)
     - [Accessibility benefits of standardized single-page navigations](#accessibility-benefits-of-standardized-single-page-navigations)
     - [Measuring standardized single-page navigations](#measuring-standardized-single-page-navigations)
-    - [Example: handling failed navigations](#example-handling-failed-navigations)
-    - [Example: single-page app "redirects"](#example-single-page-app-redirects)
-    - [Example: cross-origin affiliate links](#example-cross-origin-affiliate-links)
     - [Aborted navigations](#aborted-navigations)
+  - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
+    - [Example: handling failed navigations](#example-handling-failed-navigations)
+    - [Example: single-page app redirects and guards](#example-single-page-app-redirects-and-guards)
+    - [Example: cross-origin affiliate links](#example-cross-origin-affiliate-links)
   - [New navigation API](#new-navigation-api)
     - [Example: using `navigateInfo`](#example-using-navigateinfo)
     - [Example: next/previous buttons](#example-nextprevious-buttons)
@@ -302,6 +303,8 @@ The event object has several useful properties:
 
 - `canRespond`: indicates whether `respondWith()`, discussed below, is allowed for this navigation.
 
+- `type`: either `"push"`, `"replace"`, or `"traverse"`.
+
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
 - `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries`.
@@ -319,11 +322,13 @@ Note that you can check if the navigation will be [same-document or cross-docume
 The event object has a special method `event.respondWith(promise)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
 - Cancel any fragment navigation or cross-document navigation.
-- Immediately update the URL bar, `location.href`, and `appHistory.current`, but with `appHistory.current.finished` set to false.
+- Immediately update the URL bar, `location.href`, and `appHistory.current`.
+- Create the [`appHistory.transition`](#transitional-time-after-navigation-interception) object.
 - Wait for the promise to settle. Once it does:
-  - Update `appHistory.current.finished` to true and fire `finish` on `appHistory.current`.
-  - If it rejects, fire `navigateerror` on `appHistory`.
-  - If it fulfills, fire `navigatesuccess` on `appHistory`.
+  - Fire `finish` on `appHistory.current`.
+  - If it rejects, fire `navigateerror` on `appHistory` and reject `appHistory.transition.finished`.
+  - If it fulfills, fire `navigatesuccess` on `appHistory` and fulfill `appHistory.transition.finished`.
+  - Set `appHistory.transition` to null.
 - For the duration of the promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
 Note that the browser does not wait for the promise to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `appHistory.current`.
@@ -397,10 +402,9 @@ appHistory.addEventListener("navigate", e => {
       await myFramework.currentPage.transitionOut();
     }
 
-    const isBackForward = appHistory.entries.includes(e.destination);
     let { key } = e.destination;
 
-    if (isBackForward && myFramework.previousPages.has(key)) {
+    if (e.type === "traverse" && myFramework.previousPages.has(key)) {
       await myFramework.previousPages.get(key).transitionIn();
     } else {
       // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
@@ -469,76 +473,9 @@ This isn't a complete panacea: in particular, such metrics are gameable by bad a
 
 - We hope that most analytics vendors will come to automatically track `navigate` events as page views, and measure their duration. Then, apps using such analytics vendors would have an incentive to keep their page view statistics meaningful, and thus be disincentivized to generate spurious navigations.
 
-#### Example: handling failed navigations
-
-To handle failed navigations, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
-
-```js
-appHistory.addEventListener("navigateerror", e => {
-  document.body.textContent = `Could not load ${location.href}: ${e.message}`;
-  analyticsPackage.send("navigateerror", { stack: e.error.stack });
-});
-```
-
-To perform a rollback to where the user was previously, with a toast notification, you could do something like:
-
-```js
-appHistory.addEventListener("navigateerror", e => {
-  // Our `navigate` handler will convert this into a same-document navigation.
-  appHistory.back();
-
-  showErrorToast(`Could not load ${location.href}: ${e.message}`);
-});
-```
-
-#### Example: single-page app "redirects"
-
-**This example is likely to get updated per discussions in [#5](https://github.com/WICG/app-history/issues/5).**
-
-A common scenario in web applications with a client-side router is to perform a "redirect" to a login page if you try to access login-guarded information. The following is an example of how one could implement this using the `navigate` event:
-
-```js
-appHistory.addEventListener("navigate", e => {
-  const url = new URL(e.destination.url);
-  if (url.pathname === "/user-profile") {
-    // Cancel the navigation:
-    e.preventDefault();
-
-    // Do another navigation to /login, which will fire a new `navigate` event:
-    location.href = "/login";
-  }
-});
-```
-
-_TODO: should these be combined into a helper method like `e.redirect("/login")`?_
-
-In practice, this might be hidden behind a full router framework, e.g. the Angular framework has a notion of [route guards](https://angular.io/guide/router#preventing-unauthorized-access). Then, the framework would be the one listening to the `navigate` event, looping through its list of registered route guards to figure out the appropriate reaction.
-
-NOTE: if you combine this example with the previous one, it's important that this route guard event handler be installed before the general single-page navigation event handler. Additionally, you'd want to either insert a call to `e.stopImmediatePropagation()` in this example, or a check of `e.defaultPrevented` in that example, to stop the other `navigate` event handler from proceeding with the canceled navigation. In practice, we expect there to be one large application- or framework-level `navigate` event handler, which would take care of ensuring that route guards happen before the other parts of the router logic, and preventing that logic from executing.
-
-#### Example: cross-origin affiliate links
-
-**This example is likely to get updated per discussions in [#5](https://github.com/WICG/app-history/issues/5). Also it currently causes infinite recursion.**
-
-A common [query](https://stackoverflow.com/q/11798336/3191) is how to append affiliate IDs onto links. Although this can be done server-side, sometimes it is convenient to do so client side, especially in the case of dynamic content. Today, this requires intercepting `click` events on `<a>` elements, or using a `MutationObserver` to watch for new link insertions. The `navigate` event provides a simpler way to do this:
-
-```js
-appHistory.addEventListener("navigate", e => {
-  const url = new URL(e.destination.url);
-  if (url.hostname === "store.example.com") {
-    url.queryParams.set("affiliateId", "ead21623-781e-442f-a2c4-6cc1b2a9fda2");
-
-    e.preventDefault();
-    location.href = url;
-  }
-});
-```
-
-_TODO: it feels like this should be less disruptive than a cancel-and-perform-new-navigation; it's just a tweak to the outgoing navigation. Using the same code as the previous example feels wrong. See discussion in [#5](https://github.com/WICG/app-history/issues/5)._
-
 #### Aborted navigations
 
-As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event come with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `respondWith()` settles:
+As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event comes with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `respondWith()` settles:
 
 - The user presses their browser's stop button (or similar UI, such as the <kbd>Esc</kbd> key).
 - Another navigation is started, either by the user or programmatically. This includes back/forward navigations, e.g. the user pressing their browser's back button.
@@ -562,6 +499,86 @@ In this case:
 - Navigation to another URL will not prevent the fact that in ten seconds `document.body.innerHTML`  will be updated to show the original destination URL.
 
 See [the companion document](./interception-details.md#trying-to-interrupt-a-slow-navigation-but-the-navigate-handler-doesnt-care) for full details on exactly what happens in such scenarios.
+
+### Transitional time after navigation interception
+
+Although calling `event.respondWith()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `respondWith()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
+
+- `type`: either `"replace"`, `"push"`, or `"traverse"` indicating what type of navigation this is
+- `from`: the `AppHistoryEntry` that was the current one before the transition
+- `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `appHistory`, or rejects with the corresponding error when the `navigateerror` event fires on `appHistory`
+- `rollback()`: a promise-returning method which allows easy rollback to the `from` entry
+
+Note that `appHistory.transition.rollback()` is not the same as `appHistory.back()`: for example, if the user navigates two steps back, then `appHistory.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and app history state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
+
+Also note that `appHistory.transition.rollback()` will itself trigger a `navigate` event. This means you can continue to centralize your response to navigations in the `navigate` event handler, i.e. rollback-initiated pushes/replaces/traversals go down the same application code path as other pushes/replaces/traversals.
+
+#### Example: handling failed navigations
+
+To handle failed single-page navigations, i.e. navigations where the promise passed to `event.respondWith()` eventually rejects, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
+
+```js
+appHistory.addEventListener("navigateerror", e => {
+  document.body.textContent = `Could not load ${location.href}: ${e.message}`;
+  analyticsPackage.send("navigateerror", { stack: e.error.stack });
+});
+```
+
+This would give your users an experience most like a multi-page application, where server errors or broken links take them to a dedicated, server-generated error page.
+
+To perform a rollback to where the user was previously, with a toast notification, you could do something like:
+
+```js
+appHistory.addEventListener("navigateerror", e => {
+  const attemptedURL = location.href;
+
+  await appHistory.transition.rollback();
+  showErrorToast(`Could not load ${attemptedURL}: ${e.message}`);
+});
+```
+
+#### Example: single-page app redirects and guards
+
+A common scenario in web applications with a client-side router is to perform a "redirect" to a login page if you try to access login-guarded information. Similarly, there's often a desire for some routes to be off-limits. The following is an example of how one could implement these scenarios using the `navigate` event, including determining asynchronously which action is needed:
+
+```js
+appHistory.addEventListener("navigate", e => {
+  e.respondWith((async () => {
+    const result = await determineAction(e.destination);
+
+    if (result.type === "redirect") {
+      await appHistory.transition.rollback();
+      await appHistory.navigate(result.destinationURL, { state: result.destinationState });
+    } else if (result.type === "disallow") {
+      throw new Error(result.disallowReason);
+    } else {
+      // ...
+    }
+  })());
+});
+```
+
+In practice, this might be hidden behind a full router framework, e.g. the Angular framework has a notion of [route guards](https://angular.io/guide/router#preventing-unauthorized-access). Then, the framework would be the one listening to the `navigate` event, looping through its list of registered route guards to figure out the appropriate reaction.
+
+Note how this kind of setup composes well with `navigateerror` handlers from the previous section. For example, consider a situation where the page starts at `/a`, tries to navigate to `/b`, which the `navigate` handler redirects to `/c`, but then when that redirection reaches the `navigate` handler, it says that `/c` is disallowed. In this scenario, a display-an-error `navigateerror` handler would show an error while the URL bar reads `/c`. And a rollback-and-show-toast error handler would roll back from `/c` to `/a` (since the redirect process itself already removed `/b` from consideration).
+
+#### Example: cross-origin affiliate links
+
+**This example is likely to get updated per discussions in [#5](https://github.com/WICG/app-history/issues/5). Also it currently causes infinite recursion.**
+
+A common [query](https://stackoverflow.com/q/11798336/3191) is how to append affiliate IDs onto links. Although this can be done server-side, sometimes it is convenient to do so client side, especially in the case of dynamic content. Today, this requires intercepting `click` events on `<a>` elements, or using a `MutationObserver` to watch for new link insertions. The `navigate` event provides a simpler way to do this:
+
+```js
+appHistory.addEventListener("navigate", e => {
+  const url = new URL(e.destination.url);
+  if (url.hostname === "store.example.com") {
+    url.queryParams.set("affiliateId", "ead21623-781e-442f-a2c4-6cc1b2a9fda2");
+
+    e.preventDefault();
+    location.href = url;
+  }
+});
+```
 
 ### New navigation API
 
@@ -671,7 +688,7 @@ appHistory.addEventListener("navigate", e => {
 });
 ```
 
-Note that in addition to `appHistory.navigate()`, the [previously-discussed](#navigation-through-the-app-history-list) `appHistory.back()`, `appHistory.forward()`, and `appHistory.goTo()` methods can also take a `navigateInfo` option.
+Note that in addition to `appHistory.navigate()`, the [previously-discussed](#navigation-through-the-app-history-list) `appHistory.back()`, `appHistory.forward()`, `appHistory.goTo()`, and `appHistory.transition.rollback()` methods can also take a `navigateInfo` option.
 
 #### Example: next/previous buttons
 
@@ -850,29 +867,33 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
 1. Otherwise:
     1. `appHistory.current` fires `navigatefrom`.
     1. `location.href` updates.
-    1. `appHistory.current` updates. `appHistory.current.finished` is `false`.
+    1. `appHistory.current` updates. `appHistory.transition` is created.
     1. `currentchange` fires on `window.appHistory`.
     1. `appHistory.current` fires `navigateto`.
     1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
     1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.respondWith()`.
     1. After the promise passed to `event.respondWith()` fulfills, or after one microtask if `event.respondWith()` was not called:
-        1. `appHistory.current.finished` changes to `true`.
         1. `appHistory.current` fires `finish`.
         1. `navigatesuccess` is fired on `appHistory`.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets fulfilled.
+        1. `appHistory.transition.finished` fulfills with undefined.
+        1. `appHistory.transition` becomes null.
     1. Alternately, if the promise passed to `event.respondWith()` rejects:
-        1. `appHistory.current.finished` changes to `true`.
         1. `appHistory.current` fires `finish`.
         1. `navigateerror` fires on `window.appHistory` with the rejection reason as its `error` property.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same rejection reason.
+        1. `appHistory.transition.finished` rejects with the same rejection reason.
+        1. `appHistory.transition` becomes null.
     1. Alternately, if the navigation gets [aborted](#aborted-navigations) before either of those two things occur:
-        1. `appHistory.current.finished` stays `false`, and `appHistory.current` never fires the `finish` event.
+        1. (`appHistory.current` never fires the `finish` event.)
         1. `navigateerror` fires on `window.appHistory` with an `"AbortError"` `DOMException` as its `error` property.
         1. Any loading spinner UI stops. (But potentially restarts, or maybe doesn't stop at all, if the navigation was aborted due to a second navigation starting.)
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same `"AbortError"` `DOMException`.
+        1. `appHistory.transition.finished` rejects with the same `"AbortError"` `DOMException`.
+        1. `appHistory.transition` becomes null.
 
 For more detailed analysis, including specific code examples, see [this dedicated document](./interception-details.md).
 
@@ -1143,6 +1164,7 @@ This proposal is based on [an earlier revision](https://github.com/slightlyoff/h
 
 Thanks also to
 [@annevk](https://github.com/annevk),
+[@atscott](https://github.com/atscott),
 [@chrishtr](https://github.com/chrishtr),
 [@csreis](https://github.com/csreis),
 [@dvoytenko](https://github.com/dvoytenko),
@@ -1238,6 +1260,7 @@ partial interface Window {
 [Exposed=Window]
 interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry current;
+  readonly attribute AppHistoryTransition? transition;
   readonly attribute FrozenArray<AppHistoryEntry> entries;
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
@@ -1256,12 +1279,20 @@ interface AppHistory : EventTarget {
 };
 
 [Exposed=Window]
+interface AppHistoryTransition {
+  readonly attribute AppHistoryNavigationType type;
+  readonly attribute AppHistoryEntry from;
+  readonly attribute Promise<undefined> finished;
+
+  Promise<undefined> rollback(optional AppHistoryNavigationOptions = {});
+};
+
+[Exposed=Window]
 interface AppHistoryEntry : EventTarget {
   readonly attribute DOMString key;
   readonly attribute DOMString id;
   readonly attribute USVString url;
   readonly attribute long long index;
-  readonly attribute boolean finished;
   readonly attribute boolean sameDocument;
 
   any getState();
@@ -1270,6 +1301,12 @@ interface AppHistoryEntry : EventTarget {
   attribute EventHandler onnavigatefrom;
   attribute EventHandler onfinish;
   attribute EventHandler ondispose;
+};
+
+enum AppHistoryNavigationType {
+  "push",
+  "replace",
+  "traverse"
 };
 
 dictionary AppHistoryNavigationOptions {
@@ -1285,6 +1322,7 @@ dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
 interface AppHistoryNavigateEvent : Event {
   constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
 
+  readonly attribute AppHistoryNavigationType type;
   readonly attribute boolean canRespond;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
