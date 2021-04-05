@@ -23,25 +23,28 @@ Assume Explicit For: yes
 spec: html; type: element; text: a
 </pre>
 <pre class="anchors">
-spec: html; type: dfn; urlPrefix: https://html.spec.whatwg.org/multipage/
-  text: serialized state; url: history.html#serialized-state
-  text: session history; url: history.html#session-history
-  text: session history entry; url: history.html#session-history-entry
-  for: URL and history update steps
-    text: serializedData; url: history.html#uhus-serializeddata
-    text: isPush; url: history.html#uhus-ispush
-  for: session history
-    text: current entry; url: history.html#current-entry
-  for: session history entry
-    text: document; url: history.html#she-document
-    text: URL; url: history.html#she-url
-  for: history handling behavior
-    text: default; url: browsing-the-web.html#hh-default
-    text: replace; url: browsing-the-web.html#hh-replace
-    text: entry update; url: browsing-the-web.html#hh-entry-update
-  for: navigate
-    text: historyHandling; url: browsing-the-web.html#navigation-hh
-    text: navigationType; url: browsing-the-web.html#navigation-navigationtype
+spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
+  type: dfn
+    text: serialized state; url: history.html#serialized-state
+    text: session history; url: history.html#session-history
+    text: session history entry; url: history.html#session-history-entry
+    for: URL and history update steps
+      text: serializedData; url: history.html#uhus-serializeddata
+      text: isPush; url: history.html#uhus-ispush
+    for: session history
+      text: current entry; url: history.html#current-entry
+    for: session history entry
+      text: document; url: history.html#she-document
+      text: URL; url: history.html#she-url
+    for: history handling behavior
+      text: default; url: browsing-the-web.html#hh-default
+      text: replace; url: browsing-the-web.html#hh-replace
+      text: entry update; url: browsing-the-web.html#hh-entry-update
+    for: navigate
+      text: historyHandling; url: browsing-the-web.html#navigation-hh
+      text: navigationType; url: browsing-the-web.html#navigation-navigationtype
+  type: method
+    for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
   text: generate a random UUID; url: #dfn-generate-a-random-uuid
 </pre>
@@ -147,14 +150,18 @@ interface AppHistory : EventTarget {
   </dd>
 </dl>
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects.
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects, initially empty.
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer.
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
 
 <div algorithm>
   The <dfn attribute for="AppHistory">current</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
+
+  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return null.
+
+     <p class="note">This occurs if accessing the API while on the initial `about:blank` {{Document}}, where the [=AppHistory/update the entries=] algorithm will not yet have been run to completion.
 
   1. Return [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]].
 </div>
@@ -195,6 +202,15 @@ The following are the [=event handlers=] (and their corresponding [=event handle
   1. Let |sessionHistory| be |browsingContext|'s [=session history=].
 
   1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
+
+  <!-- TODO make more precise using https://github.com/whatwg/html/pull/4691 -->
+  1. If |sessionHistory|'s [=list/size=] is 1 and |currentSHE|'s [=session history entry/document=] is the initial `about:blank` {{Document}}, then:
+
+    1. Assert: |appHistory|'s [=AppHistory/entry list=] [=list/is empty=].
+
+    1. Return.
+
+    <p class="note">This can occur if running the <a spec="HTML">URL and history update steps</a>, e.g. via {{Document/open(unused1, unused2)|document.open()}}, on the initial `about:blank` {{Document}}. The app history API chooses not to expose the initial `about:blank` {{Document}}, so we bail early.
 
   1. Let |appHistorySHEs| be a new empty list.
 
@@ -251,6 +267,8 @@ The following are the [=event handlers=] (and their corresponding [=event handle
   1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
+
+  <p class="note">For same-document navigations much of this algorithm becomes a no-op, as only the [=AppHistory/current index=] will ultimately be updated. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
 </div>
 
 <h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
@@ -729,3 +747,5 @@ Potentially update the <a spec="HTML">traverse the history</a> algorithm to cons
 
   1. [=AppHistory/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/app history=].
 </div>
+
+<p class="note">We do not [=AppHistory/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any app history entry list.
