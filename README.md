@@ -39,7 +39,7 @@ A page-supplied "back" button can actually take you back, even after reload, by 
 
 ```js
 backButtonEl.addEventListener("click", () => {
-  if (appHistory.entries[appHistory.entries.current.index - 1]?.url === "/product-listing") {
+  if (appHistory.entries()[appHistory.current.index - 1]?.url === "/product-listing") {
     appHistory.back();
   } else {
     // If the user arrived here by typing the URL directly:
@@ -234,11 +234,13 @@ appHistory.addEventListener("currentchange", () => {
 
 ### Inspection of the app history list
 
-In addition to the current entry, the entire list of app history entries can be inspected, using `appHistory.entries`, which returns a frozen array of `AppHistoryEntry` instances. (Recall that all app history entries are same-origin contiguous entries for the current frame, so this is not a security issue.)
+In addition to the current entry, the entire list of app history entries can be inspected, using `appHistory.entries()`, which returns an array of `AppHistoryEntry` instances. (Recall that all app history entries are same-origin contiguous entries for the current frame, so this is not a security issue.)
 
 This solves the problem of allowing applications to reliably store state in an `AppHistoryEntry`'s state: because they can inspect the values stored in previous entries at any time, it can be used as real application state storage, without needing to keep a side table like one has to do when using `history.state`.
 
-In combination with the following section, the `entries` API also allows applications to display a UI allowing navigation through the app history list.
+Note that we have a method, `appHistory.entries()`, instead of a static array, `appHistory.entries`, to emphasize that retrieving the entries gives you a snapshot at a given point in time. That is, the current set of app history entries could change at any point due to manipulations of the history list, including by the user.
+
+In combination with the following section, the `entries()` API also allows applications to display a UI allowing navigation through the app history list.
 
 ### Navigation through the app history list
 
@@ -307,7 +309,7 @@ The event object has several useful properties:
 
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
-- `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries`.
+- `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries()`.
 
 - `hashChange`: a boolean, indicating whether or not this is a same-document [fragment navigation](https://html.spec.whatwg.org/#scroll-to-fragid).
 
@@ -317,7 +319,7 @@ The event object has several useful properties:
 
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
 
-Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing app history entry (i.e. is a back/forward navigation) via `appHistory.entries.includes(event.destination)`.
+Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing app history entry (i.e. is a back/forward navigation) via `event.type`.
 
 The event object has a special method `event.respondWith(promise)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
@@ -612,7 +614,7 @@ await appHistory.navigate({ state });
 
 Note how unlike `history.pushState()`, `appHistory.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
 
-Regardless of whether the navigation gets converted or not, calling `appHistory.navigate()` in this form will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries` list.)
+Regardless of whether the navigation gets converted or not, calling `appHistory.navigate()` in this form will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries()` list.)
 
 `appHistory.navigate()` also takes a `replace` option, which indicates that it will replace the current history entry in a similar manner to `location.replace()`. It is used as follows:
 
@@ -711,7 +713,7 @@ const previous = document.querySelector("button#previous");
 const permalink = document.querySelector("span#permalink");
 
 next.onclick = () => {
-  const nextPhotoInHistory = photoNumberFromURL(appHistory.entries[appHistory.current.index + 1]?.url);
+  const nextPhotoInHistory = photoNumberFromURL(appHistory.entries()[appHistory.current.index + 1]?.url);
   if (nextPhotoInHistory === appState.currentPhoto + 1) {
     appHistory.forward();
   } else {
@@ -720,7 +722,7 @@ next.onclick = () => {
 };
 
 previous.onclick = () => {
-  const prevPhotoInHistory = photoNumberFromURL(appHistory.entries[appHistory.current.index - 1]?.url);
+  const prevPhotoInHistory = photoNumberFromURL(appHistory.entries()[appHistory.current.index - 1]?.url);
   if (nextPhotoInHistory === appState.currentPhoto - 1) {
     appHistory.back();
   } else {
@@ -934,8 +936,9 @@ Note that unlike the `history` APIs, these `appHistory` APIs will not go to anot
 Instead of using `history.go(offset)`, use `await appHistory.goTo(key)` to navigate to a specific entry. As with `back()` and `forward()`, `appHistory.goTo()` will ignore other frames, and will only control the navigation of your frame. If you specifically want to reproduce the pattern of navigating by an offset (not recommended), you can use code such as the following:
 
 ```js
-const offsetIndex = appHistory.entries.indexOf(appHistory.current) + offset;
-const entry = appHistory.entries[offsetIndex];
+const entries = appHistory.entries();
+const offsetIndex = entries.indexOf(appHistory.current) + offset;
+const entry = entries[offsetIndex];
 if (entry) {
   await appHistory.goTo(entry.key);
 }
@@ -1000,16 +1003,16 @@ To read the current entry's state, instead of using `history.state`, use `appHis
 
 In general, state in app history is expected to be more useful than state in the `window.history` API, because:
 
-- It can be introspected or modified even for the non-current entry, e.g. using `appHistory.entries[i].getState()`.
+- It can be introspected or modified even for the non-current entry, e.g. using `appHistory.entries()[i].getState()`.
 - It is not erased by navigations that are not under the developer's control, such as fragment navigations (for which the state is copied over) and iframe navigations (which don't affect the app history list).
 
 This means that the patterns that are often necessary to reliably store application and UI state with `window.history`, such as maintaining a side-table or using `sessionStorage`, should not be necessary with `window.appHistory`.
 
 ### Introspecting the history list
 
-To see how many history entries are in the app history list, use `appHistory.entries.length`, instead of `history.length`. However, note that the semantics are different: app history entries only include same-origin contiguous entries for the current frame, and so that this doesn't reflect the history before the user arrived at the current origin, or the history of iframes. We believe this will be more useful for the patterns that people want in practice, such as showing an in-application back button if `appHistory.entries.length > 0`.
+To see how many history entries are in the app history list, use `appHistory.entries().length`, instead of `history.length`. However, note that the semantics are different: app history entries only include same-origin contiguous entries for the current frame, and so that this doesn't reflect the history before the user arrived at the current origin, or the history of iframes. We believe this will be more useful for the patterns that people want in practice.
 
-The app history API allows introspecting all entries in the app history list, using `appHistory.entries`. This should replace some of the workarounds people use today with the `window.history` API for getting a sense of the history list, e.g. as described in [whatwg/html#2710](https://github.com/whatwg/html/issues/2710).
+The app history API allows introspecting all entries in the app history list, using `appHistory.entries()`. This should replace some of the workarounds people use today with the `window.history` API for getting a sense of the history list, e.g. as described in [whatwg/html#2710](https://github.com/whatwg/html/issues/2710).
 
 Finally, note that `history.length` is highly non-interoperable today, in part due to the complexity of the joint session history model, and in part due to historical baggage. `appHistory`'s less complex model, and the fact that it will be developed in the modern era when there's a high focus on ensuring interoperability through web platform tests, means that using it should allow developers to avoid cross-browser issues with `history.length`.
 
@@ -1031,7 +1034,7 @@ At a high level, app history is meant to be a layer on top of the HTML Standard'
 
 This is done through:
 
-- Ensuring that app history entries map directly to the specification's existing history entries. The `appHistory.entries` API only presents a subset of them, namely same-frame contiguous, same-origin ones, but each is backed by an existing entry.
+- Ensuring that app history entries map directly to the specification's existing history entries. The `appHistory.entries()` API only presents a subset of them, namely same-frame contiguous, same-origin ones, but each is backed by an existing entry.
 
 - Ensuring that traversal through app history always maps to a traversal through the joint session history, i.e. a traversal which is already possible today.
 
@@ -1048,7 +1051,7 @@ Example: if a browsing session contains session history entries with the URLs
 4. https://example.com/baz
 ```
 
-then, if the current entry is 4, there would only be one `AppHistoryEntry` in `appHistory.entries`, corresponding to 4 itself. If the current entry is 2, then there would be two `AppHistoryEntries` in `appHistory.entries`, corresponding to 1 and 2.
+then, if the current entry is 4, there would only be one `AppHistoryEntry` in `appHistory.entries()`, corresponding to 4 itself. If the current entry is 2, then there would be two `AppHistoryEntry`s in `appHistory.entries()`, corresponding to 1 and 2.
 
 To make this correspondence work, every spec-level session history entry would gain three new fields:
 
@@ -1060,7 +1063,7 @@ Note that the "app history state" field has no interaction with the existing "se
 
 - The desired semantics of app history state is that it be carried over on fragment navigations, whereas `history.state` is not carried over. (This is a hard blocker.)
 - A clean separation can help when a page contains code that uses both `window.history` and `window.appHistory`. That is, it's convenient that existing code using `window.history` does not inadvertently mess with new code that does state management using `window.appHistory`.
-- Today, the serialized state of a session history entry is only exposed when that entry is the current one. The app history API exposes `appHistoryEntry.getState()` for all entries in `appHistory.entries`. This is not a security issue since all app history entries are same-origin contiguous, but if we exposed the serialized state value even for non-current entries, it might break some assumptions of existing code.
+- Today, the serialized state of a session history entry is only exposed when that entry is the current one. The app history API exposes `appHistoryEntry.getState()` for all entries in `appHistory.entries()`. This is not a security issue since all app history entries are same-origin contiguous, but if we exposed the serialized state value even for non-current entries, it might break some assumptions of existing code.
 - Switching to a separate field, accessible only via the `getState()` method, avoids the mutability problems discussed in [#36](https://github.com/WICG/app-history/issues/36). If the object was shared with `history.state`, those problems would be carried over.
 
 Apart from these new fields, the session history entries which correspond to `AppHistoryEntry` objects will continue to manage other fields like document, scroll restoration mode, scroll position data, and persisted user state behind the scenes, in the usual way. The serialized state and browsing context name fields would continue to work if they were set or accessed via the usual APIs, but they don't have any manifestation inside the app history APIs, and will be left as null by applications that avoid `window.history` and `window.name`.
@@ -1071,7 +1074,7 @@ _TODO: actually, we should probably expose scroll restoration mode, like `histor
 
 The view of history which the user sees, and which is traversable with existing APIs like `history.go()`, is the joint session history.
 
-Unlike the view of history presented by `window.history`, `window.appHistory` only gives a view onto session history entries for the current browsing session. This view does not present the joint session history, i.e. it is not impacted by frames. Notably, this means `appHistory.entries.length` is likely to be quite different from `history.length`.
+Unlike the view of history presented by `window.history`, `window.appHistory` only gives a view onto session history entries for the current browsing session. This view does not present the joint session history, i.e. it is not impacted by frames. Notably, this means `appHistory.entries().length` is likely to be quite different from `history.length`.
 
 Example: consider the following setup.
 
@@ -1261,7 +1264,8 @@ partial interface Window {
 interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry current;
   readonly attribute AppHistoryTransition? transition;
-  readonly attribute FrozenArray<AppHistoryEntry> entries;
+  sequence<AppHistoryEntry> entries();
+
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
