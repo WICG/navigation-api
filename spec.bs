@@ -206,6 +206,8 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 
     1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/prepend=] |she| to |appHistorySHEs|.
 
+    1. Otherwise, [=iteration/break=].
+
     1. Set |backwardIndex| to |backwardIndex| &minus; 1.
 
   1. Let |forwardIndex| be the index of |currentSHE| within |sessionHistory|.
@@ -215,6 +217,8 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     1. Let |she| be |sessionHistory|[|forwardIndex|].
 
     1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/append=] |she| to |appHistorySHEs|.
+
+    1. Otherwise, [=iteration/break=].
 
     1. Set |forwardIndex| to |forwardIndex| + 1.
 
