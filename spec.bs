@@ -268,7 +268,7 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
 
-  <p class="note">For same-document navigations much of this algorithm becomes a no-op, as only the [=AppHistory/current index=] will ultimately be updated. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
+  <p class="note">For same-document navigations only the [=AppHistory/current index=] an the [=AppHistoryEntry/index|indices=] of the various {{AppHistoryEntry}} objects will ultimately be updated by this algorithm. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
 </div>
 
 <h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
