@@ -132,6 +132,9 @@ interface AppHistory : EventTarget {
   attribute AppHistoryEntry? current;
   sequence<AppHistoryEntry> entries();
 
+  readonly attribute boolean canGoBack;
+  readonly attribute boolean canGoForward;
+
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
@@ -147,6 +150,16 @@ interface AppHistory : EventTarget {
   <dt><code>{{Window/appHistory}} . {{AppHistory/entries()}}</code>
   <dd>
     <p>Returns an array of {{AppHistoryEntry}} instances representing the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
+  </dd>
+
+  <dt><code>{{Window/appHistory}} . {{AppHistory/canGoBack}}</code>
+  <dd>
+    <p>Returns true if the current {{AppHistoryEntry}} is not the first one in the app history entries list.
+  </dd>
+
+  <dt><code>{{Window/appHistory}} . {{AppHistory/canGoForward}}</code>
+  <dd>
+    <p>Returns true if the current {{AppHistoryEntry}} is not the last one in the app history entries list.
   </dd>
 </dl>
 
@@ -172,6 +185,30 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty list.
 
   1. Return [=this=]'s [=AppHistory/entries list=].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">canGoBack</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return false.
+
+  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return false.
+
+  1. If [=this=]'s [=AppHistory/current index=] is 0, then return false.
+
+  1. Return true.
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">canGoForward</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return false.
+
+  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return false.
+
+  1. If [=this=]'s [=AppHistory/current index=] is equal to [=this=]'s [=AppHistory/entry list=]'s [=list/size=] &minus; 1, then return false.
+
+  1. Return true.
 </div>
 
 The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
