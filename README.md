@@ -305,7 +305,7 @@ The event object has several useful properties:
 
 - `canRespond`: indicates whether `respondWith()`, discussed below, is allowed for this navigation.
 
-- `type`: either `"push"`, `"replace"`, or `"traverse"`.
+- `navigationType`: either `"push"`, `"replace"`, or `"traverse"`.
 
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
@@ -319,7 +319,7 @@ The event object has several useful properties:
 
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
 
-Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing app history entry (i.e. is a back/forward navigation) via `event.type`.
+Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing app history entry (i.e. is a back/forward navigation) via `event.navigationType`.
 
 The event object has a special method `event.respondWith(promise)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
@@ -406,7 +406,7 @@ appHistory.addEventListener("navigate", e => {
 
     let { key } = e.destination;
 
-    if (e.type === "traverse" && myFramework.previousPages.has(key)) {
+    if (e.navigationType === "traverse" && myFramework.previousPages.has(key)) {
       await myFramework.previousPages.get(key).transitionIn();
     } else {
       // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
@@ -506,7 +506,7 @@ See [the companion document](./interception-details.md#trying-to-interrupt-a-slo
 
 Although calling `event.respondWith()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `respondWith()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
 
-- `type`: either `"replace"`, `"push"`, or `"traverse"` indicating what type of navigation this is
+- `navigationType`: either `"replace"`, `"push"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `AppHistoryEntry` that was the current one before the transition
 - `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `appHistory`, or rejects with the corresponding error when the `navigateerror` event fires on `appHistory`
 - `rollback()`: a promise-returning method which allows easy rollback to the `from` entry
@@ -1284,7 +1284,7 @@ interface AppHistory : EventTarget {
 
 [Exposed=Window]
 interface AppHistoryTransition {
-  readonly attribute AppHistoryNavigationType type;
+  readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute AppHistoryEntry from;
   readonly attribute Promise<undefined> finished;
 
@@ -1326,7 +1326,7 @@ dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
 interface AppHistoryNavigateEvent : Event {
   constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
 
-  readonly attribute AppHistoryNavigationType type;
+  readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute boolean canRespond;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
@@ -1339,7 +1339,7 @@ interface AppHistoryNavigateEvent : Event {
 };
 
 dictionary AppHistoryNavigateEventInit : EventInit {
-  AppHistoryNavigationType type = "push";
+  AppHistoryNavigationType navigationType = "push";
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
