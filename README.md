@@ -1339,6 +1339,7 @@ interface AppHistoryNavigateEvent : Event {
 };
 
 dictionary AppHistoryNavigateEventInit : EventInit {
+  AppHistoryNavigationType type = "push";
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
