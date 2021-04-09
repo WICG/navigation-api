@@ -263,7 +263,9 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 
     1. Set |backwardIndex| to |backwardIndex| &minus; 1.
 
-  1. Let |forwardIndex| be the index of |currentSHE| within |sessionHistory|.
+  1. [=list/Append=] |currentSHE| to |appHistorySHEs|.
+
+  1. Let |forwardIndex| be the index of |currentSHE| within |sessionHistory|, plus 1.
 
   1. While |forwardIndex| &lt; |sessionHistory|'s [=list/size=]:
 
