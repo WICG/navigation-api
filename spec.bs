@@ -743,7 +743,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
 <h2 id="session-history-patches">Patches to session history</h2>
 
-This section details monkeyaptches to [[!HTML]] to track appropriate data for associating an {{AppHistory}} with a [=session history entry=].
+This section details monkeypatches to [[!HTML]] to track appropriate data for associating an {{AppHistory}} with a [=session history entry=].
 
 <h3 id="session-history-new-she-fields">New [=session history entry=] items</h3>
 
@@ -759,11 +759,15 @@ Each [=session history entry=] gains the following new [=struct/items=]:
 
 <h3 id="session-history-patches-key">Carrying over the app history key</h3>
 
-Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" case to set <var ignore>newEntry</var>'s [=session history entry/app history key=] to <var ignore>sessionHistory</var>'s [=session history/current entry=]'s [=session history entry/app history key=].
+<div algorithm="update the session history with the new page key patch">
+  Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" case by adding the following step after the construction of |newEntry|:
+
+  1. If |newEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |sessionHistory|'s [=session history/current entry=]'s [=session history entry/origin=], then set |newEntry|'s [=session history entry/app history key=] to |sessionHistory|'s [=session history/current entry=]'s [=session history entry/app history key=].
+</div>
 
 <h3 id="session-history-patches-origin">Tracking the [=session history entry/origin=] member</h3>
 
-Update the <a spec="HTML">update the session history with the new page</a> algorithm to set the [=session history entry=]'s [=session history entry/origin=] to <var ignore>newDocument</var>'s [=Document/origin=].
+Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" and "<a for="history handling behavior">`default`</a>" cases to set <var ignore>newEntry</var>'s [=session history entry/origin=] to <var ignore>newDocument</var>'s [=Document/origin=] as part of its creation.
 
 Update the <a spec="HTML">navigate to a fragment</a> algorithm to set the new [=session history entry=]'s [=session history entry/origin=] to the [=session history/current entry=]'s [=session history entry/document=]'s [=Document/origin=].
 
