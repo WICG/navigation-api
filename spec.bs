@@ -264,6 +264,7 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
 <hr>
 
 <div algorithm="fire a navigate event">
+  <!-- TODO: refactor this into two algorithms, one for traverse and one for push/replace? Probably only after we introduce event.destination. -->
   To <dfn>fire a `navigate` event</dfn> at an {{AppHistory}} |appHistory| given an {{AppHistoryNavigationType}} <dfn for="fire a navigate event">|navigationType|</dfn>, a boolean <dfn for="fire a navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional value |navigateInfo| (default null), an optional [=list=] of {{FormData}} [=FormData/entries=] or null <dfn for="fire a navigate event">|formDataEntryList|</dfn> (default null), an optional [=URL=] <dfn for="fire a navigate event">|destinationURL|</dfn>, an optional [=serialized state=]-or-null <dfn for="fire a navigate event">|classicHistoryAPISerializedData|</dfn> (default null), and an optional [=session history entry=] <dfn for="fire a navigate event">|destinationEntry|</dfn>:
 
   1. Let |realm| be |appHistory|'s [=relevant Realm=].
@@ -277,7 +278,8 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
     1. Set |event|'s [=AppHistoryNavigateEvent/destination URL=] to |destinationURL|.
     1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
   1. Otherwise:
-    1. [=Assert=]: |destinationEntry| was given, and |destinationURL| and |classicHistoryAPISerializedData| were not.
+    1. [=Assert=]: |destinationEntry| was given
+    1. [=Assert=]: |destinationURL| was not given, and |classicHistoryAPISerializedData| and |formDataEntryList| are null.
     1. Set |event|'s [=AppHistoryNavigateEvent/destination entry=] to |destinationEntry|.
   1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
   1. If all of the following are true:
