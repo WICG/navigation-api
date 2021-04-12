@@ -1262,7 +1262,7 @@ partial interface Window {
 
 [Exposed=Window]
 interface AppHistory : EventTarget {
-  readonly attribute AppHistoryEntry current;
+  readonly attribute AppHistoryEntry? current;
   readonly attribute AppHistoryTransition? transition;
   sequence<AppHistoryEntry> entries();
 
