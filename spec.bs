@@ -238,10 +238,7 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 
   1. Let |sessionHistory| be |browsingContext|'s [=session history=].
 
-  1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
-
-  <!-- TODO make more precise using https://github.com/whatwg/html/pull/4691 -->
-  1. If |sessionHistory|'s [=list/size=] is 1 and |currentSHE|'s [=session history entry/document=] is the initial `about:blank` {{Document}}, then:
+  1. If |browsingContext| is <a spec="HTML">still on its initial `about:blank` `Document`</a>, then:
 
     1. Assert: |appHistory|'s [=AppHistory/entry list=] [=list/is empty=].
 
@@ -250,6 +247,8 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     <p class="note">This can occur if running the <a spec="HTML">URL and history update steps</a>, e.g. via {{Document/open(unused1, unused2)|document.open()}}, on the initial `about:blank` {{Document}}. The app history API chooses not to expose the initial `about:blank` {{Document}}, so we bail early.
 
   1. Let |appHistorySHEs| be a new empty list.
+
+  1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
 
   1. Let |backwardIndex| be the index of |currentSHE| within |sessionHistory|, minus 1.
 
@@ -307,7 +306,7 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
 
-  <p class="note">For same-document navigations only the [=AppHistory/current index=] an the [=AppHistoryEntry/index|indices=] of the various {{AppHistoryEntry}} objects will ultimately be updated by this algorithm. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
+  <p class="note">For same-document navigations only the [=AppHistory/current index=] and the [=AppHistoryEntry/index|indices=] of the various {{AppHistoryEntry}} objects will ultimately be updated by this algorithm. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
 </div>
 
 <h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
@@ -532,7 +531,7 @@ interface AppHistoryEntry : EventTarget {
 
   <dt><code>entry . {{AppHistoryEntry/sameDocument}}</code>
   <dd>
-    <p>Indicates whether or not this app history entry is for the same {{Document}} as the current {{Window/document}} object, or not. This will be true, for example, in cases of fragment navigations or single-page app navigations.
+    <p>Indicates whether or not this app history entry is for the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, in cases of fragment navigations or single-page app navigations.
   </dd>
 
   <dt><code>entry . {{AppHistoryEntry/getState()}}</code>
@@ -586,7 +585,7 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
 </div>
 
 <div algorithm>
-  The <dfn method for="AppHistoryEntry">getState()</dfn> getter steps are:
+  The <dfn method for="AppHistoryEntry">getState()</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
   1. If [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] is null, then return null.
