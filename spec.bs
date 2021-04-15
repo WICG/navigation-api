@@ -331,7 +331,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   <dt><code>await {{Window/appHistory}} . {{AppHistory/navigate(options)|navigate}}(<var ignore>options</var>)</code>
   <dd>
-    <p>Navigates to the same URL as the current page. <var ignore>options</var> can contain {{AppHistoryNavigationOptions/navigateInfo}} and {{AppHistoryNavigateOptions/state}} which behave as described above.
+    <p>Navigates to the same URL as the current page. <var ignore>options</var> must contain at least one of {{AppHistoryNavigationOptions/navigateInfo}} or {{AppHistoryNavigateOptions/state}}, which behave as described above.
 
     <p>The default behavior of performing a full navigation to the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}.
 
