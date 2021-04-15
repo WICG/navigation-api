@@ -158,6 +158,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</d
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
 
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate method call promise</dfn>, which is either a {{Promise}} or null, initially null.
+
 <h3 id="entries-api">Introspecting the app history entry list</h3>
 
 <dl class="domintro non-normative">
@@ -309,8 +311,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 <h3 id="global-navigate">Navigating</h3>
 
 <dl class="domintro non-normative">
-  <dt><code>{{Window/appHistory}} . {{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>)</code>
-  <dt><code>{{Window/appHistory}} . {{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>, <var ignore>options</var>)</code>
+  <dt><code>await {{Window/appHistory}} . {{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>)</code>
+  <dt><code>await {{Window/appHistory}} . {{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>, <var ignore>options</var>)</code>
   <dd>
     <p>Navigates the current page to the given <var ignore>url</var>. <var ignore>options</var> can contain the following values:
 
@@ -319,13 +321,21 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
     * {{AppHistoryNavigateOptions/state}} can be set to any value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method can be used to convert it into a same-document navigation.
+
+    <p>The returned promise will behave as follows:
+
+    * For same-document navigations created by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method, it will fulfill or reject according to the promise passed to {{AppHistoryNavigateEvent/respondWith()}}.
+    * For other same-document navigations (e.g., non-intercepted <a spec="HTML" lt="navigate to a fragment">fragment navigations</a>), it will fulfill immediately.
+    * For cross-document navigations, it will never settle.
   </dd>
 
-  <dt><code>{{Window/appHistory}} . {{AppHistory/navigate(options)|navigate}}(<var ignore>options</var>)</code>
+  <dt><code>await {{Window/appHistory}} . {{AppHistory/navigate(options)|navigate}}(<var ignore>options</var>)</code>
   <dd>
     <p>Navigates to the same URL as the current page. <var ignore>options</var> can contain {{AppHistoryNavigationOptions/navigateInfo}} and {{AppHistoryNavigateOptions/state}} which behave as described above.
 
     <p>The default behavior of performing a full navigation to the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}.
+
+    <p>The returned promise behaves as described above.
   </dd>
 </dl>
 
@@ -334,27 +344,41 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
   1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=a promise rejected with=] a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
-  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] [=map/exists=] and is true; otherwise, "<a for="history handling behavior">`default`</a>".
-
-  1. Let |browsingContext| be [=this=]'s [=relevant global object=]'s [=Window/browsing context=].
-
-  1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
-
-  1. <a spec="HTML">Navigate</a> |browsingContext| to |urlRecord| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryInfo=]</i> set to |navigateInfo|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, and |options|.
 </div>
 
 <div algorithm>
   The <dfn method for="AppHistory">navigate(|options|)</dfn> method steps are:
 
-  1. If neither |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] nor |options|["{{AppHistoryNavigateOptions/state}}"] exists, then return [=a promise rejected with=] a {{TypeError}}.
+  1. If neither |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] nor |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then return [=a promise rejected with=] a {{TypeError}}.
+
+  1. Set |options|["{{AppHistoryNavigateOptions/replace}}"] to true.
 
   1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
 
-  1. Let |browsingContext| be [=this=]'s [=relevant global object=]'s [=Window/browsing context=].
+  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, and |options|.
+</div>
+
+<div algorithm>
+  To <dfn>perform an app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, and an {{AppHistoryNavigateOptions}} |options|:
+
+  1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
+
+  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] [=map/exists=] and is true; otherwise, "<a for="history handling behavior">`default`</a>".
 
   1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
 
-  1. <a spec="HTML">Navigate</a> |browsingContext| to |urlRecord| with <i>[=navigate/appHistoryInfo=]</i> set to |navigateInfo| and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+  1. Let |promise| be [=a new promise=] created in |appHistory|'s [=relevant Realm=].
+
+  1. Let |previousPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
+
+  1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |promise|.
+
+  1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryInfo=]</i> set to |navigateInfo|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+
+  1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |previousPromise|.
+
+  1. Return |promise|.
 </div>
 
 <p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{AppHistory/navigate()|appHistory.navigate()}} can only be accessed by code with direct synchronous access to the {{Window/appHistory}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{AppHistory}} object itself.
@@ -536,6 +560,11 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
      <p class="note">This can occurr if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, or both |result| and |isSameDocument| are true, then:
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, then set it to [=a promise resolved with=] undefined, created in |realm|.
+    1. Let |navigateMethodCallPromise| be [=this=]'s [=AppHistory/navigate method call promise=].
+    1. If |navigateMethodCallPromise| is non-null, then [=promise/react=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps given |fulfillmentValue|:
+        1. [=Resolve=] |navigateMethodCallPromise| with |fulfillmentValue|.
+      and the following rejection steps given |rejectionReason|:
+        1. [=Reject=] |navigateMethodCallPromise| with |rejectionReason|.
     1. [=promise/React=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps:
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
       and the following rejection steps given reason |rejectionReason|:
