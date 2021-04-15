@@ -354,6 +354,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. Set |options|["{{AppHistoryNavigateOptions/replace}}"] to true.
 
+     <p class="note">This is not technically necessary, as the main <a spec="HTML">navigate</a> algorithm will override any non-"<a for="history handling behavior">`replace`</a>" history handling behavior for same-URL navigations.
+
   1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
 
   1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, and |options|.
