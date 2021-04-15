@@ -43,6 +43,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
     for: navigate
       text: historyHandling; url: browsing-the-web.html#navigation-hh
       text: navigationType; url: browsing-the-web.html#navigation-navigationtype
+      text: exceptionsEnabled; url: browsing-the-web.html#exceptions-enabled
   type: method
     for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
@@ -135,11 +136,29 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
+  Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
+  Promise<undefined> navigate(optional AppHistoryNavigateOptions options = {});
+
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
 };
+
+dictionary AppHistoryNavigationOptions {
+  any navigateInfo;
+};
+
+dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
+  any state;
+  boolean replace = false;
+};
 </xmp>
+
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects, initially empty.
+
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
+
+<h3 id="entries-api">Introspecting the app history entry list</h3>
 
 <dl class="domintro non-normative">
   <dt><code>{{Window/appHistory}} . {{AppHistory/current}}</code>
@@ -162,10 +181,6 @@ interface AppHistory : EventTarget {
     <p>Returns true if the current {{AppHistoryEntry}} is not the last one in the app history entries list.
   </dd>
 </dl>
-
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects, initially empty.
-
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
 
 <div algorithm>
   The <dfn attribute for="AppHistory">current</dfn> getter steps are:
@@ -211,25 +226,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. Return true.
 </div>
 
-The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
-
-<table>
-  <thead>
-    <th>[=Event handler=]
-    <th>[=Event handler event type=]
-  <tbody>
-    <tr>
-      <td><dfn attribute for="AppHistory">onnavigate</dfn>
-      <td><dfn event for="AppHistory">navigate</dfn>
-    <tr>
-      <td><dfn attribute for="AppHistory">onnavigatesuccess</dfn>
-      <td><dfn event for="AppHistory">navigatesuccess</dfn>
-    <tr>
-      <td><dfn attribute for="AppHistory">onnavigateerror</dfn>
-      <td><dfn event for="AppHistory">navigateerror</dfn>
-</table>
-
-<div algoithm>
+<div algorithm>
   To <dfn for="AppHistory">update the entries</dfn> for an {{AppHistory}} instance |appHistory|:
 
   1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=associated Document=]'s [=Document/browsing context=].
@@ -308,6 +305,75 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 
   <p class="note">For same-document navigations only the [=AppHistory/current index=] and the [=AppHistoryEntry/index|indices=] of the various {{AppHistoryEntry}} objects will ultimately be updated by this algorithm. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
 </div>
+
+<h3 id="global-navigate">Navigating</h3>
+
+<dl class="domintro non-normative">
+  <dt><code>{{Window/appHistory}} . {{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>)</code>
+  <dt><code>{{Window/appHistory}} . {{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>, <var ignore>options</var>)</code>
+  <dd>
+    <p>Navigates the current page to the given <var ignore>url</var>. <var ignore>options</var> can contain the following values:
+
+    * {{AppHistoryNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one
+    * {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    * {{AppHistoryNavigateOptions/state}} can be set to any value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
+
+    <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method can be used to convert it into a same-document navigation.
+  </dd>
+
+  <dt><code>{{Window/appHistory}} . {{AppHistory/navigate(options)|navigate}}(<var ignore>options</var>)</code>
+  <dd>
+    <p>Navigates to the same URL as the current page. <var ignore>options</var> can contain {{AppHistoryNavigationOptions/navigateInfo}} and {{AppHistoryNavigateOptions/state}} which behave as described above.
+
+    <p>The default behavior of performing a full navigation to the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}.
+  </dd>
+</dl>
+
+<div algorithm>
+  The <dfn method for="AppHistory">navigate(|url|, |options|)</dfn> method steps are:
+
+  1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=a promise rejected with=] a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
+
+  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
+
+  1. Let |browsingContext| be [=this=]'s [=relevant global object=]'s [=Window/browsing context=].
+
+  1. <a spec="HTML">Navigate</a> |browsingContext| to |urlRecord| with <i>[=navigate/historyHandling=]</i> set to |historyHandling| and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+</div>
+
+<div algorithm>
+  The <dfn method for="AppHistory">navigate(|options|)</dfn> method steps are:
+
+  1. If neither |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] nor |options|["{{AppHistoryNavigateOptions/state}}"] exists, then return [=a promise rejected with=] a {{TypeError}}.
+
+  1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
+
+  1. Let |browsingContext| be [=this=]'s [=relevant global object=]'s [=Window/browsing context=].
+
+  1. <a spec="HTML">Navigate</a> |browsingContext| to |urlRecord| with the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+</div>
+
+<p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{AppHistory/navigate()|appHistory.navigate()}} can only be accessed by code with direct synchronous access to the {{Window/appHistory}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{AppHistory}} object itself.
+
+<h3 id="global-events">Event handlers</h3>
+
+The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
+
+<table>
+  <thead>
+    <th>[=Event handler=]
+    <th>[=Event handler event type=]
+  <tbody>
+    <tr>
+      <td><dfn attribute for="AppHistory">onnavigate</dfn>
+      <td><dfn event for="AppHistory">navigate</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistory">onnavigatesuccess</dfn>
+      <td><dfn event for="AppHistory">navigatesuccess</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistory">onnavigateerror</dfn>
+      <td><dfn event for="AppHistory">navigateerror</dfn>
+</table>
 
 <h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
 
