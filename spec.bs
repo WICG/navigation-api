@@ -331,7 +331,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   <dt><code>await {{Window/appHistory}} . {{AppHistory/navigate(options)|navigate}}(<var ignore>options</var>)</code>
   <dd>
-    <p>Navigates to the same URL as the current page. <var ignore>options</var> must contain at least one of {{AppHistoryNavigationOptions/navigateInfo}} or {{AppHistoryNavigateOptions/state}}, which behave as described above.
+    <p>Navigates to the same URL as the current page. <var ignore>options</var> needs to contain at least one of {{AppHistoryNavigationOptions/navigateInfo}} or {{AppHistoryNavigateOptions/state}}, which behave as described above.
 
     <p>The default behavior of performing a full navigation to the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}.
 
@@ -806,7 +806,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 <div algorithm="navigate to a fragment">
   Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
 
-  1. Let |appHistory| be the <a spec="HTML">current entry</a>'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
+  1. Let |appHistory| be the [=session history/current entry=]'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |navigationType| be "{{AppHistoryNavigationType/push}}" if <var ignore>historyHandling</var> is "<a spec="HTML" for="history handling behavior">`default`</a>"; otherwise, "{{AppHistoryNavigationType/replace}}".
   1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| given with <i>[=fire a navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a navigate event/isSameDocument=]</i> set to true, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/destinationURL=]</i> set to <var ignore>url</var>.
   1. If |continue| is false, return.
