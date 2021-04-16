@@ -564,7 +564,7 @@ An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">
 The <dfn attribute for="AppHistoryDestination">url</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/URL=], [=URL serializer|serialized=].
 
 <div algorithm>
-  The <dfn method for="AppHistoryDestination">getState()</dfn> method are:
+  The <dfn method for="AppHistoryDestination">getState()</dfn> method steps are:
 
   1. If [=this=]'s [=AppHistoryDestination/state=] is null, then return null.
   1. Return [$StructuredDeserialize$]([=this=]'s [=AppHistoryDestination/state=]).
@@ -590,7 +590,7 @@ The <dfn attribute for="AppHistoryDestination">url</dfn> getter steps are to ret
     1. Set |destination|'s [=AppHistoryDestination/state=] to |state|.
   1. Otherwise:
     1. [=Assert=]: |destinationEntry| was given.
-    1. [=Assert=]: |destinationURL| was not given, and |classicHistoryAPISerializedData| and |formDataEntryList| are null.
+    1. [=Assert=]: |destinationURL| was not given, and |classicHistoryAPISerializedData|, |formDataEntryList|, and |state| are all null.
     1. Set |event|'s [=AppHistoryNavigateEvent/destination entry=] to |destinationEntry|.
     1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
     1. Set |destination|'s [=AppHistoryDestination/state=] to |destinationEntry|'s [=session history entry/app history state=].
