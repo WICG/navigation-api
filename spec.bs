@@ -506,14 +506,10 @@ enum AppHistoryNavigationType {
 
 The <dfn attribute for="AppHistoryNavigateEvent">navigationType</dfn>, <dfn attribute for="AppHistoryNavigateEvent">destination</dfn>, <dfn attribute for="AppHistoryNavigateEvent">canRespond</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn><!--, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>-->, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
-An {{AppHistoryNavigateEvent}} has the following associated values that are used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}":
+An {{AppHistoryNavigateEvent}} has the following associated values which are only conditionally used:
 
-* <dfn for="AppHistoryNavigateEvent">destination URL</dfn>, a [=URL=]
-* <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null
-
-It has the following associated value that is used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/traverse}}":
-
-* <dfn for="AppHistoryNavigateEvent">destination entry</dfn>, a [=session history entry=]
+* <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}"
+* <dfn for="AppHistoryNavigateEvent">destination entry</dfn>, a [=session history entry=], used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/traverse}}"
 
 These are set appropriately when the event is [=fire a navigate event|fired=].
 
@@ -531,7 +527,7 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
   1. Set [=this=]'s [=AppHistoryNavigateEvent/navigation action promise=] to |newNavigationAction|.
   1. If [=this=]'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}":
     1. Let |isPush| be true if [=this=]'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}"; otherwise, false.
-    1. Run the <a spec="HTML">URL and history update steps</a> given [=this=]'s [=relevant global object=]'s [=associated document=] and [=this=]'s [=AppHistoryNavigateEvent/destination URL=], with <i>[=URL and history update steps/serializedData=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+    1. Run the <a spec="HTML">URL and history update steps</a> given [=this=]'s [=relevant global object=]'s [=associated document=] and [=this=]'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
     1. Set [=this=]'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to [=this=]'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/state=].
   1. Otherwise:
     1. <a spec="HTML">Traverse the history</a> of [=this=]'s [=relevant global object=]'s [=Window/browsing context=] to [=AppHistoryNavigateEvent/destination entry=].
@@ -589,7 +585,6 @@ The <dfn attribute for="AppHistoryDestination">url</dfn> getter steps are to ret
   1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |info|.
   1. If |navigationType| is either "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}":
     1. [=Assert=]: |destinationURL| was given, and |destinationEntry| was not.
-    1. Set |event|'s [=AppHistoryNavigateEvent/destination URL=] to |destinationURL|.
     1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
     1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationURL|.
     1. Set |destination|'s [=AppHistoryDestination/state=] to |state|.
