@@ -539,6 +539,7 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
 [Exposed=Window]
 interface AppHistoryDestination {
   readonly attribute USVString url;
+  readonly attribute boolean sameDocument;
   any getState();
 };
 </xmp>
@@ -547,6 +548,13 @@ interface AppHistoryDestination {
   <dt><code><var ignore>event</var> . {{AppHistoryNavigateEvent/destination}} . {{AppHistoryDestination/url}}</code>
   <dd>
     <p>The URL being navigated to.
+  </dd>
+
+  <dt><code><var ignore>event</var> . {{AppHistoryNavigateEvent/destination}} . {{AppHistoryDestination/sameDocument}}</code>
+  <dd>
+    <p>Indicates whether or not this navigation is to the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, in cases of fragment navigations or {{History/pushState()|history.pushState()}} navigations.
+
+    <p>Note that this property indicates the original nature of the navigation. If a cross-document navigation is converted into a same-document navigation using {{AppHistoryNavigateEvent/respondWith()|event.respondWith()}}, that will not change the value of this property.
   </dd>
 
   <dt><code><var ignore>event</var> . {{AppHistoryNavigateEvent/destination}} . {{AppHistoryDestination/getState()}}</code>
@@ -561,7 +569,11 @@ An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">
 
 An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">state</dfn>, which is a [=serialized state=]-or-null.
 
+An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">is same document</dfn>, which is a boolean.
+
 The <dfn attribute for="AppHistoryDestination">url</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/URL=], [=URL serializer|serialized=].
+
+The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/is same document=].
 
 <div algorithm>
   The <dfn method for="AppHistoryDestination">getState()</dfn> method steps are:
@@ -599,6 +611,7 @@ The <dfn attribute for="AppHistoryDestination">url</dfn> getter steps are to ret
   1. Let |destination| be a [=new=] {{AppHistoryDestination}} created in |appHistory|'s [=relevant Realm=].
   1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationURL|.
   1. Set |destination|'s [=AppHistoryDestination/state=] to |destinationState|.
+  1. Set |destination|'s [=AppHistoryDestination/is same document=] to |isSameDocument|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/destination}} to |destination|.
   1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
   1. If all of the following are true:
@@ -687,7 +700,7 @@ interface AppHistoryEntry : EventTarget {
 
   <dt><code>entry . {{AppHistoryEntry/sameDocument}}</code>
   <dd>
-    <p>Indicates whether or not this app history entry is for the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, in cases of fragment navigations or single-page app navigations.
+    <p>Indicates whether or not this app history entry is for the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations.
   </dd>
 
   <dt><code>entry . {{AppHistoryEntry/getState()}}</code>
