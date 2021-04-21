@@ -318,7 +318,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
     * {{AppHistoryNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one
     * {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
-    * {{AppHistoryNavigateOptions/state}} can be set to any value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
+    * {{AppHistoryNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method can be used to convert it into a same-document navigation.
 
