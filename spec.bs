@@ -630,14 +630,12 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Set |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |destinationState|.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, then set it to [=a promise resolved with=] undefined, created in |realm|.
     1. Let |navigateMethodCallPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
-    1. If |navigateMethodCallPromise| is non-null, then [=promise/react=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps given |fulfillmentValue|:
-        1. [=Resolve=] |navigateMethodCallPromise| with |fulfillmentValue|.
-      and the following rejection steps given |rejectionReason|:
-        1. [=Reject=] |navigateMethodCallPromise| with |rejectionReason|.
-    1. [=promise/React=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps:
+    1. [=promise/React=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps given |fulfillmentValue|:
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
+        1. If |navigateMethodCallPromise| is non-null, then [=resolve=] |navigateMethodCallPromise| with |fulfillmentValue|.
       and the following rejection steps given reason |rejectionReason|:
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+        1. If |navigateMethodCallPromise| is non-null, then [=reject=] |navigateMethodCallPromise| with |rejectionReason|.
 
     <p class="note">If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then {{AppHistoryNavigateEvent/respondWith()}} was called and so we're performing a same-document navigation, for which we want to fire {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events, and resolve or reject the promise returned by the corresponding {{AppHistory/navigate()|appHistory.navigate()}} call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask, treating them as an instantly-successful navigation.
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, |result| is false, and |appHistory|'s [=AppHistory/navigate method call promise=] is non-null, then [=reject=] |appHistory|'s [=AppHistory/navigate method call promise=] with an "{{AbortError}}" {{DOMException}}.
