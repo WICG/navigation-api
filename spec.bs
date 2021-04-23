@@ -932,6 +932,12 @@ Each [=session history entry=] gains the following new [=struct/items=]:
   1. If |newEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |sessionHistory|'s [=session history/current entry=]'s [=session history entry/origin=], then set |newEntry|'s [=session history entry/app history key=] to |sessionHistory|'s [=session history/current entry=]'s [=session history entry/app history key=].
 </div>
 
+<h3 id="session-history-patches-state">Carrying over the app history state</h3>
+
+<div algorithm="navigate to a fragment state patch">
+  Update the <a spec="HTML">navigate to a fragment</a> algorithm by updating the step which creates and appends a new session history entry to carry over the [=session history entry/app history state=] from the [=session history/current entry=] as well.
+</div>
+
 <h3 id="session-history-patches-origin">Tracking the [=session history entry/origin=] member</h3>
 
 Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" and "<a for="history handling behavior">`default`</a>" cases to set <var ignore>newEntry</var>'s [=session history entry/origin=] to <var ignore>newDocument</var>'s [=Document/origin=] as part of its creation.
