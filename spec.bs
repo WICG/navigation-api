@@ -160,6 +160,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate method call promise</dfn>, which is either a {{Promise}} or null, initially null.
 
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate method call serialized state</dfn>, which is either a [=serialized state=] or null, initially null.
+
 <h3 id="entries-api">Introspecting the app history entry list</h3>
 
 <dl class="domintro non-normative">
@@ -378,11 +380,19 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. Let |previousPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
 
+  1. Let |previousState| be |appHistory|'s [=AppHistory/navigate method call serialized state=].
+
   1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |promise|.
+
+  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to |serializedState|.
 
   1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryInfo=]</i> set to |navigateInfo|, <i>[=navigate/appHistoryState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
 
+  1. If [=AppHistory/navigate method call serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |appHistory|'s [=AppHistory/navigate method call serialized state=].
+
   1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |previousPromise|.
+
+  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to |previousState|.
 
   1. Return |promise|.
 </div>
@@ -627,7 +637,6 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is null, then return false.
      <p class="note">This can occurr if an event listener disconnected the <{iframe}> corresponding to |appHistory|'s [=relevant global object=].</p>
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, or both |result| and |isSameDocument| are true, then:
-    1. Set |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |destinationState|.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, then set it to [=a promise resolved with=] undefined, created in |realm|.
     1. Let |navigateMethodCallPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
     1. [=promise/React=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps given |fulfillmentValue|:
@@ -638,6 +647,10 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
         1. If |navigateMethodCallPromise| is non-null, then [=reject=] |navigateMethodCallPromise| with |rejectionReason|.
 
     <p class="note">If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then {{AppHistoryNavigateEvent/respondWith()}} was called and so we're performing a same-document navigation, for which we want to fire {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events, and resolve or reject the promise returned by the corresponding {{AppHistory/navigate()|appHistory.navigate()}} call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask, treating them as an instantly-successful navigation.
+  1. Otherwise:
+    1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
+
+    <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations or canceled navigations.
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, |result| is false, and |appHistory|'s [=AppHistory/navigate method call promise=] is non-null, then [=reject=] |appHistory|'s [=AppHistory/navigate method call promise=] with an "{{AbortError}}" {{DOMException}}.
   1. Return |result|.
 </div>
