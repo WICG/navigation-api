@@ -663,9 +663,10 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 <div algorithm>
   To <dfn>signal an aborted navigation</dfn> for an {{AppHistory}} |appHistory|:
 
-  1. Let |error| be a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
-  1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
-  1. If |appHistory|'s [=AppHistory/navigate method call promise=] is non-null, then [=reject=] |appHistory|'s [=AppHistory/navigate method call promise=] with |error|.
+  1. [=Queue a microtask=] on |appHistory|'s [=relevant agent=]'s [=agent/event loop=] to perform the following steps:
+    1. Let |error| be a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
+    1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
+    1. If |appHistory|'s [=AppHistory/navigate method call promise=] is non-null, then [=reject=] |appHistory|'s [=AppHistory/navigate method call promise=] with |error|.
 </div>
 
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
