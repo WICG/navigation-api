@@ -167,6 +167,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</d
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
 
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">ongoing navigate event</dfn>, an {{AppHistoryNavigateEvent}} or null, initially null.
+
 <div algorithm>
   The <dfn attribute for="AppHistory">current</dfn> getter steps are:
 
@@ -456,7 +458,10 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
   1. If either |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or  |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true.
   1. If |userInvolvement| is "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to false. Otherwise, initialize it to true.
   1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |realm|, associated to |formDataEntryList|. Otherwise, initialize it to null.
+  1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigate event=] is null.
+  1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to |event|.
   1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
+  1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
   1. If [=this=]'s [=relevant global object=]'s [=Window/browsing context=] is null, then return false.
      <p class="note">This can occurr if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then:
@@ -698,6 +703,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   Modify the <a spec="HTML">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a spec="HTML">URL and history update steps</a>.
 
   1. Let |appHistory| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/app history=].
+  1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
   1. Let |navigationType| be "{{AppHistoryNavigationType/push}}" if <var ignore>isPush</var> is true, and "{{AppHistoryNavigationType/replace}}" otherwise.
   1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| with <i>[=fire a navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a navigate event/isSameDocument=]</i> set to true, <i>[=fire a navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
   1. If |continue| is false, return.
@@ -713,8 +719,10 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 </div>
 
 <div algorithm="navigate" id="navigate-modifications">
-  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following step right before the step which goes [=in parallel=]. Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.
+  Modify the <a spec="HTML">navigate</a> algorithm by inserting the following steps right before the step which goes [=in parallel=]. Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.
 
+  1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
+  1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
   1. If none of the following are true:
     * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
     * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
@@ -723,7 +731,6 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
     then:
 
-      1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
       1. Let |navigationType| be "{{AppHistoryNavigationType/push}}" if <var ignore>historyHandling</var> is "<a for="history handling behavior">`default`</a>"; otherwise, "{{AppHistoryNavigationType/replace}}".
       1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| with <i>[=fire a navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a navigate event/isSameDocument=]</i> set to false, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a navigate event/formDataEntryList=]</i> set to |entryList|, and <i>[=fire a navigate event/destinationURL=]</i> set to <var ignore>url</var>.
       1. If |continue| is false, return.
@@ -737,6 +744,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   Modify the <a spec="HTML">traverse the history by a delta</a> algorithm by inserting the following steps inside the queued task, before the call to <a spec="HTML">traverse the history</a>. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
 
   1. Let |appHistory| be <var ignore>specified browsing context</var>'s [=browsing context/active window=]'s [=Window/app history=].
+  1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
   1. Let |isSameDocument| be true if <var ignore>specified browsing context</var>'s [=active document=] equals <var ignore>specified entry</var>'s [=session history entry/document=]; otherwise, false.
   1. If either |isSameDocument| is true or |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
     1. Let |continue| be the result of [=firing a navigate event=] at |appHistory| with <i>[=fire a navigate event/navigationType=]</i> set to "{{AppHistoryNavigationType/traverse}}", <i>[=fire a navigate event/isSameDocument=]</i> set to |isSameDocument|, <i>[=fire a navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a navigate event/destinationEntry=]</i> set to <var ignore>specified entry</var>.
