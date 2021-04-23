@@ -535,11 +535,6 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
   1. If [=this=]'s [=Event/canceled flag=] is set, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. Set [=this=]'s [=Event/canceled flag=].
   1. Set [=this=]'s [=AppHistoryNavigateEvent/navigation action promise=] to |newNavigationAction|.
-  1. If [=this=]'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}":
-    1. Let |isPush| be true if [=this=]'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}"; otherwise, false.
-    1. Run the <a spec="HTML">URL and history update steps</a> given [=this=]'s [=relevant global object=]'s [=associated document=] and [=this=]'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to [=this=]'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
-  1. Otherwise:
-    1. <a spec="HTML">Traverse the history</a> of [=this=]'s [=relevant global object=]'s [=Window/browsing context=] to [=AppHistoryNavigateEvent/destination entry=].
 </div>
 
 <h3 id="navigate-event-destination">The {{AppHistoryDestination}} class</h3>
@@ -635,7 +630,13 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |realm|, associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
   1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is null, then return false.
-     <p class="note">This can occurr if an event listener disconnected the <{iframe}> corresponding to |appHistory|'s [=relevant global object=].</p>
+     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
+  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then:
+    1. If |event|'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}":
+      1. Let |isPush| be true if |event|'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}"; otherwise, false.
+      1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+    1. Otherwise:
+      1. <a spec="HTML">Traverse the history</a> of |event|'s [=relevant global object=]'s [=Window/browsing context=] to [=AppHistoryNavigateEvent/destination entry=].
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, or both |result| and |isSameDocument| are true, then:
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, then set it to [=a promise resolved with=] undefined, created in |realm|.
     1. Let |navigateMethodCallPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
