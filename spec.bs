@@ -611,6 +611,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 <div algorithm>
   The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given an {{AppHistory}} |appHistory|, an {{AppHistoryNavigateEvent}} |event|, an {{AppHistoryNavigationType}} |navigationType|, a boolean |isSameDocument|, a [=URL=] |destinationURL|, a [=serialized state=]-or-null |destinationState|, a [=user navigation involvement=] |userInvolvement|, a JavaScript value |info|, and a [=list=] of {{FormData}} [=FormData/entries=] or null |formDataEntryList|:
 
+  1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is <a spec="HTML">still on its initial `about:blank` `Document`</a>, then return true.
   1. Initialize |event|'s {{Event/type}} to "{{AppHistory/navigate}}".
   1. Initialize |event|'s {{AppHistoryNavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |info|.
