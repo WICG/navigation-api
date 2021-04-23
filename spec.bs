@@ -629,8 +629,11 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |userInvolvement| is "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to false. Otherwise, initialize it to true.
   1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |realm|, associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
-  1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is null, then return false.
-     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
+  1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is null, then:
+    1. [=Signal an aborted navigation=] for |appHistory|.
+    1. Return false.
+
+    <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then:
     1. If |event|'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}":
       1. Let |isPush| be true if |event|'s {{AppHistoryNavigateEvent/navigationType}} attribute was initialized to "{{AppHistoryNavigationType/push}}"; otherwise, false.
@@ -652,8 +655,17 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
 
     <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations or canceled navigations.
-  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, |result| is false, and |appHistory|'s [=AppHistory/navigate method call promise=] is non-null, then [=reject=] |appHistory|'s [=AppHistory/navigate method call promise=] with an "{{AbortError}}" {{DOMException}}.
+  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null and |result| is false, then [=signal an aborted navigation=] for |appHistory|.
   1. Return |result|.
+</div>
+
+<!-- TODO hook this up to the stop button etc. For now it just centralizes the ways a couple ways a navigate event handler can cause an abort. -->
+<div algorithm>
+  To <dfn>signal an aborted navigation</dfn> for an {{AppHistory}} |appHistory|:
+
+  1. Let |error| be a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
+  1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
+  1. If |appHistory|'s [=AppHistory/navigate method call promise=] is non-null, then [=reject=] |appHistory|'s [=AppHistory/navigate method call promise=] with |error|.
 </div>
 
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
