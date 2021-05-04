@@ -309,7 +309,7 @@ The event object has several useful properties:
 
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
-- `destination`: an `AppHistoryEntry` containing the information about the destination of the navigation. Note that this entry might or might not yet be in `window.appHistory.entries()`.
+- `destination`: an object containing the information about the destination of the navigation. It has many of the same properties as an `AppHistoryEntry`: namely `url`, `sameDocument`, and `getState()` so far (but see [#97](https://github.com/WICG/app-history/issues/97) for adding more).
 
 - `hashChange`: a boolean, indicating whether or not this is a same-document [fragment navigation](https://html.spec.whatwg.org/#scroll-to-fragid).
 
@@ -1330,7 +1330,7 @@ interface AppHistoryNavigateEvent : Event {
   readonly attribute boolean canRespond;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
-  readonly attribute AppHistoryEntry destination;
+  readonly attribute AppHistoryDestination destination;
   readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
   readonly attribute any info;
@@ -1343,10 +1343,18 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
-  required AppHistoryEntry destination;
+  required AppHistoryDestination destination;
   required AbortSignal signal;
   FormData? formData = null;
   any info = null;
+};
+
+[Exposed=Window]
+interface AppHistoryDestination {
+  readonly attribute USVString url;
+  readonly attribute boolean sameDocument;
+
+  any getState();
 };
 
 [Exposed=Window]
