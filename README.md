@@ -211,7 +211,7 @@ Crucially, `appHistory.current` stays the same regardless of what iframe navigat
 
 - Via the same-document navigation API `history.pushState()`. (Not `history.replaceState()`.)
 
-- A full-page navigation to a different document. This could be an existing document in the browser's back/forward cache, or a new document. In the latter case, this will generate a new entry on the new page's `window.appHistory` object, somewhat similar to `appHistory.navigate(navigatedToURL, { state: null })`. Note that if the navigation is cross-origin, then we'll end up in a separate app history list for that other origin.
+- A full-page navigation to a different document. This could be an existing document in the browser's back/forward cache, or a new document. In the latter case, this will generate a new entry on the new page's `window.appHistory` object, somewhat similar to `appHistory.navigate(navigatedToURL, { state: undefined })`. Note that if the navigation is cross-origin, then we'll end up in a separate app history list for that other origin.
 
 - When using the `navigate` event to [convert a cross-document non-replace navigation into a same-document navigation](#navigation-monitoring-and-interception).
 
@@ -597,7 +597,7 @@ In a single-page app using the app history API, instead the router listens to th
 There's one gap remaining, which is the ability to send additional state or info along with a navigation. We solve this by introducing a new API, `appHistory.navigate()`, which can be thought of as an augmented and combined version of `location.assign()` and `location.replace()`. The non-replace usage of `appHistory.navigate()` is as follows:
 
 ```js
-// Navigate to a new URL, resetting the state to null:
+// Navigate to a new URL, resetting the state to undefined:
 // (equivalent to `location.assign(url)`)
 await appHistory.navigate(url);
 
