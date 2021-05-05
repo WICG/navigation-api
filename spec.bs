@@ -681,6 +681,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then:
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=AppHistoryNavigateEvent/navigation action promise=] to null.
+    1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
 </div>
 
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
@@ -794,8 +795,8 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
 <div algorithm>
   The <dfn method for="AppHistoryEntry">getState()</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
-  1. If [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] is null, then return null.
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return undefined.
+  1. If [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] is null, then return undefined.
   1. Return [$StructuredDeserialize$]([=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=]).
 
   <p class="note">Unlike {{History/state|history.state}}, this will deserialize upon each access.
