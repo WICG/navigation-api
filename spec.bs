@@ -532,7 +532,7 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
 <div algorithm>
   The <dfn method for="AppHistoryNavigateEvent">respondWith(|newNavigationAction|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=]'s [=Window/browsing context=] is null, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s {{Event/isTrusted}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s {{AppHistoryNavigateEvent/canRespond}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
@@ -637,7 +637,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to |event|.
   1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
-  1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is null, then return false.
+  1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then return false.
     1. [=Signal an aborted navigation=] for |appHistory|.
     1. Return false.
 
