@@ -639,7 +639,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-05-05">5 May 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-05-07">7 May 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -985,19 +985,17 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Let <var>previousPromise</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-promise" id="ref-for-apphistory-navigate-method-call-promise">navigate method call promise</a>.</p>
      <li data-md>
-      <p>Let <var>previousState</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state">navigate method call serialized state</a>.</p>
-     <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-promise" id="ref-for-apphistory-navigate-method-call-promise①">navigate method call promise</a> to <var>promise</var>.</p>
      <li data-md>
-      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state①">navigate method call serialized state</a> to <var>serializedState</var>.</p>
+      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state">navigate method call serialized state</a> to <var>serializedState</var>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①">Navigate</a> <var>browsingContext</var> to <var>url</var> with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigation-hh" id="ref-for-navigation-hh">historyHandling</a></i> set to <var>historyHandling</var>, <i><a data-link-type="dfn" href="#navigate-apphistoryinfo" id="ref-for-navigate-apphistoryinfo">appHistoryInfo</a></i> set to <var>navigateInfo</var>, <i><a data-link-type="dfn" href="#navigate-apphistorystate" id="ref-for-navigate-apphistorystate">appHistoryState</a></i> set to <var>serializedState</var>, and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context" id="ref-for-source-browsing-context">source browsing context</a> set to <var>browsingContext</var>.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state②">navigate method call serialized state</a> is non-null, then set <var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history①">session history</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry①">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state">app history state</a> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state③">navigate method call serialized state</a>.</p>
+      <p>If <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state①">navigate method call serialized state</a> is non-null, then set <var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history①">session history</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry①">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state">app history state</a> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state②">navigate method call serialized state</a>.</p>
+     <li data-md>
+      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state③">navigate method call serialized state</a> to null.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-promise" id="ref-for-apphistory-navigate-method-call-promise②">navigate method call promise</a> to <var>previousPromise</var>.</p>
-     <li data-md>
-      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state④">navigate method call serialized state</a> to <var>previousState</var>.</p>
      <li data-md>
       <p>Return <var>promise</var>.</p>
     </ol>
@@ -1281,7 +1279,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <p>Otherwise:</p>
       <ol>
        <li data-md>
-        <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state⑤">navigate method call serialized state</a> to null.</p>
+        <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-navigate-method-call-serialized-state" id="ref-for-apphistory-navigate-method-call-serialized-state④">navigate method call serialized state</a> to null.</p>
       </ol>
       <p class="note" role="note">This ensures that any call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate-options" id="ref-for-dom-apphistory-navigate-options⑤">appHistory.navigate()</a></code> which triggered this algorithm does not overwrite the <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state②">app history state</a> of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry②">current entry</a> for cross-document navigations or canceled navigations. </p>
      <li data-md>
@@ -3110,8 +3108,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
   <aside class="dfn-panel" data-for="apphistory-navigate-method-call-serialized-state">
    <b><a href="#apphistory-navigate-method-call-serialized-state">#apphistory-navigate-method-call-serialized-state</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-apphistory-navigate-method-call-serialized-state">1.2. Navigating</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state①">(2)</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state②">(3)</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state③">(4)</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state④">(5)</a>
-    <li><a href="#ref-for-apphistory-navigate-method-call-serialized-state⑤">2.3. Firing the event</a>
+    <li><a href="#ref-for-apphistory-navigate-method-call-serialized-state">1.2. Navigating</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state①">(2)</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state②">(3)</a> <a href="#ref-for-apphistory-navigate-method-call-serialized-state③">(4)</a>
+    <li><a href="#ref-for-apphistory-navigate-method-call-serialized-state④">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-current">
