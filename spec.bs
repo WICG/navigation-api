@@ -235,7 +235,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 <div algorithm>
   To <dfn for="AppHistory">update the entries</dfn> for an {{AppHistory}} instance |appHistory|:
 
-  1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=associated Document=]'s [=Document/browsing context=].
+  1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
 
   1. [=Assert=]: |browsingContext| is not null.
 
@@ -368,7 +368,11 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 <div algorithm>
   To <dfn>perform an app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, and an {{AppHistoryNavigateOptions}} |options|:
 
+  1. If |appHistory|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
   1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
+
+  1. [=Assert=]: |browsingContext| is not null.
 
   1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] [=map/exists=] and is true; otherwise, "<a for="history handling behavior">`default`</a>".
 
