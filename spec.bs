@@ -382,8 +382,6 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. Let |previousPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
 
-  1. Let |previousState| be |appHistory|'s [=AppHistory/navigate method call serialized state=].
-
   1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |promise|.
 
   1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to |serializedState|.
@@ -392,9 +390,9 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. If [=AppHistory/navigate method call serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |appHistory|'s [=AppHistory/navigate method call serialized state=].
 
-  1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |previousPromise|.
+  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
 
-  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to |previousState|.
+  1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |previousPromise|.
 
   1. Return |promise|.
 </div>
