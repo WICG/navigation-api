@@ -358,33 +358,39 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=a promise rejected with=] a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
-  1. Let |state| be |options|["{{AppHistoryNavigateOptions/state}}"] if it exists; otherwise, undefined.
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. Let |serializedState| be null.
+
+  1. If |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryNavigateOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
 
   1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
 
   1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
 
-  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, |state|, |navigateInfo|, and |historyHandling|.
+  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, |serializedState|, |navigateInfo|, and |historyHandling|.
 </div>
 
 <div algorithm>
   The <dfn method for="AppHistory">reload(|options|)</dfn> method steps are:
 
-  1. If neither |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] nor |options|["{{AppHistoryReloadOptions/state}}"] [=map/exists=], then return [=a promise rejected with=] a {{TypeError}}.
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
 
-  1. Let |state| be |options|["{{AppHistoryReloadOptions/state}}"] if it exists; otherwise, undefined.
+  1. Let |serializedState| be null.
+
+  1. If |options|["{{AppHistoryReloadOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryReloadOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
+
+  1. Otherwise, if [=this=]'s [=current index=] is not &minus;1, then set |serializedState| to [=this=]'s [=entry list=][[=this=]'s [=current index=]]'s [=session history entry/app history state=].
 
   1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
 
-  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, |state|, |navigateInfo|, and "<a for="history handling behavior">`reload`</a>".
+  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, |serializedState|, |navigateInfo|, and "<a for="history handling behavior">`reload`</a>".
 </div>
 
 <div algorithm>
-  To <dfn>perform an app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, a JavaScript value |state|, a JavaScript value |navigateInfo|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
-
-  1. If |appHistory|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+  To <dfn>perform an app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |navigateInfo|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
 
   1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
 
@@ -392,17 +398,11 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. Assert: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
 
-  1. Let |serializedState| be null.
-
-  1. Set |serializedState| to [$StructuredSerializeForStorage$](|state|). If this throws an exception, return [=a promise rejected with=] that exception.
-
   1. Let |promise| be [=a new promise=] created in |appHistory|'s [=relevant Realm=].
 
   1. Let |previousPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
 
   1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |promise|.
-
-  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to |serializedState|.
 
   1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryInfo=]</i> set to |navigateInfo|, <i>[=navigate/appHistoryState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
 

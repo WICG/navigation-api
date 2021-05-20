@@ -632,6 +632,13 @@ Again, unlike `history.replaceState()`, `appHistory.navigate(url, { replace: tru
 Finally, we have `appHistory.reload()`. This can be used as a replacement for `location.reload()`, but it also allows passing `navigateInfo` and `state`, which are useful when a single-page app intercepts the reload using the `navigate` event:
 
 ```js
+// Just like location.reload().
+await appHistory.reload();
+
+// Leave the state as-is, but pass some navigateInfo.
+await appHistory.reload({ navigateInfo });
+
+// Overwrite the state with a new value.
 await appHistory.reload({ state, navigateInfo });
 ```
 
@@ -1268,7 +1275,7 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoForward;
 
   Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> reload(optional AppHistoryReloadOptions options = {}); // one member required: see issue #52
+  Promise<undefined> reload(optional AppHistoryReloadOptions options = {});
 
   Promise<undefined> goTo(DOMString key, optional AppHistoryNavigationOptions = {});
   Promise<undefined> back(optional AppHistoryNavigationOptions = {});
