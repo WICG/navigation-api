@@ -38,6 +38,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: URL; url: history.html#she-url
     for: history handling behavior
       text: default; url: browsing-the-web.html#hh-default
+      text: reload; url: browsing-the-web.html#hh-reload
       text: replace; url: browsing-the-web.html#hh-replace
       text: entry update; url: browsing-the-web.html#hh-entry-update
     for: navigate
@@ -137,7 +138,7 @@ interface AppHistory : EventTarget {
   readonly attribute boolean canGoForward;
 
   Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  Promise<undefined> navigate(optional AppHistoryNavigateOptions options = {});
+  Promise<undefined> reload(optional AppHistoryReloadOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
@@ -151,6 +152,10 @@ dictionary AppHistoryNavigationOptions {
 dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
   any state;
   boolean replace = false;
+};
+
+dictionary AppHistoryReloadOptions : AppHistoryNavigationOptions {
+  any state;
 };
 </xmp>
 
@@ -320,7 +325,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
   <dd>
     <p>Navigates the current page to the given <var ignore>url</var>. <var ignore>options</var> can contain the following values:
 
-    * {{AppHistoryNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one
+    * {{AppHistoryNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one.
     * {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
     * {{AppHistoryNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
@@ -333,40 +338,51 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
     * For cross-document navigations, it will never settle.
   </dd>
 
-  <dt><code>await {{Window/appHistory}} . {{AppHistory/navigate(options)|navigate}}(<var ignore>options</var>)</code>
+  <dt><code>await {{Window/appHistory}} . {{AppHistory/reload(options)|reload}}(<var ignore>options</var>)</code>
   <dd>
-    <p>Navigates to the same URL as the current page. <var ignore>options</var> needs to contain at least one of {{AppHistoryNavigationOptions/navigateInfo}} or {{AppHistoryNavigateOptions/state}}, which behave as described above.
+    <p>Reloads the current page. <var ignore>options</var> needs to contain at least one of {{AppHistoryNavigationOptions/navigateInfo}} or {{AppHistoryReloadOptions/state}}, which behave as described above.
 
-    <p>The default behavior of performing a full navigation to the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}.
+    <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}, plus performing whatever actions the {{AppHistory/navigate}} event handler sees fit to carry out.
 
-    <p>The returned promise behaves as described above.
+    <p>The returned promise will behave as follows:
+
+    * If the reload is intercepted by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method, it will fulfill or reject according to the promise passed to {{AppHistoryNavigateEvent/respondWith()}}.
+    * Otherwise, it will never settle.
   </dd>
 </dl>
+
+<!-- The following algorithms have several steps that would benefit from https://github.com/heycam/webidl/issues/983. -->
 
 <div algorithm>
   The <dfn method for="AppHistory">navigate(|url|, |options|)</dfn> method steps are:
 
   1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=a promise rejected with=] a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
-  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, and |options|.
+  1. Let |state| be |options|["{{AppHistoryNavigateOptions/state}}"] if it exists; otherwise, undefined.
+
+  1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
+
+  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
+
+  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, |state|, |navigateInfo|, and |historyHandling|.
 </div>
 
 <div algorithm>
-  The <dfn method for="AppHistory">navigate(|options|)</dfn> method steps are:
+  The <dfn method for="AppHistory">reload(|options|)</dfn> method steps are:
 
-  1. If neither |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] nor |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then return [=a promise rejected with=] a {{TypeError}}.
-
-  1. Set |options|["{{AppHistoryNavigateOptions/replace}}"] to true.
-
-     <p class="note">This is not technically necessary, as the main <a spec="HTML">navigate</a> algorithm will override any non-"<a for="history handling behavior">`replace`</a>" history handling behavior for same-URL navigations.
+  1. If neither |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] nor |options|["{{AppHistoryReloadOptions/state}}"] [=map/exists=], then return [=a promise rejected with=] a {{TypeError}}.
 
   1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
 
-  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, and |options|.
+  1. Let |state| be |options|["{{AppHistoryReloadOptions/state}}"] if it exists; otherwise, undefined.
+
+  1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
+
+  1. Return the result of [=performing an app history navigation=] given [=this=], |urlRecord|, |state|, |navigateInfo|, and "<a for="history handling behavior">`reload`</a>".
 </div>
 
 <div algorithm>
-  To <dfn>perform an app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, and an {{AppHistoryNavigateOptions}} |options|:
+  To <dfn>perform an app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, a JavaScript value |state|, a JavaScript value |navigateInfo|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
 
   1. If |appHistory|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
@@ -374,13 +390,11 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. [=Assert=]: |browsingContext| is not null.
 
-  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] [=map/exists=] and is true; otherwise, "<a for="history handling behavior">`default`</a>".
-
-  1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
+  1. Assert: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
 
   1. Let |serializedState| be null.
 
-  1. If |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryNavigateOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
+  1. Set |serializedState| to [$StructuredSerializeForStorage$](|state|). If this throws an exception, return [=a promise rejected with=] that exception.
 
   1. Let |promise| be [=a new promise=] created in |appHistory|'s [=relevant Realm=].
 
@@ -401,7 +415,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
   1. Return |promise|.
 </div>
 
-<p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{AppHistory/navigate()|appHistory.navigate()}} can only be accessed by code with direct synchronous access to the {{Window/appHistory}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{AppHistory}} object itself.
+<p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{AppHistory/navigate()|appHistory.navigate()}} and {{AppHistory/reload()|appHistory.reload()}} can only be accessed by code with direct synchronous access to the {{Window/appHistory}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{AppHistory}} object itself.
 
 <h3 id="global-events">Event handlers</h3>
 
