@@ -382,7 +382,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. If |options|["{{AppHistoryReloadOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryReloadOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
 
-  1. Otherwise, if [=this=]'s [=current index=] is not &minus;1, then set |serializedState| to [=this=]'s [=entry list=][[=this=]'s [=current index=]]'s [=session history entry/app history state=].
+  1. Otherwise, if [=this=]'s [=AppHistory/current index=] is not &minus;1, then set |serializedState| to [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]]'s [=session history entry/app history state=].
 
   1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
 
