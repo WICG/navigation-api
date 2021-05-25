@@ -470,7 +470,7 @@ interface AppHistoryNavigateEvent : Event {
   readonly attribute boolean canRespond;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
-//  readonly attribute AbortSignal signal;
+  readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
   readonly attribute any info;
 
@@ -483,7 +483,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean canRespond = false;
   boolean userInitiated = false;
   boolean hashChange = false;
-//  required AbortSignal signal;
+  required AbortSignal signal;
   FormData? formData = null;
   any info = null;
 };
@@ -523,14 +523,12 @@ enum AppHistoryNavigationType {
     <p>True if this navigation is a <a spec="HTML" lt="navigate to a fragment">fragment navigation</a>; false otherwise.
   </dd>
 
-<!--
   <dt><code><var ignore>event</var> . {{AppHistoryNavigateEvent/signal}}</code>
   <dd>
     <p>An {{AbortSignal}} which will become aborted if the navigation gets canceled, e.g. by the user pressing their browser's "Stop" button, or another higher-priority navigation interrupting this one.
 
     <p>The expected pattern is for developers to pass this along to any async operations, such as {{WindowOrWorkerGlobalScope/fetch()}}, which they perform as part of handling this navigation.
   </dd>
--->
 
   <dt><code><var ignore>event</var> . {{AppHistoryNavigateEvent/formData}}</code>
   <dd>
@@ -552,7 +550,7 @@ enum AppHistoryNavigationType {
   </dd>
 </dl>
 
-The <dfn attribute for="AppHistoryNavigateEvent">navigationType</dfn>, <dfn attribute for="AppHistoryNavigateEvent">destination</dfn>, <dfn attribute for="AppHistoryNavigateEvent">canRespond</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn><!--, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>-->, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
+The <dfn attribute for="AppHistoryNavigateEvent">navigationType</dfn>, <dfn attribute for="AppHistoryNavigateEvent">destination</dfn>, <dfn attribute for="AppHistoryNavigateEvent">canRespond</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn>, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
 An {{AppHistoryNavigateEvent}} has the following associated values which are only conditionally used:
 
@@ -675,7 +673,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
   1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then:
-    1. [=Synchronously finalize with an aborted navigation error=] for |appHistory|.
+    1. [=Synchronously finalize with an aborted navigation error=] given |appHistory| and |event|'s {{AppHistoryNavigateEvent/signal}}.
     1. Return false.
 
     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
@@ -699,17 +697,19 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
       1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
 
       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
-  1. Otherwise, [=synchronously finalize with an aborted navigation error=] for |appHistory|.
+  1. Otherwise, [=synchronously finalize with an aborted navigation error=] given |appHistory| and |event|'s {{AppHistoryNavigateEvent/signal}}.
   1. Return |result|.
 </div>
 
-<!-- TODO hook this up to the stop button etc. For now it just centralizes the ways a couple ways a navigate event handler can cause an abort. -->
 <div algorithm>
-  To <dfn>synchronously finalize with an aborted navigation error</dfn> for an {{AppHistory}} |appHistory|:
+  To <dfn>synchronously finalize with an aborted navigation error</dfn> given an {{AppHistory}} |appHistory| and an {{AbortSignal}} |signal|:
 
   1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
 
      <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for aborted navigations.
+  1. [=AbortSignal/Signal abort=] on |signal|.
+
+     <p class="note">This might do nothing, if |signal| was previously aborted by <a>cancel any ongoing `navigate` event</a>.</p>
   1. [=Queue a microtask=] on |appHistory|'s [=relevant agent=]'s [=agent/event loop=] to perform the following steps:
     1. Let |error| be a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
     1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
@@ -722,6 +722,9 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then:
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
+    1. [=AbortSignal/Signal abort=] on |appHistory|'s [=AppHistory/ongoing navigate event=]'s {{AppHistoryNavigateEvent/signal}}.
+
+  <p class="note">Because this cancels the event, this will eventually lead to the <a>inner `navigate` event firing algorithm</a> calling [=synchronously finalize with an aborted navigation error=] once the event firing process completes. However, we want to [=AbortSignal/signal abort=] on the relevant {{AppHistoryNavigateEvent/signal|event.signal}} right away.
 </div>
 
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
@@ -1090,3 +1093,15 @@ Potentially update the <a spec="HTML">traverse the history</a> algorithm to cons
 </div>
 
 <p class="note">We do not [=AppHistory/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any app history entry list.
+
+<h2 id="other-patches">Other patches</h2>
+
+<h3 id="cancel-navigation">Canceling navigation</h3>
+
+The existing HTML specification discusses canceling a navigation in a few places. However, the process is not very well-defined. We may be able to make it more rigorous, after the <a href="https://github.com/whatwg/html/issues/5767">session history rewrite</a> lands.
+
+<div algorithm="navigation canceling patch">
+  The main addition of app history is that any time navigation of a given [=browsing context=] |bc| is canceled, the user agent must <a>cancel any ongoing `navigate` event</a> for |bc|'s [=browsing context/active window=]'s [=Window/app history=].
+</div>
+
+<p class="note">This includes navigation cancelation induced by the <a spec="HTML">stop document loading</a> algorithm, which is invoked by user interface elements such as a stop button and by {{Window/stop()|window.stop()}}.</p>
