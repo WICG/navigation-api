@@ -313,8 +313,6 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
   1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
-
-  <p class="note">For same-document navigations only the [=AppHistory/current index=] and the [=AppHistoryEntry/index|indices=] of the various {{AppHistoryEntry}} objects will ultimately be updated by this algorithm. Implementations can special-case same-document navigations and avoid reassembling the [=AppHistory/entry list=].
 </div>
 
 <h3 id="global-navigate">Navigating</h3>
