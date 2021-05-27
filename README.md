@@ -305,7 +305,7 @@ The event object has several useful properties:
 
 - `canRespond`: indicates whether `respondWith()`, discussed below, is allowed for this navigation.
 
-- `navigationType`: either `"push"`, `"replace"`, or `"traverse"`.
+- `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"`.
 
 - `userInitiated`: a boolean indicating whether the navigation is user-initiated (i.e., a click on an `<a>`, or a form submission) or application-initiated (e.g. `location.href = ...`, `appHistory.navigate(...)`, etc.). Note that this will _not_ be `true` when you use mechanisms such as `button.onclick = () => appHistory.navigate(...)`; the user interaction needs to be with a real link or form. See the table in the [appendix](#appendix-types-of-navigations) for more details.
 
@@ -506,7 +506,7 @@ See [the companion document](./interception-details.md#trying-to-interrupt-a-slo
 
 Although calling `event.respondWith()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `respondWith()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
 
-- `navigationType`: either `"replace"`, `"push"`, or `"traverse"` indicating what type of navigation this is
+- `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `AppHistoryEntry` that was the current one before the transition
 - `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `appHistory`, or rejects with the corresponding error when the `navigateerror` event fires on `appHistory`
 - `rollback()`: a promise-returning method which allows easy rollback to the `from` entry
@@ -1313,6 +1313,7 @@ interface AppHistoryEntry : EventTarget {
 };
 
 enum AppHistoryNavigationType {
+  "reload",
   "push",
   "replace",
   "traverse"
