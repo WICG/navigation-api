@@ -4,7 +4,7 @@
   <title>App History API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2016/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 5c7bc9381, updated Wed May 12 18:18:08 2021 -0700" name="generator">
+  <meta content="Bikeshed version 800b43329, updated Tue May 25 14:13:32 2021 -0700" name="generator">
   <link href="https://wicg.github.io/app-history/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -639,7 +639,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-05-25">25 May 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-05-27">27 May 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -916,7 +916,6 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑥">current index</a> to <var>newCurrentIndex</var>.</p>
     </ol>
-    <p class="note" role="note">For same-document navigations only the <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑦">current index</a> and the <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index②">indices</a> of the various <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry⑨">AppHistoryEntry</a></code> objects will ultimately be updated by this algorithm. Implementations can special-case same-document navigations and avoid reassembling the <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list⑦">entry list</a>. </p>
    </div>
    <h3 class="heading settled" data-level="1.2" id="global-navigate"><span class="secno">1.2. </span><span class="content">Navigating</span><a class="self-link" href="#global-navigate"></a></h3>
    <dl class="domintro non-normative">
@@ -985,7 +984,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-apphistoryreloadoptions-state" id="ref-for-dom-apphistoryreloadoptions-state①">state</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a>, then set <var>serializedState</var> to <a data-link-type="abstract-op" href="https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeforstorage" id="ref-for-structuredserializeforstorage①">StructuredSerializeForStorage</a>(<var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-apphistoryreloadoptions-state" id="ref-for-dom-apphistoryreloadoptions-state②">state</a></code>"]). If this throws an exception, return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with④">a promise rejected with</a> that exception.</p>
      <li data-md>
-      <p>Otherwise, if <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this①⑨">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑧">current index</a> is not −1, then set <var>serializedState</var> to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⓪">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list⑧">entry list</a>[<a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②①">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑨">current index</a>]'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state">app history state</a>.</p>
+      <p>Otherwise, if <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this①⑨">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑦">current index</a> is not −1, then set <var>serializedState</var> to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⓪">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list⑦">entry list</a>[<a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②①">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑧">current index</a>]'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state">app history state</a>.</p>
      <li data-md>
       <p>Let <var>navigateInfo</var> be <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo④">navigateInfo</a></code>"] if it exists; otherwise, undefined.</p>
      <li data-md>
@@ -1360,11 +1359,11 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <dl class="domintro non-normative">
     <dt><code>entry . <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-key" id="ref-for-dom-apphistoryentry-key①">key</a></code></code> 
     <dd>
-     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent">user agent</a>-generated random UUID string representing this app history entry’s place in the app history list. This value will be reused by other <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①⓪">AppHistoryEntry</a></code> instances that replace this one due to replace-style navigations. This value will survive session restores. </p>
+     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent">user agent</a>-generated random UUID string representing this app history entry’s place in the app history list. This value will be reused by other <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry⑨">AppHistoryEntry</a></code> instances that replace this one due to replace-style navigations. This value will survive session restores. </p>
      <p>This is useful for navigating back to this location in the app history entry list, using <code>appHistory.goTo(key)</code>. </p>
     <dt><code>entry . <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-id" id="ref-for-dom-apphistoryentry-id①">id</a></code></code> 
     <dd>
-     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent①">user agent</a>-generated random UUID string representing this specific app history entry. This value will <em>not</em> be reused by other <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①①">AppHistoryEntry</a></code> instances. This value will survive session restores. </p>
+     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent①">user agent</a>-generated random UUID string representing this specific app history entry. This value will <em>not</em> be reused by other <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①⓪">AppHistoryEntry</a></code> instances. This value will survive session restores. </p>
      <p>This is useful for associating data with this app history entry using other storage APIs. </p>
     <dt><code>entry . <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-url" id="ref-for-dom-apphistoryentry-url①">url</a></code></code> 
     <dd>
@@ -1381,8 +1380,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <p>Note that in general, unless the state value is a primitive, <code>entry.getState() !== entry.getState()</code>, since a fresh copy is returned each time. </p>
      <p>This state is unrelated to the classic history API’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-state" id="ref-for-dom-history-state">history.state</a></code>. </p>
    </dl>
-   <p>Each <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①②">AppHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistoryEntry" data-dfn-type="dfn" data-noexport id="apphistoryentry-session-history-entry">session history entry</dfn>, which is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry②">session history entry</a>.</p>
-   <p>Each <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①③">AppHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistoryEntry" data-dfn-type="dfn" data-noexport id="apphistoryentry-index">index</dfn>, which is an integer.</p>
+   <p>Each <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①①">AppHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistoryEntry" data-dfn-type="dfn" data-noexport id="apphistoryentry-session-history-entry">session history entry</dfn>, which is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry②">session history entry</a>.</p>
+   <p>Each <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①②">AppHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistoryEntry" data-dfn-type="dfn" data-noexport id="apphistoryentry-index">index</dfn>, which is an integer.</p>
    <div class="algorithm" data-algorithm="key" data-algorithm-for="AppHistoryEntry">
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryEntry" data-dfn-type="attribute" data-export id="dom-apphistoryentry-key"><code>key</code></dfn> getter steps are: 
     <ol>
@@ -1416,7 +1415,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④①">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①①">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active①①">fully active</a>, then return −1.</p>
      <li data-md>
-      <p>Return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④②">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑤">session history entry</a>'s <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index③">index</a>.</p>
+      <p>Return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④②">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑤">session history entry</a>'s <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index②">index</a>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="sameDocument" data-algorithm-for="AppHistoryEntry">
@@ -3135,15 +3134,15 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
   <aside class="dfn-panel" data-for="apphistory-entry-list">
    <b><a href="#apphistory-entry-list">#apphistory-entry-list</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-apphistory-entry-list">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistory-entry-list①">(2)</a> <a href="#ref-for-apphistory-entry-list②">(3)</a> <a href="#ref-for-apphistory-entry-list③">(4)</a> <a href="#ref-for-apphistory-entry-list④">(5)</a> <a href="#ref-for-apphistory-entry-list⑤">(6)</a> <a href="#ref-for-apphistory-entry-list⑥">(7)</a> <a href="#ref-for-apphistory-entry-list⑦">(8)</a>
-    <li><a href="#ref-for-apphistory-entry-list⑧">1.2. Navigating</a>
+    <li><a href="#ref-for-apphistory-entry-list">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistory-entry-list①">(2)</a> <a href="#ref-for-apphistory-entry-list②">(3)</a> <a href="#ref-for-apphistory-entry-list③">(4)</a> <a href="#ref-for-apphistory-entry-list④">(5)</a> <a href="#ref-for-apphistory-entry-list⑤">(6)</a> <a href="#ref-for-apphistory-entry-list⑥">(7)</a>
+    <li><a href="#ref-for-apphistory-entry-list⑦">1.2. Navigating</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistory-current-index">
    <b><a href="#apphistory-current-index">#apphistory-current-index</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-apphistory-current-index">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistory-current-index①">(2)</a> <a href="#ref-for-apphistory-current-index②">(3)</a> <a href="#ref-for-apphistory-current-index③">(4)</a> <a href="#ref-for-apphistory-current-index④">(5)</a> <a href="#ref-for-apphistory-current-index⑤">(6)</a> <a href="#ref-for-apphistory-current-index⑥">(7)</a> <a href="#ref-for-apphistory-current-index⑦">(8)</a>
-    <li><a href="#ref-for-apphistory-current-index⑧">1.2. Navigating</a> <a href="#ref-for-apphistory-current-index⑨">(2)</a>
+    <li><a href="#ref-for-apphistory-current-index">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistory-current-index①">(2)</a> <a href="#ref-for-apphistory-current-index②">(3)</a> <a href="#ref-for-apphistory-current-index③">(4)</a> <a href="#ref-for-apphistory-current-index④">(5)</a> <a href="#ref-for-apphistory-current-index⑤">(6)</a> <a href="#ref-for-apphistory-current-index⑥">(7)</a>
+    <li><a href="#ref-for-apphistory-current-index⑦">1.2. Navigating</a> <a href="#ref-for-apphistory-current-index⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistory-ongoing-navigate-event">
@@ -3551,8 +3550,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <b><a href="#apphistoryentry">#apphistoryentry</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistoryentry">1. The AppHistory class</a> <a href="#ref-for-apphistoryentry①">(2)</a> <a href="#ref-for-apphistoryentry②">(3)</a>
-    <li><a href="#ref-for-apphistoryentry③">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistoryentry④">(2)</a> <a href="#ref-for-apphistoryentry⑤">(3)</a> <a href="#ref-for-apphistoryentry⑥">(4)</a> <a href="#ref-for-apphistoryentry⑦">(5)</a> <a href="#ref-for-apphistoryentry⑧">(6)</a> <a href="#ref-for-apphistoryentry⑨">(7)</a>
-    <li><a href="#ref-for-apphistoryentry①⓪">3. App history entries</a> <a href="#ref-for-apphistoryentry①①">(2)</a> <a href="#ref-for-apphistoryentry①②">(3)</a> <a href="#ref-for-apphistoryentry①③">(4)</a>
+    <li><a href="#ref-for-apphistoryentry③">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistoryentry④">(2)</a> <a href="#ref-for-apphistoryentry⑤">(3)</a> <a href="#ref-for-apphistoryentry⑥">(4)</a> <a href="#ref-for-apphistoryentry⑦">(5)</a> <a href="#ref-for-apphistoryentry⑧">(6)</a>
+    <li><a href="#ref-for-apphistoryentry⑨">3. App history entries</a> <a href="#ref-for-apphistoryentry①⓪">(2)</a> <a href="#ref-for-apphistoryentry①①">(3)</a> <a href="#ref-for-apphistoryentry①②">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistoryentry-session-history-entry">
@@ -3565,8 +3564,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
   <aside class="dfn-panel" data-for="apphistoryentry-index">
    <b><a href="#apphistoryentry-index">#apphistoryentry-index</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-apphistoryentry-index">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistoryentry-index①">(2)</a> <a href="#ref-for-apphistoryentry-index②">(3)</a>
-    <li><a href="#ref-for-apphistoryentry-index③">3. App history entries</a>
+    <li><a href="#ref-for-apphistoryentry-index">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistoryentry-index①">(2)</a>
+    <li><a href="#ref-for-apphistoryentry-index②">3. App history entries</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistoryentry-key">
