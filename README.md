@@ -48,14 +48,12 @@ backButtonEl.addEventListener("click", () => {
 });
 ```
 
-The new `currentchange` event fires whenever the current history entry changes, and includes the time it took for a single-page application nav to settle:
+A new extension to the [performance timeline API](https://developer.mozilla.org/en-US/docs/Web/API/Performance_Timeline) allows you to calculate the duration of single-page navigations, including any asynchronous work performed by the `navigate` handler:
 
 ```js
-appHistory.addEventListener("currentchange", e => {
-  if (e.startTime) {
-    analyticsPackage.sendEvent("single-page-app-nav", { loadTime: e.timeStamp - e.startTime });
-  }
-});
+for (const entry of performance.getEntriesByType("same-document-navigation")) {
+  console.log(`It took ${entry.duration} ms to navigate to the URL ${entry.name}`);
+}
 ```
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -85,6 +83,7 @@ appHistory.addEventListener("currentchange", e => {
     - [Example: next/previous buttons](#example-nextprevious-buttons)
   - [Per-entry events](#per-entry-events)
   - [Current entry change monitoring](#current-entry-change-monitoring)
+  - [Performance timeline API integration](#performance-timeline-api-integration)
   - [Complete event sequence](#complete-event-sequence)
 - [Guide for migrating from the existing history API](#guide-for-migrating-from-the-existing-history-api)
   - [Performing navigations](#performing-navigations)
@@ -461,7 +460,7 @@ This does not yet solve all accessibility problems with single-page navigations.
 
 Continuing with the theme of `respondWith()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
 
-In particular, analytics frameworks would be able to consume this information from the browser in a way that works across all applications using the app history API. See the example in the [Current entry change monitoring](#current-entry-change-monitoring) section for one way this could look; other possibilities include integrating into the existing [performance APIs](https://w3c.github.io/performance-timeline/).
+In particular, analytics frameworks would be able to consume this information from the browser in a way that works across all applications using the app history API. See the discussion on [performance timeline API integration](#performance-timeline-api-integration) for what we are proposing there.
 
 This standardized notion of single-page navigations also gives a hook for other useful metrics to build off of. For example, you could imagine variants of the `"first-paint"` and `"first-contentful-paint"` APIs which are collected after the `navigate` event is fired. Or, you could imagine vendor-specific or application-specific measurements like [Cumulative Layout Shift](https://web.dev/cls/) or React hydration time being reset after such navigations begin.
 
@@ -838,32 +837,38 @@ This can be useful for cleaning up any information in secondary stores, such as 
 
 ### Current entry change monitoring
 
-**Although the basic idea of an event for when `appHistory.current` changes will probably survive, much of this section needs revamping. See the several discussions linked below.**
+The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property due to same-document navigations. This includes both navigations that change its value, and updates to its URL or state. This event cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
 
-The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property. This includes both navigations that change its value, and calls to `appHistory.navigate()` that change its state or URL. This cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
+_TODO: Add examples of when this would be useful: [#14](https://github.com/WICG/app-history/issues/14). If no such examples can be found, delete this event._
 
-This event has one special property, `event.startTime`, which for [same-document](#appendix-types-of-navigations) navigations gives the value of `performance.now()` when the navigation was initiated. This includes for navigations that were originally [cross-document](#appendix-types-of-navigations), like the user clicking on `<a href="https://example.com/another-page">`, but were transformed into same-document navigations by [navigation interception](#navigation-monitoring-and-interception). For completely cross-document navigations, `startTime` will be `null`.
+### Performance timeline API integration
 
-"Initiated" means either when the corresponding API was called (like `location.href` or `appHistory.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`. This allows it to be used for determining the overall time from navigation initiation to navigation completion, including the time it took for a promise passed to `e.respondWith()` to settle:
+The [performance timeline API](https://w3c.github.io/performance-timeline/) provides a generic framework for the browser to signal about interesting events, their durations, and their associated data via `PerformanceEntry` objects. For example, cross-document navigations are done with the [navigation timing API](https://w3c.github.io/navigation-timing/), which uses a subclass of `PerformanceEntry` called `PerformanceNavigationTiming`.
+
+Until now, it has not been possible to measure such data for same-document navigations. This is somewhat understandable, as such navigations have always been "zero duration": they occur instantaneously when the application calls `history.pushState()` or `history.replaceState()`. So measuring them isn't that interesting. But with the app history API, [browsers know about the start time, end time, and duration of the navigation](#measuring-standardized-single-page-navigations), so we can give useful performance entries.
+
+The `PerformanceEntry` instances for such same-document navigations are instances of a new subclass, `SameDocumentNavigationEntry`, with the following properties:
+
+- `name`: the URL being navigated to. (The use of `name` instead of `url` is strange, but matches all the other `PerformanceEntry`s on the platform.)
+
+- `entryType`: always `"same-document-navigation"`.
+
+- `startTime`: the time at which the navigation was initiated, i.e. when the corresponding API was called (like `location.href` or `appHistory.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`.
+
+- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promise passed to `event.respondWith()` to settle, for navigations intercepted by a `navigate` event handler.
+
+- `success`: `false` if the promise passed to `event.respondWith()` rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
+
+To record single-page navigations using [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), web developers could then use code such as the following:
 
 ```js
-appHistory.addEventListener("currentchange", e => {
-  if (e.startTime) {
-    const loadTime = e.timeStamp - e.startTime;
-
-    document.querySelector("#status-bar").textContent = `Loaded in ${loadTime} ms!`;
-    analyticsPackage.sendEvent("single-page-app-nav", { loadTime });
-  } else {
-    document.querySelector("#status-bar").textContent = `Welcome to this document!`;
+const observer = new PerformanceObserver(list => {
+  for (const entry of list.getEntries()) {
+    analyticsPackage.send("same-document-navigation", entry.toJSON());
   }
 });
+observer.observe({ type: "same-document-navigation" });
 ```
-
-_TODO: reconsider cross-document navigations. There will only be one (the initial load of the page); should we even fire this event in that case? (That's [#31](https://github.com/WICG/app-history/issues/31).) Could we give `startTime` a useful value there, if we do?_
-
-_TODO: this property-on-the-event design is not good and does not work, per [#59](https://github.com/WICG/app-history/issues/59). We should probably integrate with the performance timeline APIs instead? Discuss in [#33](https://github.com/WICG/app-history/issues/33)._
-
-_TODO: Add a non-analytics examples, similar to how people use `popstate` today. [#14](https://github.com/WICG/app-history/issues/14)_
 
 ### Complete event sequence
 
@@ -888,6 +893,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets fulfilled.
         1. `appHistory.transition.finished` fulfills with undefined.
         1. `appHistory.transition` becomes null.
+        1. Queue a new `SameDocumentNavigationEntry` indicating success.
     1. Alternately, if the promise passed to `event.respondWith()` rejects:
         1. `appHistory.current` fires `finish`.
         1. `navigateerror` fires on `window.appHistory` with the rejection reason as its `error` property.
@@ -895,6 +901,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same rejection reason.
         1. `appHistory.transition.finished` rejects with the same rejection reason.
         1. `appHistory.transition` becomes null.
+        1. Queue a new `SameDocumentNavigationEntry` indicating failure.
     1. Alternately, if the navigation gets [aborted](#aborted-navigations) before either of those two things occur:
         1. (`appHistory.current` never fires the `finish` event.)
         1. `navigateerror` fires on `window.appHistory` with an `"AbortError"` `DOMException` as its `error` property.
@@ -902,6 +909,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. If the process was initiated by a call to an `appHistory` API that returns a promise, then that promise gets rejected with the same `"AbortError"` `DOMException`.
         1. `appHistory.transition.finished` rejects with the same `"AbortError"` `DOMException`.
         1. `appHistory.transition` becomes null.
+        1. Queue a new `SameDocumentNavigationEntry` indicating failure.
 
 For more detailed analysis, including specific code examples, see [this dedicated document](./interception-details.md).
 
@@ -1028,7 +1036,7 @@ The app history API provides several replacements that subsume these events:
 
 - To react to and potentially intercept navigations before they complete, use the `navigate` event on `appHistory`. See the [Navigation monitoring and interception](#navigation-monitoring-and-interception) section for more details, including how the event object provides useful information that can be used to distinguish different types of navigations.
 
-- To react to navigations that have completed, use the `currentchange` event on `appHistory`. See the [Current entry change monitoring](#current-entry-change-monitoring) section for more details, including an example of how to use it to determine how long a same-document navigation took.
+- To react to navigations that have completed, use the `currentchange` event on `appHistory`. See the [Current entry change monitoring](#current-entry-change-monitoring) section for more details.
 
 - To watch a particular entry to see when it's navigated to, navigated from, or becomes unreachable, use that `AppHistoryEntry`'s `navigateto`, `navigatefrom`, and `dispose` events. See the [Per-entry events](#per-entry-events) section for more details.
 
@@ -1375,5 +1383,11 @@ interface AppHistoryCurrentChangeEvent : Event {
 
 dictionary AppHistoryCurrentChangeEventInit : EventInit {
   DOMHighResTimeStamp? startTime = null;
+};
+
+[Exposed=Window]
+interface SameDocumentNavigationEntry : PerformanceEntry {
+  readonly attribute boolean success;
+  [Default] object toJSON();
 };
 ```
