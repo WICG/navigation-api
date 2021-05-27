@@ -88,6 +88,7 @@ appHistory.addEventListener("currentchange", e => {
   - [Complete event sequence](#complete-event-sequence)
 - [Guide for migrating from the existing history API](#guide-for-migrating-from-the-existing-history-api)
   - [Performing navigations](#performing-navigations)
+  - [Warning: back/forward are not always opposites](#warning-backforward-are-not-always-opposites)
   - [Using `navigate` handlers](#using-navigate-handlers)
   - [Attaching and using history state](#attaching-and-using-history-state)
   - [Introspecting the history list](#introspecting-the-history-list)
@@ -277,7 +278,7 @@ All of these methods return promises, because navigations can be intercepted and
 
 - The navigation succeeds, and it was a different-document navigation. Then the promise will never settle, because the entire document and all its promises will disappear.
 
-As discussed in more detail in the section on [integration with the existing history API and spec](#integration-with-the-existing-history-api-and-spec), navigating through the app history list does navigate through the joint session history. This means it _can_ impact other frames on the page. It's just that, unlike `history.back()` and friends, such other-frame navigations always happen as a side effect of navigating your own frame; they are never the sole result of an app history traversal.
+As discussed in more detail in the section on [integration with the existing history API and spec](#integration-with-the-existing-history-api-and-spec), navigating through the app history list does navigate through the joint session history. This means it _can_ impact other frames on the page. It's just that, unlike `history.back()` and friends, such other-frame navigations always happen as a side effect of navigating your own frame; they are never the sole result of an app history traversal. (An interesting consequence of this is that [`appHistory.back()` and `appHistory.forward()` are not always opposites](#warning-backforward-are-not-always-opposites).)
 
 ### Keys and IDs
 
@@ -947,6 +948,33 @@ if (entry) {
   await appHistory.goTo(entry.key);
 }
 ```
+
+### Warning: back/forward are not always opposites
+
+As a consequence of how app history is focused on manipulating the current frame, `appHistory.back()` followed by `appHistory.forward()` will not always take you back to the original situation, when all the different frames on a page are considered. This sometimes is the case with `history.back()` and `history.forward()` today, due to browser bugs. But for app history, it's actually intentional and expected.
+
+This is because of the ambiguity where there can be multiple joint session history entries (representing the history state of the entire frame tree) for a given app history entry (representing the history state of your particular frame). Consider the following example joint session history where an iframe is involved:
+
+```
+A. https://example.com/outer#1
+   ┗ https://example.com/inner-1
+B. https://example.com/outer#2
+   ┗ https://example.com/inner-1
+C. https://example.com/outer#2
+   ┗ https://example.com/inner-2
+D. https://example.com/outer#2
+   ┗ https://example.com/inner-3
+E. https://example.com/outer#2
+   ┗ https://example.com/inner-4
+```
+
+Let's say the user is looking at joint session history entry C. If code in the outer frame calls `appHistory.back()`, this is a request to navigate backward to the nearest joint session history entry where the outer frame differs, i.e. to navigate to A. Then, if the outer frame in state A calls `appHistory.forward()`, this is a request to navigate forward to the nearest joint session history entry where the outer frame differs, i.e. to navigate to B. So starting at C, a back/forward sequence took us to B.
+
+For similar reasons, if you started at state C, a forward/back sequence in the outer frame would fail (since there is no joint session history entry past C that differs for the outer frame). But a back/forward sequence would succeed, and take you to B per the above.
+
+Although this behavior can be a bit counterintuitive, we think it's worth the tradeoff of having `appHistory.back()` and `appHistory.forward()` predictably navigate your own frame, instead of sometimes only navigating some subframe (like `history.back()` and `history.forward()` can do).
+
+In the longer term, we think the best fix for this would be to introduce [a mode for iframes where they don't mess with the joint session history at all](https://github.com/whatwg/html/issues/6501). If a page used that on all its iframes, then it would never have to worry about such strange behavior. We're hoping to spec and prototype such an API alongside app history, so that they could ship at roughly the same time in implementations.
 
 ### Using `navigate` handlers
 
