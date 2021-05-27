@@ -72,6 +72,7 @@ appHistory.addEventListener("currentchange", e => {
   - [Navigation monitoring and interception](#navigation-monitoring-and-interception)
     - [Example: replacing navigations with single-page app navigations](#example-replacing-navigations-with-single-page-app-navigations)
     - [Example: async transitions with special back/forward handling](#example-async-transitions-with-special-backforward-handling)
+    - [Example: progressively enhancing form submissions](#example-progressively-enhancing-form-submissions)
     - [Restrictions on firing, canceling, and responding](#restrictions-on-firing-canceling-and-responding)
     - [Accessibility benefits of standardized single-page navigations](#accessibility-benefits-of-standardized-single-page-navigations)
     - [Measuring standardized single-page navigations](#measuring-standardized-single-page-navigations)
@@ -416,6 +417,43 @@ appHistory.addEventListener("navigate", e => {
   })());
 });
 ```
+
+#### Example: progressively enhancing form submissions
+
+A common pattern for multi-page web apps is [post/redirect/get](https://en.wikipedia.org/wiki/Post/Redirect/Get), which handles POST form submissions by performing a server-side redirect to a page retrieved with GET. This avoids a POST-derived page from ever entering the session history, since this can lead to confusing "Do you want to resubmit the form?" popups and [interop problems](https://github.com/whatwg/html/issues/6600).
+
+The app history API's `navigate` event allows emulating this pattern on the client side using code such as the following:
+
+```js
+appHistory.addEventListener("navigate", e => {
+  const url = new URL(e.destination.url);
+
+  switch (url.pathname) {
+    case "/form-submit": {
+      e.respondWith((async () => {
+        // Do not navigate to form-submit; instead send the data to that endpoint using fetch().
+        await fetch("/form-submit", { body: e.formData });
+
+        // Perform a client-side "redirect" to /destination.
+        await appHistory.navigate("/destination", { replace: true });
+      }()));
+      break;
+    }
+    case "/destination": {
+      e.respondWith((async () => {
+        document.body.innerHTML = "Form submission complete!";
+      }()));
+      break;
+    }
+  }
+});
+```
+
+Note how doing a replace navigation to `/destination` overrides the in-progress navigation to `/form-submit`, so that like in the server-driven approach, the session history ends up going straight from the original page to `/destination`, with no entry for `/form-submit`. (This example uses the `appHistory.navigate()` API introduced [further down](#new-navigation-api), but you could also do `location.replace("/destination")` for much the same effect.)
+
+What's cool about this example is that, if the browser does not support app history, then the server-driven post/redirect/get flow will still go through, i.e. the user will see a full-page navigation that leaves them at `/destination`. So this is purely a progressive enhancement.
+
+See [this interactive demo](https://selective-heliotrope-dumpling.glitch.me/) to check out the technique in action, in browsers with or without the app history API implemented.
 
 #### Restrictions on firing, canceling, and responding
 
