@@ -1067,6 +1067,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
 };
 
 <c- b>enum</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="enum" data-export id="enumdef-apphistorynavigationtype"><code><c- g>AppHistoryNavigationType</c-></code></dfn> {
+  <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigationType" data-dfn-type="enum-value" data-export id="dom-apphistorynavigationtype-reload"><code><c- s>"reload"</c-></code></dfn>,
   <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigationType" data-dfn-type="enum-value" data-export id="dom-apphistorynavigationtype-push"><code><c- s>"push"</c-></code></dfn>,
   <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigationType" data-dfn-type="enum-value" data-export id="dom-apphistorynavigationtype-replace"><code><c- s>"replace"</c-></code></dfn>,
   <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigationType" data-dfn-type="enum-value" data-export id="dom-apphistorynavigationtype-traverse"><code><c- s>"traverse"</c-></code></dfn>
@@ -1075,7 +1076,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <dl class="domintro non-normative">
     <dt><code><var>event</var> . <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-navigationtype" id="ref-for-dom-apphistorynavigateevent-navigationtype①">navigationType</a></code></code> 
     <dd>
-     <p>One of "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push">push</a></code>", "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace">replace</a></code>", or "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse">traverse</a></code>", indicating what type of navigation this is. </p>
+     <p>One of "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-reload" id="ref-for-dom-apphistorynavigationtype-reload">reload</a></code>", "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push">push</a></code>", "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace">replace</a></code>", or "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse">traverse</a></code>", indicating what type of navigation this is. </p>
     <dt><code><var>event</var> . <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination①">destination</a></code></code> 
     <dd>
      <p>An <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination②">AppHistoryDestination</a></code> representing the destination of the navigation. </p>
@@ -1105,7 +1106,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <p>An <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent②">AppHistoryNavigateEvent</a></code> has the following associated values which are only conditionally used:</p>
    <ul>
     <li data-md>
-     <p><dfn class="dfn-paneled" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="dfn" data-noexport id="apphistorynavigateevent-classic-history-api-serialized-data">classic history API serialized data</dfn>, a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state②">serialized state</a>-or-null, used when its <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-navigationtype" id="ref-for-dom-apphistorynavigateevent-navigationtype②">navigationType</a></code> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push①">push</a></code>" or "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace①">replace</a></code>"</p>
+     <p><dfn class="dfn-paneled" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="dfn" data-noexport id="apphistorynavigateevent-classic-history-api-serialized-data">classic history API serialized data</dfn>, a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state②">serialized state</a>-or-null, used when its <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-navigationtype" id="ref-for-dom-apphistorynavigateevent-navigationtype②">navigationType</a></code> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-reload" id="ref-for-dom-apphistorynavigationtype-reload①">reload</a></code>", "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push①">push</a></code>" or "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace①">replace</a></code>"</p>
     <li data-md>
      <p><dfn class="dfn-paneled" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="dfn" data-noexport id="apphistorynavigateevent-destination-entry">destination entry</dfn>, a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry">session history entry</a>, used when its <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-navigationtype" id="ref-for-dom-apphistorynavigateevent-navigationtype③">navigationType</a></code> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①">traverse</a></code>"</p>
    </ul>
@@ -1150,6 +1151,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     <dd>
      <p>For "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse②">traverse</a></code>" navigations, returns the deserialization of the state stored in the destination session history entry. </p>
      <p>For "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push②">push</a></code>" and "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace②">replace</a></code>" navigations, returns the deserialization of the state passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate④">appHistory.navigate()</a></code>, if the navigation was initiated in that way, or null if it wasn’t. </p>
+     <p>For "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-reload" id="ref-for-dom-apphistorynavigationtype-reload②">reload</a></code>" navigations, returns the deserialization of the state passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-reload" id="ref-for-dom-apphistory-reload③">appHistory.reload()</a></code>, if the reload was initiated in that way, or null if it wasn’t. </p>
    </dl>
    <p>An <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination④">AppHistoryDestination</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistoryDestination" data-dfn-type="dfn" data-noexport id="apphistorydestination-url">URL</dfn>, which is a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①">URL</a>.</p>
    <p>An <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination⑤">AppHistoryDestination</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistoryDestination" data-dfn-type="dfn" data-noexport id="apphistorydestination-state">state</dfn>, which is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state③">serialized state</a>-or-null.</p>
@@ -1255,18 +1257,18 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promise" id="ref-for-apphistorynavigateevent-navigation-action-promise①">navigation action promise</a> is non-null, then:</p>
       <ol>
        <li data-md>
-        <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-navigationtype" id="ref-for-dom-apphistorynavigateevent-navigationtype⑤">navigationType</a></code> attribute was initialized to "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push③">push</a></code>" or "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace③">replace</a></code>":</p>
+        <p>If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse⑥">traverse</a></code>":</p>
         <ol>
          <li data-md>
-          <p>Let <var>isPush</var> be true if <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-navigationtype" id="ref-for-dom-apphistorynavigateevent-navigationtype⑥">navigationType</a></code> attribute was initialized to "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push④">push</a></code>"; otherwise, false.</p>
-         <li data-md>
-          <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps①">URL and history update steps</a> given <var>event</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①④">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑦">associated document</a> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination⑥">destination</a></code>'s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url②">URL</a>, with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-serializeddata" id="ref-for-uhus-serializeddata">serializedData</a></i> set to <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-classic-history-api-serialized-data" id="ref-for-apphistorynavigateevent-classic-history-api-serialized-data①">classic history API serialized data</a> and <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-ispush" id="ref-for-uhus-ispush">isPush</a></i> set to <var>isPush</var>.</p>
+          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">Traverse the history</a> of <var>event</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①④">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc③">browsing context</a> to <a data-link-type="dfn" href="#apphistorynavigateevent-destination-entry" id="ref-for-apphistorynavigateevent-destination-entry①">destination entry</a>.</p>
         </ol>
        <li data-md>
         <p>Otherwise:</p>
         <ol>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">Traverse the history</a> of <var>event</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc③">browsing context</a> to <a data-link-type="dfn" href="#apphistorynavigateevent-destination-entry" id="ref-for-apphistorynavigateevent-destination-entry①">destination entry</a>.</p>
+          <p>Let <var>isPush</var> be true if <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push③">push</a></code>"; otherwise, false.</p>
+         <li data-md>
+          <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps①">URL and history update steps</a> given <var>event</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑦">associated document</a> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination⑥">destination</a></code>'s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url②">URL</a>, with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-serializeddata" id="ref-for-uhus-serializeddata">serializedData</a></i> set to <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-classic-history-api-serialized-data" id="ref-for-apphistorynavigateevent-classic-history-api-serialized-data①">classic history API serialized data</a> and <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-ispush" id="ref-for-uhus-ispush">isPush</a></i> set to <var>isPush</var>.</p>
         </ol>
       </ol>
      <li data-md>
@@ -1534,7 +1536,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p><a data-link-type="dfn" href="#cancel-any-ongoing-navigate-event" id="ref-for-cancel-any-ongoing-navigate-event">Cancel any ongoing navigate event</a> for <var>appHistory</var>.</p>
      <li data-md>
-      <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push⑤">push</a></code>" if <var>isPush</var> is true, and "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace④">replace</a></code>" otherwise.</p>
+      <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push④">push</a></code>" if <var>isPush</var> is true, and "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace③">replace</a></code>" otherwise.</p>
      <li data-md>
       <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event" id="ref-for-fire-a-push-or-replace-navigate-event">firing a push or replace navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-navigationtype" id="ref-for-fire-a-push-or-replace-navigate-event-navigationtype">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-issamedocument" id="ref-for-fire-a-push-or-replace-navigate-event-issamedocument">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-destinationurl" id="ref-for-fire-a-push-or-replace-navigate-event-destinationurl">destinationURL</a></i> set to <var>newURL</var>, and <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata" id="ref-for-fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a></i> set to <var>serializedData</var>.</p>
      <li data-md>
@@ -1547,7 +1549,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Let <var>appHistory</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry③">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document①">document</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②④">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history②">app history</a>.</p>
      <li data-md>
-      <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push⑥">push</a></code>" if <var>historyHandling</var> is "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default②"><code>default</code></a>"; otherwise, "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace⑤">replace</a></code>".</p>
+      <p>Let <var>navigationType</var> be the result of <a data-link-type="dfn" href="#convert-a-history-handling-behavior-to-a-navigation-type" id="ref-for-convert-a-history-handling-behavior-to-a-navigation-type">converting a history handling behavior to a navigation type</a> given <var>historyHandling</var>.</p>
      <li data-md>
       <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event" id="ref-for-fire-a-push-or-replace-navigate-event①">firing a push or replace navigate event</a> at <var>appHistory</var> given with <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-navigationtype" id="ref-for-fire-a-push-or-replace-navigate-event-navigationtype①">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-issamedocument" id="ref-for-fire-a-push-or-replace-navigate-event-issamedocument①">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-userinvolvement" id="ref-for-fire-a-push-or-replace-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>, and <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-destinationurl" id="ref-for-fire-a-push-or-replace-navigate-event-destinationurl①">destinationURL</a></i> set to <var>url</var>.</p>
      <li data-md>
@@ -1576,7 +1578,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <p>then:</p>
       <ol>
        <li data-md>
-        <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push⑦">push</a></code>" if <var>historyHandling</var> is "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default③"><code>default</code></a>"; otherwise, "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace⑥">replace</a></code>".</p>
+        <p>Let <var>navigationType</var> be the result of <a data-link-type="dfn" href="#convert-a-history-handling-behavior-to-a-navigation-type" id="ref-for-convert-a-history-handling-behavior-to-a-navigation-type①">converting a history handling behavior to a navigation type</a> given <var>historyHandling</var>.</p>
        <li data-md>
         <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event" id="ref-for-fire-a-push-or-replace-navigate-event②">firing a push or replace navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-navigationtype" id="ref-for-fire-a-push-or-replace-navigate-event-navigationtype②">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-issamedocument" id="ref-for-fire-a-push-or-replace-navigate-event-issamedocument②">isSameDocument</a></i> set to false, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-userinvolvement" id="ref-for-fire-a-push-or-replace-navigate-event-userinvolvement①">userInvolvement</a></i> set to <var>userInvolvement</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-formdataentrylist" id="ref-for-fire-a-push-or-replace-navigate-event-formdataentrylist">formDataEntryList</a></i> set to <var>entryList</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-destinationurl" id="ref-for-fire-a-push-or-replace-navigate-event-destinationurl②">destinationURL</a></i> set to <var>url</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-info" id="ref-for-fire-a-push-or-replace-navigate-event-info">info</a></i> set to <var>appHistoryInfo</var>, and <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-state" id="ref-for-fire-a-push-or-replace-navigate-event-state">state</a></i> set to <var>appHistoryState</var>.</p>
        <li data-md>
@@ -1605,6 +1607,26 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       </ol>
     </ol>
    </div>
+   <div class="algorithm" data-algorithm="convert a history handling behavior to a navigation type">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="convert-a-history-handling-behavior-to-a-navigation-type">convert a history handling behavior to a navigation type</dfn> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#history-handling-behavior" id="ref-for-history-handling-behavior①">history handling behavior</a> <var>historyHandling</var>: 
+    <ol>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: <var>historyHandling</var> is not "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update②"><code>entry update</code></a>".</p>
+     <li data-md>
+      <p>Return the result of switching on <var>historyHandling</var>:</p>
+      <dl class="switch">
+       <dt data-md>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-reload" id="ref-for-hh-reload②"><code>reload</code></a>"
+       <dd data-md>
+        <p>"<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-reload" id="ref-for-dom-apphistorynavigationtype-reload③">reload</a></code>"</p>
+       <dt data-md>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace②"><code>replace</code></a>"
+       <dd data-md>
+        <p>"<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace④">replace</a></code>"</p>
+       <dt data-md>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default②"><code>default</code></a>"
+       <dd data-md>
+        <p>"<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push⑤">push</a></code>"</p>
+      </dl>
+    </ol>
+   </div>
    <h2 class="heading settled" data-level="5" id="session-history-patches"><span class="secno">5. </span><span class="content">Patches to session history</span><a class="self-link" href="#session-history-patches"></a></h2>
    <p>This section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> to track appropriate data for associating an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory①⑦">AppHistory</a></code> with a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry③">session history entry</a>.</p>
    <h3 class="heading settled" data-level="5.1" id="session-history-new-she-fields"><span class="secno">5.1. </span><span class="content">New <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry④">session history entry</a> items</span><a class="self-link" href="#session-history-new-she-fields"></a></h3>
@@ -1621,7 +1643,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    </ul>
    <h3 class="heading settled" data-level="5.2" id="session-history-patches-key"><span class="secno">5.2. </span><span class="content">Carrying over the app history key</span><a class="self-link" href="#session-history-patches-key"></a></h3>
    <div class="algorithm" data-algorithm="update the session history with the new page key patch">
-     Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace②"><code>replace</code></a>" case by adding the following step after the construction of <var>newEntry</var>: 
+     Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace③"><code>replace</code></a>" case by adding the following step after the construction of <var>newEntry</var>: 
     <ol>
      <li data-md>
       <p>If <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin④">origin</a> is the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin⑤">same</a> as <var>sessionHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry④">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑤">origin</a>, then set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key①">app history key</a> to <var>sessionHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑤">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key②">app history key</a>.</p>
@@ -1630,7 +1652,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <h3 class="heading settled" data-level="5.3" id="session-history-patches-state"><span class="secno">5.3. </span><span class="content">Carrying over the app history state</span><a class="self-link" href="#session-history-patches-state"></a></h3>
    <div class="algorithm" data-algorithm="navigate to a fragment state patch"> Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑥">navigate to a fragment</a> algorithm by updating the step which creates and appends a new session history entry to carry over the <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑥">app history state</a> from the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑥">current entry</a> as well. </div>
    <h3 class="heading settled" data-level="5.4" id="session-history-patches-origin"><span class="secno">5.4. </span><span class="content">Tracking the <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑥">origin</a> member</span><a class="self-link" href="#session-history-patches-origin"></a></h3>
-   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page①">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace③"><code>replace</code></a>" and "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default④"><code>default</code></a>" cases to set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑦">origin</a> to <var>newDocument</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin②">origin</a> as part of its creation.</p>
+   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page①">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace④"><code>replace</code></a>" and "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default③"><code>default</code></a>" cases to set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑦">origin</a> to <var>newDocument</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin②">origin</a> as part of its creation.</p>
    <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑦">navigate to a fragment</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑥">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑧">origin</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑦">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a>.</p>
    <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps③">URL and history update steps</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑦">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑨">origin</a> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin④">origin</a>.</p>
    <p>Potentially update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history②">traverse the history</a> algorithm to consult the new <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①⓪">origin</a> field, instead of checking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document④">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑤">origin</a>, since the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑤">document</a> can disappear?? Needs further investigation.</p>
@@ -1688,6 +1710,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <li><a href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a><span>, in §2.3</span>
    <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">constructor(type)</a><span>, in §2.1</span>
    <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">constructor(type, eventInit)</a><span>, in §2.1</span>
+   <li><a href="#convert-a-history-handling-behavior-to-a-navigation-type">convert a history handling behavior to a navigation type</a><span>, in §4.3</span>
    <li><a href="#dom-apphistory-current">current</a><span>, in §1.1</span>
    <li><a href="#apphistory-current-index">current index</a><span>, in §1</span>
    <li>
@@ -1770,6 +1793,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <li><a href="#session-history-entry-origin">origin</a><span>, in §5.1</span>
    <li><a href="#perform-an-app-history-navigation">perform an app history navigation</a><span>, in §1.2</span>
    <li><a href="#dom-apphistorynavigationtype-push">"push"</a><span>, in §2.1</span>
+   <li><a href="#dom-apphistorynavigationtype-reload">"reload"</a><span>, in §2.1</span>
    <li><a href="#dom-apphistory-reload">reload()</a><span>, in §1.2</span>
    <li><a href="#dom-apphistory-reload">reload(options)</a><span>, in §1.2</span>
    <li><a href="#dom-apphistorynavigationtype-replace">"replace"</a><span>, in §2.1</span>
@@ -2047,8 +2071,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default">https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-hh-default">1.2. Navigating</a> <a href="#ref-for-hh-default①">(2)</a>
-    <li><a href="#ref-for-hh-default②">4.3. Navigation algorithm updates</a> <a href="#ref-for-hh-default③">(2)</a>
-    <li><a href="#ref-for-hh-default④">5.4. Tracking the origin member</a>
+    <li><a href="#ref-for-hh-default②">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-hh-default③">5.4. Tracking the origin member</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-she-document">
@@ -2062,7 +2086,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
   <aside class="dfn-panel" data-for="term-for-hh-entry-update">
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update">https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-hh-entry-update">4.3. Navigation algorithm updates</a> <a href="#ref-for-hh-entry-update①">(2)</a>
+    <li><a href="#ref-for-hh-entry-update">4.3. Navigation algorithm updates</a> <a href="#ref-for-hh-entry-update①">(2)</a> <a href="#ref-for-hh-entry-update②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-error">
@@ -2134,6 +2158,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#history-handling-behavior">https://html.spec.whatwg.org/multipage/browsing-the-web.html#history-handling-behavior</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-history-handling-behavior">1.2. Navigating</a>
+    <li><a href="#ref-for-history-handling-behavior①">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-navigation-hh">
@@ -2285,14 +2310,16 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-reload">https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-reload</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-hh-reload">1.2. Navigating</a> <a href="#ref-for-hh-reload①">(2)</a>
+    <li><a href="#ref-for-hh-reload②">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-hh-replace">
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace">https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-hh-replace">1.2. Navigating</a> <a href="#ref-for-hh-replace①">(2)</a>
-    <li><a href="#ref-for-hh-replace②">5.2. Carrying over the app history key</a>
-    <li><a href="#ref-for-hh-replace③">5.4. Tracking the origin member</a>
+    <li><a href="#ref-for-hh-replace②">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-hh-replace③">5.2. Carrying over the app history key</a>
+    <li><a href="#ref-for-hh-replace④">5.4. Tracking the origin member</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-report-the-exception">
@@ -2461,6 +2488,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     <li><a href="#ref-for-assert">1.1. Introspecting the app history entry list</a>
     <li><a href="#ref-for-assert①">1.2. Navigating</a>
     <li><a href="#ref-for-assert②">2.3. Firing the event</a>
+    <li><a href="#ref-for-assert③">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-iteration-break">
@@ -3035,6 +3063,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
 };
 
 <c- b>enum</c-> <a href="#enumdef-apphistorynavigationtype"><code><c- g>AppHistoryNavigationType</c-></code></a> {
+  <a href="#dom-apphistorynavigationtype-reload"><code><c- s>"reload"</c-></code></a>,
   <a href="#dom-apphistorynavigationtype-push"><code><c- s>"push"</c-></code></a>,
   <a href="#dom-apphistorynavigationtype-replace"><code><c- s>"replace"</c-></code></a>,
   <a href="#dom-apphistorynavigationtype-traverse"><code><c- s>"traverse"</c-></code></a>
@@ -3216,6 +3245,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <ul>
     <li><a href="#ref-for-dom-apphistory-reload">1. The AppHistory class</a>
     <li><a href="#ref-for-dom-apphistory-reload①">1.2. Navigating</a> <a href="#ref-for-dom-apphistory-reload②">(2)</a>
+    <li><a href="#ref-for-dom-apphistory-reload③">2.2. The AppHistoryDestination class</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="perform-an-app-history-navigation">
@@ -3289,13 +3319,21 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     <li><a href="#ref-for-enumdef-apphistorynavigationtype②">2.3. Firing the event</a> <a href="#ref-for-enumdef-apphistorynavigationtype③">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-apphistorynavigationtype-reload">
+   <b><a href="#dom-apphistorynavigationtype-reload">#dom-apphistorynavigationtype-reload</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-reload">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigationtype-reload①">(2)</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-reload②">2.2. The AppHistoryDestination class</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-reload③">4.3. Navigation algorithm updates</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigationtype-push">
    <b><a href="#dom-apphistorynavigationtype-push">#dom-apphistorynavigationtype-push</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-apphistorynavigationtype-push">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigationtype-push①">(2)</a>
     <li><a href="#ref-for-dom-apphistorynavigationtype-push②">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-dom-apphistorynavigationtype-push③">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigationtype-push④">(2)</a>
-    <li><a href="#ref-for-dom-apphistorynavigationtype-push⑤">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-apphistorynavigationtype-push⑥">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-push⑦">(3)</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-push③">2.3. Firing the event</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-push④">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-apphistorynavigationtype-push⑤">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigationtype-replace">
@@ -3303,8 +3341,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <ul>
     <li><a href="#ref-for-dom-apphistorynavigationtype-replace">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigationtype-replace①">(2)</a>
     <li><a href="#ref-for-dom-apphistorynavigationtype-replace②">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-dom-apphistorynavigationtype-replace③">2.3. Firing the event</a>
-    <li><a href="#ref-for-dom-apphistorynavigationtype-replace④">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-apphistorynavigationtype-replace⑤">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-replace⑥">(3)</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-replace③">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-apphistorynavigationtype-replace④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigationtype-traverse">
@@ -3312,14 +3349,14 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <ul>
     <li><a href="#ref-for-dom-apphistorynavigationtype-traverse">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①">(2)</a>
     <li><a href="#ref-for-dom-apphistorynavigationtype-traverse②">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-dom-apphistorynavigationtype-traverse③">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse④">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse⑤">(3)</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-traverse③">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse④">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse⑤">(3)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse⑥">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigateevent-navigationtype">
    <b><a href="#dom-apphistorynavigateevent-navigationtype">#dom-apphistorynavigateevent-navigationtype</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-apphistorynavigateevent-navigationtype">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigateevent-navigationtype①">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-navigationtype②">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-navigationtype③">(4)</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-navigationtype④">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigateevent-navigationtype⑤">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-navigationtype⑥">(3)</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-navigationtype④">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigateevent-destination">
@@ -3666,6 +3703,12 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <b><a href="#navigate-apphistorystate">#navigate-apphistorystate</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigate-apphistorystate">1.2. Navigating</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="convert-a-history-handling-behavior-to-a-navigation-type">
+   <b><a href="#convert-a-history-handling-behavior-to-a-navigation-type">#convert-a-history-handling-behavior-to-a-navigation-type</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-convert-a-history-handling-behavior-to-a-navigation-type">4.3. Navigation algorithm updates</a> <a href="#ref-for-convert-a-history-handling-behavior-to-a-navigation-type①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="session-history-entry-origin">
