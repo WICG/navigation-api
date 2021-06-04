@@ -544,7 +544,7 @@ An {{AppHistoryNavigateEvent}} has the following associated values which are onl
 
 One of these is set appropriately when the event is [[#navigate-event-firing|fired]].
 
-An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn for="AppHistoryNavigateEvent">navigation action promise</dfn>, initially null.
+An {{AppHistoryNavigateEvent}} also has an associated <dfn for="AppHistoryNavigateEvent">navigation action promises list</dfn>, which is a [=list=] of {{Promise}} objects, initially empty.
 
 <div algorithm>
   The <dfn method for="AppHistoryNavigateEvent">respondWith(|newNavigationAction|)</dfn> method steps are:
@@ -554,8 +554,7 @@ An {{AppHistoryNavigateEvent}} also has an associated {{Promise}}-or-null <dfn f
   1. If [=this=]'s {{AppHistoryNavigateEvent/canRespond}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/canceled flag=] is set, then throw an "{{InvalidStateError}}" {{DOMException}}.
-  1. Set [=this=]'s [=Event/canceled flag=].
-  1. Set [=this=]'s [=AppHistoryNavigateEvent/navigation action promise=] to |newNavigationAction|.
+  1. [=list/Append=] |newNavigationAction| to [=this=]'s [=AppHistoryNavigateEvent/navigation action promises list=].
 </div>
 
 <h3 id="navigate-event-destination">The {{AppHistoryDestination}} class</h3>
@@ -651,45 +650,47 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |destinationURL| is [=rewritable=] relative to |currentURL|, and either |isSameDocument| is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canRespond}} to true. Otherwise, initialize it to false.
   1. If either |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or  |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true.
   1. If |userInvolvement| is "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to false. Otherwise, initialize it to true.
-  1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |realm|, associated to |formDataEntryList|. Otherwise, initialize it to null.
+  1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |appHistory|'s [=relevant Realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigate event=] is null.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to |event|.
   1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
-  1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then return false.
-    1. [=Signal an aborted navigation=] for |appHistory|.
+  1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then:
+    1. [=Synchronously finalize with an aborted navigation error=] for |appHistory|.
     1. Return false.
 
     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
-  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then:
+  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty, then:
     1. If |navigationType| is "{{AppHistoryNavigationType/traverse}}":
       1. <a spec="HTML">Traverse the history</a> of |event|'s [=relevant global object=]'s [=Window/browsing context=] to [=AppHistoryNavigateEvent/destination entry=].
     1. Otherwise:
       1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
       1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
-  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, or both |result| and |isSameDocument| are true, then:
-    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null, then set it to [=a promise resolved with=] undefined, created in |realm|.
-    1. Let |navigateMethodCallPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
-    1. [=promise/React=] to |event|'s [=AppHistoryNavigateEvent/navigation action promise=] with the following fulfillment steps given |fulfillmentValue|:
-        1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
-        1. If |navigateMethodCallPromise| is non-null, then [=resolve=] |navigateMethodCallPromise| with |fulfillmentValue|.
-      and the following rejection steps given reason |rejectionReason|:
-        1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
-        1. If |navigateMethodCallPromise| is non-null, then [=reject=] |navigateMethodCallPromise| with |rejectionReason|.
+  1. If |result| is true:
+    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |isSameDocument| is true, then:
+      1. [=Wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
+          1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
+          1. If |navigateMethodCallPromise| is non-null, then [=resolve=] |navigateMethodCallPromise| with undefined.
+        and the following failure steps given reason |rejectionReason|:
+          1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+          1. If |navigateMethodCallPromise| is non-null, then [=reject=] |navigateMethodCallPromise| with |rejectionReason|.
 
-    <p class="note">If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is non-null, then {{AppHistoryNavigateEvent/respondWith()}} was called and so we're performing a same-document navigation, for which we want to fire {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events, and resolve or reject the promise returned by the corresponding {{AppHistory/navigate()|appHistory.navigate()}} call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask, treating them as an instantly-successful navigation.
-  1. Otherwise:
-    1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
+      <p class="note">If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is non-empty, then {{AppHistoryNavigateEvent/respondWith()}} was called and so we're performing a same-document navigation, for which we want to fire {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events, and resolve or reject the promise returned by the corresponding {{AppHistory/navigate()|appHistory.navigate()}} call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask, treating them as an instantly-successful navigation.
+    1. Otherwise:
+      1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
 
-    <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations or canceled navigations.
-  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promise=] is null and |result| is false, then [=signal an aborted navigation=] for |appHistory|.
+      <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
+  1. Otherwise, [=synchronously finalize with an aborted navigation error=] for |appHistory|.
   1. Return |result|.
 </div>
 
 <!-- TODO hook this up to the stop button etc. For now it just centralizes the ways a couple ways a navigate event handler can cause an abort. -->
 <div algorithm>
-  To <dfn>signal an aborted navigation</dfn> for an {{AppHistory}} |appHistory|:
+  To <dfn>synchronously finalize with an aborted navigation error</dfn> for an {{AppHistory}} |appHistory|:
 
+  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
+
+     <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for aborted navigations.
   1. [=Queue a microtask=] on |appHistory|'s [=relevant agent=]'s [=agent/event loop=] to perform the following steps:
     1. Let |error| be a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
     1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
@@ -701,7 +702,6 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
   1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then:
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
-    1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=AppHistoryNavigateEvent/navigation action promise=] to null.
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
 </div>
 
