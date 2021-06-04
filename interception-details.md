@@ -23,7 +23,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
 1. `appHistory.current` and `appHistory.transition` update.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"#foo"`
@@ -38,6 +37,7 @@ After the promise settles in one microtask:
 1. `navigatesuccess` is fired on `appHistory`.
 1. `appHistory.transition.finished` fulfills.
 1. `appHistory.transition` updates back to null.
+1. A new `SameDocumentNavigationEntry` indicating success is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a short (but nonzero) duration.
 
 ### No interception
 
@@ -50,7 +50,7 @@ location.hash = "#foo";
 console.log(location.hash);
 ```
 
-This is the same as the previous case.
+This is the same as the previous case, except that the `SameDocumentNavigationEntry` has zero duration.
 
 ### Cancelation
 
@@ -89,7 +89,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
 1. `appHistory.current` and `appHistory.transition` update.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -106,6 +105,7 @@ After the promise fulfills in ten seconds:
 1. `appHistory.transition.finished` fulfills.
 1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
+1. A new `SameDocumentNavigationEntry` indicating success is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a ten-second duration.
 
 ### Delayed failure
 
@@ -124,7 +124,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
 1. `appHistory.current` and `appHistory.transition` update.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -141,6 +140,7 @@ After the promise rejects in ten seconds:
 1. `appHistory.transition.finished` rejects, with the `new Error("bad")` exception.
 1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
+1. A new `SameDocumentNavigationEntry` indicating failure is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a ten-second duration.
 
 Note: any unreachable `AppHistoryEntry`s disposed as part of the synchronous block do not get resurrected.
 
@@ -174,7 +174,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/foo"`.
 1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`, and `appHistory.transition` updates to represent the transition from the starting URL to `/foo`.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -188,12 +187,12 @@ After one second:
 
 1. `navigateerror` fires on `window.appHistory`, with an `"AbortError"` `DOMException`.
 1. `appHistory.transition.finished` rejects with that `"AbortError"` `DOMException`.
+1. The `event.signal` for the navigation to `/foo` fires an `"abort"` event.
+1. A new `SameDocumentNavigationEntry` indicating failure is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a one-second duration.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/bar"`.
 1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`, and `appHistory.transition` updates to represent the transition from `/foo` to `/bar` (_not_ from the starting URL to `/bar`).
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
-1. The `event.signal` for the navigation to `/foo` fires an `"abort"` event.
 1. Any loading spinner UI stops, but then restarts. (Or maybe it never stops.)
 1. The second `console.log()` outputs `"/bar"`.
 
@@ -211,6 +210,7 @@ After eleven seconds:
 1. `appHistory.transition.finished` fulfills.
 1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
+1. A new `SameDocumentNavigationEntry` indicating success is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a ten-second duration.
 
 ### Trying to interrupt a slow navigation, but the `navigate` handler doesn't care
 
@@ -239,7 +239,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/foo"`.
 1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`, and `appHistory.transition` updates to represent the transition from the starting URL to `/foo`.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -252,12 +251,13 @@ Asynchronously but basically immediately:
 After one second:
 
 1. `navigateerror` fires on `window.appHistory`, with an `"AbortError"` `DOMException`.
+1. `appHistory.transition.finished` rejects with that `"AbortError"` `DOMException`.
+1. The `event.signal` for the navigation to `/foo` fires an `"abort"` event. (But nobody is listening to it.)
+1. A new `SameDocumentNavigationEntry` indicating failure is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a one-second duration.
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/bar"`.
 1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`, and `appHistory.transition` updates to represent the transition from `/foo` to `/bar` (_not_ from the starting URL to `/bar`).
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
-1. The `event.signal` for the navigation to `/foo` fires an `"abort"` event. (But nobody is listening to it.)
 1. Any loading spinner UI stops, but then restarts. (Or maybe it never stops.)
 1. The second `console.log()` outputs `"/bar"`.
 
@@ -275,3 +275,4 @@ After eleven seconds:
 1. `appHistory.transition.finished` fulfills.
 1. `appHistory.transition` updates back to null.
 1. Any loading spinner UI stops.
+1. A new `SameDocumentNavigationEntry` indicating success is [queued](https://w3c.github.io/performance-timeline/#queue-a-performanceentry), with a ten-second duration.
