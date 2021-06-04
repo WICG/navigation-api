@@ -23,7 +23,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
 1. `appHistory.current` and `appHistory.transition` update.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"#foo"`
@@ -90,7 +89,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
 1. `appHistory.current` and `appHistory.transition` update.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -126,7 +124,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates.
 1. `appHistory.current` and `appHistory.transition` update.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -177,7 +174,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/foo"`.
 1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`, and `appHistory.transition` updates to represent the transition from the starting URL to `/foo`.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -196,7 +192,6 @@ After one second:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/bar"`.
 1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`, and `appHistory.transition` updates to represent the transition from `/foo` to `/bar` (_not_ from the starting URL to `/bar`).
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any loading spinner UI stops, but then restarts. (Or maybe it never stops.)
 1. The second `console.log()` outputs `"/bar"`.
@@ -244,7 +239,6 @@ Synchronously:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/foo"`.
 1. `appHistory.current` updates to a new `AppHistoryEntry` representing `/foo`, and `appHistory.transition` updates to represent the transition from the starting URL to `/foo`.
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
 1. The `console.log()` outputs `"/foo"`.
@@ -263,7 +257,6 @@ After one second:
 1. `appHistory.current` fires `navigatefrom`.
 1. `location.href` updates to `"/bar"`.
 1. `appHistory.current` changes to a new `AppHistoryEntry` representing `/bar`, and `appHistory.transition` updates to represent the transition from `/foo` to `/bar` (_not_ from the starting URL to `/bar`).
-1. `currentchange` fires on `window.appHistory`.
 1. `appHistory.current` fires `navigateto`.
 1. Any loading spinner UI stops, but then restarts. (Or maybe it never stops.)
 1. The second `console.log()` outputs `"/bar"`.

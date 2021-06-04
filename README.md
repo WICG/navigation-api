@@ -222,15 +222,6 @@ The current entry can be replaced with a new entry, with a new `AppHistoryEntry`
 
 - When using the `navigate` event to [convert a cross-document replace navigation into a same-document navigation](#navigation-monitoring-and-interception).
 
-In both cases, for same-document navigations a `currentchange` event will fire on `appHistory`:
-
-```js
-appHistory.addEventListener("currentchange", () => {
-  // appHistory.current has changed: either to a completely new entry (with new key),
-  // or it has been replaced (keeping the same key).
-});
-```
-
 ### Inspection of the app history list
 
 In addition to the current entry, the entire list of app history entries can be inspected, using `appHistory.entries()`, which returns an array of `AppHistoryEntry` instances. (Recall that all app history entries are same-origin contiguous entries for the current frame, so this is not a security issue.)
@@ -835,12 +826,6 @@ await appHistory.navigate("/1-b");
 
 This can be useful for cleaning up any information in secondary stores, such as `sessionStorage` or caches, when we're guaranteed to never reach those particular history entries again.
 
-### Current entry change monitoring
-
-The `window.appHistory` object has an event, `currentchange`, which allows the application to react to any updates to the `appHistory.current` property due to same-document navigations. This includes both navigations that change its value, and updates to its URL or state. This event cannot be intercepted or canceled, as it occurs after the navigation has already happened; it's just an after-the-fact notification.
-
-_TODO: Add examples of when this would be useful: [#14](https://github.com/WICG/app-history/issues/14). If no such examples can be found, delete this event._
-
 ### Performance timeline API integration
 
 The [performance timeline API](https://w3c.github.io/performance-timeline/) provides a generic framework for the browser to signal about interesting events, their durations, and their associated data via `PerformanceEntry` objects. For example, cross-document navigations are done with the [navigation timing API](https://w3c.github.io/navigation-timing/), which uses a subclass of `PerformanceEntry` called `PerformanceNavigationTiming`.
@@ -881,7 +866,6 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
     1. `appHistory.current` fires `navigatefrom`.
     1. `location.href` updates.
     1. `appHistory.current` updates. `appHistory.transition` is created.
-    1. `currentchange` fires on `window.appHistory`.
     1. `appHistory.current` fires `navigateto`.
     1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
@@ -1036,7 +1020,7 @@ The app history API provides several replacements that subsume these events:
 
 - To react to and potentially intercept navigations before they complete, use the `navigate` event on `appHistory`. See the [Navigation monitoring and interception](#navigation-monitoring-and-interception) section for more details, including how the event object provides useful information that can be used to distinguish different types of navigations.
 
-- To react to navigations that have completed, use the `currentchange` event on `appHistory`. See the [Current entry change monitoring](#current-entry-change-monitoring) section for more details.
+- To react to navigations that have completed, use the `navigatesuccess` or `navigateerror` events on `appHistory`. Note that these will only be fired asynchronously, after any handlers passed to the `navigate` event's `event.respondWith()` method have completed.
 
 - To watch a particular entry to see when it's navigated to, navigated from, or becomes unreachable, use that `AppHistoryEntry`'s `navigateto`, `navigatefrom`, and `dispose` events. See the [Per-entry events](#per-entry-events) section for more details.
 
@@ -1292,7 +1276,6 @@ interface AppHistory : EventTarget {
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
-  attribute EventHandler oncurrentchange;
 };
 
 [Exposed=Window]
@@ -1372,17 +1355,6 @@ interface AppHistoryDestination {
   readonly attribute boolean sameDocument;
 
   any getState();
-};
-
-[Exposed=Window]
-interface AppHistoryCurrentChangeEvent : Event {
-  constructor(DOMString type, optional AppHistorycurrentChangeEventInit eventInit = {});
-
-  readonly attribute DOMHighResTimeStamp? startTime;
-};
-
-dictionary AppHistoryCurrentChangeEventInit : EventInit {
-  DOMHighResTimeStamp? startTime = null;
 };
 
 [Exposed=Window]
