@@ -259,7 +259,7 @@ Unlike the existing history API's `history.go()` method, which navigates by offs
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
-- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise passed to `respondWith()`. (However, even if the promise rejects, `location.href` and `appHistory.current` will change.)
+- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise(s) passed to `respondWith()`. (However, even if the promise rejects, `location.href` and `appHistory.current` will change.)
 
 - The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
@@ -326,6 +326,8 @@ The event object has a special method `event.respondWith(promise)`. This works o
 - For the duration of the promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
 Note that the browser does not wait for the promise to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `appHistory.current`.
+
+If `respondWith()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the given promises will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
 
 _TODO: is it OK for web developers that the URL bar updates immediately? See [#66](https://github.com/WICG/app-history/issues/66)._
 
