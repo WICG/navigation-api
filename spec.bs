@@ -358,6 +358,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
   1. Let |serializedState| be null.
 
   1. If |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryNavigateOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
@@ -373,6 +375,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
   The <dfn method for="AppHistory">reload(|options|)</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
 
