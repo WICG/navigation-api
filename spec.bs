@@ -1006,9 +1006,10 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   1. Let |initiatorOrigin| be |source browsing context|'s [=active document=]'s [=Document/origin=].
   1. [=parallel queue/enqueue steps|Enqueue the following steps=] to |traversable|'s [=traversable navigable/session history traversal queue=]:
     1. Let |allSteps| be the result of [=traversable navigable/getting all history steps=] for |traversable|.
-    1. Let |targetStep| be TODO compute using [=traversable navigable/current session history step=], |allSteps|, and |delta|. Will be failure if there is no step |delta| away from the current one.
-    1. If |targetStep| is failure, then return.
-    1. [=Apply the history step=] |targetStep| to |traversable| with true, <var ignore>step</var>, |initiatorOrigin|, and |userInvolvement|.
+    1. Let |currentStepIndex| be the index of the [=traversable navigable/current session history step=] within |allSteps|.
+    1. Let |targetStepIndex| be |currentStepIndex| plus |delta|.
+    1. If |allSteps|[|targetStepIndex|] does not [=set/exist=], then return.
+    1. [=Apply the history step=] |allSteps|[|targetStepIndex|] to |traversable| with true, <var ignore>step</var>, |initiatorOrigin|, and |userInvolvement|.
 </div>
 
 <div algorithm="apply the history step">
