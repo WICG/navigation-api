@@ -423,9 +423,11 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. Set |appHistory|'s [=AppHistory/navigate method call promise=] to |promise|.
 
+  1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to |serializedState|.
+
   1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryInfo=]</i> set to |navigateInfo|, <i>[=navigate/appHistoryState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
 
-  1. If [=AppHistory/navigate method call serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |appHistory|'s [=AppHistory/navigate method call serialized state=].
+  1. If |appHistory|'s [=AppHistory/navigate method call serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |appHistory|'s [=AppHistory/navigate method call serialized state=].
 
   1. Set |appHistory|'s [=AppHistory/navigate method call serialized state=] to null.
 
@@ -679,12 +681,13 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
   1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty, then:
     1. If |navigationType| is "{{AppHistoryNavigationType/traverse}}":
-      1. <a spec="HTML">Traverse the history</a> of |event|'s [=relevant global object=]'s [=Window/browsing context=] to [=AppHistoryNavigateEvent/destination entry=].
+      1. Do nothing. The same-document history traversal is already underway and this algorithm was reached as a consequence of that.
     1. Otherwise:
       1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
       1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
   1. If |result| is true:
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |isSameDocument| is true, then:
+      1. Let |navigateMethodCallPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
       1. [=Wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
           1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
           1. If |navigateMethodCallPromise| is non-null, then [=resolve=] |navigateMethodCallPromise| with undefined.

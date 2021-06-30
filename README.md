@@ -1337,9 +1337,9 @@ interface AppHistory : EventTarget {
   Promise<undefined> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
   Promise<undefined> reload(optional AppHistoryReloadOptions options = {});
 
-  Promise<undefined> goTo(DOMString key, optional AppHistoryNavigationOptions = {});
-  Promise<undefined> back(optional AppHistoryNavigationOptions = {});
-  Promise<undefined> forward(optional AppHistoryNavigationOptions = {});
+  Promise<undefined> goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
+  Promise<undefined> back(optional AppHistoryNavigationOptions options = {});
+  Promise<undefined> forward(optional AppHistoryNavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
