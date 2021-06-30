@@ -1259,7 +1259,9 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event①">ongoing navigate event</a> to <var>event</var>.</p>
      <li data-md>
-      <p>Let <var>result</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-dispatch" id="ref-for-concept-event-dispatch">dispatching</a> <var>event</var> at <var>appHistory</var>.</p>
+      <p>Let <var>dispatchResult</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-dispatch" id="ref-for-concept-event-dispatch">dispatching</a> <var>event</var> at <var>appHistory</var>.</p>
+     <li data-md>
+      <p>Let <var>shouldContinue</var> be <var>dispatchResult</var>.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event②">ongoing navigate event</a> to null.</p>
      <li data-md>
@@ -1272,26 +1274,18 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       </ol>
       <p class="note" role="note">This can occur if an event listener disconnected the <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element" id="ref-for-the-iframe-element">iframe</a></code> corresponding to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑤">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑥">relevant global object</a>.</p>
      <li data-md>
-      <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list①">navigation action promises list</a> is not empty, then:</p>
+      <p>If <var>dispatchResult</var> is true:</p>
       <ol>
        <li data-md>
-        <p>If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse⑥">traverse</a></code>":</p>
-        <ol>
-         <li data-md>
-          <p>Do nothing. The same-document history traversal is already underway and this algorithm was reached as a consequence of that.</p>
-        </ol>
-       <li data-md>
-        <p>Otherwise:</p>
+        <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list①">navigation action promises list</a> is not empty and <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse⑥">traverse</a></code>":</p>
         <ol>
          <li data-md>
           <p>Let <var>isPush</var> be true if <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push③">push</a></code>"; otherwise, false.</p>
          <li data-md>
           <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps①">URL and history update steps</a> given <var>event</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑦">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⓪">associated document</a> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination⑥">destination</a></code>'s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url②">URL</a>, with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-serializeddata" id="ref-for-uhus-serializeddata">serializedData</a></i> set to <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-classic-history-api-serialized-data" id="ref-for-apphistorynavigateevent-classic-history-api-serialized-data①">classic history API serialized data</a> and <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-ispush" id="ref-for-uhus-ispush">isPush</a></i> set to <var>isPush</var>.</p>
+         <li data-md>
+          <p>Set <var>shouldContinue</var> to false.</p>
         </ol>
-      </ol>
-     <li data-md>
-      <p>If <var>result</var> is true:</p>
-      <ol>
        <li data-md>
         <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a> is not empty or <var>isSameDocument</var> is true, then:</p>
         <ol>
@@ -1325,7 +1319,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Otherwise, <a data-link-type="dfn" href="#synchronously-finalize-with-an-aborted-navigation-error" id="ref-for-synchronously-finalize-with-an-aborted-navigation-error①">synchronously finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal③">signal</a></code>.</p>
      <li data-md>
-      <p>Return <var>result</var>.</p>
+      <p>Return <var>shouldContinue</var>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="synchronously finalize with an aborted navigation error">
