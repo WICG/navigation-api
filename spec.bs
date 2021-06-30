@@ -672,20 +672,19 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |appHistory|'s [=relevant Realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigate event=] is null.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to |event|.
-  1. Let |result| be the result of [=dispatching=] |event| at |appHistory|.
+  1. Let |dispatchResult| be the result of [=dispatching=] |event| at |appHistory|.
+  1. Let |shouldContinue| be |dispatchResult|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
   1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then:
     1. [=Synchronously finalize with an aborted navigation error=] given |appHistory| and |event|'s {{AppHistoryNavigateEvent/signal}}.
     1. Return false.
 
     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
-  1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty, then:
-    1. If |navigationType| is "{{AppHistoryNavigationType/traverse}}":
-      1. Do nothing. The same-document history traversal is already underway and this algorithm was reached as a consequence of that.
-    1. Otherwise:
-      1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
-      1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
-  1. If |result| is true:
+  1. If |dispatchResult| is true:
+    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
+        1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
+        1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+        1. Set |shouldContinue| to false.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |isSameDocument| is true, then:
       1. Let |navigateMethodCallPromise| be |appHistory|'s [=AppHistory/navigate method call promise=].
       1. [=Wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
@@ -701,7 +700,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
   1. Otherwise, [=synchronously finalize with an aborted navigation error=] given |appHistory| and |event|'s {{AppHistoryNavigateEvent/signal}}.
-  1. Return |result|.
+  1. Return |shouldContinue|.
 </div>
 
 <div algorithm>
