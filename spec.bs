@@ -182,6 +182,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">ongoing navigate event</dfn>, an {{AppHistoryNavigateEvent}} or null, initially null.
 
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">post-navigate event navigation signal</dfn>, an {{AbortSignal}} or null, initially null.
+
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate method call promise</dfn>, which is either a {{Promise}} or null, initially null.
 
 Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate method call serialized state</dfn>, which is either a [=serialized state=] or null, initially null.
@@ -217,7 +219,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 
   1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return null.
 
-     <p class="note">This occurs if accessing the API while on the initial `about:blank` {{Document}}, where the [=AppHistory/update the entries=] algorithm will not yet have been run to completion.
+     <p class="note">This occurs if accessing the API while on the initial `about:blank` {{Document}}, where the [=AppHistory/update for navigation=] algorithm will not yet have been run to completion.
 
   1. Return [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]].
 </div>
@@ -255,7 +257,9 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
 </div>
 
 <div algorithm>
-  To <dfn for="AppHistory">update the entries</dfn> for an {{AppHistory}} instance |appHistory|:
+  To <dfn for="AppHistory">update for navigation</dfn> an {{AppHistory}} instance |appHistory|:
+
+  1. Set |appHistory|'s [=AppHistory/post-navigate event navigation signal=] to null.
 
   1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
 
@@ -653,6 +657,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Initialize |event|'s {{Event/type}} to "{{AppHistory/navigate}}".
   1. Initialize |event|'s {{AppHistoryNavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/info}} to |info|.
+  1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |appHistory|'s [=relevant Realm=].
   1. Let |destination| be a [=new=] {{AppHistoryDestination}} created in |appHistory|'s [=relevant Realm=].
   1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationURL|.
   1. Set |destination|'s [=AppHistoryDestination/state=] to |destinationState|.
@@ -681,6 +686,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].</p>
   1. If |dispatchResult| is true:
+    1. Set |appHistory|'s [=AppHistory/post-navigate event navigation signal=] to |event|'s {{AppHistoryNavigateEvent/signal}}.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
         1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
         1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
@@ -723,10 +729,12 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
   1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then:
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
+       <p class="note">This will eventually lead to the <a>inner `navigate` event firing algorithm</a> calling [=synchronously finalize with an aborted navigation error=] once the event firing process completes. However, we want to [=AbortSignal/signal abort=] on the relevant {{AppHistoryNavigateEvent/signal|event.signal}} right away, thus the below step.
     1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
     1. [=AbortSignal/Signal abort=] on |appHistory|'s [=AppHistory/ongoing navigate event=]'s {{AppHistoryNavigateEvent/signal}}.
-
-  <p class="note">Because this cancels the event, this will eventually lead to the <a>inner `navigate` event firing algorithm</a> calling [=synchronously finalize with an aborted navigation error=] once the event firing process completes. However, we want to [=AbortSignal/signal abort=] on the relevant {{AppHistoryNavigateEvent/signal|event.signal}} right away.
+  1. Otherwise, if |appHistory|'s [=AppHistory/post-navigate event navigation signal=] is non-null, then:
+    1. [=AbortSignal/Signal abort=] on |appHistory|'s [=AppHistory/post-navigate event navigation signal=].
+    1. Set |appHistory|'s [=AppHistory/post-navigate event navigation signal=] to null.
 </div>
 
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
@@ -1085,16 +1093,16 @@ Potentially update the <a spec="HTML">traverse the history</a> algorithm to cons
 <div algorithm="traverse the history update patch">
   Update the <a spec="HTML">traverse the history</a> algorithm by adding the following step before the final step which fires various events:
 
-  1. [=AppHistory/Update the entries=] of <var ignore>newDocument</var>'s [=relevant global object=]'s [=Window/app history=].
+  1. [=AppHistory/Update for navigation=] <var ignore>newDocument</var>'s [=relevant global object=]'s [=Window/app history=].
 </div>
 
 <div algorithm="URL and history update steps update patch">
   Update the <a spec="HTML">URL and history update steps</a> by appending the following final step:
 
-  1. [=AppHistory/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/app history=].
+  1. [=AppHistory/Update for navigation=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/app history=].
 </div>
 
-<p class="note">We do not [=AppHistory/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any app history entry list.
+<p class="note">We do not [=AppHistory/update for navigation=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any app history entry list.
 
 <h2 id="other-patches">Other patches</h2>
 
