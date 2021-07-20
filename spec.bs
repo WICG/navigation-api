@@ -332,6 +332,20 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">navigate meth
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
 </div>
 
+<div algorithm>
+  To <dfn>get the app history index</dfn> of a [=session history entry=] |she| within an {{AppHistory}} |appHistory|:
+
+  1. Let |index| be 0.
+
+  1. [=list/For each=] |ahe| of |appHistory|'s [=AppHistory/entry list=]:
+
+    1. If |ahe|'s [=AppHistoryEntry/session history entry=] is equal to |she|, then return |index|.
+
+    1. Increment |index| by 1.
+
+  1. Assert: this step is never reached.
+</div>
+
 <h3 id="global-navigate">Navigating</h3>
 
 <dl class="domintro non-normative">
@@ -665,10 +679,16 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Set |event|'s [=AppHistoryNavigateEvent/destination entry=] to |destinationEntry|.
   1. Let |destination| be a [=new=] {{AppHistoryDestination}} created in |appHistory|'s [=relevant Realm=].
   1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
-  1. Set |destination|'s [=AppHistoryDestination/key=] to |destinationEntry|'s [=session history entry/app history key=].
-  1. Set |destination|'s [=AppHistoryDestination/id=] to |destinationEntry|'s [=session history entry/app history id=].
-  1. Set |destination|'s [=AppHistoryDestination/index=] to |destinationEntry|'s [=AppHistoryEntry/index=].
-  1. Set |destination|'s [=AppHistoryDestination/state=] to |destinationEntry|'s [=session history entry/app history state=].
+  1. If |destinationEntry|'s [=session history entry/origin=] is [=same origin=] with |appHistory|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
+    1. Set |destination|'s [=AppHistoryDestination/key=] to |destinationEntry|'s [=session history entry/app history key=].
+    1. Set |destination|'s [=AppHistoryDestination/id=] to |destinationEntry|'s [=session history entry/app history id=].
+    1. Set |destination|'s [=AppHistoryDestination/index=] to the result of [=getting the app history index=] of |destinationEntry| within |appHistory|.
+    1. Set |destination|'s [=AppHistoryDestination/state=] to |destinationEntry|'s [=session history entry/app history state=].
+  1. Otherwise,
+    1. Set |destination|'s [=AppHistoryDestination/key=] to null.
+    1. Set |destination|'s [=AppHistoryDestination/id=] to null.
+    1. Set |destination|'s [=AppHistoryDestination/index=] to &minus;1.
+    1. Set |destination|'s [=AppHistoryDestination/state=] to null.
   1. Set |destination|'s [=AppHistoryDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |appHistory|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
   1. Return the result of performing the [=inner navigate event firing algorithm=] given |appHistory|, "{{AppHistoryNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, |info|, and null.
 </div>
