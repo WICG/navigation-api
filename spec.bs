@@ -1032,13 +1032,13 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
         1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
         1. Set |shouldContinue| to false.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |destination|'s [=AppHistoryDestination/is same document=] is true, then [=wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
-        1. TODO: don't do this stuff if we've been canceled.
+        1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
         1. If |ongoingNavigation| is non-null, then:
           1. [=Resolve=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with undefined.
           1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
       and the following failure steps given reason |rejectionReason|:
-        1. TODO: don't do this stuff if we've been canceled.
+        1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
         1. If |ongoingNavigation| is non-null, then:
           1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |rejectionReason|.
@@ -1072,8 +1072,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |promise| be null.
   1. If |ongoingNavigation| is non-null, then set |promise| to |ongoingNavigation|'s [=app history API navigation/returned promise=].
   1. If |ongoingNavigation| is non-null, then perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+  1. [=AbortSignal/Signal abort=] on |signal|.
   1. [=Queue a microtask=] on |appHistory|'s [=relevant agent=]'s [=agent/event loop=] to perform the following steps:
-    1. [=AbortSignal/Signal abort=] on |signal|.
     1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
     1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
     1. If |promise| is non-null, then [=reject=] it with |error|.
