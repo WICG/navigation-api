@@ -432,11 +432,20 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">post-navigate
 
 An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=struct/items=]:
 
-* An <dfn for="app history API navigation">info</dfn>, a JavaScript value
-* A <dfn for="app history API navigation">returned promise</dfn>, a {{Promise}} or null
-* A <dfn for="app history API navigation">cleanup step</dfn>, an algorithm step
+* <dfn for="app history API navigation">info</dfn>, a JavaScript value
+* <dfn for="app history API navigation">returned promise</dfn>, a {{Promise}} or null
+* <dfn for="app history API navigation">cleanup step</dfn>, an algorithm step
+* <dfn for="app history API navigation">was cleaned up</dfn>, a boolean
 
 <p class="note">We need to store the {{AbortSignal}} separately from the [=app history API navigation=] struct, since it needs to be tracked even for navigations that are not via the app history APIs. So, we store it some of the time in the [=AppHistory/ongoing navigate event=]'s {{AppHistoryNavigateEvent/signal}} property, and the rest of the time in the [=AppHistory/post-navigate event ongoing navigation signal=].
+
+<div algorithm>
+  To <dfn for="app history API navigation">clean up</dfn> an [=app history API navigation=] |navigation|:
+
+  1. Perform |navigation|'s [=app history API navigation/cleanup step=].
+
+  1. Set |navigation|'s [=app history API navigation/was cleaned up=] to true.
+</div>
 
 <div algorithm>
   To <dfn for="AppHistory">set the upcoming non-traverse navigation</dfn> given an {{AppHistory}} |appHistory| and a JavaScript value |info|:
@@ -445,13 +454,13 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |cleanupStep| be an algorithm step which sets |appHistory|'s [=AppHistory/ongoing non-traverse navigation=] to null.
 
-  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, and [=app history API navigation/cleanup step=] is |cleanupStep|.
+  1. Let |upcomingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, [=app history API navigation/cleanup step=] is |cleanupStep|, and [=app history API navigation/was cleaned up=] is false.
 
   1. Assert: |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is null.
 
-  1. Set |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] to |ongoingNavigation|.
+  1. Set |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] to |upcomingNavigation|.
 
-  1. Return |ongoingNavigation|.
+  1. Return |upcomingNavigation|.
 </div>
 
 <div algorithm>
@@ -471,7 +480,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |cleanupStep| be an algorithm step which [=map/removes=] |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|].
 
-  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, and [=app history API navigation/cleanup step=] is |cleanupStep|.
+  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, [=app history API navigation/cleanup step=] is |cleanupStep|, and [=app history API navigation/was cleaned up=] is false.
 
   1. Set |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|]  to |ongoingNavigation|.
 
@@ -575,7 +584,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
     1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
 
-    1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+    1. [=app history API navigation/Clean up=] |ongoingNavigation|.
 
     <p class="note">We don't [=finalize with an aborted navigation error=] since that algorithm only makes sense after the {{AppHistory/navigate}} event has fired.
 
@@ -698,7 +707,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
       1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with an "{{InvalidStateError}}" {{DOMException}}.
 
-      1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+      1. [=app history API navigation/Clean up=] |ongoingNavigation|.
 
       1. Abort these steps.
 
@@ -1000,7 +1009,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If either |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is <a spec="HTML">still on its initial `about:blank` `Document`</a>, or both |event|'s {{AppHistoryNavigateEvent/canRespond}} and |event|'s {{Event/cancelable}} are false, then:
     1. If |ongoingNavigation| is not null, then:
       1. [=Resolve=] |ongoingNavigation|'s [=app history API navigation/returned promise=].
-      1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+      1. [=app history API navigation/Clean up=] |ongoingNavigation|.
     1. Return true.
   1. Initialize |event|'s {{Event/type}} to "{{AppHistory/navigate}}".
   1. Initialize |event|'s {{AppHistoryNavigateEvent/navigationType}} to |navigationType|.
@@ -1032,17 +1041,17 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
         1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
         1. Set |shouldContinue| to false.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |destination|'s [=AppHistoryDestination/is same document=] is true, then [=wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
-        1. TODO: don't do this stuff if we've been canceled.
+        1. If |ongoingNavigation|'s [=app history API navigation/was cleaned up=] is true, then abort these steps. TODO this doesn't work for non-app history cases.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
         1. If |ongoingNavigation| is non-null, then:
           1. [=Resolve=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with undefined.
-          1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+          1. [=app history API navigation/Clean up=] |ongoingNavigation|.
       and the following failure steps given reason |rejectionReason|:
         1. TODO: don't do this stuff if we've been canceled.
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
         1. If |ongoingNavigation| is non-null, then:
           1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |rejectionReason|.
-          1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+          1. [=app history API navigation/Clean up=] |ongoingNavigation|.
 
       <p class="note">If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is non-empty, then {{AppHistoryNavigateEvent/respondWith()}} was called and so we're performing a same-document navigation, for which we want to fire {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events, and resolve or reject the promise returned by the corresponding {{AppHistory/navigate()|appHistory.navigate()}} call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask (by waiting for zero promises), or after the appropriate task in the traversal case.
     1. Otherwise:
@@ -1071,7 +1080,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
      <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for aborted navigations.
   1. Let |promise| be null.
   1. If |ongoingNavigation| is non-null, then set |promise| to |ongoingNavigation|'s [=app history API navigation/returned promise=].
-  1. If |ongoingNavigation| is non-null, then perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+  1. If |ongoingNavigation| is non-null, then [=app history API navigation/clean up=] |ongoingNavigation|.
   1. [=Queue a microtask=] on |appHistory|'s [=relevant agent=]'s [=agent/event loop=] to perform the following steps:
     1. [=AbortSignal/Signal abort=] on |signal|.
     1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
