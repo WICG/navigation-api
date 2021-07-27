@@ -1079,6 +1079,18 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. If |promise| is non-null, then [=reject=] it with |error|.
 </div>
 
+<div algorithm>
+  To <dfn>inform app history about a canceled navigation</dfn> in a [=browsing context=] |bc|:
+
+  1. Let |appHistory| be |bc|'s [=browsing context/active window=]'s [=Window/app history=].
+  1. Let |ongoingNavigation| be |appHistory|'s [=AppHistory/ongoing non-traverse navigation=].
+  1. If |ongoingNavigation| is null, and the navigation being canceled is an "<a for="history handling behavior">`entry update`</a>" navigation that originally came from traversal to a [=session history entry=] |she|, then:
+    <p class="advisement">This predicate should be made more precise when we define navigation cancelation in detail.</p>
+    1. Let |key| be |she|'s [=session history entry/app history key=].
+    1. If |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|] exists, then set |ongoingNavigation| to [=AppHistory/ongoing traverse navigations=][|key|].
+  1. [=Finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
+</div>
+
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
 A [=URL=] is <dfn>rewritable</dfn> relative to another [=URL=] if they differ in only the [=url/path=], [=url/query=], or [=url/fragment=] components.
 
@@ -1450,7 +1462,7 @@ Potentially update the <a spec="HTML">traverse the history</a> algorithm to cons
 The existing HTML specification discusses canceling a navigation in a few places. However, the process is not very well-defined. We may be able to make it more rigorous, after the <a href="https://github.com/whatwg/html/issues/5767">session history rewrite</a> lands.
 
 <div algorithm="navigation canceling patch">
-  The main addition of app history is that any time navigation of a given [=browsing context=] |bc| is canceled, the user agent must [=finalize with an aborted navigation error=] given |bc|'s [=browsing context/active window=]'s [=Window/app history=] and |bc|'s [=browsing context/active window=]'s [=Window/app history=]'s [=AppHistory/ongoing non-traverse navigation=].
+  The main addition of app history is that any time navigation of a given [=browsing context=] |bc| is canceled, the user agent must [=inform app history about a canceled navigation=] given |bc|.
 </div>
 
-<p class="note">This includes navigation cancelation induced by the <a spec="HTML">stop document loading</a> algorithm, which is invoked by user interface elements such as a stop button and by {{Window/stop()|window.stop()}}.</p>
+<p class="note">This includes navigation cancelation induced by the <a spec="HTML">stop document loading</a> algorithm, which is invoked by user interface elements such as a stop button and by {{Window/stop()|window.stop()}}. (However, note <a href="https://github.com/whatwg/html/issues/6905">whatwg/html#6905</a>, which notes that in reality sometimes {{Window/stop()|window.stop()}} does not cancel navigations.)</p>
