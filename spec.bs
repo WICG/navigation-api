@@ -885,7 +885,7 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
   The <dfn attribute for="AppHistoryEntry">index</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return &minus;1.
-  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=AppHistoryEntry/index=].
+  1. Return [=this=]'s [=AppHistoryEntry/index=].
 </div>
 
 <div algorithm>
