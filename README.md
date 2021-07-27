@@ -562,7 +562,7 @@ This would give your users an experience most like a multi-page application, whe
 To perform a rollback to where the user was previously, with a toast notification, you could do something like:
 
 ```js
-appHistory.addEventListener("navigateerror", e => {
+appHistory.addEventListener("navigateerror", async e => {
   const attemptedURL = location.href;
 
   await appHistory.transition.rollback();
@@ -697,7 +697,7 @@ document.addEventListener("keydown", async e => {
   }
 });
 
-photoGallery.addEventListener("click", e => {
+photoGallery.addEventListener("click", async e => {
   if (e.target.closest(".photo-thumbnail")) {
     await appHistory.navigate(getPhotoURL(e.target), { navigateInfo: { via: "gallery", thumbnail: e.target } });
   }
