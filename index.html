@@ -4,7 +4,7 @@
   <title>App History API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2016/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version bb6b91100, updated Mon Jul 12 16:52:37 2021 -0700" name="generator">
+  <meta content="Bikeshed version 59d067506, updated Fri Jul 23 15:43:29 2021 -0700" name="generator">
   <link href="https://wicg.github.io/app-history/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -639,7 +639,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-07-23">23 July 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-07-27">27 July 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1504,7 +1504,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑤">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①④">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active①①">fully active</a>, then return −1.</p>
      <li data-md>
-      <p>Return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑥">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑥">session history entry</a>'s <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index②">index</a>.</p>
+      <p>Return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑥">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index②">index</a>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="sameDocument" data-algorithm-for="AppHistoryEntry">
@@ -1513,7 +1513,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑦">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑤">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active①②">fully active</a>, then return false.</p>
      <li data-md>
-      <p>Return true if <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑧">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑦">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document①">document</a> equals <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑥">associated Document</a>, and false otherwise.</p>
+      <p>Return true if <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑧">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑥">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document①">document</a> equals <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑥">associated Document</a>, and false otherwise.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="getState()" data-algorithm-for="AppHistoryEntry">
@@ -1522,9 +1522,9 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤⓪">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②④">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑦">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active①③">fully active</a>, then return undefined.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤①">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑧">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑤">app history state</a> is null, then return undefined.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤①">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑦">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑤">app history state</a> is null, then return undefined.</p>
      <li data-md>
-      <p>Return <a data-link-type="abstract-op" href="https://html.spec.whatwg.org/multipage/structured-data.html#structureddeserialize" id="ref-for-structureddeserialize①">StructuredDeserialize</a>(<a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤②">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑥">app history state</a>).</p>
+      <p>Return <a data-link-type="abstract-op" href="https://html.spec.whatwg.org/multipage/structured-data.html#structureddeserialize" id="ref-for-structureddeserialize①">StructuredDeserialize</a>(<a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this⑤②">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑧">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑥">app history state</a>).</p>
     </ol>
     <p class="note" role="note">Unlike <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-state" id="ref-for-dom-history-state①">history.state</a></code>, this will deserialize upon each access. </p>
     <p class="note" role="note">This can in theory throw an exception, if attempting to deserialize a large <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer">ArrayBuffer</a></code> when not enough memory is available. </p>
@@ -3947,7 +3947,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
    <b><a href="#apphistoryentry-session-history-entry">#apphistoryentry-session-history-entry</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistoryentry-session-history-entry">1.1. Introspecting the app history entry list</a> <a href="#ref-for-apphistoryentry-session-history-entry①">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry②">(3)</a>
-    <li><a href="#ref-for-apphistoryentry-session-history-entry③">3. App history entries</a> <a href="#ref-for-apphistoryentry-session-history-entry④">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑤">(3)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑥">(4)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑦">(5)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑧">(6)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑨">(7)</a>
+    <li><a href="#ref-for-apphistoryentry-session-history-entry③">3. App history entries</a> <a href="#ref-for-apphistoryentry-session-history-entry④">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑤">(3)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑥">(4)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑦">(5)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑧">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistoryentry-index">
