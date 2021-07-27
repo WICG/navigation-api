@@ -433,7 +433,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">post-navigate
 An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=struct/items=]:
 
 * An <dfn for="app history API navigation">info</dfn>, a JavaScript value
-* A <dfn for="app history API navigation">returned promise</dfn>, a {{Promise}} or null
+* A <dfn for="app history API navigation">returned promise</dfn>, a {{Promise}}
 * A <dfn for="app history API navigation">cleanup step</dfn>, an algorithm step
 
 <p class="note">We need to store the {{AbortSignal}} separately from the [=app history API navigation=] struct, since it needs to be tracked even for navigations that are not via the app history APIs. So, we store it some of the time in the [=AppHistory/ongoing navigate event=]'s {{AppHistoryNavigateEvent/signal}} property, and the rest of the time in the [=AppHistory/post-navigate event ongoing navigation signal=].
