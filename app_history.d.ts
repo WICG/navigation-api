@@ -31,7 +31,7 @@ interface AppHistoryTransition {
   rollback(options?: AppHistoryNavigationOptions): Promise<void>;
 }
 
-interface AppHistoryEntry {
+interface AppHistoryEntry extends EventTarget {
   readonly key: string;
   readonly id: string;
   readonly url: string;
@@ -61,7 +61,7 @@ interface AppHistoryReloadOptions extends AppHistoryNavigationOptions {
   state?: unknown;
 }
 
-declare class AppHistoryNavigateEvent {
+declare class AppHistoryNavigateEvent extends Event {
   constructor(type: string, eventInit?: AppHistoryNavigateEventInit);
 
   readonly navigationType: AppHistoryNavigationType;
