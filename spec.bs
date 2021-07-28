@@ -758,7 +758,7 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 <xmp class="idl">
 [Exposed=Window]
 interface AppHistoryNavigateEvent : Event {
-  constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
+  constructor(DOMString type, AppHistoryNavigateEventInit eventInit);
 
   readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute AppHistoryDestination destination;

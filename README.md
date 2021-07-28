@@ -1393,7 +1393,7 @@ dictionary AppHistoryReloadOptions : AppHistoryNavigationOptions {
 
 [Exposed=Window]
 interface AppHistoryNavigateEvent : Event {
-  constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
+  constructor(DOMString type, AppHistoryNavigateEventInit eventInit);
 
   readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute boolean canRespond;
