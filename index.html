@@ -742,7 +742,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="apphistory"><code><c- g>AppHistory</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget"><c- n>EventTarget</c-></a> {
   <a data-link-type="dfn" href="https://heycam.github.io/webidl/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#apphistoryentry" id="ref-for-apphistoryentry"><c- n>AppHistoryEntry</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries"><c- g>entries</c-></a>();
-  <c- b>attribute</c-> <a data-link-type="idl-name" href="#apphistoryentry" id="ref-for-apphistoryentry①"><c- n>AppHistoryEntry</c-></a>? <a class="idl-code" data-link-type="attribute" data-type="AppHistoryEntry?" href="#dom-apphistory-current" id="ref-for-dom-apphistory-current"><c- g>current</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#apphistoryentry" id="ref-for-apphistoryentry①"><c- n>AppHistoryEntry</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AppHistoryEntry?" href="#dom-apphistory-current" id="ref-for-dom-apphistory-current"><c- g>current</c-></a>;
 
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-apphistory-cangoback" id="ref-for-dom-apphistory-cangoback"><c- g>canGoBack</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean" id="ref-for-idl-boolean①"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-apphistory-cangoforward" id="ref-for-dom-apphistory-cangoforward"><c- g>canGoForward</c-></a>;
@@ -2157,205 +2157,205 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
-   <li><a href="#user-navigation-involvement-activation">activation</a><span>, in §4.2</span>
-   <li><a href="#window-app-history">app history</a><span>, in §1</span>
-   <li><a href="#apphistory">AppHistory</a><span>, in §1</span>
-   <li><a href="#dom-window-apphistory">appHistory</a><span>, in §1</span>
-   <li><a href="#app-history-api-navigation">app history API navigation</a><span>, in §1.2</span>
-   <li><a href="#apphistorydestination">AppHistoryDestination</a><span>, in §2.2</span>
-   <li><a href="#apphistoryentry">AppHistoryEntry</a><span>, in §3</span>
-   <li><a href="#session-history-entry-app-history-id">app history id</a><span>, in §5.1</span>
-   <li><a href="#session-history-entry-app-history-key">app history key</a><span>, in §5.1</span>
-   <li><a href="#apphistorynavigateevent">AppHistoryNavigateEvent</a><span>, in §2.1</span>
-   <li><a href="#dictdef-apphistorynavigateeventinit">AppHistoryNavigateEventInit</a><span>, in §2.1</span>
-   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">AppHistoryNavigateEvent(type)</a><span>, in §2.1</span>
-   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">AppHistoryNavigateEvent(type, eventInit)</a><span>, in §2.1</span>
-   <li><a href="#dictdef-apphistorynavigateoptions">AppHistoryNavigateOptions</a><span>, in §1</span>
-   <li><a href="#dictdef-apphistorynavigationoptions">AppHistoryNavigationOptions</a><span>, in §1</span>
-   <li><a href="#enumdef-apphistorynavigationtype">AppHistoryNavigationType</a><span>, in §2.1</span>
-   <li><a href="#dictdef-apphistoryreloadoptions">AppHistoryReloadOptions</a><span>, in §1</span>
-   <li><a href="#session-history-entry-app-history-state">app history state</a><span>, in §5.1</span>
-   <li><a href="#navigate-apphistorystate">appHistoryState</a><span>, in §4.3</span>
-   <li><a href="#dom-apphistory-back">back()</a><span>, in §1.4</span>
-   <li><a href="#dom-apphistory-back">back(options)</a><span>, in §1.4</span>
-   <li><a href="#user-navigation-involvement-browser-ui">browser UI</a><span>, in §4.2</span>
-   <li><a href="#dom-apphistory-cangoback">canGoBack</a><span>, in §1.1</span>
-   <li><a href="#dom-apphistory-cangoforward">canGoForward</a><span>, in §1.1</span>
+   <li><a href="#user-navigation-involvement-activation">activation</a><span>, in § 4.2</span>
+   <li><a href="#window-app-history">app history</a><span>, in § 1</span>
+   <li><a href="#apphistory">AppHistory</a><span>, in § 1</span>
+   <li><a href="#dom-window-apphistory">appHistory</a><span>, in § 1</span>
+   <li><a href="#app-history-api-navigation">app history API navigation</a><span>, in § 1.2</span>
+   <li><a href="#apphistorydestination">AppHistoryDestination</a><span>, in § 2.2</span>
+   <li><a href="#apphistoryentry">AppHistoryEntry</a><span>, in § 3</span>
+   <li><a href="#session-history-entry-app-history-id">app history id</a><span>, in § 5.1</span>
+   <li><a href="#session-history-entry-app-history-key">app history key</a><span>, in § 5.1</span>
+   <li><a href="#apphistorynavigateevent">AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+   <li><a href="#dictdef-apphistorynavigateeventinit">AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
+   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">AppHistoryNavigateEvent(type)</a><span>, in § 2.1</span>
+   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">AppHistoryNavigateEvent(type, eventInit)</a><span>, in § 2.1</span>
+   <li><a href="#dictdef-apphistorynavigateoptions">AppHistoryNavigateOptions</a><span>, in § 1</span>
+   <li><a href="#dictdef-apphistorynavigationoptions">AppHistoryNavigationOptions</a><span>, in § 1</span>
+   <li><a href="#enumdef-apphistorynavigationtype">AppHistoryNavigationType</a><span>, in § 2.1</span>
+   <li><a href="#dictdef-apphistoryreloadoptions">AppHistoryReloadOptions</a><span>, in § 1</span>
+   <li><a href="#session-history-entry-app-history-state">app history state</a><span>, in § 5.1</span>
+   <li><a href="#navigate-apphistorystate">appHistoryState</a><span>, in § 4.3</span>
+   <li><a href="#dom-apphistory-back">back()</a><span>, in § 1.4</span>
+   <li><a href="#dom-apphistory-back">back(options)</a><span>, in § 1.4</span>
+   <li><a href="#user-navigation-involvement-browser-ui">browser UI</a><span>, in § 4.2</span>
+   <li><a href="#dom-apphistory-cangoback">canGoBack</a><span>, in § 1.1</span>
+   <li><a href="#dom-apphistory-cangoforward">canGoForward</a><span>, in § 1.1</span>
    <li>
     canRespond
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-canrespond">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#dom-apphistorynavigateeventinit-canrespond">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-canrespond">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-apphistorynavigateeventinit-canrespond">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#apphistorynavigateevent-classic-history-api-serialized-data">classic history API serialized data</a><span>, in §2.1</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a><span>, in §2.3</span>
-   <li><a href="#app-history-api-navigation-cleanup-step">cleanup step</a><span>, in §1.2</span>
-   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">constructor(type)</a><span>, in §2.1</span>
-   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">constructor(type, eventInit)</a><span>, in §2.1</span>
-   <li><a href="#convert-a-history-handling-behavior-to-a-navigation-type">convert a history handling behavior to a navigation type</a><span>, in §4.3</span>
-   <li><a href="#dom-apphistory-current">current</a><span>, in §1.1</span>
-   <li><a href="#apphistory-current-index">current index</a><span>, in §1.1</span>
+   <li><a href="#apphistorynavigateevent-classic-history-api-serialized-data">classic history API serialized data</a><span>, in § 2.1</span>
+   <li><a href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a><span>, in § 2.3</span>
+   <li><a href="#app-history-api-navigation-cleanup-step">cleanup step</a><span>, in § 1.2</span>
+   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">constructor(type)</a><span>, in § 2.1</span>
+   <li><a href="#dom-apphistorynavigateevent-apphistorynavigateevent">constructor(type, eventInit)</a><span>, in § 2.1</span>
+   <li><a href="#convert-a-history-handling-behavior-to-a-navigation-type">convert a history handling behavior to a navigation type</a><span>, in § 4.3</span>
+   <li><a href="#dom-apphistory-current">current</a><span>, in § 1.1</span>
+   <li><a href="#apphistory-current-index">current index</a><span>, in § 1.1</span>
    <li>
     destination
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-destination">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#dom-apphistorynavigateeventinit-destination">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-destination">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-apphistorynavigateeventinit-destination">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#apphistorynavigateevent-destination-entry">destination entry</a><span>, in §2.1</span>
-   <li><a href="#fire-a-traversal-navigate-event-destinationentry">destinationEntry</a><span>, in §2.3</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event-destinationurl">destinationURL</a><span>, in §2.3</span>
-   <li><a href="#dom-apphistory-entries">entries()</a><span>, in §1.1</span>
-   <li><a href="#apphistory-entry-list">entry list</a><span>, in §1.1</span>
-   <li><a href="#navigate-entrylist">entryList</a><span>, in §4.1</span>
-   <li><a href="#finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</a><span>, in §2.3</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event">fire a push or replace navigate event</a><span>, in §2.3</span>
-   <li><a href="#fire-a-traversal-navigate-event">fire a traversal navigate event</a><span>, in §2.3</span>
-   <li><a href="#fire-traversal-navigate-events">fire traversal navigate events</a><span>, in §4.4</span>
+   <li><a href="#apphistorynavigateevent-destination-entry">destination entry</a><span>, in § 2.1</span>
+   <li><a href="#fire-a-traversal-navigate-event-destinationentry">destinationEntry</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-push-or-replace-navigate-event-destinationurl">destinationURL</a><span>, in § 2.3</span>
+   <li><a href="#dom-apphistory-entries">entries()</a><span>, in § 1.1</span>
+   <li><a href="#apphistory-entry-list">entry list</a><span>, in § 1.1</span>
+   <li><a href="#navigate-entrylist">entryList</a><span>, in § 4.1</span>
+   <li><a href="#finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-push-or-replace-navigate-event">fire a push or replace navigate event</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-traversal-navigate-event">fire a traversal navigate event</a><span>, in § 2.3</span>
+   <li><a href="#fire-traversal-navigate-events">fire traversal navigate events</a><span>, in § 4.4</span>
    <li>
     formData
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-formdata">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#dom-apphistorynavigateeventinit-formdata">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-formdata">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-apphistorynavigateeventinit-formdata">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#fire-a-push-or-replace-navigate-event-formdataentrylist">formDataEntryList</a><span>, in §2.3</span>
-   <li><a href="#dom-apphistory-forward">forward()</a><span>, in §1.4</span>
-   <li><a href="#dom-apphistory-forward">forward(options)</a><span>, in §1.4</span>
+   <li><a href="#fire-a-push-or-replace-navigate-event-formdataentrylist">formDataEntryList</a><span>, in § 2.3</span>
+   <li><a href="#dom-apphistory-forward">forward()</a><span>, in § 1.4</span>
+   <li><a href="#dom-apphistory-forward">forward(options)</a><span>, in § 1.4</span>
    <li>
     getState()
     <ul>
-     <li><a href="#dom-apphistorydestination-getstate">method for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#dom-apphistoryentry-getstate">method for AppHistoryEntry</a><span>, in §3</span>
+     <li><a href="#dom-apphistorydestination-getstate">method for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#dom-apphistoryentry-getstate">method for AppHistoryEntry</a><span>, in § 3</span>
     </ul>
-   <li><a href="#get-the-app-history-index">get the app history index</a><span>, in §1.1</span>
-   <li><a href="#dom-apphistory-goto">goTo(key)</a><span>, in §1.4</span>
-   <li><a href="#dom-apphistory-goto">goTo(key, options)</a><span>, in §1.4</span>
+   <li><a href="#get-the-app-history-index">get the app history index</a><span>, in § 1.1</span>
+   <li><a href="#dom-apphistory-goto">goTo(key)</a><span>, in § 1.4</span>
+   <li><a href="#dom-apphistory-goto">goTo(key, options)</a><span>, in § 1.4</span>
    <li>
     hashChange
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-hashchange">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#dom-apphistorynavigateeventinit-hashchange">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-hashchange">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-apphistorynavigateeventinit-hashchange">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
    <li>
     id
     <ul>
-     <li><a href="#dom-apphistorydestination-id">attribute for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#dom-apphistoryentry-id">attribute for AppHistoryEntry</a><span>, in §3</span>
-     <li><a href="#apphistorydestination-id">dfn for AppHistoryDestination</a><span>, in §2.2</span>
+     <li><a href="#dom-apphistorydestination-id">attribute for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#dom-apphistoryentry-id">attribute for AppHistoryEntry</a><span>, in § 3</span>
+     <li><a href="#apphistorydestination-id">dfn for AppHistoryDestination</a><span>, in § 2.2</span>
     </ul>
    <li>
     index
     <ul>
-     <li><a href="#dom-apphistorydestination-index">attribute for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#dom-apphistoryentry-index">attribute for AppHistoryEntry</a><span>, in §3</span>
-     <li><a href="#apphistorydestination-index">dfn for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#apphistoryentry-index">dfn for AppHistoryEntry</a><span>, in §3</span>
+     <li><a href="#dom-apphistorydestination-index">attribute for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#dom-apphistoryentry-index">attribute for AppHistoryEntry</a><span>, in § 3</span>
+     <li><a href="#apphistorydestination-index">dfn for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#apphistoryentry-index">dfn for AppHistoryEntry</a><span>, in § 3</span>
     </ul>
    <li>
     info
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-info">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#app-history-api-navigation-info">dfn for app history API navigation</a><span>, in §1.2</span>
-     <li><a href="#dom-apphistorynavigateeventinit-info">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-info">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#app-history-api-navigation-info">dfn for app history API navigation</a><span>, in § 1.2</span>
+     <li><a href="#dom-apphistorynavigateeventinit-info">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#inform-app-history-about-a-canceled-navigation">inform app history about a canceled navigation</a><span>, in §2.3</span>
-   <li><a href="#inner-navigate-event-firing-algorithm">inner navigate event firing algorithm</a><span>, in §2.3</span>
-   <li><a href="#apphistorydestination-is-same-document">is same document</a><span>, in §2.2</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event-issamedocument">isSameDocument</a><span>, in §2.3</span>
+   <li><a href="#inform-app-history-about-a-canceled-navigation">inform app history about a canceled navigation</a><span>, in § 2.3</span>
+   <li><a href="#inner-navigate-event-firing-algorithm">inner navigate event firing algorithm</a><span>, in § 2.3</span>
+   <li><a href="#apphistorydestination-is-same-document">is same document</a><span>, in § 2.2</span>
+   <li><a href="#fire-a-push-or-replace-navigate-event-issamedocument">isSameDocument</a><span>, in § 2.3</span>
    <li>
     key
     <ul>
-     <li><a href="#dom-apphistorydestination-key">attribute for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#dom-apphistoryentry-key">attribute for AppHistoryEntry</a><span>, in §3</span>
-     <li><a href="#apphistorydestination-key">dfn for AppHistoryDestination</a><span>, in §2.2</span>
+     <li><a href="#dom-apphistorydestination-key">attribute for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#dom-apphistoryentry-key">attribute for AppHistoryEntry</a><span>, in § 3</span>
+     <li><a href="#apphistorydestination-key">dfn for AppHistoryDestination</a><span>, in § 2.2</span>
     </ul>
-   <li><a href="#eventdef-apphistory-navigate">navigate</a><span>, in §1.5</span>
-   <li><a href="#eventdef-apphistory-navigateerror">navigateerror</a><span>, in §1.5</span>
-   <li><a href="#dom-apphistorynavigationoptions-navigateinfo">navigateInfo</a><span>, in §1</span>
-   <li><a href="#eventdef-apphistory-navigatesuccess">navigatesuccess</a><span>, in §1.5</span>
-   <li><a href="#dom-apphistory-navigate">navigate(url)</a><span>, in §1.3</span>
-   <li><a href="#dom-apphistory-navigate">navigate(url, options)</a><span>, in §1.3</span>
-   <li><a href="#apphistorynavigateevent-navigation-action-promises-list">navigation action promises list</a><span>, in §2.1</span>
+   <li><a href="#eventdef-apphistory-navigate">navigate</a><span>, in § 1.5</span>
+   <li><a href="#eventdef-apphistory-navigateerror">navigateerror</a><span>, in § 1.5</span>
+   <li><a href="#dom-apphistorynavigationoptions-navigateinfo">navigateInfo</a><span>, in § 1</span>
+   <li><a href="#eventdef-apphistory-navigatesuccess">navigatesuccess</a><span>, in § 1.5</span>
+   <li><a href="#dom-apphistory-navigate">navigate(url)</a><span>, in § 1.3</span>
+   <li><a href="#dom-apphistory-navigate">navigate(url, options)</a><span>, in § 1.3</span>
+   <li><a href="#apphistorynavigateevent-navigation-action-promises-list">navigation action promises list</a><span>, in § 2.1</span>
    <li>
     navigationType
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-navigationtype">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#fire-a-push-or-replace-navigate-event-navigationtype">dfn for fire a push or replace navigate event</a><span>, in §2.3</span>
-     <li><a href="#dom-apphistorynavigateeventinit-navigationtype">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-navigationtype">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#fire-a-push-or-replace-navigate-event-navigationtype">dfn for fire a push or replace navigate event</a><span>, in § 2.3</span>
+     <li><a href="#dom-apphistorynavigateeventinit-navigationtype">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#user-navigation-involvement-none">none</a><span>, in §4.2</span>
-   <li><a href="#apphistory-ongoing-navigate-event">ongoing navigate event</a><span>, in §1.2</span>
-   <li><a href="#apphistory-ongoing-non-traverse-navigation">ongoing non-traverse navigation</a><span>, in §1.2</span>
-   <li><a href="#apphistory-ongoing-traverse-navigations">ongoing traverse navigations</a><span>, in §1.2</span>
-   <li><a href="#dom-apphistory-onnavigate">onnavigate</a><span>, in §1.5</span>
-   <li><a href="#dom-apphistory-onnavigateerror">onnavigateerror</a><span>, in §1.5</span>
-   <li><a href="#dom-apphistory-onnavigatesuccess">onnavigatesuccess</a><span>, in §1.5</span>
-   <li><a href="#session-history-entry-origin">origin</a><span>, in §5.1</span>
-   <li><a href="#perform-an-app-history-traversal">perform an app history traversal</a><span>, in §1.4</span>
-   <li><a href="#perform-a-non-traverse-app-history-navigation">perform a non-traverse app history navigation</a><span>, in §1.3</span>
-   <li><a href="#apphistory-post-navigate-event-ongoing-navigation-signal">post-navigate event ongoing navigation signal</a><span>, in §1.2</span>
-   <li><a href="#apphistory-promote-the-upcoming-non-traverse-navigation-to-ongoing">promote the upcoming non-traverse navigation to ongoing</a><span>, in §1.2</span>
-   <li><a href="#dom-apphistorynavigationtype-push">"push"</a><span>, in §2.1</span>
-   <li><a href="#dom-apphistorynavigationtype-reload">"reload"</a><span>, in §2.1</span>
-   <li><a href="#dom-apphistory-reload">reload()</a><span>, in §1.3</span>
-   <li><a href="#dom-apphistory-reload">reload(options)</a><span>, in §1.3</span>
-   <li><a href="#dom-apphistorynavigationtype-replace">"replace"</a><span>, in §2.1</span>
-   <li><a href="#dom-apphistorynavigateoptions-replace">replace</a><span>, in §1</span>
-   <li><a href="#dom-apphistorynavigateevent-respondwith">respondWith(newNavigationAction)</a><span>, in §2.1</span>
-   <li><a href="#app-history-api-navigation-returned-promise">returned promise</a><span>, in §1.2</span>
-   <li><a href="#rewritable">rewritable</a><span>, in §2.3</span>
+   <li><a href="#user-navigation-involvement-none">none</a><span>, in § 4.2</span>
+   <li><a href="#apphistory-ongoing-navigate-event">ongoing navigate event</a><span>, in § 1.2</span>
+   <li><a href="#apphistory-ongoing-non-traverse-navigation">ongoing non-traverse navigation</a><span>, in § 1.2</span>
+   <li><a href="#apphistory-ongoing-traverse-navigations">ongoing traverse navigations</a><span>, in § 1.2</span>
+   <li><a href="#dom-apphistory-onnavigate">onnavigate</a><span>, in § 1.5</span>
+   <li><a href="#dom-apphistory-onnavigateerror">onnavigateerror</a><span>, in § 1.5</span>
+   <li><a href="#dom-apphistory-onnavigatesuccess">onnavigatesuccess</a><span>, in § 1.5</span>
+   <li><a href="#session-history-entry-origin">origin</a><span>, in § 5.1</span>
+   <li><a href="#perform-an-app-history-traversal">perform an app history traversal</a><span>, in § 1.4</span>
+   <li><a href="#perform-a-non-traverse-app-history-navigation">perform a non-traverse app history navigation</a><span>, in § 1.3</span>
+   <li><a href="#apphistory-post-navigate-event-ongoing-navigation-signal">post-navigate event ongoing navigation signal</a><span>, in § 1.2</span>
+   <li><a href="#apphistory-promote-the-upcoming-non-traverse-navigation-to-ongoing">promote the upcoming non-traverse navigation to ongoing</a><span>, in § 1.2</span>
+   <li><a href="#dom-apphistorynavigationtype-push">"push"</a><span>, in § 2.1</span>
+   <li><a href="#dom-apphistorynavigationtype-reload">"reload"</a><span>, in § 2.1</span>
+   <li><a href="#dom-apphistory-reload">reload()</a><span>, in § 1.3</span>
+   <li><a href="#dom-apphistory-reload">reload(options)</a><span>, in § 1.3</span>
+   <li><a href="#dom-apphistorynavigationtype-replace">"replace"</a><span>, in § 2.1</span>
+   <li><a href="#dom-apphistorynavigateoptions-replace">replace</a><span>, in § 1</span>
+   <li><a href="#dom-apphistorynavigateevent-respondwith">respondWith(newNavigationAction)</a><span>, in § 2.1</span>
+   <li><a href="#app-history-api-navigation-returned-promise">returned promise</a><span>, in § 1.2</span>
+   <li><a href="#rewritable">rewritable</a><span>, in § 2.3</span>
    <li>
     sameDocument
     <ul>
-     <li><a href="#dom-apphistorydestination-samedocument">attribute for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#dom-apphistoryentry-samedocument">attribute for AppHistoryEntry</a><span>, in §3</span>
+     <li><a href="#dom-apphistorydestination-samedocument">attribute for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#dom-apphistoryentry-samedocument">attribute for AppHistoryEntry</a><span>, in § 3</span>
     </ul>
-   <li><a href="#apphistoryentry-session-history-entry">session history entry</a><span>, in §3</span>
-   <li><a href="#apphistory-set-an-ongoing-traverse-navigation">set an ongoing traverse navigation</a><span>, in §1.2</span>
-   <li><a href="#apphistory-set-the-upcoming-non-traverse-navigation">set the upcoming non-traverse navigation</a><span>, in §1.2</span>
+   <li><a href="#apphistoryentry-session-history-entry">session history entry</a><span>, in § 3</span>
+   <li><a href="#apphistory-set-an-ongoing-traverse-navigation">set an ongoing traverse navigation</a><span>, in § 1.2</span>
+   <li><a href="#apphistory-set-the-upcoming-non-traverse-navigation">set the upcoming non-traverse navigation</a><span>, in § 1.2</span>
    <li>
     signal
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-signal">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#dom-apphistorynavigateeventinit-signal">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-signal">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-apphistorynavigateeventinit-signal">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
    <li>
     state
     <ul>
-     <li><a href="#apphistorydestination-state">dfn for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#fire-a-push-or-replace-navigate-event-state">dfn for fire a push or replace navigate event</a><span>, in §2.3</span>
-     <li><a href="#dom-apphistorynavigateoptions-state">dict-member for AppHistoryNavigateOptions</a><span>, in §1</span>
-     <li><a href="#dom-apphistoryreloadoptions-state">dict-member for AppHistoryReloadOptions</a><span>, in §1</span>
+     <li><a href="#apphistorydestination-state">dfn for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#fire-a-push-or-replace-navigate-event-state">dfn for fire a push or replace navigate event</a><span>, in § 2.3</span>
+     <li><a href="#dom-apphistorynavigateoptions-state">dict-member for AppHistoryNavigateOptions</a><span>, in § 1</span>
+     <li><a href="#dom-apphistoryreloadoptions-state">dict-member for AppHistoryReloadOptions</a><span>, in § 1</span>
     </ul>
-   <li><a href="#apphistory-to-be-set-serialized-state">to-be-set serialized state</a><span>, in §1.2</span>
-   <li><a href="#dom-apphistorynavigationtype-traverse">"traverse"</a><span>, in §2.1</span>
-   <li><a href="#apphistory-upcoming-non-traverse-navigation">upcoming non-traverse navigation</a><span>, in §1.2</span>
-   <li><a href="#apphistory-update-the-entries">update the entries</a><span>, in §1.1</span>
-   <li><a href="#apphistorydestination-url">URL</a><span>, in §2.2</span>
+   <li><a href="#apphistory-to-be-set-serialized-state">to-be-set serialized state</a><span>, in § 1.2</span>
+   <li><a href="#dom-apphistorynavigationtype-traverse">"traverse"</a><span>, in § 2.1</span>
+   <li><a href="#apphistory-upcoming-non-traverse-navigation">upcoming non-traverse navigation</a><span>, in § 1.2</span>
+   <li><a href="#apphistory-update-the-entries">update the entries</a><span>, in § 1.1</span>
+   <li><a href="#apphistorydestination-url">URL</a><span>, in § 2.2</span>
    <li>
     url
     <ul>
-     <li><a href="#dom-apphistorydestination-url">attribute for AppHistoryDestination</a><span>, in §2.2</span>
-     <li><a href="#dom-apphistoryentry-url">attribute for AppHistoryEntry</a><span>, in §3</span>
+     <li><a href="#dom-apphistorydestination-url">attribute for AppHistoryDestination</a><span>, in § 2.2</span>
+     <li><a href="#dom-apphistoryentry-url">attribute for AppHistoryEntry</a><span>, in § 3</span>
     </ul>
    <li>
     userInitiated
     <ul>
-     <li><a href="#dom-apphistorynavigateevent-userinitiated">attribute for AppHistoryNavigateEvent</a><span>, in §2.1</span>
-     <li><a href="#dom-apphistorynavigateeventinit-userinitiated">dict-member for AppHistoryNavigateEventInit</a><span>, in §2.1</span>
+     <li><a href="#dom-apphistorynavigateevent-userinitiated">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-apphistorynavigateeventinit-userinitiated">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
    <li>
     userInvolvement
     <ul>
-     <li><a href="#fire-a-push-or-replace-navigate-event-userinvolvement">dfn for fire a push or replace navigate event</a><span>, in §2.3</span>
-     <li><a href="#fire-a-traversal-navigate-event-userinvolvement">dfn for fire a traversal navigate event</a><span>, in §2.3</span>
-     <li><a href="#navigate-userinvolvement">dfn for navigate</a><span>, in §4.2</span>
-     <li><a href="#traverse-the-history-by-a-delta-userinvolvement">dfn for traverse the history by a delta</a><span>, in §4.2</span>
+     <li><a href="#fire-a-push-or-replace-navigate-event-userinvolvement">dfn for fire a push or replace navigate event</a><span>, in § 2.3</span>
+     <li><a href="#fire-a-traversal-navigate-event-userinvolvement">dfn for fire a traversal navigate event</a><span>, in § 2.3</span>
+     <li><a href="#navigate-userinvolvement">dfn for navigate</a><span>, in § 4.2</span>
+     <li><a href="#traverse-the-history-by-a-delta-userinvolvement">dfn for traverse the history by a delta</a><span>, in § 4.2</span>
     </ul>
    <li>
     user navigation involvement
     <ul>
-     <li><a href="#user-navigation-involvement">definition of</a><span>, in §4.2</span>
-     <li><a href="#event-user-navigation-involvement">dfn for Event</a><span>, in §4.2</span>
+     <li><a href="#user-navigation-involvement">definition of</a><span>, in § 4.2</span>
+     <li><a href="#event-user-navigation-involvement">dfn for Event</a><span>, in § 4.2</span>
     </ul>
   </ul>
   <aside class="dfn-panel" data-for="term-for-abortsignal">
@@ -3734,24 +3734,24 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
    <dt id="biblio-dom">[DOM]
-   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/">DOM Standard</a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
+   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/"><cite>DOM Standard</cite></a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-html">[HTML]
-   <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/">HTML Standard</a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
+   <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
-   <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/">Infra Standard</a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/"><cite>Infra Standard</cite></a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
    <dt id="biblio-url">[URL]
-   <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/">URL Standard</a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
+   <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/"><cite>URL Standard</cite></a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
    <dt id="biblio-webidl">[WebIDL]
-   <dd>Boris Zbarsky. <a href="https://heycam.github.io/webidl/">Web IDL</a>. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
+   <dd>Boris Zbarsky. <a href="https://heycam.github.io/webidl/"><cite>Web IDL</cite></a>. URL: <a href="https://heycam.github.io/webidl/">https://heycam.github.io/webidl/</a>
    <dt id="biblio-xhr">[XHR]
-   <dd>Anne van Kesteren. <a href="https://xhr.spec.whatwg.org/">XMLHttpRequest Standard</a>. Living Standard. URL: <a href="https://xhr.spec.whatwg.org/">https://xhr.spec.whatwg.org/</a>
+   <dd>Anne van Kesteren. <a href="https://xhr.spec.whatwg.org/"><cite>XMLHttpRequest Standard</cite></a>. Living Standard. URL: <a href="https://xhr.spec.whatwg.org/">https://xhr.spec.whatwg.org/</a>
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
    <dt id="biblio-csp">[CSP]
-   <dd>Mike West. <a href="https://w3c.github.io/webappsec-csp/">Content Security Policy Level 3</a>. URL: <a href="https://w3c.github.io/webappsec-csp/">https://w3c.github.io/webappsec-csp/</a>
+   <dd>Mike West. <a href="https://w3c.github.io/webappsec-csp/"><cite>Content Security Policy Level 3</cite></a>. URL: <a href="https://w3c.github.io/webappsec-csp/">https://w3c.github.io/webappsec-csp/</a>
    <dt id="biblio-fetch">[FETCH]
-   <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/">Fetch Standard</a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
+   <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/"><cite>Fetch Standard</cite></a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
    <dt id="biblio-webappsec-fetch-metadata-1">[WEBAPPSEC-FETCH-METADATA-1]
    <dd>Fetch Metadata Request Headers URL: <a href="https://w3c.github.io/webappsec-fetch-metadata/">https://w3c.github.io/webappsec-fetch-metadata/</a>
   </dl>
@@ -3763,7 +3763,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <a href="#apphistory"><code><c- g>AppHistory</c-></code></a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget"><c- n>EventTarget</c-></a> {
   <a data-link-type="dfn" href="https://heycam.github.io/webidl/#idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#apphistoryentry"><c- n>AppHistoryEntry</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-apphistory-entries"><c- g>entries</c-></a>();
-  <c- b>attribute</c-> <a data-link-type="idl-name" href="#apphistoryentry"><c- n>AppHistoryEntry</c-></a>? <a class="idl-code" data-link-type="attribute" data-type="AppHistoryEntry?" href="#dom-apphistory-current"><c- g>current</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#apphistoryentry"><c- n>AppHistoryEntry</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="AppHistoryEntry?" href="#dom-apphistory-current"><c- g>current</c-></a>;
 
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-apphistory-cangoback"><c- g>canGoBack</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-apphistory-cangoforward"><c- g>canGoForward</c-></a>;
