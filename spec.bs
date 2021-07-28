@@ -1021,6 +1021,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |dispatchResult| be the result of [=dispatching=] |event| at |appHistory|.
   1. Let |shouldContinue| be |dispatchResult|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
+  1. Set |appHistory|'s [=AppHistory/post-navigate event ongoing navigation signal=] to |event|'s {{AppHistoryNavigateEvent/signal}}.
   1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then:
     1. [=Finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
     1. Return false.
