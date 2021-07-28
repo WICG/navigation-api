@@ -639,7 +639,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-07-27">27 July 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-07-28">28 July 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1636,6 +1636,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event③">ongoing navigate event</a> to null.</p>
      <li data-md>
+      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">post-navigate event ongoing navigation signal</a> to <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑥">signal</a></code>.</p>
+     <li data-md>
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document②">active Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑧">fully active</a>, then:</p>
       <ol>
        <li data-md>
@@ -1661,7 +1663,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a> is not empty or <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document⑤">is same document</a> is true, then <a data-link-type="dfn" href="https://heycam.github.io/webidl/#wait-for-all" id="ref-for-wait-for-all">wait for all</a> of <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list③">navigation action promises list</a>, with the following success steps:</p>
         <ol>
          <li data-md>
-          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑥">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag">aborted flag</a> is set, then abort these steps.</p>
+          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑦">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag">aborted flag</a> is set, then abort these steps.</p>
          <li data-md>
           <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess①">navigatesuccess</a></code> at <var>appHistory</var>.</p>
          <li data-md>
@@ -1676,7 +1678,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         and the following failure steps given reason <var>rejectionReason</var>: 
         <ol>
          <li data-md>
-          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑦">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag①">aborted flag</a> is set, then abort these steps.</p>
+          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑧">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag①">aborted flag</a> is set, then abort these steps.</p>
          <li data-md>
           <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire①">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror①">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
          <li data-md>
@@ -1713,7 +1715,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event④">ongoing navigate event</a> is non-null, then:</p>
       <ol>
        <li data-md>
-        <p>Set <var>signal</var> to the value of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event⑤">ongoing navigate event</a>'s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑧">signal</a></code> property.</p>
+        <p>Set <var>signal</var> to the value of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event⑤">ongoing navigate event</a>'s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑨">signal</a></code> property.</p>
        <li data-md>
         <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event⑥">ongoing navigate event</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#canceled-flag" id="ref-for-canceled-flag③">canceled flag</a> to true.</p>
        <li data-md>
@@ -1723,12 +1725,12 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>Otherwise:</p>
       <ol>
        <li data-md>
-        <p class="assertion">Assert: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">post-navigate event ongoing navigation signal</a> is not null.</p>
+        <p class="assertion">Assert: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">post-navigate event ongoing navigation signal</a> is not null.</p>
        <li data-md>
-        <p>Set <var>signal</var> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">post-navigate event ongoing navigation signal</a>.</p>
+        <p>Set <var>signal</var> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">post-navigate event ongoing navigation signal</a>.</p>
       </ol>
      <li data-md>
-      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">post-navigate event ongoing navigation signal</a> to null.</p>
+      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal④">post-navigate event ongoing navigation signal</a> to null.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-to-be-set-serialized-state" id="ref-for-apphistory-to-be-set-serialized-state⑤">to-be-set serialized state</a> to null.</p>
       <p class="note" role="note">This ensures that any call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate⑧">appHistory.navigate()</a></code> which triggered this algorithm does not overwrite the <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state④">app history state</a> of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry③">current entry</a> for aborted navigations. </p>
@@ -4030,7 +4032,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <b><a href="#apphistory-post-navigate-event-ongoing-navigation-signal">#apphistory-post-navigate-event-ongoing-navigation-signal</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal">1.2. Ongoing navigation tracking</a>
-    <li><a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">2.3. Firing the event</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">(2)</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">(3)</a>
+    <li><a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">2.3. Firing the event</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">(2)</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">(3)</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal④">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="app-history-api-navigation">
@@ -4281,7 +4283,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-dom-apphistorynavigateevent-signal">1.2. Ongoing navigation tracking</a> <a href="#ref-for-dom-apphistorynavigateevent-signal①">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-signal②">(3)</a>
     <li><a href="#ref-for-dom-apphistorynavigateevent-signal③">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigateevent-signal④">(2)</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-signal⑤">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑥">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑦">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑧">(4)</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-signal⑤">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑥">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑦">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑧">(4)</a> <a href="#ref-for-dom-apphistorynavigateevent-signal⑨">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigateevent-formdata">
