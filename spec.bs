@@ -146,7 +146,7 @@ The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=th
 [Exposed=Window]
 interface AppHistory : EventTarget {
   sequence<AppHistoryEntry> entries();
-  attribute AppHistoryEntry? current;
+  readonly attribute AppHistoryEntry? current;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
