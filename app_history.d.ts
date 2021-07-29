@@ -2,7 +2,7 @@ interface Window {
   readonly appHistory: AppHistory;
 }
 
-interface AppHistory extends EventTarget {
+declare class AppHistory extends EventTarget {
   readonly current: AppHistoryEntry|null;
   readonly transition: AppHistoryTransition|null;
 
@@ -18,12 +18,12 @@ interface AppHistory extends EventTarget {
   back(options?: AppHistoryNavigationOptions): Promise<void>;
   forward(options?: AppHistoryNavigationOptions): Promise<void>;
 
-  onnavigate: ((ev: Event) => any)|null;
-  onnavigatesuccess: ((ev: Event) => any)|null;
-  onnavigateerror: ((ev: Event) => any)|null;
+  onnavigate: ((this: AppHistory, ev: Event) => any)|null;
+  onnavigatesuccess: ((this: AppHistory, ev: Event) => any)|null;
+  onnavigateerror: ((this: AppHistory, ev: Event) => any)|null;
 }
 
-interface AppHistoryTransition {
+declare class AppHistoryTransition {
   readonly navigationType: AppHistoryNavigationType;
   readonly from: AppHistoryEntry;
   readonly finished: Promise<void>;
@@ -31,7 +31,7 @@ interface AppHistoryTransition {
   rollback(options?: AppHistoryNavigationOptions): Promise<void>;
 }
 
-interface AppHistoryEntry extends EventTarget {
+declare class AppHistoryEntry extends EventTarget {
   readonly key: string;
   readonly id: string;
   readonly url: string;
@@ -40,29 +40,29 @@ interface AppHistoryEntry extends EventTarget {
 
   getState(): unknown;
 
-  onnavigateto: ((ev: Event) => any)|null;
-  onnavigatefrom: ((ev: Event) => any)|null;
-  onfinish: ((ev: Event) => any)|null;
-  ondispose: ((ev: Event) => any)|null;
+  onnavigateto: ((this: AppHistoryEntry, ev: Event) => any)|null;
+  onnavigatefrom: ((this: AppHistoryEntry, ev: Event) => any)|null;
+  onfinish: ((this: AppHistoryEntry, ev: Event) => any)|null;
+  ondispose: ((this: AppHistoryEntry, ev: Event) => any)|null;
 }
 
 type AppHistoryNavigationType = 'reload'|'push'|'replace'|'traverse';
 
-interface AppHistoryNavigationOptions {
+declare class AppHistoryNavigationOptions {
   navigateInfo?: unknown;
 }
 
-interface AppHistoryNavigateOptions extends AppHistoryNavigationOptions {
+declare class AppHistoryNavigateOptions extends AppHistoryNavigationOptions {
   state?: unknown;
   replace?: boolean;
 }
 
-interface AppHistoryReloadOptions extends AppHistoryNavigationOptions {
+declare class AppHistoryReloadOptions extends AppHistoryNavigationOptions {
   state?: unknown;
 }
 
 declare class AppHistoryNavigateEvent extends Event {
-  constructor(type: string, eventInit?: AppHistoryNavigateEventInit);
+  constructor(type: string, eventInit: AppHistoryNavigateEventInit);
 
   readonly navigationType: AppHistoryNavigationType;
   readonly canRespond: boolean;
@@ -76,20 +76,19 @@ declare class AppHistoryNavigateEvent extends Event {
   respondWith(newNavigationAction: Promise<void>): void;
 }
 
-interface AppHistoryNavigateEventInit extends EventInit {
+declare class AppHistoryNavigateEventInit extends EventInit {
   navigationType?: AppHistoryNavigationType;
   canRespond?: boolean;
   userInitiated?: boolean;
   hashChange?: boolean;
-  destination?: AppHistoryDestination;
-  signal?: AbortSignal;
+  destination: AppHistoryDestination;
+  signal: AbortSignal;
   formData?: FormData|null;
   info?: unknown;
 }
 
-interface AppHistoryDestination {
+declare class AppHistoryDestination {
   readonly url: string;
-  readonly attribute: string;
   readonly key: string|null;
   readonly id: string|null;
   readonly index: number;
