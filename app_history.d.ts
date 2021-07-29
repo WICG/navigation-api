@@ -18,9 +18,9 @@ declare class AppHistory extends EventTarget {
   back(options?: AppHistoryNavigationOptions): Promise<void>;
   forward(options?: AppHistoryNavigationOptions): Promise<void>;
 
-  onnavigate: ((this: AppHistory, ev: Event) => any)|null;
+  onnavigate: ((this: AppHistory, ev: AppHistoryNavigateEvent) => any)|null;
   onnavigatesuccess: ((this: AppHistory, ev: Event) => any)|null;
-  onnavigateerror: ((this: AppHistory, ev: Event) => any)|null;
+  onnavigateerror: ((this: AppHistory, ev: ErrorEvent) => any)|null;
 }
 
 declare class AppHistoryTransition {
@@ -48,16 +48,16 @@ declare class AppHistoryEntry extends EventTarget {
 
 type AppHistoryNavigationType = 'reload'|'push'|'replace'|'traverse';
 
-declare class AppHistoryNavigationOptions {
+interface AppHistoryNavigationOptions {
   navigateInfo?: unknown;
 }
 
-declare class AppHistoryNavigateOptions extends AppHistoryNavigationOptions {
+interface AppHistoryNavigateOptions extends AppHistoryNavigationOptions {
   state?: unknown;
   replace?: boolean;
 }
 
-declare class AppHistoryReloadOptions extends AppHistoryNavigationOptions {
+interface AppHistoryReloadOptions extends AppHistoryNavigationOptions {
   state?: unknown;
 }
 
