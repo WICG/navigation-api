@@ -76,7 +76,7 @@ declare class AppHistoryNavigateEvent extends Event {
   respondWith(newNavigationAction: Promise<void>): void;
 }
 
-declare class AppHistoryNavigateEventInit extends EventInit {
+interface AppHistoryNavigateEventInit extends EventInit {
   navigationType?: AppHistoryNavigationType;
   canRespond?: boolean;
   userInitiated?: boolean;
