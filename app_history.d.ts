@@ -2,6 +2,11 @@ interface Window {
   readonly appHistory: AppHistory;
 }
 
+interface AppHistoryEventMap {
+  "navigate": AppHistoryNavigateEvent;
+  "navigateerror": ErrorEvent;
+}
+
 declare class AppHistory extends EventTarget {
   readonly current: AppHistoryEntry|null;
   readonly transition: AppHistoryTransition|null;
@@ -21,6 +26,11 @@ declare class AppHistory extends EventTarget {
   onnavigate: ((this: AppHistory, ev: AppHistoryNavigateEvent) => any)|null;
   onnavigatesuccess: ((this: AppHistory, ev: Event) => any)|null;
   onnavigateerror: ((this: AppHistory, ev: ErrorEvent) => any)|null;
+
+  addEventListener<K extends keyof AppHistoryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof AppHistoryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare class AppHistoryTransition {
