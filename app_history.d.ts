@@ -2,6 +2,12 @@ interface Window {
   readonly appHistory: AppHistory;
 }
 
+interface AppHistoryEventMap {
+  "navigate": AppHistoryNavigateEvent;
+  "navigatesuccess": Event;
+  "navigateerror": ErrorEvent;
+}
+
 declare class AppHistory extends EventTarget {
   readonly current: AppHistoryEntry|null;
   readonly transition: AppHistoryTransition|null;
@@ -21,6 +27,11 @@ declare class AppHistory extends EventTarget {
   onnavigate: ((this: AppHistory, ev: AppHistoryNavigateEvent) => any)|null;
   onnavigatesuccess: ((this: AppHistory, ev: Event) => any)|null;
   onnavigateerror: ((this: AppHistory, ev: ErrorEvent) => any)|null;
+
+  addEventListener<K extends keyof AppHistoryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof AppHistoryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 declare class AppHistoryTransition {
@@ -29,6 +40,13 @@ declare class AppHistoryTransition {
   readonly finished: Promise<void>;
 
   rollback(options?: AppHistoryNavigationOptions): Promise<void>;
+}
+
+interface AppHistoryEntryEventMap {
+  "navigateto": Event;
+  "navigatefrom": Event;
+  "finish": Event;
+  "dispose": Event;
 }
 
 declare class AppHistoryEntry extends EventTarget {
@@ -44,6 +62,11 @@ declare class AppHistoryEntry extends EventTarget {
   onnavigatefrom: ((this: AppHistoryEntry, ev: Event) => any)|null;
   onfinish: ((this: AppHistoryEntry, ev: Event) => any)|null;
   ondispose: ((this: AppHistoryEntry, ev: Event) => any)|null;
+
+  addEventListener<K extends keyof AppHistoryEntryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEntryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof AppHistoryEntryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEntryEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 type AppHistoryNavigationType = 'reload'|'push'|'replace'|'traverse';
