@@ -4,6 +4,7 @@ interface Window {
 
 interface AppHistoryEventMap {
   "navigate": AppHistoryNavigateEvent;
+  "navigatesuccess": Event;
   "navigateerror": ErrorEvent;
 }
 
@@ -41,6 +42,13 @@ declare class AppHistoryTransition {
   rollback(options?: AppHistoryNavigationOptions): Promise<void>;
 }
 
+interface AppHistoryEntryEventMap {
+  "navigateto": Event;
+  "navigatefrom": Event;
+  "finish": Event;
+  "dispose": Event;
+}
+
 declare class AppHistoryEntry extends EventTarget {
   readonly key: string;
   readonly id: string;
@@ -54,6 +62,11 @@ declare class AppHistoryEntry extends EventTarget {
   onnavigatefrom: ((this: AppHistoryEntry, ev: Event) => any)|null;
   onfinish: ((this: AppHistoryEntry, ev: Event) => any)|null;
   ondispose: ((this: AppHistoryEntry, ev: Event) => any)|null;
+
+  addEventListener<K extends keyof AppHistoryEntryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEntryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof AppHistoryEntryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEntryEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
 type AppHistoryNavigationType = 'reload'|'push'|'replace'|'traverse';
