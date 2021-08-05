@@ -827,7 +827,9 @@ enum AppHistoryNavigationType {
 
   <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/formData}}</code>
   <dd>
-    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation is a POST <a spec="HTML" lt="submit">form submission</a>; null otherwise.
+    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation is a "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}" navigation representing a POST <a spec="HTML" lt="submit">form submission</a>; null otherwise.
+
+    <p>(Notably, this will be null even for "{{AppHistoryNavigationType/reload}}" and "{{AppHistoryNavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
   </dd>
 
   <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/info}}</code>
