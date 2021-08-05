@@ -1415,7 +1415,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   required AppHistoryDestination destination;
   required AbortSignal signal;
   FormData? formData = null;
-  any info = null;
+  any info;
 };
 
 [Exposed=Window]

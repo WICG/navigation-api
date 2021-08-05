@@ -780,7 +780,7 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   boolean hashChange = false;
   required AbortSignal signal;
   FormData? formData = null;
-  any info = null;
+  any info;
 };
 
 enum AppHistoryNavigationType {
