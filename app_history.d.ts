@@ -72,7 +72,7 @@ declare class AppHistoryEntry extends EventTarget {
 type AppHistoryNavigationType = 'reload'|'push'|'replace'|'traverse';
 
 interface AppHistoryNavigationOptions {
-  navigateInfo?: unknown;
+  info?: unknown;
 }
 
 interface AppHistoryNavigateOptions extends AppHistoryNavigationOptions {

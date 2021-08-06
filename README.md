@@ -80,7 +80,7 @@ for (const entry of performance.getEntriesByType("same-document-navigation")) {
     - [Example: single-page app redirects and guards](#example-single-page-app-redirects-and-guards)
     - [Example: cross-origin affiliate links](#example-cross-origin-affiliate-links)
   - [New navigation API](#new-navigation-api)
-    - [Example: using `navigateInfo`](#example-using-navigateinfo)
+    - [Example: using `info`](#example-using-info)
     - [Example: next/previous buttons](#example-nextprevious-buttons)
   - [Per-entry events](#per-entry-events)
   - [Current entry change monitoring](#current-entry-change-monitoring)
@@ -307,7 +307,7 @@ The event object has several useful properties:
 
 - `formData`: a [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) object containing form submission data, or `null` if the navigation is not a form submission.
 
-- `info`: any value passed by `appHistory.navigate(url, { state, navigateInfo })`, `appHistory.back({ navigateInfo })`, or similar, if the navigation was initiated by one of those methods and the `navigateInfo` option was supplied. Otherwise, null. See [the example below](#example-using-navigateinfo) for more.
+- `info`: any value passed by `appHistory.navigate(url, { state, info })`, `appHistory.back({ info })`, or similar, if the navigation was initiated by one of those methods and the `info` option was supplied. Otherwise, undefined. See [the example below](#example-using-info) for more.
 
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
 
@@ -635,8 +635,8 @@ await appHistory.navigate(url);
 // Use a new URL and state.
 await appHistory.navigate(url, { state });
 
-// You can also pass navigateInfo for the navigate event handler to receive:
-await appHistory.navigate(url, { state, navigateInfo });
+// You can also pass info for the navigate event handler to receive:
+await appHistory.navigate(url, { state, info });
 ```
 
 Note how unlike `history.pushState()`, `appHistory.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
@@ -654,30 +654,30 @@ await appHistory.navigate(url, { replace: true });
 // Replace the URL and state at the same time.
 await appHistory.navigate(url, { replace: true, state });
 
-// You can still pass along navigateInfo:
-await appHistory.navigate(url, { replace: true, state, navigateInfo });
+// You can still pass along info:
+await appHistory.navigate(url, { replace: true, state, info });
 ```
 
 Again, unlike `history.replaceState()`, `appHistory.navigate(url, { replace: true })` will by default perform a full navigation. And again, single-page apps will usually intercept these using `navigate`.
 
-Finally, we have `appHistory.reload()`. This can be used as a replacement for `location.reload()`, but it also allows passing `navigateInfo` and `state`, which are useful when a single-page app intercepts the reload using the `navigate` event:
+Finally, we have `appHistory.reload()`. This can be used as a replacement for `location.reload()`, but it also allows passing `info` and `state`, which are useful when a single-page app intercepts the reload using the `navigate` event:
 
 ```js
 // Just like location.reload().
 await appHistory.reload();
 
-// Leave the state as-is, but pass some navigateInfo.
-await appHistory.reload({ navigateInfo });
+// Leave the state as-is, but pass some info.
+await appHistory.reload({ info });
 
 // Overwrite the state with a new value.
-await appHistory.reload({ state, navigateInfo });
+await appHistory.reload({ state, info });
 ```
 
 Note that both of these methods return promises. In the event that the navigations get converted into same-document navigations via `event.respondWith(promise)` in a `navigate` handler, these returned promises will settle in the same way that `promise` does. This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, then the promises will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promise, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
 
-#### Example: using `navigateInfo`
+#### Example: using `info`
 
-The `navigateInfo` option to `appHistory.navigate()` gets passed to the `navigate` event handler as the `event.info` property. The intended use of this value is to convey transient information about this particular navigation, such as how it happened. In this way, it's different from the persisted value retrievable using `event.destination.getState()`.
+The `info` option to `appHistory.navigate()` gets passed to the `navigate` event handler as the `event.info` property. The intended use of this value is to convey transient information about this particular navigation, such as how it happened. In this way, it's different from the persisted value retrievable using `event.destination.getState()`.
 
 One example of how this might be used is to trigger different single-page navigation renderings depending on how a certain route was reached. For example, consider a photo gallery app, where you can reach the same photo URL and state via various routes:
 
@@ -690,16 +690,16 @@ Each of these wants a different animation at navigate time. This information doe
 ```js
 document.addEventListener("keydown", async e => {
   if (e.key === "ArrowLeft" && hasPreviousPhoto()) {
-    await appHistory.navigate(getPreviousPhotoURL(), { navigateInfo: { via: "go-left" } });
+    await appHistory.navigate(getPreviousPhotoURL(), { info: { via: "go-left" } });
   }
   if (e.key === "ArrowRight" && hasNextPhoto()) {
-    await appHistory.navigate(getNextPhotoURL(), { navigateInfo: { via: "go-right" } });
+    await appHistory.navigate(getNextPhotoURL(), { info: { via: "go-right" } });
   }
 });
 
 photoGallery.addEventListener("click", async e => {
   if (e.target.closest(".photo-thumbnail")) {
-    await appHistory.navigate(getPhotoURL(e.target), { navigateInfo: { via: "gallery", thumbnail: e.target } });
+    await appHistory.navigate(getPhotoURL(e.target), { info: { via: "gallery", thumbnail: e.target } });
   }
 });
 
@@ -727,7 +727,7 @@ appHistory.addEventListener("navigate", e => {
 });
 ```
 
-Note that in addition to `appHistory.navigate()`, the previously-discussed `appHistory.reload()`, `appHistory.back()`, `appHistory.forward()`, `appHistory.goTo()`, and `appHistory.transition.rollback()` methods can also take a `navigateInfo` option.
+Note that in addition to `appHistory.navigate()`, the previously-discussed `appHistory.reload()`, `appHistory.back()`, `appHistory.forward()`, `appHistory.goTo()`, and `appHistory.transition.rollback()` methods can also take a `info` option.
 
 #### Example: next/previous buttons
 
@@ -1379,7 +1379,7 @@ enum AppHistoryNavigationType {
 };
 
 dictionary AppHistoryNavigationOptions {
-  any navigateInfo;
+  any info;
 };
 
 dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
