@@ -639,7 +639,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-08-05">5 August 2021</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-08-06">6 August 2021</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -713,7 +713,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     <li>
      <a href="#other-patches"><span class="secno">6</span> <span class="content">Other patches</span></a>
      <ol class="toc">
-      <li><a href="#cancel-navigation"><span class="secno">6.1</span> <span class="content">Canceling navigation</span></a>
+      <li><a href="#cancel-navigation"><span class="secno">6.1</span> <span class="content">Canceling navigation and traversals</span></a>
      </ol>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
@@ -1007,6 +1007,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
 <c- a>const</c-> p2 <c- o>=</c-> appHistory<c- p>.</c->navigate<c- p>(</c->url2<c- p>);</c->
 </pre>
    <p>we need to ensure that when navigating to <code>url2</code>, we still have the <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise⑦">Promise</a></code> <code>p1</code> around so that we can reject it. We can’t just get rid of any ongoing navigation promises the moment the second call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate①">navigate()</a></code> happens.</p>
+   <p>We also need to ensure that, if we start a new navigation, navigations which have gotten as far as firing <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②">navigate</a></code> events, but not yet as far as firing <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror">navigateerror</a></code>, get <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error">finalized with an aborted navigation error</a>.</p>
    <p>We end up accomplishing all this using the following setup:</p>
    <p>Each <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory⑧">AppHistory</a></code> object has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistory" data-dfn-type="dfn" data-noexport id="apphistory-ongoing-navigate-event">ongoing navigate event</dfn>, an <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent②">AppHistoryNavigateEvent</a></code> or null, initially null.</p>
    <p>Each <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory⑨">AppHistory</a></code> object has an associated <dfn class="dfn-paneled" data-dfn-for="AppHistory" data-dfn-type="dfn" data-noexport id="apphistory-to-be-set-serialized-state">to-be-set serialized state</dfn>, a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state">serialized state</a> or null, initially null.</p>
@@ -1021,6 +1022,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li data-md>
      <p>A <dfn class="dfn-paneled" data-dfn-for="app history API navigation" data-dfn-type="dfn" data-noexport id="app-history-api-navigation-returned-promise">returned promise</dfn>, a <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-promise" id="ref-for-idl-promise⑧">Promise</a></code></p>
     <li data-md>
+     <p>A <dfn class="dfn-paneled" data-dfn-for="app history API navigation" data-dfn-type="dfn" data-noexport id="app-history-api-navigation-fired-navigate-event">fired <code>navigate</code> event</dfn>, a boolean</p>
+    <li data-md>
      <p>A <dfn class="dfn-paneled" data-dfn-for="app history API navigation" data-dfn-type="dfn" data-noexport id="app-history-api-navigation-cleanup-step">cleanup step</dfn>, an algorithm step</p>
    </ul>
    <p class="note" role="note">We need to store the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal①">AbortSignal</a></code> separately from the <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation③">app history API navigation</a> struct, since it needs to be tracked even for navigations that are not via the app history APIs. So, we store it some of the time in the <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event">ongoing navigate event</a>'s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal②">signal</a></code> property, and the rest of the time in the <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal">post-navigate event ongoing navigation signal</a>. </p>
@@ -1032,7 +1035,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>cleanupStep</var> be an algorithm step which sets <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-non-traverse-navigation" id="ref-for-apphistory-ongoing-non-traverse-navigation">ongoing non-traverse navigation</a> to null.</p>
      <li data-md>
-      <p>Let <var>ongoingNavigation</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation④">app history API navigation</a> whose <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise">returned promise</a> is <var>promise</var>, and <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step">cleanup step</a> is <var>cleanupStep</var>.</p>
+      <p>Let <var>ongoingNavigation</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation④">app history API navigation</a> whose <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise">returned promise</a> is <var>promise</var>, <a data-link-type="dfn" href="#app-history-api-navigation-fired-navigate-event" id="ref-for-app-history-api-navigation-fired-navigate-event">fired navigate event</a> is false, and <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step">cleanup step</a> is <var>cleanupStep</var>.</p>
      <li data-md>
       <p class="assertion">Assert: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-upcoming-non-traverse-navigation" id="ref-for-apphistory-upcoming-non-traverse-navigation">upcoming non-traverse navigation</a> is null.</p>
      <li data-md>
@@ -1060,7 +1063,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>cleanupStep</var> be an algorithm step which <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-remove" id="ref-for-map-remove">removes</a> <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations">ongoing traverse navigations</a>[<var>key</var>].</p>
      <li data-md>
-      <p>Let <var>ongoingNavigation</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑤">app history API navigation</a> whose <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info①">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise①">returned promise</a> is <var>promise</var>, and <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step①">cleanup step</a> is <var>cleanupStep</var>.</p>
+      <p>Let <var>ongoingNavigation</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑤">app history API navigation</a> whose <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info①">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise①">returned promise</a> is <var>promise</var>, <a data-link-type="dfn" href="#app-history-api-navigation-fired-navigate-event" id="ref-for-app-history-api-navigation-fired-navigate-event①">fired navigate event</a> is false, and <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step①">cleanup step</a> is <var>cleanupStep</var>.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations①">ongoing traverse navigations</a>[<var>key</var>]  to <var>ongoingNavigation</var>.</p>
      <li data-md>
@@ -1077,15 +1080,15 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateoptions-replace" id="ref-for-dom-apphistorynavigateoptions-replace">replace</a></code> can be set to true to replace the current session history entry, instead of pushing a new one.</p>
       <li data-md>
-       <p><code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo①">navigateInfo</a></code> can be set to any value; it will populate the <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-info" id="ref-for-dom-apphistorynavigateevent-info">info</a></code> property of the corresponding <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②">navigate</a></code> event.</p>
+       <p><code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo①">navigateInfo</a></code> can be set to any value; it will populate the <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-info" id="ref-for-dom-apphistorynavigateevent-info">info</a></code> property of the corresponding <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate③">navigate</a></code> event.</p>
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateoptions-state" id="ref-for-dom-apphistorynavigateoptions-state①">state</a></code> can be set to any <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable-objects" id="ref-for-serializable-objects">serializable</a> value; it will populate the state retrieved by <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-getstate" id="ref-for-dom-apphistoryentry-getstate">appHistory.current.getState()</a></code> once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)</p>
      </ul>
-     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate③">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith④">respondWith()</a></code> method can be used to convert it into a same-document navigation. </p>
+     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate④">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith④">respondWith()</a></code> method can be used to convert it into a same-document navigation. </p>
      <p>The returned promise will behave as follows: </p>
      <ul>
       <li data-md>
-       <p>For same-document navigations created by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate④">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑤">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑥">respondWith()</a></code>.</p>
+       <p>For same-document navigations created by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑤">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑤">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑥">respondWith()</a></code>.</p>
       <li data-md>
        <p>For other same-document navigations (e.g., non-intercepted <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid">fragment navigations</a>), it will fulfill immediately.</p>
       <li data-md>
@@ -1094,11 +1097,11 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code>await <code class="idl"><a data-link-type="idl" href="#dom-window-apphistory" id="ref-for-dom-window-apphistory⑦">appHistory</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-apphistory-reload" id="ref-for-dom-apphistory-reload①">reload</a></code>(<var>options</var>)</code> 
     <dd>
      <p>Reloads the current page. <var>options</var> needs to contain at least one of <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo②">navigateInfo</a></code> or <code class="idl"><a data-link-type="idl" href="#dom-apphistoryreloadoptions-state" id="ref-for-dom-apphistoryreloadoptions-state">state</a></code>, which behave as described above. </p>
-     <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑤">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑦">respondWith()</a></code> method. Doing so will mean this call only updates state or passes along the appropriate <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo③">navigateInfo</a></code>, plus performing whatever actions the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑥">navigate</a></code> event handler sees fit to carry out. </p>
+     <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑥">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑦">respondWith()</a></code> method. Doing so will mean this call only updates state or passes along the appropriate <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo③">navigateInfo</a></code>, plus performing whatever actions the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑦">navigate</a></code> event handler sees fit to carry out. </p>
      <p>The returned promise will behave as follows: </p>
      <ul>
       <li data-md>
-       <p>If the reload is intercepted by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑦">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑧">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑨">respondWith()</a></code>.</p>
+       <p>If the reload is intercepted by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑧">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑧">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith⑨">respondWith()</a></code>.</p>
       <li data-md>
        <p>Otherwise, it will never settle.</p>
      </ul>
@@ -1161,21 +1164,14 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate">Navigate</a> <var>browsingContext</var> to <var>url</var> with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigation-hh" id="ref-for-navigation-hh">historyHandling</a></i> set to <var>historyHandling</var>, <i><a data-link-type="dfn" href="#navigate-apphistorystate" id="ref-for-navigate-apphistorystate">appHistoryState</a></i> set to <var>serializedState</var>, and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context" id="ref-for-source-browsing-context">source browsing context</a> set to <var>browsingContext</var>.</p>
      <li data-md>
-      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-upcoming-non-traverse-navigation" id="ref-for-apphistory-upcoming-non-traverse-navigation④">upcoming non-traverse navigation</a> is <var>ongoingNavigation</var>, then:</p>
+      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-upcoming-non-traverse-navigation" id="ref-for-apphistory-upcoming-non-traverse-navigation④">upcoming non-traverse navigation</a> is <var>ongoingNavigation</var>, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error①">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
       <p class="note" role="note">This means the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①">navigate</a> algorithm bailed out before ever getting to the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm">inner navigate event firing algorithm</a> which would <a data-link-type="dfn" href="#apphistory-promote-the-upcoming-non-traverse-navigation-to-ongoing" id="ref-for-apphistory-promote-the-upcoming-non-traverse-navigation-to-ongoing">promote the upcoming non-traverse navigation to ongoing</a>. </p>
-      <ol>
-       <li data-md>
-        <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject②">Reject</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise②">returned promise</a> with a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new①">new</a> "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code>, created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm③">relevant Realm</a>.</p>
-       <li data-md>
-        <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step②">cleanup step</a>.</p>
-      </ol>
-      <p class="note" role="note">We don’t <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</a> since that algorithm only makes sense after the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑧">navigate</a></code> event has fired. </p>
      <li data-md>
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-to-be-set-serialized-state" id="ref-for-apphistory-to-be-set-serialized-state①">to-be-set serialized state</a> is non-null, then set <var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history①">session history</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry①">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state①">app history state</a> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-to-be-set-serialized-state" id="ref-for-apphistory-to-be-set-serialized-state②">to-be-set serialized state</a>.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-to-be-set-serialized-state" id="ref-for-apphistory-to-be-set-serialized-state③">to-be-set serialized state</a> to null.</p>
      <li data-md>
-      <p>Return <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise③">returned promise</a>.</p>
+      <p>Return <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise②">returned promise</a>.</p>
     </ol>
    </div>
    <p class="note" role="note">Unlike <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-location-assign" id="ref-for-dom-location-assign">location.assign()</a></code> and friends, which are exposed across <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain">origin-domain</a> boundaries, <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate④">appHistory.navigate()</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-apphistory-reload" id="ref-for-dom-apphistory-reload②">appHistory.reload()</a></code> can only be accessed by code with direct synchronous access to the <code class="idl"><a data-link-type="idl" href="#dom-window-apphistory" id="ref-for-dom-window-apphistory⑧">appHistory</a></code> property. Thus, we avoid the complications around tracking <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context" id="ref-for-source-browsing-context①">source browsing contexts</a>, and we don’t need to deal with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#allowed-to-navigate" id="ref-for-allowed-to-navigate">allowed to navigate</a> check and its accompanying <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#exceptions-enabled" id="ref-for-exceptions-enabled">exceptionsEnabled</a></i> flag. We just treat all navigations as being initiated by the <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory①⑧">AppHistory</a></code> object itself. </p>
@@ -1189,7 +1185,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>The returned promise will behave as follows: </p>
      <ul>
       <li data-md>
-       <p>If there is no <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①⓪">AppHistoryEntry</a></code> in <code class="idl"><a data-link-type="idl" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries②">appHistory.entries</a></code> with the given key, it will reject with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror④">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑥">DOMException</a></code>.</p>
+       <p>If there is no <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①⓪">AppHistoryEntry</a></code> in <code class="idl"><a data-link-type="idl" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries②">appHistory.entries</a></code> with the given key, it will reject with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror④">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code>.</p>
       <li data-md>
        <p>For same-document traversals intercepted by the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①⓪">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①⓪">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①①">respondWith()</a></code>.</p>
       <li data-md>
@@ -1205,7 +1201,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>The returned promise will behave as follows: </p>
      <ul>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-apphistory-cangoback" id="ref-for-dom-apphistory-cangoback②">appHistory.canGoBack</a></code> is false, it will reject with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑤">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-apphistory-cangoback" id="ref-for-dom-apphistory-cangoback②">appHistory.canGoBack</a></code> is false, it will reject with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑤">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑥">DOMException</a></code>.</p>
       <li data-md>
        <p>For same-document traversals intercepted by the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①②">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①②">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①③">respondWith()</a></code>.</p>
       <li data-md>
@@ -1221,7 +1217,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>The returned promise will behave as follows: </p>
      <ul>
       <li data-md>
-       <p>If <code class="idl"><a data-link-type="idl" href="#dom-apphistory-cangoback" id="ref-for-dom-apphistory-cangoback③">appHistory.canGoForward</a></code> is false, it will reject with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑥">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑧">DOMException</a></code>.</p>
+       <p>If <code class="idl"><a data-link-type="idl" href="#dom-apphistory-cangoback" id="ref-for-dom-apphistory-cangoback③">appHistory.canGoForward</a></code> is false, it will reject with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑥">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑦">DOMException</a></code>.</p>
       <li data-md>
        <p>For same-document traversals intercepted by the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①④">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①④">respondWith()</a></code> method, it will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①⑤">respondWith()</a></code>.</p>
       <li data-md>
@@ -1234,9 +1230,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistory" data-dfn-type="method" data-export data-lt="goTo(key, options)|goTo(key)" id="dom-apphistory-goto"><code>goTo(<var>key</var>, <var>options</var>)</code></dfn> method steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑤">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑨">current index</a> is −1, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑦">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑦">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑨">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑤">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index⑨">current index</a> is −1, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑦">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑦">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑧">DOMException</a></code>.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑥">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list⑨">entry list</a> does not contain any <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①①">AppHistoryEntry</a></code> whose <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry③">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key">app history key</a> equals <var>key</var>, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑧">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑧">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑥">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list⑨">entry list</a> does not contain any <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry①①">AppHistoryEntry</a></code> whose <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry③">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key">app history key</a> equals <var>key</var>, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑧">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑧">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException⑨">DOMException</a></code>.</p>
      <li data-md>
       <p>Return the result of <a data-link-type="dfn" href="#perform-an-app-history-traversal" id="ref-for-perform-an-app-history-traversal">performing an app history traversal</a> given <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑦">this</a>, <var>key</var>, and <var>options</var>.</p>
     </ol>
@@ -1245,7 +1241,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistory" data-dfn-type="method" data-export data-lt="back(options)|back()" id="dom-apphistory-back"><code>back(<var>options</var>)</code></dfn> method steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑧">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①⓪">current index</a> is −1 or 0, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑨">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑨">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑧">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①⓪">current index</a> is −1 or 0, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with⑨">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror⑨">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
      <li data-md>
       <p>Let <var>key</var> be <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this②⑨">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list①⓪">entry list</a>[<a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⓪">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①①">current index</a> − 1]'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry④">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key①">app history key</a>.</p>
      <li data-md>
@@ -1256,7 +1252,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistory" data-dfn-type="method" data-export data-lt="forward(options)|forward()" id="dom-apphistory-forward"><code>forward(<var>options</var>)</code></dfn> method steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③②">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①②">current index</a> is −1 or is equal to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③③">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list①①">entry list</a>'s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size②">size</a> − 1, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①⓪">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⓪">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①②">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③②">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①②">current index</a> is −1 or is equal to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③③">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list①①">entry list</a>'s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size②">size</a> − 1, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①⓪">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⓪">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>.</p>
      <li data-md>
       <p>Let <var>key</var> be <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③④">this</a>'s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list①②">entry list</a>[<a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑤">this</a>'s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①③">current index</a> + 1]'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑤">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key②">app history key</a>.</p>
      <li data-md>
@@ -1268,9 +1264,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="perform-an-app-history-traversal">perform an app history traversal</dfn> given an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory①⑨">AppHistory</a></code> object <var>appHistory</var>, a string <var>key</var>, and an <code class="idl"><a data-link-type="idl" href="#dictdef-apphistorynavigationoptions" id="ref-for-dictdef-apphistorynavigationoptions⑤">AppHistoryNavigationOptions</a></code> <var>options</var>:</p>
     <ol>
      <li data-md>
-      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑧">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑥">fully active</a>, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①①">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①①">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①③">DOMException</a></code>.</p>
+      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑧">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑥">fully active</a>, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①①">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①①">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①②">DOMException</a></code>.</p>
      <li data-md>
-      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑨">associated Document</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#unload-counter" id="ref-for-unload-counter②">unload counter</a> is greater than 0, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①②">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①②">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①④">DOMException</a></code>.</p>
+      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑨">associated Document</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#unload-counter" id="ref-for-unload-counter②">unload counter</a> is greater than 0, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-rejected-with" id="ref-for-a-promise-rejected-with①②">a promise rejected with</a> an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①②">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①③">DOMException</a></code>.</p>
      <li data-md>
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-entry-list" id="ref-for-apphistory-entry-list①③">entry list</a>[<var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index①④">current index</a>]'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry⑥">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key③">app history key</a> equals <var>key</var>, then return <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-promise-resolved-with" id="ref-for-a-promise-resolved-with">a promise resolved with</a> undefined.</p>
      <li data-md>
@@ -1282,7 +1278,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>info</var> be <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-navigateinfo" id="ref-for-dom-apphistorynavigationoptions-navigateinfo①⑤">navigateInfo</a></code>"] if it <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②">exists</a>, or undefined otherwise.</p>
      <li data-md>
-      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations②">ongoing traverse navigations</a>[<var>key</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③">exists</a>, then return <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations③">ongoing traverse navigations</a>[<var>key</var>]'s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise④">returned promise</a>.</p>
+      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations②">ongoing traverse navigations</a>[<var>key</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists③">exists</a>, then return <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations③">ongoing traverse navigations</a>[<var>key</var>]'s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise③">returned promise</a>.</p>
      <li data-md>
       <p>Let <var>ongoingNavigation</var> be the result of <a data-link-type="dfn" href="#apphistory-set-an-ongoing-traverse-navigation" id="ref-for-apphistory-set-an-ongoing-traverse-navigation">setting an ongoing traverse navigation</a> for <var>appHistory</var> given <var>key</var> and <var>info</var>.</p>
      <li data-md>
@@ -1294,9 +1290,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p>Let <var>targetEntry</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①">session history entry</a> in <var>navigableEntries</var> whose <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key④">app history key</a> equals <var>key</var>. If no such entry exists, then:</p>
         <ol>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject③">Reject</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑤">returned promise</a> with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①③">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>.</p>
+          <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject②">Reject</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise④">returned promise</a> with an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①③">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①④">DOMException</a></code>.</p>
          <li data-md>
-          <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step③">cleanup step</a>.</p>
+          <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step②">cleanup step</a>.</p>
          <li data-md>
           <p>Abort these steps.</p>
         </ol>
@@ -1322,14 +1318,14 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step">Apply the history step</a> <var>targetStep</var> to <var>traversable</var>, with true, <var>initiatorBC</var>, and "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none">none</a></code>".</p>
         <ul>
          <li data-md>
-          <p>If this aborts due to user-canceled unloading or due to the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①⑤">navigate</a></code> event being canceled, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error①">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
+          <p>If this aborts due to user-canceled unloading or due to the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①⑤">navigate</a></code> event being canceled, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error②">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
          <li data-md>
-          <p>If this aborts due to the initiator allowed-to-navigate check, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error②">finalize with an aborted navigation error</a> given <var>appHistory</var>, <var>ongoingNavigation</var>, and a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new②">new</a> "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑥">DOMException</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm④">relevant Realm</a>.</p>
+          <p>If this aborts due to the initiator allowed-to-navigate check, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error③">finalize with an aborted navigation error</a> given <var>appHistory</var>, <var>ongoingNavigation</var>, and a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new①">new</a> "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm③">relevant Realm</a>.</p>
         </ul>
         <p class="advisement">Eventually <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step①">apply the history step</a> will have well-specified hooks for communicating these conditions back to its caller.</p>
       </ol>
      <li data-md>
-      <p>Return <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑥">returned promise</a>.</p>
+      <p>Return <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑤">returned promise</a>.</p>
     </ol>
    </div>
    <h3 class="heading settled" data-level="1.5" id="global-events"><span class="secno">1.5. </span><span class="content">Event handlers</span><a class="self-link" href="#global-events"></a></h3>
@@ -1417,8 +1413,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith①⑧">respondWith</a></code>(<var>newNavigationAction</var>)</code> 
     <dd>
      <p>Synchronously converts this navigation into a same-document navigation to the destination URL. </p>
-     <p>The given <var>newNavigationAction</var> promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror">navigateerror</a></code> events as appropriate, which other parts of the web application can respond to. </p>
-     <p>This method will throw a "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror①">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> if <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-canrespond" id="ref-for-dom-apphistorynavigateevent-canrespond②">canRespond</a></code> is false, or if <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted">isTrusted</a></code> is false. It will throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①④">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code> if not called synchronously, during event dispatch. </p>
+     <p>The given <var>newNavigationAction</var> promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess①">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror①">navigateerror</a></code> events as appropriate, which other parts of the web application can respond to. </p>
+     <p>This method will throw a "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror①">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑥">DOMException</a></code> if <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-canrespond" id="ref-for-dom-apphistorynavigateevent-canrespond②">canRespond</a></code> is false, or if <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted">isTrusted</a></code> is false. It will throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①④">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> if not called synchronously, during event dispatch. </p>
    </dl>
    <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-navigationtype"><code>navigationType</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-destination"><code>destination</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-canrespond"><code>canRespond</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-userinitiated"><code>userInitiated</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-hashchange"><code>hashChange</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-signal"><code>signal</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-formdata"><code>formData</code></dfn>, and <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-info"><code>info</code></dfn> getter steps are to return the value that the corresponding attribute was initialized to.</p>
    <p>An <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent④">AppHistoryNavigateEvent</a></code> has the following associated values which are only conditionally used:</p>
@@ -1434,15 +1430,15 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="method" data-export id="dom-apphistorynavigateevent-respondwith"><code>respondWith(<var>newNavigationAction</var>)</code></dfn> method steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑦">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document①">active Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑦">fully active</a>, then throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑤">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑦">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document①">active Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑦">fully active</a>, then throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑤">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code>.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑧">this</a>'s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted①">isTrusted</a></code> attribute was initialized to false, then throw a "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror②">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑧">this</a>'s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted①">isTrusted</a></code> attribute was initialized to false, then throw a "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror②">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code>.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑨">this</a>'s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-canrespond" id="ref-for-dom-apphistorynavigateevent-canrespond③">canRespond</a></code> attribute was initialized to false, then throw a "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror③">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②①">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this③⑨">this</a>'s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-canrespond" id="ref-for-dom-apphistorynavigateevent-canrespond③">canRespond</a></code> attribute was initialized to false, then throw a "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#securityerror" id="ref-for-securityerror③">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code>.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⓪">this</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#dispatch-flag" id="ref-for-dispatch-flag">dispatch flag</a> is unset, then throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②②">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④⓪">this</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#dispatch-flag" id="ref-for-dispatch-flag">dispatch flag</a> is unset, then throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑥">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②①">DOMException</a></code>.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④①">this</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#canceled-flag" id="ref-for-canceled-flag②">canceled flag</a> is set, then throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②③">DOMException</a></code>.</p>
+      <p>If <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④①">this</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#canceled-flag" id="ref-for-canceled-flag②">canceled flag</a> is set, then throw an "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#invalidstateerror" id="ref-for-invalidstateerror①⑦">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②②">DOMException</a></code>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append④">Append</a> <var>newNavigationAction</var> to <a data-link-type="dfn" href="https://heycam.github.io/webidl/#this" id="ref-for-this④②">this</a>'s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list">navigation action promises list</a>.</p>
     </ol>
@@ -1507,11 +1503,11 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event">fire a traversal <code>navigate</code> event</dfn> at an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②①">AppHistory</a></code> <var>appHistory</var> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry④">session history entry</a> <dfn class="dfn-paneled" data-dfn-for="fire a traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event-destinationentry"><var>destinationEntry</var></dfn>, and an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none①">none</a></code>"): 
     <ol>
      <li data-md>
-      <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑥">AppHistoryNavigateEvent</a></code>, in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑤">relevant Realm</a>.</p>
+      <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑥">AppHistoryNavigateEvent</a></code>, in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm④">relevant Realm</a>.</p>
      <li data-md>
       <p>Set <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-destination-entry" id="ref-for-apphistorynavigateevent-destination-entry">destination entry</a> to <var>destinationEntry</var>.</p>
      <li data-md>
-      <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new③">new</a> <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination①⓪">AppHistoryDestination</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑥">relevant Realm</a>.</p>
+      <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new②">new</a> <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination①⓪">AppHistoryDestination</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑤">relevant Realm</a>.</p>
      <li data-md>
       <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url①">URL</a> to <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url">URL</a>.</p>
      <li data-md>
@@ -1548,11 +1544,11 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event">fire a push or replace <code>navigate</code> event</dfn> at an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②②">AppHistory</a></code> <var>appHistory</var> given an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype②">AppHistoryNavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state④">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata③">FormData</a></code> <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry" id="ref-for-concept-formdata-entry">entries</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
     <ol>
      <li data-md>
-      <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create①">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑦">AppHistoryNavigateEvent</a></code>, in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑦">relevant Realm</a>.</p>
+      <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create①">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑦">AppHistoryNavigateEvent</a></code>, in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑥">relevant Realm</a>.</p>
      <li data-md>
       <p>Set <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-classic-history-api-serialized-data" id="ref-for-apphistorynavigateevent-classic-history-api-serialized-data">classic history API serialized data</a> to <var>classicHistoryAPISerializedData</var>.</p>
      <li data-md>
-      <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new④">new</a> <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination①①">AppHistoryDestination</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑧">relevant Realm</a>.</p>
+      <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new③">new</a> <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination①①">AppHistoryDestination</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑦">relevant Realm</a>.</p>
      <li data-md>
       <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url②">URL</a> to <var>destinationURL</var>.</p>
      <li data-md>
@@ -1587,15 +1583,24 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>If either <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui">browser UI</a></code>" or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①①">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable">cancelable</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
-      <p>If either <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑧">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc④">browsing context</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/dom.html#still-on-its-initial-about:blank-document" id="ref-for-still-on-its-initial-about:blank-document①">still on its initial <code>about:blank</code> <code>Document</code></a>, or both <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-canrespond" id="ref-for-dom-apphistorynavigateevent-canrespond⑤">canRespond</a></code> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable①">cancelable</a></code> are false, then:</p>
+      <p>If both <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-canrespond" id="ref-for-dom-apphistorynavigateevent-canrespond⑤">canRespond</a></code> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable①">cancelable</a></code> are false, then return true.</p>
+      <p class="note" role="note">In this case we are definitely performing a cross-document navigation or traversal. We don’t clean up <var>ongoingNavigation</var> however, since we might end up <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error④">finalizing with an aborted navigation error</a> before the current <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document④">Document</a></code> unloads. </p>
+     <li data-md>
+      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑧">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc④">browsing context</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/dom.html#still-on-its-initial-about:blank-document" id="ref-for-still-on-its-initial-about:blank-document①">still on its initial <code>about:blank</code> <code>Document</code></a>, then:</p>
       <ol>
        <li data-md>
         <p>If <var>ongoingNavigation</var> is not null, then:</p>
         <ol>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve②">Resolve</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑦">returned promise</a>.</p>
+          <p>If <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document④">is same document</a> is true, then:</p>
+          <ol>
+           <li data-md>
+            <p class="assertion">Assert: <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①②">traverse</a></code>".</p>
+           <li data-md>
+            <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve②">Resolve</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑥">returned promise</a>.</p>
+          </ol>
          <li data-md>
-          <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step④">cleanup step</a>.</p>
+          <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step③">cleanup step</a>.</p>
         </ol>
        <li data-md>
         <p>Return true.</p>
@@ -1610,12 +1615,12 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>If <var>ongoingNavigation</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-info" id="ref-for-dom-apphistorynavigateevent-info⑥">info</a></code> to <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info②">info</a>. Otherwise, initialize it to undefined.</p>
       <p class="note" role="note">At this point <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info③">info</a> is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑥">app history API navigation</a>. </p>
      <li data-md>
-      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑤">signal</a></code> to a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new⑤">new</a> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal⑤">AbortSignal</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑨">relevant Realm</a>.</p>
+      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑤">signal</a></code> to a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new④">new</a> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal⑤">AbortSignal</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑧">relevant Realm</a>.</p>
      <li data-md>
       <p>If all of the following are true:</p>
       <ul>
        <li data-md>
-        <p><var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document④">is same document</a> is true;</p>
+        <p><var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document⑤">is same document</a> is true;</p>
        <li data-md>
         <p><var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url④">URL</a> <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-equals" id="ref-for-concept-url-equals">equals</a> <var>currentURL</var> with <i><a data-link-type="dfn" href="https://url.spec.whatwg.org/#url-equals-exclude-fragments" id="ref-for-url-equals-exclude-fragments">exclude fragments</a></i> set to true; and</p>
        <li data-md>
@@ -1625,7 +1630,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>If <var>userInvolvement</var> is "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none③">none</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-userinitiated" id="ref-for-dom-apphistorynavigateevent-userinitiated②">userInitiated</a></code> to false. Otherwise, initialize it to true.</p>
      <li data-md>
-      <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-formdata" id="ref-for-dom-apphistorynavigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new⑥">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata⑤">FormData</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①⓪">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
+      <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-formdata" id="ref-for-dom-apphistorynavigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new⑤">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata⑤">FormData</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑨">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event①">ongoing navigate event</a> is null.</p>
      <li data-md>
@@ -1639,10 +1644,12 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">post-navigate event ongoing navigation signal</a> to <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑥">signal</a></code>.</p>
      <li data-md>
+      <p>If <var>ongoingNavigation</var> is not null, then set <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-fired-navigate-event" id="ref-for-app-history-api-navigation-fired-navigate-event②">fired navigate event</a> to true.</p>
+     <li data-md>
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document②">active Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑧">fully active</a>, then:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error③">Finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
+        <p><a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑤">Finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
        <li data-md>
         <p>Return false.</p>
       </ol>
@@ -1651,7 +1658,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>If <var>dispatchResult</var> is true:</p>
       <ol>
        <li data-md>
-        <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list①">navigation action promises list</a> is not empty and <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①②">traverse</a></code>":</p>
+        <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list①">navigation action promises list</a> is not empty and <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①③">traverse</a></code>":</p>
         <ol>
          <li data-md>
           <p>Let <var>isPush</var> be true if <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push④">push</a></code>"; otherwise, false.</p>
@@ -1661,19 +1668,19 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
           <p>Set <var>shouldContinue</var> to false.</p>
         </ol>
        <li data-md>
-        <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a> is not empty or <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document⑤">is same document</a> is true, then <a data-link-type="dfn" href="https://heycam.github.io/webidl/#wait-for-all" id="ref-for-wait-for-all">wait for all</a> of <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list③">navigation action promises list</a>, with the following success steps:</p>
+        <p>If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a> is not empty or <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document⑥">is same document</a> is true, then <a data-link-type="dfn" href="https://heycam.github.io/webidl/#wait-for-all" id="ref-for-wait-for-all">wait for all</a> of <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list③">navigation action promises list</a>, with the following success steps:</p>
         <ol>
          <li data-md>
           <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑦">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag">aborted flag</a> is set, then abort these steps.</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess①">navigatesuccess</a></code> at <var>appHistory</var>.</p>
+          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess②">navigatesuccess</a></code> at <var>appHistory</var>.</p>
          <li data-md>
           <p>If <var>ongoingNavigation</var> is non-null, then:</p>
           <ol>
            <li data-md>
-            <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve③">Resolve</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑧">returned promise</a> with undefined.</p>
+            <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve③">Resolve</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑦">returned promise</a> with undefined.</p>
            <li data-md>
-            <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step⑤">cleanup step</a>.</p>
+            <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step④">cleanup step</a>.</p>
           </ol>
         </ol>
         and the following failure steps given reason <var>rejectionReason</var>: 
@@ -1681,17 +1688,17 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
          <li data-md>
           <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑧">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag①">aborted flag</a> is set, then abort these steps.</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire①">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror①">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
+          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire①">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror②">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
          <li data-md>
           <p>If <var>ongoingNavigation</var> is non-null, then:</p>
           <ol>
            <li data-md>
-            <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject④">Reject</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑨">returned promise</a> with <var>rejectionReason</var>.</p>
+            <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject③">Reject</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑧">returned promise</a> with <var>rejectionReason</var>.</p>
            <li data-md>
-            <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step⑥">cleanup step</a>.</p>
+            <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step⑤">cleanup step</a>.</p>
           </ol>
         </ol>
-        <p class="note" role="note">If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list④">navigation action promises list</a> is non-empty, then <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith②⓪">respondWith()</a></code> was called and so we’re performing a same-document navigation, for which we want to fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess②">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror②">navigateerror</a></code> events, and resolve or reject the promise returned by the corresponding <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate⑥">appHistory.navigate()</a></code> call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask (by waiting for zero promises), or after the appropriate task in the traversal case. </p>
+        <p class="note" role="note">If <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list④">navigation action promises list</a> is non-empty, then <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-respondwith" id="ref-for-dom-apphistorynavigateevent-respondwith②⓪">respondWith()</a></code> was called and so we’re performing a same-document navigation, for which we want to fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess③">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror③">navigateerror</a></code> events, and resolve or reject the promise returned by the corresponding <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate⑥">appHistory.navigate()</a></code> call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask (by waiting for zero promises), or after the appropriate task in the traversal case. </p>
        <li data-md>
         <p>Otherwise:</p>
         <ol>
@@ -1701,14 +1708,14 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p class="note" role="note">This ensures that any call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate⑦">appHistory.navigate()</a></code> which triggered this algorithm does not overwrite the <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state③">app history state</a> of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry②">current entry</a> for cross-document navigations. </p>
       </ol>
      <li data-md>
-      <p>Otherwise, <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①③">traverse</a></code>", <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error④">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
-      <p class="note" role="note">If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①④">traverse</a></code>", then we will <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑤">finalize with an aborted navigation error</a> in <a data-link-type="dfn" href="#perform-an-app-history-traversal" id="ref-for-perform-an-app-history-traversal③">perform an app history traversal</a>. </p>
+      <p>Otherwise, <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①④">traverse</a></code>", <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑥">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
+      <p class="note" role="note">If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①⑤">traverse</a></code>", then we will <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑦">finalize with an aborted navigation error</a> in <a data-link-type="dfn" href="#perform-an-app-history-traversal" id="ref-for-perform-an-app-history-traversal③">perform an app history traversal</a>. </p>
      <li data-md>
       <p>Return <var>shouldContinue</var>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="finalize with an aborted navigation error">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</dfn> given an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②④">AppHistory</a></code> <var>appHistory</var>, an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑦">app history API navigation</a> or null <var>ongoingNavigation</var>, and an optional <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②④">DOMException</a></code> <var>error</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</dfn> given an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②④">AppHistory</a></code> <var>appHistory</var>, an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑦">app history API navigation</a> or null <var>ongoingNavigation</var>, and an optional <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②③">DOMException</a></code> <var>error</var>: 
     <ol>
      <li data-md>
       <p>Let <var>signal</var> be null.</p>
@@ -1723,40 +1730,30 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event⑦">ongoing navigate event</a> to null.</p>
       </ol>
      <li data-md>
-      <p>Otherwise:</p>
-      <ol>
-       <li data-md>
-        <p class="assertion">Assert: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">post-navigate event ongoing navigation signal</a> is not null.</p>
-       <li data-md>
-        <p>Set <var>signal</var> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">post-navigate event ongoing navigation signal</a>.</p>
-      </ol>
+      <p>Otherwise, set <var>signal</var> to <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">post-navigate event ongoing navigation signal</a>.</p>
      <li data-md>
-      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal④">post-navigate event ongoing navigation signal</a> to null.</p>
+      <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-post-navigate-event-ongoing-navigation-signal" id="ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">post-navigate event ongoing navigation signal</a> to null.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-to-be-set-serialized-state" id="ref-for-apphistory-to-be-set-serialized-state⑤">to-be-set serialized state</a> to null.</p>
       <p class="note" role="note">This ensures that any call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate⑧">appHistory.navigate()</a></code> which triggered this algorithm does not overwrite the <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state④">app history state</a> of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry③">current entry</a> for aborted navigations. </p>
      <li data-md>
-      <p>Let <var>promise</var> be null.</p>
+      <p>If <var>signal</var> is not null, then <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-signal-abort" id="ref-for-abortsignal-signal-abort②">signal abort</a> on <var>signal</var>.</p>
      <li data-md>
-      <p>If <var>ongoingNavigation</var> is non-null, then set <var>promise</var> to <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise①⓪">returned promise</a>.</p>
-     <li data-md>
-      <p>If <var>ongoingNavigation</var> is non-null, then perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step⑦">cleanup step</a>.</p>
-     <li data-md>
-      <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-signal-abort" id="ref-for-abortsignal-signal-abort②">Signal abort</a> on <var>signal</var>.</p>
-     <li data-md>
-      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask" id="ref-for-queue-a-microtask">Queue a microtask</a> on <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-agent" id="ref-for-relevant-agent">relevant agent</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop" id="ref-for-concept-agent-event-loop">event loop</a> to perform the following steps:</p>
+      <p>If <var>ongoingNavigation</var> is non-null, then:</p>
       <ol>
        <li data-md>
-        <p>If <var>error</var> was not given, then set <var>error</var> to a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new⑦">new</a> "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror①">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>, created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①①">relevant Realm</a>.</p>
+        <p>If <var>error</var> was not given, then set <var>error</var> to a <a data-link-type="dfn" href="https://heycam.github.io/webidl/#new" id="ref-for-new⑥">new</a> "<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#aborterror" id="ref-for-aborterror">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-DOMException" id="ref-for-idl-DOMException②④">DOMException</a></code>, created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①⓪">relevant Realm</a>.</p>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire②">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror③">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent①">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error①">error</a></code> initialized to <var>error</var>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message①">message</a></code> initialized to the value of <var>error</var>’s <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dom-domexception-message" id="ref-for-dom-domexception-message">message</a></code> property, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename①">filename</a></code> initialized to the empty string, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno①">lineno</a></code> and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno①">colno</a></code> initialized to 0.</p>
+        <p>If <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-fired-navigate-event" id="ref-for-app-history-api-navigation-fired-navigate-event③">fired navigate event</a> is true, then <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire②">fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror④">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent①">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error①">error</a></code> initialized to <var>error</var>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message①">message</a></code> initialized to the value of <var>error</var>’s <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#dom-domexception-message" id="ref-for-dom-domexception-message">message</a></code> property, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename①">filename</a></code> initialized to the empty string, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno①">lineno</a></code> and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno①">colno</a></code> initialized to 0.</p>
        <li data-md>
-        <p>If <var>promise</var> is non-null, then <a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject⑤">reject</a> it with <var>error</var>.</p>
+        <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject④">Reject</a> <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-returned-promise" id="ref-for-app-history-api-navigation-returned-promise⑨">returned promise</a> with <var>error</var>.</p>
+       <li data-md>
+        <p>Perform <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-cleanup-step" id="ref-for-app-history-api-navigation-cleanup-step⑥">cleanup step</a>.</p>
       </ol>
     </ol>
    </div>
-   <div class="algorithm" data-algorithm="inform app history about a canceled navigation">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inform-app-history-about-a-canceled-navigation">inform app history about a canceled navigation</dfn> in a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context">browsing context</a> <var>bc</var>: 
+   <div class="algorithm" data-algorithm="inform app history about canceling navigation">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inform-app-history-about-canceling-navigation">inform app history about canceling navigation</dfn> in a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context">browsing context</a> <var>bc</var>: 
     <ol>
      <li data-md>
       <p>Let <var>appHistory</var> be <var>bc</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-window" id="ref-for-active-window">active window</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history①">app history</a>.</p>
@@ -1772,14 +1769,23 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations⑥">ongoing traverse navigations</a>[<var>key</var>] exists, then set <var>ongoingNavigation</var> to <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations⑦">ongoing traverse navigations</a>[<var>key</var>].</p>
       </ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑥">Finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
+      <p><a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑧">Finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="inform app history about canceling traversals">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inform-app-history-about-canceling-traversals">inform app history about canceling traversals</dfn> in a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context①">browsing context</a> <var>bc</var>: 
+    <ol>
+     <li data-md>
+      <p>Let <var>appHistory</var> be <var>bc</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-window" id="ref-for-active-window①">active window</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history②">app history</a>.</p>
+     <li data-md>
+      <p>For each <var>ongoingTraversal</var> of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations⑧">ongoing traverse navigations</a>: <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑨">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingTraversal</var>.</p>
     </ol>
    </div>
    <p>A <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url③">URL</a> is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="rewritable">rewritable</dfn> relative to another <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url④">URL</a> if they differ in only the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path">path</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-query" id="ref-for-concept-url-query">query</a>, or <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment②">fragment</a> components.</p>
    <div class="example" id="example-rewritable-url">
     <a class="self-link" href="#example-rewritable-url"></a> <code>https://example.com/foo?bar#baz</code> is rewritable relative to <code>https://example.com/qux</code>. 
     <p>However, the concept is not the same as the two URLs' <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin">origins</a> being <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin④">the same</a>: <code>https://user:password@example.com/qux</code> is not rewritable relative to <code>https://example.com/qux</code>.</p>
-    <p>Similarly, <code>about:blank</code> or <code>blob:</code> URLs are not rewritable relative to <code>https:</code> URLs, despite there being cases where a <code>https</code>:-<a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url②">URL</a> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document④">Document</a></code> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin⑤">same origin</a> with an <code>about:blank</code> or <code>blob:</code>-derived <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑤">Document</a></code>.</p>
+    <p>Similarly, <code>about:blank</code> or <code>blob:</code> URLs are not rewritable relative to <code>https:</code> URLs, despite there being cases where a <code>https</code>:-<a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url②">URL</a> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑤">Document</a></code> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin⑤">same origin</a> with an <code>about:blank</code> or <code>blob:</code>-derived <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑥">Document</a></code>.</p>
    </div>
    <h2 class="heading settled" data-level="3" id="apphistoryentry-class"><span class="secno">3. </span><span class="content">App history entries</span><a class="self-link" href="#apphistoryentry-class"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed③"><c- g>Exposed</c-></a>=<c- n>Window</c->]
@@ -1812,7 +1818,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>The index of this app history entry within <code class="idl"><a data-link-type="idl" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries③">appHistory.entries()</a></code>, or −1 if the entry is not in the app history list. </p>
     <dt><code><var>entry</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-samedocument" id="ref-for-dom-apphistoryentry-samedocument①">sameDocument</a></code></code> 
     <dd>
-     <p>Indicates whether or not this app history entry is for the same <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑥">Document</a></code> as the current <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-document-2" id="ref-for-dom-document-2①">document</a></code> value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations. </p>
+     <p>Indicates whether or not this app history entry is for the same <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑦">Document</a></code> as the current <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-document-2" id="ref-for-dom-document-2①">document</a></code> value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations. </p>
     <dt><code><var>state</var> = <var>entry</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-getstate" id="ref-for-dom-apphistoryentry-getstate②">getState</a></code>()</code> 
     <dd>
      <p>Returns the deserialization of the state stored in this entry, which was added to the entry using <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate⑨">appHistory.navigate()</a></code>. This state survives session restores. </p>
@@ -1927,7 +1933,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid②">navigate to a fragment</a> algorithm to take a new <var>userInvolvement</var> argument. Then, update the call to it from <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑧">navigate</a> to set <i><a data-link-type="dfn" href="#navigate-userinvolvement" id="ref-for-navigate-userinvolvement①">userInvolvement</a></i> to this <var>userInvolvement</var> value.</p>
    <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta">traverse the history by a delta</a> argument to take an optional named argument <dfn class="dfn-paneled" data-dfn-for="traverse the history by a delta" data-dfn-type="dfn" data-noexport id="traverse-the-history-by-a-delta-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none⑥">none</a></code>"). Then, update the paragraph talking about user-initiated navigation as follows:</p>
    <blockquote>
-     When the user navigates through a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context①">browsing context</a>, e.g. using a browser’s back and forward buttons, the user agent must <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta①">traverse the history by a delta</a> with a delta equivalent to the action specified by the user
+     When the user navigates through a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context②">browsing context</a>, e.g. using a browser’s back and forward buttons, the user agent must <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta①">traverse the history by a delta</a> with a delta equivalent to the action specified by the user
     <del> and</del>
     <ins>,</ins>
      the browsing context being operated on
@@ -1969,7 +1975,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps" id="ref-for-shared-history-push/replace-state-steps">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps②">URL and history update steps</a>. 
     <ol>
      <li data-md>
-      <p>Let <var>appHistory</var> be <var>history</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑨">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history②">app history</a>.</p>
+      <p>Let <var>appHistory</var> be <var>history</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑨">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history③">app history</a>.</p>
      <li data-md>
       <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push⑤">push</a></code>" if <var>isPush</var> is true, and "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace④">replace</a></code>" otherwise.</p>
      <li data-md>
@@ -1982,7 +1988,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid③">navigate to a fragment</a> algorithm by prepending the following steps. Recall that per <a href="#user-initiated-patches">§ 4.2 Browser UI/user-initiated patches</a> we have introduced a <var>userInvolvement</var> argument. 
     <ol>
      <li data-md>
-      <p>Let <var>appHistory</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry④">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document②">document</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③⓪">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history③">app history</a>.</p>
+      <p>Let <var>appHistory</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry④">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document②">document</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③⓪">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history④">app history</a>.</p>
      <li data-md>
       <p>Let <var>navigationType</var> be the result of <a data-link-type="dfn" href="#convert-a-history-handling-behavior-to-a-navigation-type" id="ref-for-convert-a-history-handling-behavior-to-a-navigation-type">converting a history handling behavior to a navigation type</a> given <var>historyHandling</var>.</p>
      <li data-md>
@@ -1995,7 +2001,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①①">navigate</a> algorithm to take an optional <dfn class="dfn-paneled" data-dfn-for="navigate" data-dfn-type="dfn" data-noexport id="navigate-apphistorystate"><var>appHistoryState</var></dfn> argument (default null). Then, insert the following steps right before the step which goes <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel①">in parallel</a>. (Recall that per <a href="#user-initiated-patches">§ 4.2 Browser UI/user-initiated patches</a> we have introduced <var>userInvolvement</var> argument, and per <a href="#form-patches">§ 4.1 Form submission patches</a> we have introduced an <var>entryList</var> argument.) 
     <ol>
      <li data-md>
-      <p>Let <var>appHistory</var> be <var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-window" id="ref-for-active-window①">active window</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history④">app history</a>.</p>
+      <p>Let <var>appHistory</var> be <var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-window" id="ref-for-active-window②">active window</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑤">app history</a>.</p>
      <li data-md>
       <p>If none of the following are true:</p>
       <ul>
@@ -2006,7 +2012,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p><var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document③">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain①">same origin-domain</a> with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context" id="ref-for-source-browsing-context②">source browsing context</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document④">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin①">origin</a></p>
        <li data-md>
-        <p><var>browsingContext</var>’s only entry in its <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history②">session history</a> is the <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑦">Document</a></code> that was added when <var>browsingContext</var> was <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context">created</a></p>
+        <p><var>browsingContext</var>’s only entry in its <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history②">session history</a> is the <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑧">Document</a></code> that was added when <var>browsingContext</var> was <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context">created</a></p>
       </ul>
       <p>then:</p>
       <ol>
@@ -2089,7 +2095,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p>If <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> is not equal to <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document①">active document</a>, and <var>initiatorOrigin</var> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain③">same origin-domain</a> with <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document②">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a>, then abort these steps.</p>
        <li data-md>
-        <p>Let <var>appHistory</var> be <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document③">active document</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③②">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑤">app history</a>.</p>
+        <p>Let <var>appHistory</var> be <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document③">active document</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③②">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑥">app history</a>.</p>
        <li data-md>
         <p>Let <var>result</var> be the result of <a data-link-type="dfn" href="#fire-a-traversal-navigate-event" id="ref-for-fire-a-traversal-navigate-event">firing a traversal navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-destinationentry" id="ref-for-fire-a-traversal-navigate-event-destinationentry">destinationEntry</a></i> set to <var>destinationEntry</var> and <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-userinvolvement" id="ref-for-fire-a-traversal-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>.</p>
        <li data-md>
@@ -2137,22 +2143,50 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history①">traverse the history</a> algorithm by adding the following step before the final step which fires various events: 
     <ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries①">Update the entries</a> of <var>newDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③③">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑥">app history</a>.</p>
+      <p><a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries①">Update the entries</a> of <var>newDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③③">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑦">app history</a>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="URL and history update steps update patch">
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps④">URL and history update steps</a> by appending the following final step: 
     <ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries②">Update the entries</a> of <var>document</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③④">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑦">app history</a>.</p>
+      <p><a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries②">Update the entries</a> of <var>document</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③④">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑧">app history</a>.</p>
     </ol>
    </div>
-   <p class="note" role="note">We do not <a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries③">update the entries</a> when initially <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context①">creating a new browsing context</a>, as we intentionally don’t want to include the initial <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑧">Document</a></code> in any app history entry list. </p>
+   <p class="note" role="note">We do not <a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries③">update the entries</a> when initially <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context①">creating a new browsing context</a>, as we intentionally don’t want to include the initial <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑨">Document</a></code> in any app history entry list. </p>
    <h2 class="heading settled" data-level="6" id="other-patches"><span class="secno">6. </span><span class="content">Other patches</span><a class="self-link" href="#other-patches"></a></h2>
-   <h3 class="heading settled" data-level="6.1" id="cancel-navigation"><span class="secno">6.1. </span><span class="content">Canceling navigation</span><a class="self-link" href="#cancel-navigation"></a></h3>
-   <p>The existing HTML specification discusses canceling a navigation in a few places. However, the process is not very well-defined. We may be able to make it more rigorous, after the <a href="https://github.com/whatwg/html/issues/5767">session history rewrite</a> lands.</p>
-   <div class="algorithm" data-algorithm="navigation canceling patch"> The main addition of app history is that any time navigation of a given <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context②">browsing context</a> <var>bc</var> is canceled, the user agent must <a data-link-type="dfn" href="#inform-app-history-about-a-canceled-navigation" id="ref-for-inform-app-history-about-a-canceled-navigation">inform app history about a canceled navigation</a> given <var>bc</var>. </div>
-   <p class="note" role="note">This includes navigation cancelation induced by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#stop-document-loading" id="ref-for-stop-document-loading">stop document loading</a> algorithm, which is invoked by user interface elements such as a stop button and by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop">window.stop()</a></code>. (However, note <a href="https://github.com/whatwg/html/issues/6905">whatwg/html#6905</a>, which notes that in reality sometimes <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop①">window.stop()</a></code> does not cancel navigations.)</p>
+   <h3 class="heading settled" data-level="6.1" id="cancel-navigation"><span class="secno">6.1. </span><span class="content">Canceling navigation and traversals</span><a class="self-link" href="#cancel-navigation"></a></h3>
+   <p>The existing HTML specification discusses canceling a navigation and traverals in a few places. However, the process is not very well-defined, and per <a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a>, is not very interoperable. We plan to make it more rigorous, after the <a href="https://github.com/whatwg/html/issues/5767">session history rewrite</a> lands.</p>
+   <p>Specifically, the spec uses a few phrases:</p>
+   <ul>
+    <li data-md>
+     <p>"Cancel any existing but not-yet-mature attempts to navigate a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context③">browsing context</a>", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①③">navigate</a> algorithm and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta④">traverse the history by a delta</a> algorithm. This cancels any ongoing navigations, including history traversal navigations which have made their way back into the main event loop to perform an "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update④"><code>entry update</code></a>" navigation.</p>
+    <li data-md>
+     <p>"Cancel that navigation", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#stop-document-loading" id="ref-for-stop-document-loading">stop document loading</a> algorithm. This is likely supposed to work the same as the above?</p>
+    <li data-md>
+     <p>"Remove any tasks queued by the history traversal task source that are associated with any Document objects in the top-level browsing context’s document family." This cancels queued-up traversals that have not yet made their way back to the main event loop. This is currently called from any same-document navigations, i.e. the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps⑤">URL and history update steps</a> and <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑧">navigating to a fragment</a>, as well as as part of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history②">traverse the history</a> for cross-document traversals.</p>
+   </ul>
+   <p>We assume that the eventual model will retain essentially these two primitives: canceling not-yet-mature navigations, and canceling queued-up traversals. When exactly these two operations will be invoked is dependent on how the discussion goes in <a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a>.</p>
+   <hr>
+   <p>App history introduces a new complication here, which is that a navigation might have <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#concept-navigate-mature" id="ref-for-concept-navigate-mature">matured</a> but still be "ongoing", in the sense of <a href="#ongoing-state">§ 1.2 Ongoing navigation tracking</a>. That is, consider a case such as:</p>
+<pre class="highlight">appHistory<c- p>.</c->addEventListener<c- p>(</c-><c- u>"navigate"</c-><c- p>,</c-> e <c- p>=></c-> <c- p>{</c->
+  e<c- p>.</c->respondWith<c- p>(</c-><c- k>new</c-> Promise<c- p>(</c->r <c- p>=></c-> setTimeout<c- p>(</c->r<c- p>,</c-> <c- mf>1</c->_000<c- p>)));</c->
+  e<c- p>.</c->signal<c- p>.</c->addEventListener<c- p>(</c-><c- u>"abort"</c-><c- p>,</c-> <c- p>()</c-> <c- p>=></c-> <c- p>{</c-> <c- p>...</c-> <c- p>});</c->
+<c- p>});</c->
+
+<c- a>const</c-> p <c- o>=</c-> appHistory<c- p>.</c->navigate<c- p>(</c-><c- u>"#1"</c-><c- p>);</c->
+
+setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- mf>500</c-><c- p>);</c->
+</pre>
+   <p>Without the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②③">navigate</a></code> event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop">stop()</a></code> call does nothing. But because we have used the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②④">navigate</a></code> handler to indicate that the navigation is still ongoing, we want the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop①">stop()</a></code> call to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error①⓪">finalize that navigation with an aborted navigation error</a>, in particular causing <code>p</code> to reject and the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#eventdef-abortsignal-abort" id="ref-for-eventdef-abortsignal-abort">abort</a></code> event to fire on <code>e.signal</code>.</p>
+   <hr>
+   <p>The integration is then as follows:</p>
+   <ul>
+    <li data-md>
+     <p>Wherever the spec ends up canceling not-yet-mature navigations for a browsing context <var>bc</var>, we also <a data-link-type="dfn" href="#inform-app-history-about-canceling-navigation" id="ref-for-inform-app-history-about-canceling-navigation">inform app history about canceling navigation</a> in <var>bc</var>. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)</p>
+    <li data-md>
+     <p>Wherever the spec ends up canceling queued-up traversals for a browsing context <var>bc</var>, we also <a data-link-type="dfn" href="#inform-app-history-about-canceling-traversals" id="ref-for-inform-app-history-about-canceling-traversals">inform app history about canceling traversals</a> in <var>bc</var>. (Regardless of whether or not there are any traversals queued up.)</p>
+   </ul>
   </main>
 <script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
@@ -2209,6 +2243,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <li><a href="#finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</a><span>, in § 2.3</span>
    <li><a href="#fire-a-push-or-replace-navigate-event">fire a push or replace navigate event</a><span>, in § 2.3</span>
    <li><a href="#fire-a-traversal-navigate-event">fire a traversal navigate event</a><span>, in § 2.3</span>
+   <li><a href="#app-history-api-navigation-fired-navigate-event">fired navigate event</a><span>, in § 1.2</span>
    <li><a href="#fire-traversal-navigate-events">fire traversal navigate events</a><span>, in § 4.4</span>
    <li>
     formData
@@ -2256,7 +2291,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li><a href="#app-history-api-navigation-info">dfn for app history API navigation</a><span>, in § 1.2</span>
      <li><a href="#dom-apphistorynavigateeventinit-info">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#inform-app-history-about-a-canceled-navigation">inform app history about a canceled navigation</a><span>, in § 2.3</span>
+   <li><a href="#inform-app-history-about-canceling-navigation">inform app history about canceling navigation</a><span>, in § 2.3</span>
+   <li><a href="#inform-app-history-about-canceling-traversals">inform app history about canceling traversals</a><span>, in § 2.3</span>
    <li><a href="#inner-navigate-event-firing-algorithm">inner navigate event firing algorithm</a><span>, in § 2.3</span>
    <li><a href="#apphistorydestination-is-same-document">is same document</a><span>, in § 2.2</span>
    <li><a href="#fire-a-push-or-replace-navigate-event-issamedocument">isSameDocument</a><span>, in § 2.3</span>
@@ -2370,10 +2406,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-document">1.1. Introspecting the app history entry list</a> <a href="#ref-for-document①">(2)</a> <a href="#ref-for-document②">(3)</a>
     <li><a href="#ref-for-document③">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-document④">2.3. Firing the event</a> <a href="#ref-for-document⑤">(2)</a>
-    <li><a href="#ref-for-document⑥">3. App history entries</a>
-    <li><a href="#ref-for-document⑦">4.3. Navigation algorithm updates</a>
-    <li><a href="#ref-for-document⑧">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-document④">2.3. Firing the event</a> <a href="#ref-for-document⑤">(2)</a> <a href="#ref-for-document⑥">(3)</a>
+    <li><a href="#ref-for-document⑦">3. App history entries</a>
+    <li><a href="#ref-for-document⑧">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-document⑨">5.5. Updating the AppHistory object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-event">
@@ -2394,6 +2430,12 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-eventtarget">1. The AppHistory class</a>
     <li><a href="#ref-for-eventtarget①">3. App history entries</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-eventdef-abortsignal-abort">
+   <a href="https://dom.spec.whatwg.org/#eventdef-abortsignal-abort">https://dom.spec.whatwg.org/#eventdef-abortsignal-abort</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-eventdef-abortsignal-abort">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-abortsignal-aborted-flag">
@@ -2541,8 +2583,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="term-for-active-window">
    <a href="https://html.spec.whatwg.org/multipage/browsers.html#active-window">https://html.spec.whatwg.org/multipage/browsers.html#active-window</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-active-window">2.3. Firing the event</a>
-    <li><a href="#ref-for-active-window①">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-active-window">2.3. Firing the event</a> <a href="#ref-for-active-window①">(2)</a>
+    <li><a href="#ref-for-active-window②">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-allowed-to-navigate">
@@ -2671,6 +2713,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-hh-entry-update">2.3. Firing the event</a>
     <li><a href="#ref-for-hh-entry-update①">4.3. Navigation algorithm updates</a> <a href="#ref-for-hh-entry-update②">(2)</a> <a href="#ref-for-hh-entry-update③">(3)</a>
+    <li><a href="#ref-for-hh-entry-update④">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-error">
@@ -2695,12 +2738,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes">https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-idl-attributes</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-event-handler-idl-attributes">1.5. Event handlers</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-agent-event-loop">
-   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop">https://html.spec.whatwg.org/multipage/webappapis.html#concept-agent-event-loop</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-agent-event-loop">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-exceptions-enabled">
@@ -2816,6 +2853,12 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-dom-errorevent-lineno">2.3. Firing the event</a> <a href="#ref-for-dom-errorevent-lineno①">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-concept-navigate-mature">
+   <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#concept-navigate-mature">https://html.spec.whatwg.org/multipage/browsing-the-web.html#concept-navigate-mature</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-navigate-mature">6.1. Canceling navigation and traversals</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-message">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message">https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message</a><b>Referenced in:</b>
    <ul>
@@ -2835,6 +2878,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-navigate②">4.1. Form submission patches</a> <a href="#ref-for-navigate③">(2)</a> <a href="#ref-for-navigate④">(3)</a>
     <li><a href="#ref-for-navigate⑤">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-navigate⑥">(2)</a> <a href="#ref-for-navigate⑦">(3)</a> <a href="#ref-for-navigate⑧">(4)</a> <a href="#ref-for-navigate⑨">(5)</a> <a href="#ref-for-navigate①⓪">(6)</a>
     <li><a href="#ref-for-navigate①①">4.3. Navigation algorithm updates</a> <a href="#ref-for-navigate①②">(2)</a>
+    <li><a href="#ref-for-navigate①③">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-navigate-fragid">
@@ -2846,6 +2890,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-navigate-fragid③">4.3. Navigation algorithm updates</a> <a href="#ref-for-navigate-fragid④">(2)</a> <a href="#ref-for-navigate-fragid⑤">(3)</a>
     <li><a href="#ref-for-navigate-fragid⑥">5.3. Carrying over the app history state</a>
     <li><a href="#ref-for-navigate-fragid⑦">5.4. Tracking the origin member</a>
+    <li><a href="#ref-for-navigate-fragid⑧">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-navigation-navigationtype">
@@ -2891,18 +2936,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-queue-a-global-task">4.4. History traversal updates</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-queue-a-microtask">
-   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask">https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-microtask</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-queue-a-microtask">2.3. Firing the event</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-relevant-agent">
-   <a href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-agent">https://html.spec.whatwg.org/multipage/webappapis.html#relevant-agent</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-relevant-agent">2.3. Firing the event</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-concept-relevant-global">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global">https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global</a><b>Referenced in:</b>
    <ul>
@@ -2922,9 +2955,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-concept-relevant-realm">1.1. Introspecting the app history entry list</a>
     <li><a href="#ref-for-concept-relevant-realm①">1.2. Ongoing navigation tracking</a> <a href="#ref-for-concept-relevant-realm②">(2)</a>
-    <li><a href="#ref-for-concept-relevant-realm③">1.3. Navigating</a>
-    <li><a href="#ref-for-concept-relevant-realm④">1.4. Traversing</a>
-    <li><a href="#ref-for-concept-relevant-realm⑤">2.3. Firing the event</a> <a href="#ref-for-concept-relevant-realm⑥">(2)</a> <a href="#ref-for-concept-relevant-realm⑦">(3)</a> <a href="#ref-for-concept-relevant-realm⑧">(4)</a> <a href="#ref-for-concept-relevant-realm⑨">(5)</a> <a href="#ref-for-concept-relevant-realm①⓪">(6)</a> <a href="#ref-for-concept-relevant-realm①①">(7)</a>
+    <li><a href="#ref-for-concept-relevant-realm③">1.4. Traversing</a>
+    <li><a href="#ref-for-concept-relevant-realm④">2.3. Firing the event</a> <a href="#ref-for-concept-relevant-realm⑤">(2)</a> <a href="#ref-for-concept-relevant-realm⑥">(3)</a> <a href="#ref-for-concept-relevant-realm⑦">(4)</a> <a href="#ref-for-concept-relevant-realm⑧">(5)</a> <a href="#ref-for-concept-relevant-realm⑨">(6)</a> <a href="#ref-for-concept-relevant-realm①⓪">(7)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-relevant-settings-object">
@@ -3066,13 +3098,13 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="term-for-stop-document-loading">
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#stop-document-loading">https://html.spec.whatwg.org/multipage/browsing-the-web.html#stop-document-loading</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-stop-document-loading">6.1. Canceling navigation</a>
+    <li><a href="#ref-for-stop-document-loading">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-window-stop">
    <a href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop">https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-window-stop">6.1. Canceling navigation</a> <a href="#ref-for-dom-window-stop①">(2)</a>
+    <li><a href="#ref-for-dom-window-stop">6.1. Canceling navigation and traversals</a> <a href="#ref-for-dom-window-stop①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-submit-body">
@@ -3106,6 +3138,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-traverse-the-history">5.4. Tracking the origin member</a>
     <li><a href="#ref-for-traverse-the-history①">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-traverse-the-history②">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-traverse-the-history-by-a-delta">
@@ -3114,6 +3147,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-traverse-the-history-by-a-delta">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-traverse-the-history-by-a-delta①">(2)</a>
     <li><a href="#ref-for-traverse-the-history-by-a-delta②">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-traverse-the-history-by-a-delta③">4.4. History traversal updates</a>
+    <li><a href="#ref-for-traverse-the-history-by-a-delta④">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-unload-counter">
@@ -3145,6 +3179,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-url-and-history-update-steps②">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-url-and-history-update-steps③">5.4. Tracking the origin member</a>
     <li><a href="#ref-for-url-and-history-update-steps④">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-url-and-history-update-steps⑤">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-list-append">
@@ -3330,8 +3365,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="term-for-aborterror">
    <a href="https://heycam.github.io/webidl/#aborterror">https://heycam.github.io/webidl/#aborterror</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-aborterror">1.3. Navigating</a>
-    <li><a href="#ref-for-aborterror①">2.3. Firing the event</a>
+    <li><a href="#ref-for-aborterror">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-ArrayBuffer">
@@ -3343,10 +3377,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="term-for-idl-DOMException">
    <a href="https://heycam.github.io/webidl/#idl-DOMException">https://heycam.github.io/webidl/#idl-DOMException</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-idl-DOMException">1.3. Navigating</a> <a href="#ref-for-idl-DOMException①">(2)</a> <a href="#ref-for-idl-DOMException②">(3)</a> <a href="#ref-for-idl-DOMException③">(4)</a> <a href="#ref-for-idl-DOMException④">(5)</a> <a href="#ref-for-idl-DOMException⑤">(6)</a>
-    <li><a href="#ref-for-idl-DOMException⑥">1.4. Traversing</a> <a href="#ref-for-idl-DOMException⑦">(2)</a> <a href="#ref-for-idl-DOMException⑧">(3)</a> <a href="#ref-for-idl-DOMException⑨">(4)</a> <a href="#ref-for-idl-DOMException①⓪">(5)</a> <a href="#ref-for-idl-DOMException①①">(6)</a> <a href="#ref-for-idl-DOMException①②">(7)</a> <a href="#ref-for-idl-DOMException①③">(8)</a> <a href="#ref-for-idl-DOMException①④">(9)</a> <a href="#ref-for-idl-DOMException①⑤">(10)</a> <a href="#ref-for-idl-DOMException①⑥">(11)</a>
-    <li><a href="#ref-for-idl-DOMException①⑦">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-idl-DOMException①⑧">(2)</a> <a href="#ref-for-idl-DOMException①⑨">(3)</a> <a href="#ref-for-idl-DOMException②⓪">(4)</a> <a href="#ref-for-idl-DOMException②①">(5)</a> <a href="#ref-for-idl-DOMException②②">(6)</a> <a href="#ref-for-idl-DOMException②③">(7)</a>
-    <li><a href="#ref-for-idl-DOMException②④">2.3. Firing the event</a> <a href="#ref-for-idl-DOMException②⑤">(2)</a>
+    <li><a href="#ref-for-idl-DOMException">1.3. Navigating</a> <a href="#ref-for-idl-DOMException①">(2)</a> <a href="#ref-for-idl-DOMException②">(3)</a> <a href="#ref-for-idl-DOMException③">(4)</a> <a href="#ref-for-idl-DOMException④">(5)</a>
+    <li><a href="#ref-for-idl-DOMException⑤">1.4. Traversing</a> <a href="#ref-for-idl-DOMException⑥">(2)</a> <a href="#ref-for-idl-DOMException⑦">(3)</a> <a href="#ref-for-idl-DOMException⑧">(4)</a> <a href="#ref-for-idl-DOMException⑨">(5)</a> <a href="#ref-for-idl-DOMException①⓪">(6)</a> <a href="#ref-for-idl-DOMException①①">(7)</a> <a href="#ref-for-idl-DOMException①②">(8)</a> <a href="#ref-for-idl-DOMException①③">(9)</a> <a href="#ref-for-idl-DOMException①④">(10)</a> <a href="#ref-for-idl-DOMException①⑤">(11)</a>
+    <li><a href="#ref-for-idl-DOMException①⑥">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-idl-DOMException①⑦">(2)</a> <a href="#ref-for-idl-DOMException①⑧">(3)</a> <a href="#ref-for-idl-DOMException①⑨">(4)</a> <a href="#ref-for-idl-DOMException②⓪">(5)</a> <a href="#ref-for-idl-DOMException②①">(6)</a> <a href="#ref-for-idl-DOMException②②">(7)</a>
+    <li><a href="#ref-for-idl-DOMException②③">2.3. Firing the event</a> <a href="#ref-for-idl-DOMException②④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-DOMString">
@@ -3458,18 +3492,16 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <a href="https://heycam.github.io/webidl/#new">https://heycam.github.io/webidl/#new</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-new">1.1. Introspecting the app history entry list</a>
-    <li><a href="#ref-for-new①">1.3. Navigating</a>
-    <li><a href="#ref-for-new②">1.4. Traversing</a>
-    <li><a href="#ref-for-new③">2.3. Firing the event</a> <a href="#ref-for-new④">(2)</a> <a href="#ref-for-new⑤">(3)</a> <a href="#ref-for-new⑥">(4)</a> <a href="#ref-for-new⑦">(5)</a>
+    <li><a href="#ref-for-new①">1.4. Traversing</a>
+    <li><a href="#ref-for-new②">2.3. Firing the event</a> <a href="#ref-for-new③">(2)</a> <a href="#ref-for-new④">(3)</a> <a href="#ref-for-new⑤">(4)</a> <a href="#ref-for-new⑥">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-reject">
    <a href="https://heycam.github.io/webidl/#reject">https://heycam.github.io/webidl/#reject</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-reject">1.2. Ongoing navigation tracking</a> <a href="#ref-for-reject①">(2)</a>
-    <li><a href="#ref-for-reject②">1.3. Navigating</a>
-    <li><a href="#ref-for-reject③">1.4. Traversing</a>
-    <li><a href="#ref-for-reject④">2.3. Firing the event</a> <a href="#ref-for-reject⑤">(2)</a>
+    <li><a href="#ref-for-reject②">1.4. Traversing</a>
+    <li><a href="#ref-for-reject③">2.3. Firing the event</a> <a href="#ref-for-reject④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-resolve">
@@ -3535,6 +3567,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li><span class="dfn-paneled" id="term-for-event">Event</span>
      <li><span class="dfn-paneled" id="term-for-dictdef-eventinit">EventInit</span>
      <li><span class="dfn-paneled" id="term-for-eventtarget">EventTarget</span>
+     <li><span class="dfn-paneled" id="term-for-eventdef-abortsignal-abort">abort</span>
      <li><span class="dfn-paneled" id="term-for-abortsignal-aborted-flag">aborted flag</span>
      <li><span class="dfn-paneled" id="term-for-eventtarget-activation-behavior">activation behavior</span>
      <li><span class="dfn-paneled" id="term-for-dom-event-cancelable">cancelable</span>
@@ -3587,7 +3620,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li><span class="dfn-paneled" id="term-for-event-handlers">event handler</span>
      <li><span class="dfn-paneled" id="term-for-event-handler-event-type">event handler event type</span>
      <li><span class="dfn-paneled" id="term-for-event-handler-idl-attributes">event handler idl attribute</span>
-     <li><span class="dfn-paneled" id="term-for-concept-agent-event-loop">event loop</span>
      <li><span class="dfn-paneled" id="term-for-exceptions-enabled">exceptionsenabled</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-filename">filename</span>
      <li><span class="dfn-paneled" id="term-for-following-hyperlinks-2">follow the hyperlink</span>
@@ -3605,6 +3637,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li><span class="dfn-paneled" id="term-for-uhus-ispush">ispush</span>
      <li><span class="dfn-paneled" id="term-for-joint-session-history">joint session history</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-lineno">lineno</span>
+     <li><span class="dfn-paneled" id="term-for-concept-navigate-mature">matured</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-message">message</span>
      <li><span class="dfn-paneled" id="term-for-navigable">navigable</span>
      <li><span class="dfn-paneled" id="term-for-navigate">navigate</span>
@@ -3616,8 +3649,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li><span class="dfn-paneled" id="term-for-plan-to-navigate">plan to navigate</span>
      <li><span class="dfn-paneled" id="term-for-dom-history-pushstate">pushState(data, unused)</span>
      <li><span class="dfn-paneled" id="term-for-queue-a-global-task">queue a global task</span>
-     <li><span class="dfn-paneled" id="term-for-queue-a-microtask">queue a microtask</span>
-     <li><span class="dfn-paneled" id="term-for-relevant-agent">relevant agent</span>
      <li><span class="dfn-paneled" id="term-for-concept-relevant-global">relevant global object</span>
      <li><span class="dfn-paneled" id="term-for-concept-relevant-realm">relevant realm</span>
      <li><span class="dfn-paneled" id="term-for-relevant-settings-object">relevant settings object</span>
@@ -3855,10 +3886,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <b><a href="#window-app-history">#window-app-history</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-window-app-history">1. The AppHistory class</a>
-    <li><a href="#ref-for-window-app-history①">2.3. Firing the event</a>
-    <li><a href="#ref-for-window-app-history②">4.3. Navigation algorithm updates</a> <a href="#ref-for-window-app-history③">(2)</a> <a href="#ref-for-window-app-history④">(3)</a>
-    <li><a href="#ref-for-window-app-history⑤">4.4. History traversal updates</a>
-    <li><a href="#ref-for-window-app-history⑥">5.5. Updating the AppHistory object</a> <a href="#ref-for-window-app-history⑦">(2)</a>
+    <li><a href="#ref-for-window-app-history①">2.3. Firing the event</a> <a href="#ref-for-window-app-history②">(2)</a>
+    <li><a href="#ref-for-window-app-history③">4.3. Navigation algorithm updates</a> <a href="#ref-for-window-app-history④">(2)</a> <a href="#ref-for-window-app-history⑤">(3)</a>
+    <li><a href="#ref-for-window-app-history⑥">4.4. History traversal updates</a>
+    <li><a href="#ref-for-window-app-history⑦">5.5. Updating the AppHistory object</a> <a href="#ref-for-window-app-history⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-window-apphistory">
@@ -4024,14 +4055,14 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <ul>
     <li><a href="#ref-for-apphistory-ongoing-traverse-navigations">1.2. Ongoing navigation tracking</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations①">(2)</a>
     <li><a href="#ref-for-apphistory-ongoing-traverse-navigations②">1.4. Traversing</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations③">(2)</a>
-    <li><a href="#ref-for-apphistory-ongoing-traverse-navigations④">2.3. Firing the event</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑤">(2)</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑥">(3)</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑦">(4)</a>
+    <li><a href="#ref-for-apphistory-ongoing-traverse-navigations④">2.3. Firing the event</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑤">(2)</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑥">(3)</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑦">(4)</a> <a href="#ref-for-apphistory-ongoing-traverse-navigations⑧">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistory-post-navigate-event-ongoing-navigation-signal">
    <b><a href="#apphistory-post-navigate-event-ongoing-navigation-signal">#apphistory-post-navigate-event-ongoing-navigation-signal</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal">1.2. Ongoing navigation tracking</a>
-    <li><a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">2.3. Firing the event</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">(2)</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">(3)</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal④">(4)</a>
+    <li><a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal①">2.3. Firing the event</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal②">(2)</a> <a href="#ref-for-apphistory-post-navigate-event-ongoing-navigation-signal③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="app-history-api-navigation">
@@ -4052,18 +4083,24 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <b><a href="#app-history-api-navigation-returned-promise">#app-history-api-navigation-returned-promise</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-app-history-api-navigation-returned-promise">1.2. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-returned-promise①">(2)</a>
-    <li><a href="#ref-for-app-history-api-navigation-returned-promise②">1.3. Navigating</a> <a href="#ref-for-app-history-api-navigation-returned-promise③">(2)</a>
-    <li><a href="#ref-for-app-history-api-navigation-returned-promise④">1.4. Traversing</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑤">(2)</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑥">(3)</a>
-    <li><a href="#ref-for-app-history-api-navigation-returned-promise⑦">2.3. Firing the event</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑧">(2)</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑨">(3)</a> <a href="#ref-for-app-history-api-navigation-returned-promise①⓪">(4)</a>
+    <li><a href="#ref-for-app-history-api-navigation-returned-promise②">1.3. Navigating</a>
+    <li><a href="#ref-for-app-history-api-navigation-returned-promise③">1.4. Traversing</a> <a href="#ref-for-app-history-api-navigation-returned-promise④">(2)</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑤">(3)</a>
+    <li><a href="#ref-for-app-history-api-navigation-returned-promise⑥">2.3. Firing the event</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑦">(2)</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑧">(3)</a> <a href="#ref-for-app-history-api-navigation-returned-promise⑨">(4)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="app-history-api-navigation-fired-navigate-event">
+   <b><a href="#app-history-api-navigation-fired-navigate-event">#app-history-api-navigation-fired-navigate-event</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-app-history-api-navigation-fired-navigate-event">1.2. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-fired-navigate-event①">(2)</a>
+    <li><a href="#ref-for-app-history-api-navigation-fired-navigate-event②">2.3. Firing the event</a> <a href="#ref-for-app-history-api-navigation-fired-navigate-event③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="app-history-api-navigation-cleanup-step">
    <b><a href="#app-history-api-navigation-cleanup-step">#app-history-api-navigation-cleanup-step</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-app-history-api-navigation-cleanup-step">1.2. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-cleanup-step①">(2)</a>
-    <li><a href="#ref-for-app-history-api-navigation-cleanup-step②">1.3. Navigating</a>
-    <li><a href="#ref-for-app-history-api-navigation-cleanup-step③">1.4. Traversing</a>
-    <li><a href="#ref-for-app-history-api-navigation-cleanup-step④">2.3. Firing the event</a> <a href="#ref-for-app-history-api-navigation-cleanup-step⑤">(2)</a> <a href="#ref-for-app-history-api-navigation-cleanup-step⑥">(3)</a> <a href="#ref-for-app-history-api-navigation-cleanup-step⑦">(4)</a>
+    <li><a href="#ref-for-app-history-api-navigation-cleanup-step②">1.4. Traversing</a>
+    <li><a href="#ref-for-app-history-api-navigation-cleanup-step③">2.3. Firing the event</a> <a href="#ref-for-app-history-api-navigation-cleanup-step④">(2)</a> <a href="#ref-for-app-history-api-navigation-cleanup-step⑤">(3)</a> <a href="#ref-for-app-history-api-navigation-cleanup-step⑥">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistory-set-the-upcoming-non-traverse-navigation">
@@ -4148,13 +4185,14 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="eventdef-apphistory-navigate">
    <b><a href="#eventdef-apphistory-navigate">#eventdef-apphistory-navigate</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-eventdef-apphistory-navigate">1.2. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-apphistory-navigate①">(2)</a>
-    <li><a href="#ref-for-eventdef-apphistory-navigate②">1.3. Navigating</a> <a href="#ref-for-eventdef-apphistory-navigate③">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate④">(3)</a> <a href="#ref-for-eventdef-apphistory-navigate⑤">(4)</a> <a href="#ref-for-eventdef-apphistory-navigate⑥">(5)</a> <a href="#ref-for-eventdef-apphistory-navigate⑦">(6)</a> <a href="#ref-for-eventdef-apphistory-navigate⑧">(7)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigate">1.2. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-apphistory-navigate①">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate②">(3)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigate③">1.3. Navigating</a> <a href="#ref-for-eventdef-apphistory-navigate④">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate⑤">(3)</a> <a href="#ref-for-eventdef-apphistory-navigate⑥">(4)</a> <a href="#ref-for-eventdef-apphistory-navigate⑦">(5)</a> <a href="#ref-for-eventdef-apphistory-navigate⑧">(6)</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate⑨">1.4. Traversing</a> <a href="#ref-for-eventdef-apphistory-navigate①⓪">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate①①">(3)</a> <a href="#ref-for-eventdef-apphistory-navigate①②">(4)</a> <a href="#ref-for-eventdef-apphistory-navigate①③">(5)</a> <a href="#ref-for-eventdef-apphistory-navigate①④">(6)</a> <a href="#ref-for-eventdef-apphistory-navigate①⑤">(7)</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate①⑥">2. The navigate event</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate①⑦">2.3. Firing the event</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate①⑧">4. Patches to fire the navigate event</a> <a href="#ref-for-eventdef-apphistory-navigate①⑨">(2)</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate②⓪">4.3. Navigation algorithm updates</a> <a href="#ref-for-eventdef-apphistory-navigate②①">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate②②">(3)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigate②③">6.1. Canceling navigation and traversals</a> <a href="#ref-for-eventdef-apphistory-navigate②④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-onnavigatesuccess">
@@ -4166,8 +4204,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="eventdef-apphistory-navigatesuccess">
    <b><a href="#eventdef-apphistory-navigatesuccess">#eventdef-apphistory-navigatesuccess</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess">2.1. The AppHistoryNavigateEvent class</a>
-    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess①">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigatesuccess②">(2)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess">1.2. Ongoing navigation tracking</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess①">2.1. The AppHistoryNavigateEvent class</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess②">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigatesuccess③">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-onnavigateerror">
@@ -4179,8 +4218,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="eventdef-apphistory-navigateerror">
    <b><a href="#eventdef-apphistory-navigateerror">#eventdef-apphistory-navigateerror</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-eventdef-apphistory-navigateerror">2.1. The AppHistoryNavigateEvent class</a>
-    <li><a href="#ref-for-eventdef-apphistory-navigateerror①">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigateerror②">(2)</a> <a href="#ref-for-eventdef-apphistory-navigateerror③">(3)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigateerror">1.2. Ongoing navigation tracking</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigateerror①">2.1. The AppHistoryNavigateEvent class</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigateerror②">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigateerror③">(2)</a> <a href="#ref-for-eventdef-apphistory-navigateerror④">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistorynavigateevent">
@@ -4237,7 +4277,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <li><a href="#ref-for-dom-apphistorynavigationtype-traverse">1.2. Ongoing navigation tracking</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①">(2)</a>
     <li><a href="#ref-for-dom-apphistorynavigationtype-traverse②">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse③">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse④">(3)</a>
     <li><a href="#ref-for-dom-apphistorynavigationtype-traverse⑤">2.2. The AppHistoryDestination class</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse⑥">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse⑦">(3)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse⑧">(4)</a>
-    <li><a href="#ref-for-dom-apphistorynavigationtype-traverse⑨">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①⓪">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①①">(3)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①②">(4)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①③">(5)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①④">(6)</a>
+    <li><a href="#ref-for-dom-apphistorynavigationtype-traverse⑨">2.3. Firing the event</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①⓪">(2)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①①">(3)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①②">(4)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①③">(5)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①④">(6)</a> <a href="#ref-for-dom-apphistorynavigationtype-traverse①⑤">(7)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorynavigateevent-navigationtype">
@@ -4379,7 +4419,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <b><a href="#apphistorydestination-is-same-document">#apphistorydestination-is-same-document</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistorydestination-is-same-document">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-apphistorydestination-is-same-document①">2.3. Firing the event</a> <a href="#ref-for-apphistorydestination-is-same-document②">(2)</a> <a href="#ref-for-apphistorydestination-is-same-document③">(3)</a> <a href="#ref-for-apphistorydestination-is-same-document④">(4)</a> <a href="#ref-for-apphistorydestination-is-same-document⑤">(5)</a>
+    <li><a href="#ref-for-apphistorydestination-is-same-document①">2.3. Firing the event</a> <a href="#ref-for-apphistorydestination-is-same-document②">(2)</a> <a href="#ref-for-apphistorydestination-is-same-document③">(3)</a> <a href="#ref-for-apphistorydestination-is-same-document④">(4)</a> <a href="#ref-for-apphistorydestination-is-same-document⑤">(5)</a> <a href="#ref-for-apphistorydestination-is-same-document⑥">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorydestination-url">
@@ -4494,15 +4534,23 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <aside class="dfn-panel" data-for="finalize-with-an-aborted-navigation-error">
    <b><a href="#finalize-with-an-aborted-navigation-error">#finalize-with-an-aborted-navigation-error</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error">1.3. Navigating</a>
-    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error①">1.4. Traversing</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error②">(2)</a>
-    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error③">2.3. Firing the event</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error④">(2)</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑤">(3)</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑥">(4)</a>
+    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error">1.2. Ongoing navigation tracking</a>
+    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error①">1.3. Navigating</a>
+    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error②">1.4. Traversing</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error③">(2)</a>
+    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error④">2.3. Firing the event</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑤">(2)</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑥">(3)</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑦">(4)</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑧">(5)</a> <a href="#ref-for-finalize-with-an-aborted-navigation-error⑨">(6)</a>
+    <li><a href="#ref-for-finalize-with-an-aborted-navigation-error①⓪">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="inform-app-history-about-a-canceled-navigation">
-   <b><a href="#inform-app-history-about-a-canceled-navigation">#inform-app-history-about-a-canceled-navigation</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="inform-app-history-about-canceling-navigation">
+   <b><a href="#inform-app-history-about-canceling-navigation">#inform-app-history-about-canceling-navigation</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-inform-app-history-about-a-canceled-navigation">6.1. Canceling navigation</a>
+    <li><a href="#ref-for-inform-app-history-about-canceling-navigation">6.1. Canceling navigation and traversals</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="inform-app-history-about-canceling-traversals">
+   <b><a href="#inform-app-history-about-canceling-traversals">#inform-app-history-about-canceling-traversals</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-inform-app-history-about-canceling-traversals">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="rewritable">
