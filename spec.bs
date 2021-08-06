@@ -164,7 +164,7 @@ interface AppHistory : EventTarget {
 };
 
 dictionary AppHistoryNavigationOptions {
-  any navigateInfo;
+  any info;
 };
 
 dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
@@ -384,7 +384,7 @@ During any given navigation, the {{AppHistory}} object needs to keep track of th
       <td>For the duration of event firing
       <td>So that if the navigation is canceled while the event is firing, we can [=Event/canceled flag|cancel=] the event.
     <tr>
-      <td>Any {{AppHistoryNavigationOptions/navigateInfo}}
+      <td>Any {{AppHistoryNavigationOptions/info}}
       <td>Until the task is queued to fire the {{AppHistory/navigate}} event
       <td>So that we can use it to fire the {{AppHistory/navigate}} event after the the trip through the [=traversable navigable/session history traversal queue=]
     <tr>
@@ -490,7 +490,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
     <p>Navigates the current page to the given <var ignore>url</var>. <var ignore>options</var> can contain the following values:
 
     * {{AppHistoryNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one.
-    * {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    * {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
     * {{AppHistoryNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method can be used to convert it into a same-document navigation.
@@ -504,9 +504,9 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   <dt><code>await {{Window/appHistory}}.{{AppHistory/reload(options)|reload}}(<var ignore>options</var>)</code>
   <dd>
-    <p>Reloads the current page. <var ignore>options</var> needs to contain at least one of {{AppHistoryNavigationOptions/navigateInfo}} or {{AppHistoryReloadOptions/state}}, which behave as described above.
+    <p>Reloads the current page. The {{AppHistoryNavigationOptions/info}} and {{AppHistoryReloadOptions/state}} options behave as described above.
 
-    <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/navigateInfo}}, plus performing whatever actions the {{AppHistory/navigate}} event handler sees fit to carry out.
+    <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/respondWith()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/info}}, plus performing whatever actions the {{AppHistory/navigate}} event handler sees fit to carry out.
 
     <p>The returned promise will behave as follows:
 
@@ -530,11 +530,11 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. If |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryNavigateOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
 
-  1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
+  1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it exists; otherwise, undefined.
 
   1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
 
-  1. Return the result of [=performing a non-traverse app history navigation=] given [=this=], |urlRecord|, |serializedState|, |navigateInfo|, and |historyHandling|.
+  1. Return the result of [=performing a non-traverse app history navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and |historyHandling|.
 </div>
 
 <div algorithm>
@@ -552,13 +552,13 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Otherwise, if [=this=]'s [=AppHistory/current index=] is not &minus;1, then set |serializedState| to [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]]'s [=session history entry/app history state=].
 
-  1. Let |navigateInfo| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it exists; otherwise, undefined.
+  1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it exists; otherwise, undefined.
 
-  1. Return the result of [=performing a non-traverse app history navigation=] given [=this=], |urlRecord|, |serializedState|, |navigateInfo|, and "<a for="history handling behavior">`reload`</a>".
+  1. Return the result of [=performing a non-traverse app history navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and "<a for="history handling behavior">`reload`</a>".
 </div>
 
 <div algorithm>
-  To <dfn>perform a non-traverse app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |navigateInfo|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
+  To <dfn>perform a non-traverse app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
 
   1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
 
@@ -566,7 +566,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Assert: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
 
-  1. Let |ongoingNavigation| be the result of [=AppHistory/setting the upcoming non-traverse navigation=] for |appHistory| given |navigateInfo|.
+  1. Let |ongoingNavigation| be the result of [=AppHistory/setting the upcoming non-traverse navigation=] for |appHistory| given |info|.
 
   1. Set |appHistory|'s [=AppHistory/to-be-set serialized state=] to |serializedState|.
 
@@ -589,11 +589,11 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
 <dl class="domintro non-normative">
   <dt><code>await {{Window/appHistory}}.{{AppHistory/goTo(key)|goTo}}(<var ignore>key</var>)</code>
-  <dt><code>await {{Window/appHistory}}.{{AppHistory/goTo(key, options)|goTo}}(<var ignore>key</var>, { {{AppHistoryNavigationOptions/navigateInfo}} })</code>
+  <dt><code>await {{Window/appHistory}}.{{AppHistory/goTo(key, options)|goTo}}(<var ignore>key</var>, { {{AppHistoryNavigationOptions/info}} })</code>
   <dd>
-    <p>Traverses the <a spec=HTML>joint session history</a> to the closest joint session history entry that matches the {{AppHistoryEntry}} with the given key. {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    <p>Traverses the <a spec=HTML>joint session history</a> to the closest joint session history entry that matches the {{AppHistoryEntry}} with the given key. {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return a promise for that original traversal, and {{AppHistoryNavigationOptions/navigateInfo}} will be ignored.
+    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return a promise for that original traversal, and {{AppHistoryNavigationOptions/info}} will be ignored.
 
     <p>The returned promise will behave as follows:
 
@@ -604,11 +604,11 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
   </dd>
 
   <dt><code>await {{Window/appHistory}}.{{AppHistory/back()|back}}()</code>
-  <dt><code>await {{Window/appHistory}}.{{AppHistory/back(options)|back}}({ {{AppHistoryNavigationOptions/navigateInfo}} })</code>
+  <dt><code>await {{Window/appHistory}}.{{AppHistory/back(options)|back}}({ {{AppHistoryNavigationOptions/info}} })</code>
   <dd>
-    <p>Traverse the <a spec=HTML>joint session history</a> to the closest previous joint session history entry which results in this frame navigating, i.e. results in {{AppHistory/current|appHistory.current}} updating. {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    <p>Traverse the <a spec=HTML>joint session history</a> to the closest previous joint session history entry which results in this frame navigating, i.e. results in {{AppHistory/current|appHistory.current}} updating. {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return a promise for that original traversal, and {{AppHistoryNavigationOptions/navigateInfo}} will be ignored.
+    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return a promise for that original traversal, and {{AppHistoryNavigationOptions/info}} will be ignored.
 
     <p>The returned promise will behave as follows:
 
@@ -619,11 +619,11 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
   </dd>
 
   <dt><code>await {{Window/appHistory}}.{{AppHistory/forward()|forward}}()</code>
-  <dt><code>await {{Window/appHistory}}.{{AppHistory/forward(options)|forward}}({ {{AppHistoryNavigationOptions/navigateInfo}} })</code>
+  <dt><code>await {{Window/appHistory}}.{{AppHistory/forward(options)|forward}}({ {{AppHistoryNavigationOptions/info}} })</code>
   <dd>
-    <p>Traverse the <a spec=HTML>joint session history</a> to the closest forward joint session history entry which results in this frame navigating, i.e. results in {{AppHistory/current|appHistory.current}} updating. {{AppHistoryNavigationOptions/navigateInfo}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    <p>Traverse the <a spec=HTML>joint session history</a> to the closest forward joint session history entry which results in this frame navigating, i.e. results in {{AppHistory/current|appHistory.current}} updating. {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return a promise for that original traversal, and {{AppHistoryNavigationOptions/navigateInfo}} will be ignored.
+    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return a promise for that original traversal, and {{AppHistoryNavigationOptions/info}} will be ignored.
 
     <p>The returned promise will behave as follows:
 
@@ -681,7 +681,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |initiatorBC| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
 
-  1. Let |info| be |options|["{{AppHistoryNavigationOptions/navigateInfo}}"] if it [=map/exists=], or undefined otherwise.
+  1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it [=map/exists=], or undefined otherwise.
 
   1. If |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|] [=map/exists=], then return |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|]'s [=app history API navigation/returned promise=].
 
