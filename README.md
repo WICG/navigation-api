@@ -82,8 +82,8 @@ for (const entry of performance.getEntriesByType("same-document-navigation")) {
   - [New navigation API](#new-navigation-api)
     - [Example: using `info`](#example-using-info)
     - [Example: next/previous buttons](#example-nextprevious-buttons)
+  - [Setting the current entry's state without navigating](#setting-the-current-entrys-state-without-navigating)
   - [Per-entry events](#per-entry-events)
-  - [Current entry change monitoring](#current-entry-change-monitoring)
   - [Performance timeline API integration](#performance-timeline-api-integration)
   - [Complete event sequence](#complete-event-sequence)
 - [Guide for migrating from the existing history API](#guide-for-migrating-from-the-existing-history-api)
@@ -808,6 +808,28 @@ Let's look at our scenarios again:
 - If the user presses previous/next and the previous/next item in their app history is the previous/next photo, then you want to just navigate them through the app history list, like their browser back and forward buttons: this works as intended, due to the if statements inside the `click` handlers for the next and previous buttons.
 - You'll want to make sure any "permalink" or "share" UI is updated ASAP after such button presses, even if the photo is still loading: this works as intended, since we can do this work synchronously before loading the photo.
 
+### Setting the current entry's state without navigating
+
+We believe that in the majority of cases, single-page apps will be best served by updating their state via `appHistory.navigate({ state: newState })`, which goes through the `navigate` event. That is, coupling state updates with navigations, which are handled by centralized router code. This is generally superior to the classic history API's model, where state (and URL) updates are done in a way disconnected from navigation, using `history.replaceState()`.
+
+However, there is one type of case where the navigation-centric model doesn't work well. This is when you need to update the current entry's state in response to an external event, often caused by user interaction.
+
+For example, consider a page with expandable/collapsable `<details>` elements. You want to store the expanded/collapsed state of these `<details>` elements in your app history state, so that when the user traverses back and forward through history, or restarts their browser, your app can read the restored app history state and expand the `<details>` elements appropriately, showing the user what they saw previously.
+
+Creating this experience with `appHistory.navigate()` and the `navigate` event is awkward. You would need to listen for the `<details>` element's `toggle` event, and then do `appHistory.reload({ state: newState })`. And then you would need to have your `navigate` handler do `e.respondWith(Promise.resolve())`, _and not actually do anything_, because the `<details>` element is already open. This can be made to work, but is pretty awkward.
+
+For cases like this, where the current app history entry's state needs to be updated to capture something that has already happened, we have `appHistory.updateCurrent({ state: newState })`. We would write our above example like so:
+
+```js
+detailsEl.addEventListener("toggle", () => {
+  appHistory.updateCurrent({
+    state: { ...appHistory.current.state, detailsOpen: detailsEl.open }
+  });
+});
+```
+
+Another example of this sort of situation is shown in the following section.
+
 ### Per-entry events
 
 Each `AppHistoryEntry` has a series of events which the application can react to. **We expect these to mostly be used by decentralized parts of the application's codebase, such as components, to synchronize their state with the history list.** Unlike the `navigate` event, these events are not cancelable. They are used only for reacting to changes, not intercepting or preventing navigations.
@@ -823,9 +845,8 @@ async function showPhoto(photoId) {
   } });
 
   // When we navigate away from this photo, save any changes the user made.
-  // NOTE: this is kind of awkward; see https://github.com/WICG/app-history/issues/115.
   appHistory.current.addEventListener("navigatefrom", e => {
-    appHistory.reload({
+    appHistory.updateCurrent({
       state: {
         dateTaken: document.querySelector("#photo-container > .date-taken").value,
         caption: document.querySelector("#photo-container > .caption").value
@@ -1059,11 +1080,15 @@ Note how in this case we don't need to use `appHistory.navigate()`, even though 
 
 ### Attaching and using history state
 
-To update the current entry's state, instead of using `history.replaceState(newState)`, use `appHistory.reload({ state:  newState })`, combined with a `navigate` handler to convert the cross-document navigation into a same-document one. (See also [#115](https://github.com/WICG/app-history/issues/115) for cases where that pattern might be a bit awkward, and we're discussing something better.)
+To update the current entry's state, instead of using `history.replaceState(newState)`, either:
+
+- Use `appHistory.reload({ state:  newState })`, combined with a `navigate` handler to convert the cross-document navigation into a same-document one and update the document appropriately, if your state update is meant to drive a page update.
+
+- Use `appHistory.updateCurrent({ state: newState })`, if your state update is meant to capture something that's already happened to the page.
 
 To create a new entry with the same URL but a new state value, instead of using `history.pushState(newState)`, use `appHistory.navigate(appHistory.current.url, { state: newState })`, again combined with a `navigate` handler.
 
-To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, use `appHistory.navigate()`.
+To read the current entry's state, instead of using `history.state`, use `appHistory.current.getState()`. Note that this will give a clone of the state, so you cannot set properties on it: to update state, see above.
 
 In general, state in app history is expected to be more useful than state in the `window.history` API, because:
 
@@ -1330,6 +1355,7 @@ interface AppHistory : EventTarget {
   readonly attribute AppHistoryEntry? current;
   readonly attribute AppHistoryTransition? transition;
   sequence<AppHistoryEntry> entries();
+  undefined updateCurrent(AppHistoryUpdateCurrentOptions options);
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
@@ -1376,6 +1402,10 @@ enum AppHistoryNavigationType {
   "push",
   "replace",
   "traverse"
+};
+
+dictionary AppHistoryUpdateCurrentOptions {
+  required any state;
 };
 
 dictionary AppHistoryNavigationOptions {

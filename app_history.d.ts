@@ -9,10 +9,10 @@ interface AppHistoryEventMap {
 }
 
 declare class AppHistory extends EventTarget {
-  readonly current: AppHistoryEntry|null;
-  readonly transition: AppHistoryTransition|null;
-
   entries(): AppHistoryEntry[];
+  readonly current: AppHistoryEntry|null;
+  updateCurrent(options: AppHistoryUpdateCurrentOptions): void;
+  readonly transition: AppHistoryTransition|null;
 
   readonly canGoBack: boolean;
   readonly canGoForward: boolean;
@@ -70,6 +70,10 @@ declare class AppHistoryEntry extends EventTarget {
 }
 
 type AppHistoryNavigationType = 'reload'|'push'|'replace'|'traverse';
+
+interface AppHistoryUpdateCurrentOptions {
+  state: unknown;
+}
 
 interface AppHistoryNavigationOptions {
   info?: unknown;
