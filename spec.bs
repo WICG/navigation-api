@@ -147,6 +147,7 @@ The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=th
 interface AppHistory : EventTarget {
   sequence<AppHistoryEntry> entries();
   readonly attribute AppHistoryEntry? current;
+  undefined updateCurrent(AppHistoryUpdateCurrentOptions options);
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
@@ -161,6 +162,10 @@ interface AppHistory : EventTarget {
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
+};
+
+dictionary AppHistoryUpdateCurrentOptions {
+  required any state;
 };
 
 dictionary AppHistoryNavigationOptions {
@@ -185,11 +190,6 @@ dictionary AppHistoryReloadOptions : AppHistoryNavigationOptions {
     <p>Returns an array of {{AppHistoryEntry}} instances representing the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/current}}</code>
-  <dd>
-    <p>The current {{AppHistoryEntry}}.
-  </dd>
-
   <dt><code>{{Window/appHistory}}.{{AppHistory/canGoBack}}</code>
   <dd>
     <p>Returns true if the current {{AppHistoryEntry}} is not the first one in the app history entries list.
@@ -211,18 +211,6 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty list.
 
   1. Return [=this=]'s [=AppHistory/entries list=].
-</div>
-
-<div algorithm>
-  The <dfn attribute for="AppHistory">current</dfn> getter steps are:
-
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
-
-  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return null.
-
-     <p class="note">This occurs if accessing the API while on the initial `about:blank` {{Document}}, where the [=AppHistory/update the entries=] algorithm will not yet have been run to completion.
-
-  1. Return [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]].
 </div>
 
 <div algorithm>
@@ -339,6 +327,46 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
     1. Increment |index| by 1.
 
   1. Assert: this step is never reached.
+</div>
+
+<h3 id="current-entry">The current entry</h3>
+
+<dl class="domintro non-normative">
+  <dt><code>{{Window/appHistory}}.{{AppHistory/current}}</code>
+  <dd>
+    <p>The current {{AppHistoryEntry}}.
+  </dd>
+
+  <dt><code>{{Window/appHistory}}.{{AppHistory/updateCurrent()|updateCurrent}}({ {{AppHistoryUpdateCurrentOptions/state}} })</code>
+  <dd>
+    <p>Update the [=session history entry/app history state=] of the current {{AppHistoryEntry}}, without performing a navigation like {{AppHistory/reload()|appHistory.reload()}} would do.
+
+    <p>This method is best used to capture updates to the page that have already happened, and need to be reflected into the app history state. For cases where the state update is meant to drive a page update, instead use {{AppHistory/navigate()|appHistory.navigate()}} or {{AppHistory/reload()|appHistory.reload()}}.
+  </dd>
+</dl>
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">current</dfn> getter steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
+
+  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return null.
+
+     <p class="note">This occurs if accessing the API while on the initial `about:blank` {{Document}}, where the [=AppHistory/update the entries=] algorithm will not yet have been run to completion.
+
+  1. Return [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]].
+</div>
+
+<div algorithm>
+  The <dfn method for="AppHistory">updateCurrent(|options|)</dfn> method steps are:
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then throw an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. Let |serializedState| be [$StructuredSerializeForStorage$](|options|["{{AppHistoryUpdateCurrentOptions/state}}"]), rethrowing any exceptions.
+
+  1. Set [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] to |serializedState|.
 </div>
 
 <h3 id="ongoing-state">Ongoing navigation tracking</h3>
