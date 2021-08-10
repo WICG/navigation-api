@@ -407,11 +407,11 @@ interface AppHistoryTransition {
   </dd>
 
   <dt><code>await {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}()</code></dt>
-  <dt><code>await {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}({ {{AppHistoryNavigationOptions/navigateInfo}} })</code></dt>
+  <dt><code>await {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}({ {{AppHistoryNavigationOptions/info}} })</code></dt>
   <dd>
-    <p>Performs another navigation which is the logical opposite of the one represented by this transition:
+    <p>Aborts the ongoing navigation, and immediately performs another navigation which is the logical opposite of the one represented by this transition:
 
-    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/reload}}", it will perform a repalce navigation that resets the app history state to that found in the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}.
+    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/reload}}", it will perform a replace navigation that resets the app history state to that found in the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}.
 
     * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/push}}", it will traverse to the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}, and then delete the previously-current {{AppHistoryEntry}} from the app history list, so that it cannot be reached with {{AppHistory/forward()|appHistory.forward()}} or the forward button.
 
@@ -419,7 +419,11 @@ interface AppHistoryTransition {
 
     * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/traverse}}", it will traverse to the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}. (This could involve going either forward or backward in the app history list.)
 
-    <p>In all cases, this rollback navigation will still fire a {{AppHistory/navigate}} event. The {{AppHistoryNavigationOptions/navigateInfo}} option, if provided, will populate the {{AppHistoryNavigateEvent/info}} property of the fired event.
+    <p>Aborting the ongoing navigation will cause {{AppHistory/navigateerror}} to fire, any {{AppHistoryNavigateEvent/signal|navigateEvent.signal}} instances to fire {{AbortSignal/abort}}, and any relevant promises to reject. This includes {{AppHistoryTransition/finished|appHistory.transition.finished}}.
+
+    <p>Then, the rollback navigation described above starts. This will fire a {{AppHistory/navigate}} event, and reset {{AppHistory/transition|appHistory.transition}} to a new {{AppHistoryTransition}} instance. The {{AppHistoryNavigationOptions/info}} option, if provided, will populate the {{AppHistoryNavigateEvent/info}} property of the fired event.
+
+    <p>This method can only be called while the transition is still ongoing, i.e. while {{AppHistory/transition|appHistory.transition}} equals this {{AppHistoryTransition}} object. Calling it afterward will return a promise rejected with an "{{InvalidStateError}}" {{DOMException}}.
   </dd>
 </dl>
 
