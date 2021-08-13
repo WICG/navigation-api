@@ -24,13 +24,13 @@ An application or framework's centralized router can use the `navigate` event to
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  if (!e.canRespond || e.hashChange) {
+  if (!e.canTransition || e.hashChange) {
     return;
   }
 
   if (routesTable.has(e.destination.url)) {
     const routeHandler = routesTable.get(e.destination.url);
-    e.respondWith(routeHandler());
+    e.transitionWhile(routeHandler());
   }
 });
 ```
@@ -258,7 +258,7 @@ Unlike the existing history API's `history.go()` method, which navigates by offs
 
 All of these methods return promises, because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
-- The `navigate` event responds to the navigation using `event.respondWith()`, in which case the promise fulfills or rejects according to the promise(s) passed to `respondWith()`. (However, even if the promise rejects, `location.href` and `appHistory.current` will change.)
+- The `navigate` event responds to the navigation using `event.transitionWhile()`, in which case the promise fulfills or rejects according to the promise(s) passed to `transitionWhile()`. (However, even if the promise rejects, `location.href` and `appHistory.current` will change.)
 
 - The `navigate` event cancels the navigation without responding to it, in which case the promise rejects with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
@@ -294,7 +294,7 @@ The event object has several useful properties:
 
 - `cancelable` (inherited from `Event`): indicates whether `preventDefault()` is allowed to cancel this navigation.
 
-- `canRespond`: indicates whether `respondWith()`, discussed below, is allowed for this navigation.
+- `canTransition`: indicates whether `transitionWhile()`, discussed below, is allowed for this navigation.
 
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"`.
 
@@ -312,7 +312,7 @@ The event object has several useful properties:
 
 Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing app history entry (i.e. is a back/forward navigation) via `event.navigationType`.
 
-The event object has a special method `event.respondWith(promise)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
+The event object has a special method `event.transitionWhile(promise)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
 - Cancel any fragment navigation or cross-document navigation.
 - Immediately update the URL bar, `location.href`, and `appHistory.current`.
@@ -326,7 +326,7 @@ The event object has a special method `event.respondWith(promise)`. This works o
 
 Note that the browser does not wait for the promise to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `appHistory.current`.
 
-If `respondWith()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the given promises will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
+If `transitionWhile()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the given promises will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
 
 _TODO: is it OK for web developers that the URL bar updates immediately? See [#66](https://github.com/WICG/app-history/issues/66)._
 
@@ -337,7 +337,7 @@ The following is the kind of code you might see in an application or framework's
 ```js
 appHistory.addEventListener("navigate", e => {
   // Some navigations, e.g. cross-origin navigations, we cannot intercept. Let the browser handle those normally.
-  if (!e.canRespond) {
+  if (!e.canTransition) {
     return;
   }
 
@@ -347,9 +347,9 @@ appHistory.addEventListener("navigate", e => {
   }
 
   if (e.formData) {
-    e.respondWith(processFormDataAndUpdateUI(e.formData, e.signal));
+    e.transitionWhile(processFormDataAndUpdateUI(e.formData, e.signal));
   } else {
-    e.respondWith(doSinglePageAppNav(e.destination, e.signal));
+    e.transitionWhile(doSinglePageAppNav(e.destination, e.signal));
   }
 });
 ```
@@ -388,11 +388,11 @@ Sometimes it's desirable to handle back/forward navigations specially, e.g. reus
 ```js
 appHistory.addEventListener("navigate", e => {
   // As before.
-  if (!e.canRespond || e.hashChange) {
+  if (!e.canTransition || e.hashChange) {
     return;
   }
 
-  e.respondWith((async () => {
+  e.transitionWhile((async () => {
     if (myFramework.currentPage) {
       await myFramework.currentPage.transitionOut();
     }
@@ -421,7 +421,7 @@ appHistory.addEventListener("navigate", e => {
 
   switch (url.pathname) {
     case "/form-submit": {
-      e.respondWith((async () => {
+      e.transitionWhile((async () => {
         // Do not navigate to form-submit; instead send the data to that endpoint using fetch().
         await fetch("/form-submit", { body: e.formData });
 
@@ -431,7 +431,7 @@ appHistory.addEventListener("navigate", e => {
       break;
     }
     case "/destination": {
-      e.respondWith((async () => {
+      e.transitionWhile((async () => {
         document.body.innerHTML = "Form submission complete!";
       }()));
       break;
@@ -470,7 +470,7 @@ This is important to avoid abusive pages trapping the user by disabling their ba
 
 We're discussing this restriction in [#32](https://github.com/WICG/app-history/issues/32), as it does hurt some use cases, and we'd like to soften it in some way.
 
-Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.respondWith()`, and as such will have `event.canRespond` equal to false:
+Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.transitionWhile()`, and as such will have `event.canTransition` equal to false:
 
 - Any navigation to a URL which differs in scheme, username, password, host, or port. (I.e., you can only intercept URLs which differ in path, query, or fragment.)
 - Any programmatically-initiated [cross-document](#appendix-types-of-navigations) back/forward navigations. (Recall that _user_-initiated cross-document navigations will not fire the `navigate` event at all.) Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
@@ -479,17 +479,17 @@ We'll note that these restrictions still allow canceling cross-origin non-back/f
 
 #### Accessibility benefits of standardized single-page navigations
 
-The `navigate` event's `event.respondWith()` method provides a helpful convenience for implementing single-page navigations, as discussed above. But beyond that, providing a direct signal to the browser as to the duration and outcome of a single-page navigation has benefits for accessibility technology users.
+The `navigate` event's `event.transitionWhile()` method provides a helpful convenience for implementing single-page navigations, as discussed above. But beyond that, providing a direct signal to the browser as to the duration and outcome of a single-page navigation has benefits for accessibility technology users.
 
 In particular, with [cross-document](#appendix-types-of-navigations) navigations, AT users get clear feedback that a navigation has occurred. But traditionally, single-page navigations have not been communicated in the same way to accessibility technology. This is in part because it is not clear to the browser when a user interaction causes a single-page navigation, because of the app-specific JavaScript that intermediates between such interactions and the eventual call to `history.pushState()`/`history.replaceState()`. In particular, it's unclear exactly when the navigation begins and ends: trying to use the URL change as a signal doesn't work, since when applications call `history.pushState()` during the content loading process varies.
 
-Implementing single-page navigations by using the `navigate` event and its `respondWith()` function solves this part of the problem. It gives the browser clear insight into when a navigation is being handled as a single-page navigation, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds. We expect browsers to use these to update their own UI (including any loading indicators; see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330) for previous feature requests). And we expect browsers to communicate these signals to accessibility technology, in the same way they do for traditional cross-document navigations.
+Implementing single-page navigations by using the `navigate` event and its `transitionWhile()` function solves this part of the problem. It gives the browser clear insight into when a navigation is being handled as a single-page navigation, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds. We expect browsers to use these to update their own UI (including any loading indicators; see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330) for previous feature requests). And we expect browsers to communicate these signals to accessibility technology, in the same way they do for traditional cross-document navigations.
 
 This does not yet solve all accessibility problems with single-page navigations. In particular, this proposal doesn't currently have a solution for focus management and placing the user's keyboard focus in the relevant place after navigation. However, we are very interested in finding a way to make usage of the app history API guide web developers toward creating accessible experiences, and would like to explore additions or changes that would help with these aspects of the problem as well. Please join us to discuss and brainstorm in [#25](https://github.com/WICG/app-history/issues/25).
 
 #### Measuring standardized single-page navigations
 
-Continuing with the theme of `respondWith()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
+Continuing with the theme of `transitionWhile()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
 
 In particular, analytics frameworks would be able to consume this information from the browser in a way that works across all applications using the app history API. See the discussion on [performance timeline API integration](#performance-timeline-api-integration) for what we are proposing there.
 
@@ -497,7 +497,7 @@ This standardized notion of single-page navigations also gives a hook for other 
 
 This isn't a complete panacea: in particular, such metrics are gameable by bad actors. Such bad actors could try to drive down average measured "load time" by generating excessive `navigate` events that don't actually do anything. So in scenarios where the web application is less interested in measuring itself, and more interested in driving down specific metrics, those creating the metrics will need to take into account such misuse of the API. Some potential countermeasures against such gaming could include:
 
-- Only using the start time of the navigation in creating such metrics, and not using the promise-settling time. This avoids gaming via code such as `event.respondWith(Promise.resolve()); await doActualNavigation()` which makes the navigation appear instant to the browser.
+- Only using the start time of the navigation in creating such metrics, and not using the promise-settling time. This avoids gaming via code such as `event.transitionWhile(Promise.resolve()); await doActualNavigation()` which makes the navigation appear instant to the browser.
 
 - Filtering to only count navigations where `event.userInitiated` is true.
 
@@ -507,18 +507,18 @@ This isn't a complete panacea: in particular, such metrics are gameable by bad a
 
 #### Aborted navigations
 
-As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event comes with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `respondWith()` settles:
+As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event comes with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `transitionWhile()` settles:
 
 - The user presses their browser's stop button (or similar UI, such as the <kbd>Esc</kbd> key).
 - Another navigation is started, either by the user or programmatically. This includes back/forward navigations, e.g. the user pressing their browser's back button.
 
-The signal will not transition to the aborted state if `respondWith()` is not called. This means it cannot be used to observe the interruption of a [cross-document](#appendix-types-of-navigations) navigation, if that cross-document navigation was left alone and not converted into a same-document navigation by using `respondWith()`. Similarly, `window.stop()` will not impact `respondWith()`-derived same-document navigations.
+The signal will not transition to the aborted state if `transitionWhile()` is not called. This means it cannot be used to observe the interruption of a [cross-document](#appendix-types-of-navigations) navigation, if that cross-document navigation was left alone and not converted into a same-document navigation by using `transitionWhile()`. Similarly, `window.stop()` will not impact `transitionWhile()`-derived same-document navigations.
 
-Whether and how the application responds to this abort is up to the web developer. In many cases, such as in [the example above](#example-replacing-navigations-with-single-page-app-navigations), this will automatically work: by passing the `event.signal` through to any `AbortSignal`-consuming APIs like `fetch()`, those APIs will get aborted, and the resulting `"AbortError"` `DOMException` propagated to be the rejection reason for the promise passed to `respondWith()`. But it's possible to ignore it completely, as in the following example:
+Whether and how the application responds to this abort is up to the web developer. In many cases, such as in [the example above](#example-replacing-navigations-with-single-page-app-navigations), this will automatically work: by passing the `event.signal` through to any `AbortSignal`-consuming APIs like `fetch()`, those APIs will get aborted, and the resulting `"AbortError"` `DOMException` propagated to be the rejection reason for the promise passed to `transitionWhile()`. But it's possible to ignore it completely, as in the following example:
 
 ```js
 appHistory.addEventListener("navigate", event => {
-  event.respondWith((async () => {
+  event.transitionWhile((async () => {
     await new Promise(r => setTimeout(r, 10_000));
     document.body.innerHTML = `Navigated to ${event.destination.url}`;
   }());
@@ -534,7 +534,7 @@ See [the companion document](./interception-details.md#trying-to-interrupt-a-slo
 
 ### Transitional time after navigation interception
 
-Although calling `event.respondWith()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `respondWith()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
+Although calling `event.transitionWhile()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `transitionWhile()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
 
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `AppHistoryEntry` that was the current one before the transition
@@ -547,7 +547,7 @@ Also note that `appHistory.transition.rollback()` will itself trigger a `navigat
 
 #### Example: handling failed navigations
 
-To handle failed single-page navigations, i.e. navigations where the promise passed to `event.respondWith()` eventually rejects, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
+To handle failed single-page navigations, i.e. navigations where the promise passed to `event.transitionWhile()` eventually rejects, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
 
 ```js
 appHistory.addEventListener("navigateerror", e => {
@@ -575,7 +575,7 @@ A common scenario in web applications with a client-side router is to perform a 
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  e.respondWith((async () => {
+  e.transitionWhile((async () => {
     const result = await determineAction(e.destination);
 
     if (result.type === "redirect") {
@@ -638,7 +638,7 @@ await appHistory.navigate(url, { state });
 await appHistory.navigate(url, { state, info });
 ```
 
-Note how unlike `history.pushState()`, `appHistory.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.respondWith()`.
+Note how unlike `history.pushState()`, `appHistory.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.transitionWhile()`.
 
 Regardless of whether the navigation gets converted or not, calling `appHistory.navigate()` in this form will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `appHistory.entries()` list.)
 
@@ -672,7 +672,7 @@ await appHistory.reload({ info });
 await appHistory.reload({ state, info });
 ```
 
-Note that both of these methods return promises. In the event that the navigations get converted into same-document navigations via `event.respondWith(promise)` in a `navigate` handler, these returned promises will settle in the same way that `promise` does. This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, then the promises will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promise, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
+Note that both of these methods return promises. In the event that the navigations get converted into same-document navigations via `event.transitionWhile(promise)` in a `navigate` handler, these returned promises will settle in the same way that `promise` does. This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, then the promises will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promise, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
 
 #### Example: using `info`
 
@@ -704,7 +704,7 @@ photoGallery.addEventListener("click", async e => {
 
 appHistory.addEventListener("navigate", e => {
   if (isPhotoNavigation(e)) {
-    e.respondWith((async () => {
+    e.transitionWhile((async () => {
       switch (e.info.?via) {
         case "go-left": {
           await animateLeft();
@@ -769,8 +769,8 @@ previous.onclick = () => {
 appHistory.addEventListener("navigate", event => {
   const photoNumber = photoNumberFromURL(e.destination.url);
 
-  if (photoNumber && e.canRespond) {
-    e.respondWith((async () => {
+  if (photoNumber && e.canTransition) {
+    e.transitionWhile((async () => {
       // Synchronously update app state and next/previous/permalink UI:
       appState.currentPhoto = photoNumber;
       previous.disabled = appState.currentPhoto === 0;
@@ -815,7 +815,7 @@ However, there is one type of case where the navigation-centric model doesn't wo
 
 For example, consider a page with expandable/collapsable `<details>` elements. You want to store the expanded/collapsed state of these `<details>` elements in your app history state, so that when the user traverses back and forward through history, or restarts their browser, your app can read the restored app history state and expand the `<details>` elements appropriately, showing the user what they saw previously.
 
-Creating this experience with `appHistory.navigate()` and the `navigate` event is awkward. You would need to listen for the `<details>` element's `toggle` event, and then do `appHistory.reload({ state: newState })`. And then you would need to have your `navigate` handler do `e.respondWith(Promise.resolve())`, _and not actually do anything_, because the `<details>` element is already open. This can be made to work, but is pretty awkward.
+Creating this experience with `appHistory.navigate()` and the `navigate` event is awkward. You would need to listen for the `<details>` element's `toggle` event, and then do `appHistory.reload({ state: newState })`. And then you would need to have your `navigate` handler do `e.transitionWhile(Promise.resolve())`, _and not actually do anything_, because the `<details>` element is already open. This can be made to work, but is pretty awkward.
 
 For cases like this, where the current app history entry's state needs to be updated to capture something that has already happened, we have `appHistory.updateCurrent({ state: newState })`. We would write our above example like so:
 
@@ -901,9 +901,9 @@ The `PerformanceEntry` instances for such same-document navigations are instance
 
 - `startTime`: the time at which the navigation was initiated, i.e. when the corresponding API was called (like `location.href` or `appHistory.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`.
 
-- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promise passed to `event.respondWith()` to settle, for navigations intercepted by a `navigate` event handler.
+- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promise passed to `event.transitionWhile()` to settle, for navigations intercepted by a `navigate` event handler.
 
-- `success`: `false` if the promise passed to `event.respondWith()` rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
+- `success`: `false` if the promise passed to `event.transitionWhile()` rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
 
 To record single-page navigations using [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), web developers could then use code such as the following:
 
@@ -930,8 +930,8 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
     1. `appHistory.current` fires `navigateto`.
     1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
-    1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.respondWith()`.
-    1. After the promise passed to `event.respondWith()` fulfills, or after one microtask if `event.respondWith()` was not called:
+    1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.transitionWhile()`.
+    1. After the promise passed to `event.transitionWhile()` fulfills, or after one microtask if `event.transitionWhile()` was not called:
         1. `appHistory.current` fires `finish`.
         1. `navigatesuccess` is fired on `appHistory`.
         1. Any loading spinner UI stops.
@@ -939,7 +939,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. `appHistory.transition.finished` fulfills with undefined.
         1. `appHistory.transition` becomes null.
         1. Queue a new `SameDocumentNavigationEntry` indicating success.
-    1. Alternately, if the promise passed to `event.respondWith()` rejects:
+    1. Alternately, if the promise passed to `event.transitionWhile()` rejects:
         1. `appHistory.current` fires `finish`.
         1. `navigateerror` fires on `window.appHistory` with the rejection reason as its `error` property.
         1. Any loading spinner UI stops.
@@ -1030,7 +1030,7 @@ In the longer term, we think the best fix for this would be to introduce [a mode
 
 ### Using `navigate` handlers
 
-Many cases which use `history.pushState()` today can just be deleted when using `appHistory`. This is because if you have a listener for the `navigate` event on `appHistory`, that listener can use `event.respondWith()` to transform navigations that would normally be new-document navigations into same-document navigations. So for example, instead of
+Many cases which use `history.pushState()` today can just be deleted when using `appHistory`. This is because if you have a listener for the `navigate` event on `appHistory`, that listener can use `event.transitionWhile()` to transform navigations that would normally be new-document navigations into same-document navigations. So for example, instead of
 
 ```html
 <a href="/about">About us</a>
@@ -1067,7 +1067,7 @@ window.doStuff = async () => {
 
 document.addEventListener("navigate", e => {
   if (shouldBeSinglePageNav(e.destination.url)) {
-    e.respondWith((async () => {
+    e.transitionWhile((async () => {
       document.querySelector("main").innerHTML = await loadContentFor(e.destination.url);
     })());
   }
@@ -1112,7 +1112,7 @@ The app history API provides several replacements that subsume these events:
 
 - To react to and potentially intercept navigations before they complete, use the `navigate` event on `appHistory`. See the [Navigation monitoring and interception](#navigation-monitoring-and-interception) section for more details, including how the event object provides useful information that can be used to distinguish different types of navigations.
 
-- To react to navigations that have completed, use the `navigatesuccess` or `navigateerror` events on `appHistory`. Note that these will only be fired asynchronously, after any handlers passed to the `navigate` event's `event.respondWith()` method have completed.
+- To react to navigations that have completed, use the `navigatesuccess` or `navigateerror` events on `appHistory`. Note that these will only be fired asynchronously, after any handlers passed to the `navigate` event's `event.transitionWhile()` method have completed.
 
 - To watch a particular entry to see when it's navigated to, navigated from, or becomes unreachable, use that `AppHistoryEntry`'s `navigateto`, `navigatefrom`, and `dispose` events. See the [Per-entry events](#per-entry-events) section for more details.
 
@@ -1306,11 +1306,11 @@ Most navigations are cross-document navigations. Same-document navigations can h
 - Any of the above navigation mechanisms only updating the URL's fragment, e.g. `location.hash = "foo"` or clicking on `<a href="#bar">` or calling `history.back()` after either of those two actions
 - `history.pushState()` and `history.replaceState()`
 - `document.open()`
-- [Intercepting a cross-document navigation](#navigation-monitoring-and-interception) using the `appHistory` object's `navigate` event, and calling `event.respondWith()`
+- [Intercepting a cross-document navigation](#navigation-monitoring-and-interception) using the `appHistory` object's `navigate` event, and calling `event.transitionWhile()`
 
 Here's a summary table:
 
-|Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canRespond`|
+|Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canTransition`|
 |-------|------------------------|-----------------|-----------------|--------------|--------------|
 |Browser UI (back/forward,<br>same-document)|Same|Yes|Yes|No|Yes|
 |Browser UI (back/forward,<br>cross-document)|Cross|No|—|—|—|

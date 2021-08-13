@@ -92,7 +92,7 @@ declare class AppHistoryNavigateEvent extends Event {
   constructor(type: string, eventInit: AppHistoryNavigateEventInit);
 
   readonly navigationType: AppHistoryNavigationType;
-  readonly canRespond: boolean;
+  readonly canTransition: boolean;
   readonly userInitiated: boolean;
   readonly hashChange: boolean;
   readonly destination: AppHistoryDestination;
@@ -100,12 +100,12 @@ declare class AppHistoryNavigateEvent extends Event {
   readonly formData: FormData|null;
   readonly info: unknown;
 
-  respondWith(newNavigationAction: Promise<void>): void;
+  transitionWhile(newNavigationAction: Promise<void>): void;
 }
 
 interface AppHistoryNavigateEventInit extends EventInit {
   navigationType?: AppHistoryNavigationType;
-  canRespond?: boolean;
+  canTransition?: boolean;
   userInitiated?: boolean;
   hashChange?: boolean;
   destination: AppHistoryDestination;

@@ -6,11 +6,11 @@ TODO: research where in these sequences accessibility technology should integrat
 
 ## Same-document
 
-### Immediately-successful `respondWith()`
+### Immediately-successful `transitionWhile()`
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  e.respondWith(Promise.resolve());
+  e.transitionWhile(Promise.resolve());
 });
 
 location.hash = "#foo";
@@ -68,15 +68,15 @@ Synchronously:
 1. `navigate` fires on `window.appHistory`. The event gets canceled.
 1. The `console.log()` outputs `""` (or whatever the old hash was).
 
-## Same-origin `respondWith()`, cross-document
+## Same-origin `transitionWhile()`, cross-document
 
-When performing a same-origin navigations, `respondWith()` can be used to take over the navigation and convert it to a same-document navigation, even if it would normally be a cross-document navigation.
+When performing a same-origin navigations, `transitionWhile()` can be used to take over the navigation and convert it to a same-document navigation, even if it would normally be a cross-document navigation.
 
 ### Delayed success
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  e.respondWith(new Promise(r => setTimeout(r, 10_000)));
+  e.transitionWhile(new Promise(r => setTimeout(r, 10_000)));
 });
 
 location.href = "/foo";
@@ -111,7 +111,7 @@ After the promise fulfills in ten seconds:
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  e.respondWith(new Promise((r, reject) => setTimeout(() => reject(new Error("bad")), 10_000)));
+  e.transitionWhile(new Promise((r, reject) => setTimeout(() => reject(new Error("bad")), 10_000)));
 });
 
 location.href = "/foo";
@@ -148,7 +148,7 @@ Note: any unreachable `AppHistoryEntry`s disposed as part of the synchronous blo
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  e.respondWith((async () => {
+  e.transitionWhile((async () => {
     await new Promise(r => setTimeout(r, 10_000));
 
     // Since there's no setTimeout-that-takes-an-AbortSignal we check manually here.
@@ -218,7 +218,7 @@ This is a modification of the above example where the web developer does not pay
 
 ```js
 appHistory.addEventListener("navigate", e => {
-  e.respondWith((async () => {
+  e.transitionWhile((async () => {
     await new Promise(r => setTimeout(r, 10_000));
     document.body.innerHTML = `navigated to ${e.destination.url}`;
   })());
