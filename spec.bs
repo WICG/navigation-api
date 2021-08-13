@@ -1196,7 +1196,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. [=Reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |error|.
     1. Set |appHistory|'s [=AppHistory/transition=] to null.
   1. If |ongoingNavigation| is non-null, then:
-    1. If |ongoingNavigation|'s [=app history API navigation/fired navigate event=] is true, then [=fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
+    1. If |ongoingNavigation|'s [=app history API navigation/fired navigate event=] is true, then [=fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |error| and the current JavaScript stack in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+       <p class="note">Thus, for example, if this algorithm is reached because of a call to {{Window/stop()|window.stop()}}, these properties would probably end up initialized based on the line of script that called {{Window/stop()|window.stop()}}. But if it's because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0.
     1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |error|.
     1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
 </div>
