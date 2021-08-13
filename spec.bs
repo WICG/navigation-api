@@ -148,6 +148,7 @@ interface AppHistory : EventTarget {
   sequence<AppHistoryEntry> entries();
   readonly attribute AppHistoryEntry? current;
   undefined updateCurrent(AppHistoryUpdateCurrentOptions options);
+  readonly attribute AppHistoryTransition? transition;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
@@ -370,6 +371,87 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 </div>
 
 <h3 id="ongoing-state">Ongoing navigation tracking</h3>
+
+<xmp class="idl">
+[Exposed=Window]
+interface AppHistoryTransition {
+  readonly attribute AppHistoryNavigationType navigationType;
+  readonly attribute AppHistoryEntry from;
+  readonly attribute Promise<undefined> finished;
+
+  Promise<undefined> rollback(optional AppHistoryNavigationOptions options = {});
+};
+</xmp>
+
+<dl class="domintro">
+  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}</code>
+  <dd>
+    <p>An {{AppHistoryTransition}} object representing any ongoing navigation that hasn't yet reached the {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} stage, if one exists, or null if there is no such transition ongoing.
+
+    <p>Since {{AppHistory/current|appHistory.current}} (and other properties like {{Location/href|location.href}}) are updated immediately upon navigation, this {{AppHistory/transition|appHistory.transition}} property is useful for determining when such navigations are not yet fully settled, according to any promises passed to {{AppHistoryNavigateEvent/respondWith()|event.respondWith()}}.
+  </dd>
+
+  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/navigationType}}</code></dt>
+  <dd>
+    <p>One of "{{AppHistoryNavigationType/reload}}", "{{AppHistoryNavigationType/push}}", "{{AppHistoryNavigationType/replace}}", or "{{AppHistoryNavigationType/traverse}}", indicating what type of navigation this transition is for.
+  </dd>
+
+  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/from}}</code></dt>
+  <dd>
+    <p>The {{AppHistoryEntry}} from which the transition is coming. This can be useful to compare against {{AppHistory/current|appHistory.current}}.
+  </dd>
+
+  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/finished}}</code></dt>
+  <dd>
+    <p>A promise which fulfills at the same time the {{AppHistory/navigatesuccess}} event fires, or rejects at the same time the {{AppHistory/navigateerror}} fires.
+  </dd>
+
+  <dt><code>await {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}()</code></dt>
+  <dt><code>await {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}({ {{AppHistoryNavigationOptions/info}} })</code></dt>
+  <dd>
+    <p>Aborts the ongoing navigation, and immediately performs another navigation which is the logical opposite of the one represented by this transition:
+
+    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/reload}}", it will perform a replace navigation that resets the app history state to that found in the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}.
+
+    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/push}}", it will traverse to the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}, and then delete the previously-current {{AppHistoryEntry}} from the app history list, so that it cannot be reached with {{AppHistory/forward()|appHistory.forward()}} or the forward button.
+
+    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/replace}}", it will perform another replace navigation that resets the URL and app history state to those found in the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}.
+
+    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/traverse}}", it will traverse to the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}. (This could involve going either forward or backward in the app history list.)
+
+    <p>Aborting the ongoing navigation will cause {{AppHistory/navigateerror}} to fire, any {{AppHistoryNavigateEvent/signal|navigateEvent.signal}} instances to fire {{AbortSignal/abort}}, and any relevant promises to reject. This includes {{AppHistoryTransition/finished|appHistory.transition.finished}}.
+
+    <p>Then, the rollback navigation described above starts. This will fire a {{AppHistory/navigate}} event, and reset {{AppHistory/transition|appHistory.transition}} to a new {{AppHistoryTransition}} instance. The {{AppHistoryNavigationOptions/info}} option, if provided, will populate the {{AppHistoryNavigateEvent/info}} property of the fired event.
+
+    <p>This method can only be called while the transition is still ongoing, i.e. while {{AppHistory/transition|appHistory.transition}} equals this {{AppHistoryTransition}} object. Calling it afterward will return a promise rejected with an "{{InvalidStateError}}" {{DOMException}}.
+  </dd>
+</dl>
+
+An {{AppHistory}} has a <dfn for="AppHistory">transition</dfn>, which is an {{AppHistoryTransition}} or null.
+
+The <dfn attribute for="AppHistory">transition</dfn> getter steps are to return [=this=]'s [=AppHistory/transition=].
+
+<hr>
+
+An {{AppHistoryTransition}} has an associated <dfn for="AppHistoryTransition">navigation type</dfn>, which is an {{AppHistoryNavigationType}}.
+
+An {{AppHistoryTransition}} has an associated <dfn for="AppHistoryTransition">from entry</dfn>, which is an {{AppHistoryEntry}}.
+
+An {{AppHistoryTransition}} has an associated <dfn for="AppHistoryTransition">finished promise</dfn>, which is an {{Promise}}.
+
+The <dfn attribute for="AppHistoryTransition">navigationType</dfn> getter steps are to return [=this=]'s [=AppHistoryTransition/navigation type=].
+
+The <dfn attribute for="AppHistoryTransition">from</dfn> getter steps are to return [=this=]'s [=AppHistoryTransition/from entry=].
+
+The <dfn attribute for="AppHistoryTransition">finished</dfn> getter steps are to return [=this=]'s [=AppHistoryTransition/finished promise=].
+
+<div algorithm>
+  The <dfn method for="AppHistoryTransition">rollback(|options|)</dfn> method steps are:
+
+  1. TODO use |options|.
+</div>
+
+<hr>
 
 During any given navigation, the {{AppHistory}} object needs to keep track of the following:
 
@@ -1060,6 +1142,10 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
     <p class="note">This can occur if an event listener disconnected the <{iframe}> corresponding to [=this=]'s [=relevant global object=].
   1. If |dispatchResult| is true:
+    1. Assert: |appHistory|'s [=AppHistory/current index=] is not &minus;1.
+    1. Let |fromEntry| be |appHistory|'s [=AppHistory/entry list=][|appHistory|'s [=AppHistory/current index=]].
+    1. Let |transition| be a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
+    1. Set |appHistory|'s [=AppHistory/transition=] to |transition|.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
         1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
         1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
@@ -1067,12 +1153,16 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |destination|'s [=AppHistoryDestination/is same document=] is true, then [=wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
+        1. [=Resolve=] |transition|'s [=AppHistoryTransition/finished promise=] with undefined.
+        1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
         1. If |ongoingNavigation| is non-null, then:
           1. [=Resolve=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with undefined.
           1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
       and the following failure steps given reason |rejectionReason|:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+        1. [=Reject=] |transition|'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
+        1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
         1. If |ongoingNavigation| is non-null, then:
           1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |rejectionReason|.
           1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
@@ -1101,8 +1191,11 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
      <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for aborted navigations.
   1. If |signal| is not null, then [=AbortSignal/signal abort=] on |signal|.
+  1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
+  1. If |appHistory|'s [=AppHistory/transition=] is not null, then:
+    1. [=Reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |error|.
+    1. Set |appHistory|'s [=AppHistory/transition=] to null.
   1. If |ongoingNavigation| is non-null, then:
-    1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
     1. If |ongoingNavigation|'s [=app history API navigation/fired navigate event=] is true, then [=fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, {{ErrorEvent/message}} initialized to the value of |error|'s {{DOMException/message}} property, {{ErrorEvent/filename}} initialized to the empty string, and {{ErrorEvent/lineno}} and {{ErrorEvent/colno}} initialized to 0.
     1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |error|.
     1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
