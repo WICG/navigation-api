@@ -158,7 +158,7 @@ Non-goals:
 
 - Provide platform support for the coordination problem of multiple routers (e.g., per-UI-component routers) on a single page. We plan to leave this coordination to frameworks for now (with the frameworks using the new API).
 
-- Handle the case where the Android back button is being used as a "modal close signal"; instead, we believe that's best handled by [a separate API](https://github.com/slightlyoff/history_api/blob/master/history_and_modals.md).
+- Handle the case where the Android back button is being used as a "close signal"; instead, we believe that's best handled by [a separate API](https://github.com/domenic/close-watcher).
 
 - Provide any handling for preventing navigations that might lose data: this is already handled orthogonally by the platform's `beforeunload` event.
 
