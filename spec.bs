@@ -546,7 +546,6 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
 * An <dfn for="app history API navigation">info</dfn>, a JavaScript value
 * A <dfn for="app history API navigation">returned promise</dfn>, a {{Promise}}
-* A <dfn for="app history API navigation">fired `navigate` event</dfn>, a boolean
 * A <dfn for="app history API navigation">cleanup step</dfn>, an algorithm step
 
 <p class="note">We need to store the {{AbortSignal}} separately from the [=app history API navigation=] struct, since it needs to be tracked even for navigations that are not via the app history APIs. So, we store it some of the time in the [=AppHistory/ongoing navigate event=]'s {{AppHistoryNavigateEvent/signal}} property, and the rest of the time in the [=AppHistory/post-navigate event ongoing navigation signal=].
@@ -558,7 +557,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |cleanupStep| be an algorithm step which sets |appHistory|'s [=AppHistory/ongoing non-traverse navigation=] to null.
 
-  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, [=app history API navigation/fired navigate event=] is false, and [=app history API navigation/cleanup step=] is |cleanupStep|.
+  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, and [=app history API navigation/cleanup step=] is |cleanupStep|.
 
   1. Assert: |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is null.
 
@@ -584,7 +583,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |cleanupStep| be an algorithm step which [=map/removes=] |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|].
 
-  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, [=app history API navigation/fired navigate event=] is false, and [=app history API navigation/cleanup step=] is |cleanupStep|.
+  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/info=] is |info|, [=app history API navigation/returned promise=] is |promise|, and [=app history API navigation/cleanup step=] is |cleanupStep|.
 
   1. Set |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|]  to |ongoingNavigation|.
 
@@ -682,9 +681,13 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
 
-  1. If |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is |ongoingNavigation|, then [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
+  1. If |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is |ongoingNavigation|, then:
 
-     <p class="note">This means the <a spec="HTML">navigate</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=AppHistory/promote the upcoming non-traverse navigation to ongoing=].
+    <p class="note">This means the <a spec="HTML">navigate</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=AppHistory/promote the upcoming non-traverse navigation to ongoing=].
+
+    1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
+
+    1. Return [=a promise rejected with=] an "{{AbortError}}" {{DOMException}}.
 
   1. If |appHistory|'s [=AppHistory/to-be-set serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |appHistory|'s [=AppHistory/to-be-set serialized state=].
 
@@ -1135,7 +1138,6 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |shouldContinue| be |dispatchResult|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
   1. Set |appHistory|'s [=AppHistory/post-navigate event ongoing navigation signal=] to |event|'s {{AppHistoryNavigateEvent/signal}}.
-  1. If |ongoingNavigation| is not null, then set |ongoingNavigation|'s [=app history API navigation/fired navigate event=] to true.
   1. If |appHistory|'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then:
     1. [=Finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
     1. Return false.
@@ -1172,7 +1174,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
       1. Set |appHistory|'s [=AppHistory/to-be-set serialized state=] to null.
 
       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
-  1. Otherwise, |navigationType| is not "{{AppHistoryNavigationType/traverse}}", [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
+  1. Otherwise, if |navigationType| is not "{{AppHistoryNavigationType/traverse}}" and |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is not set, then [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
      <p class="note">If |navigationType| is "{{AppHistoryNavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform an app history traversal=].
   1. Return |shouldContinue|.
 </div>
@@ -1195,9 +1197,9 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |appHistory|'s [=AppHistory/transition=] is not null, then:
     1. [=Reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |error|.
     1. Set |appHistory|'s [=AppHistory/transition=] to null.
+  1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |error| and the current JavaScript stack in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+    <p class="note">Thus, for example, if this algorithm is reached because of a call to {{Window/stop()|window.stop()}}, these properties would probably end up initialized based on the line of script that called {{Window/stop()|window.stop()}}. But if it's because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0.
   1. If |ongoingNavigation| is non-null, then:
-    1. If |ongoingNavigation|'s [=app history API navigation/fired navigate event=] is true, then [=fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |error| and the current JavaScript stack in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
-       <p class="note">Thus, for example, if this algorithm is reached because of a call to {{Window/stop()|window.stop()}}, these properties would probably end up initialized based on the line of script that called {{Window/stop()|window.stop()}}. But if it's because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0.
     1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |error|.
     1. Perform |ongoingNavigation|'s [=app history API navigation/cleanup step=].
 </div>
