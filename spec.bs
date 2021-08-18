@@ -912,7 +912,7 @@ enum AppHistoryNavigationType {
   <dd>
     <p>True if {{AppHistoryNavigateEvent/transitionWhile()}} can be called to convert this navigation into a single-page navigation; false otherwise.
 
-    <p>Generally speaking, this will be true whenever the destination URL is [=rewritable=] relative to the page's current URL, except for cross-document back/forward navigations, where it will always be false.
+    <p>Generally speaking, this will be true whenever the current {{Document}} [=can have its URL rewritten=] to the destination URL, except for cross-document back/forward navigations, where it will always be false.
   </dd>
 
   <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/userInitiated}}</code>
@@ -1103,8 +1103,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |ongoingNavigation| be null.
   1. If |destination|'s [=AppHistoryDestination/key=] is null, then set |ongoingNavigation| to |appHistory|'s [=AppHistory/ongoing non-traverse navigation=].
   1. Otherwise, if |appHistory|'s [=AppHistory/ongoing traverse navigations=][|destination|'s [=AppHistoryDestination/key=]] [=map/exists=], then set |ongoingNavigation| to |appHistory|'s [=AppHistory/ongoing traverse navigations=][|destination|'s [=AppHistoryDestination/key=]].
-  1. Let |currentURL| be |appHistory|'s [=relevant global object=]'s [=associated document=]'s [=Document/URL=].
-  1. If |destination|'s [=AppHistoryDestination/URL=] is [=rewritable=] relative to |currentURL|, and either |destination|'s [=AppHistoryDestination/is same document=] is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
+  1. Let |document| be |appHistory|'s [=relevant global object=]'s [=associated document=].
+  1. If |document| [=can have its URL rewritten=] to |destination|'s [=AppHistoryDestination/URL=], and either |destination|'s [=AppHistoryDestination/is same document=] is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
   1. If either |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or  |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
   1. If both |event|'s {{AppHistoryNavigateEvent/canTransition}} and |event|'s {{Event/cancelable}} are false, then return true.
      <p class="note">In this case we are definitely performing a cross-document navigation or traversal. We don't clean up |ongoingNavigation| however, since we might end up [=finalizing with an aborted navigation error=] before the current {{Document}} unloads.
@@ -1121,6 +1121,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |ongoingNavigation| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/info}} to |ongoingNavigation|'s [=app history API navigation/info=]. Otherwise, initialize it to undefined.
      <p class="note">At this point |ongoingNavigation|'s [=app history API navigation/info=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=app history API navigation=].
   1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |appHistory|'s [=relevant Realm=].
+  1. Let |currentURL| be |document|'s [=Document/URL=].
   1. If all of the following are true:
     * |destination|'s [=AppHistoryDestination/is same document=] is true;
     * |destination|'s [=AppHistoryDestination/URL=] [=url/equals=] |currentURL| with <i>[=url/equals/exclude fragments=]</i> set to true; and
@@ -1144,7 +1145,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Set |appHistory|'s [=AppHistory/transition=] to |transition|.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
         1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
-        1. Run the <a spec="HTML">URL and history update steps</a> given |event|'s [=relevant global object=]'s [=associated document=] and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+        1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
         1. Set |shouldContinue| to false.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |destination|'s [=AppHistoryDestination/is same document=] is true, then [=wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
@@ -1215,15 +1216,28 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. For each |ongoingTraversal| of |traversals|: [=finalize with an aborted navigation error=] given |appHistory| and |ongoingTraversal|.
 </div>
 
-<!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
-A [=URL=] is <dfn>rewritable</dfn> relative to another [=URL=] if they differ in only the [=url/path=], [=url/query=], or [=url/fragment=] components.
+<div algorithm>
+  A {{Document}} <dfn>can have its URL rewritten</dfn> to a [=URL=] |url| if the following algorithm returns true:
+
+  1. Let |documentURL| be |document|'s [=Document/URL=].
+
+  1. If |url| and |documentURL| differ in any component other than the [=url/path=], [=url/query=], or [=url/fragment=] components, then return false.
+
+  1. If |url|'s [=url/origin=] is not [=same origin=] with |document|'s [=Document/origin=], and |url| and |documentURL| differ in any component other than the [=url/fragment=] component, then return false.
+
+     <p class="note">This prevents sandboxed content from spoofing other pages on the same origin.</p>
+
+  1. Return true.
+
+  <p class="advisement">The intent here is to encapsulate what is currently steps 6.4 and 6.5 of the <a spec="HTML">shared history push/replace state steps</a>, so that there is a common primitive shared between app history's URL rewriting capabilities and {{History/pushState()}}/{{History/replaceState()}}. However, note that per <a href="https://github.com/whatwg/html/issues/6836">whatwg/html#6836</a>, the spec doesn't quite match browsers. We plan to straighten this out and continue using a shared primitive.</p>
+</div>
 
 <div class="example" id="example-rewritable-url">
-  `https://example.com/foo?bar#baz` is rewritable relative to `https://example.com/qux`.
+  A {{Document}} whose [=Document/URL=] is `https://example.com/foo` [=can have its URL rewritten=] to `https://example.com/foo?bar#baz`.
 
-  However, the concept is not the same as the two URLs' [=url/origins=] being [=same origin|the same=]: `https://user:password@example.com/qux` is not rewritable relative to `https://example.com/qux`.
+  However, the concept is not the same as the two URLs' [=url/origins=] being [=same origin|the same=]: a {{Document}} whose [=Document/URL=] is `https://user:password@example.com/qux` cannot have its URL rewritten to `https://example.com/qux`, despite the origins matching.
 
-  Similarly, `about:blank` or `blob:` URLs are not rewritable relative to `https:` URLs, despite there being cases where a `https`:-[=Document/URL=] {{Document}} is [=same origin=] with an `about:blank` or `blob:`-derived {{Document}}.
+  Similarly, a {{Document}} whose [=Document/URL=] is `about:blank` or a `blob:` URL cannot have its URL rewritten to a `https:` URL, even if the {{Document}}'s [=Document/origin=] matches the `https:` URL in question.
 </div>
 
 <h2 id="apphistoryentry-class">App history entries</h2>
