@@ -45,6 +45,8 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: historyHandling; url: browsing-the-web.html#navigation-hh
       text: navigationType; url: browsing-the-web.html#navigation-navigationtype
       text: exceptionsEnabled; url: browsing-the-web.html#exceptions-enabled
+    for: browsing context
+      text: discard; url: window-object.html#a-browsing-context-is-discarded
   type: method
     for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
 spec: html; urlPrefix: https://whatpr.org/html/6315/
@@ -1198,18 +1200,19 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |appHistory| be |bc|'s [=browsing context/active window=]'s [=Window/app history=].
   1. If |appHistory|'s [=AppHistory/ongoing navigation signal=] is null, then return.
   1. Let |ongoingNavigation| be |appHistory|'s [=AppHistory/ongoing non-traverse navigation=].
-  1. If |ongoingNavigation| is null, and the navigation being canceled is an "<a for="history handling behavior">`entry update`</a>" navigation that originally came from traversal to a [=session history entry=] |she|, then:
-    <p class="advisement">This predicate should be made more precise when we define navigation cancelation in detail.</p>
-    1. Let |key| be |she|'s [=session history entry/app history key=].
-    1. If |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|] exists, then set |ongoingNavigation| to [=AppHistory/ongoing traverse navigations=][|key|].
+  1. If |ongoingNavigation| is null, and |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then:
+    1. Let |key| be |appHistory|'s [=AppHistory/ongoing navigate event=]'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/key=].
+    1. If |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|] exists, then set |ongoingNavigation| to |appHistory|'s [=AppHistory/ongoing traverse navigations=][|key|].
+
+    <p class="note">This case will only be triggered if this algorithm is called by [=inform app history about browsing context discarding=]. In particular, it can happen if the browsing context is [=browsing context/discarded=] during the firing of the {{AppHistory/navigate}} event.
   1. [=Finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
 </div>
 
 <div algorithm>
-  To <dfn>inform app history about canceling traversals</dfn> in a [=browsing context=] |bc|:
+  To <dfn>inform app history about browsing context discarding</dfn> given a [=browsing context=] |bc|:
 
+  1. [=Inform app history about canceling navigation=] in |bc|.
   1. Let |appHistory| be |bc|'s [=browsing context/active window=]'s [=Window/app history=].
-  1. If |appHistory|'s [=AppHistory/ongoing navigation signal=] is null, then return.
   1. Let |traversals| be a [=list/clone=] of |appHistory|'s [=AppHistory/ongoing traverse navigations=].
   1. For each |ongoingTraversal| of |traversals|: [=finalize with an aborted navigation error=] given |appHistory| and |ongoingTraversal|.
 </div>
@@ -1592,7 +1595,9 @@ Specifically, the spec uses a few phrases:
 
 * "Remove any tasks queued by the history traversal task source that are associated with any Document objects in the top-level browsing context's document family." This cancels queued-up traversals that have not yet made their way back to the main event loop. This is currently called from any same-document navigations, i.e. the <a spec="HTML">URL and history update steps</a> and <a spec="HTML">navigating to a fragment</a>, as well as as part of <a spec="HTML">traverse the history</a> for cross-document traversals.
 
-We assume that the eventual model will retain essentially these two primitives: canceling not-yet-mature navigations, and canceling queued-up traversals. When exactly these two operations will be invoked is dependent on how the discussion goes in <a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a>.
+<a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a> reveals that implementations don't really follow this breakdown. In particular, modulo one case in Firefox, traversals are only canceled as part of [=browsing context/discarding=] a browsing context.
+
+That leaves us with two main operations: canceling not-yet-mature navigations, and dealing with browsing context discarding.
 
 <hr>
 
@@ -1615,6 +1620,6 @@ Without the {{AppHistory/navigate}} event handler, this kind of synchronous frag
 
 The integration is then as follows:
 
-* Wherever the spec ends up canceling not-yet-mature navigations for a browsing context |bc|, we also [=inform app history about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
+* Wherever the spec ends up canceling not-yet-mature navigations for a [=browsing context=] |bc|, we also [=inform app history about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
 
-* Wherever the spec ends up canceling queued-up traversals for a browsing context |bc|, we also [=inform app history about canceling traversals=] in |bc|. (Regardless of whether or not there are any traversals queued up.)
+* When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform app history about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in fligh, or any traversals queued up.)
