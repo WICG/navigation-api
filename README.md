@@ -1332,7 +1332,7 @@ Here's a summary table:
 
 - † = No if cross-document
 - ‡ = No if triggered via, e.g., `element.click()`
-- \* = No if the URL differs from the page's current one in components besides path/fragment/query
+- \* = No if the URL differs from the page's current one in components besides path/query/fragment, or is cross-origin from the current page and differs in any component besides fragment.
 - Δ = No if cross-document and initiated from a [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) window, e.g. `frames['cross-origin-frame'].location.href = ...` or `<a target="cross-origin-frame">`
 - ◊ = fragment navigations initiated by `<meta http-equiv="refresh">` or the `Refresh` header are only same-document in some browsers: [whatwg/html#6451](https://github.com/whatwg/html/issues/6451)
 
