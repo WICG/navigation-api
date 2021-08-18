@@ -1220,7 +1220,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   To <dfn>inform app history about canceling traversals</dfn> in a [=browsing context=] |bc|:
 
   1. Let |appHistory| be |bc|'s [=browsing context/active window=]'s [=Window/app history=].
-  1. For each |ongoingTraversal| of |appHistory|'s [=AppHistory/ongoing traverse navigations=]: [=finalize with an aborted navigation error=] given |appHistory| and |ongoingTraversal|.
+  1. Let |traversals| be a [=list/clone=] of |appHistory|'s [=AppHistory/ongoing traverse navigations=].
+  1. For each |ongoingTraversal| of |traversals|: [=finalize with an aborted navigation error=] given |appHistory| and |ongoingTraversal|.
 </div>
 
 <!-- Remember to modify pushState()/replaceState() to use this, when we eventually move to the HTML Standard. -->
