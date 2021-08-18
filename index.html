@@ -1890,7 +1890,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>appHistory</var> be <var>bc</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-window" id="ref-for-active-window①">active window</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history②">app history</a>.</p>
      <li data-md>
-      <p>For each <var>ongoingTraversal</var> of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations⑧">ongoing traverse navigations</a>: <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑧">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingTraversal</var>.</p>
+      <p>Let <var>traversals</var> be a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-clone" id="ref-for-list-clone">clone</a> of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-traverse-navigations" id="ref-for-apphistory-ongoing-traverse-navigations⑧">ongoing traverse navigations</a>.</p>
+     <li data-md>
+      <p>For each <var>ongoingTraversal</var> of <var>traversals</var>: <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑧">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingTraversal</var>.</p>
     </ol>
    </div>
    <p>A <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url③">URL</a> is <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="rewritable">rewritable</dfn> relative to another <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url④">URL</a> if they differ in only the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path">path</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-query" id="ref-for-concept-url-query">query</a>, or <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment②">fragment</a> components.</p>
@@ -3346,6 +3348,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-iteration-break">1.1. Introspecting the app history entry list</a> <a href="#ref-for-iteration-break①">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-list-clone">
+   <a href="https://infra.spec.whatwg.org/#list-clone">https://infra.spec.whatwg.org/#list-clone</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-list-clone">2.3. Firing the event</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-list-contain">
    <a href="https://infra.spec.whatwg.org/#list-contain">https://infra.spec.whatwg.org/#list-contain</a><b>Referenced in:</b>
    <ul>
@@ -3835,6 +3843,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-list-append">append</span>
      <li><span class="dfn-paneled" id="term-for-assert">assert</span>
      <li><span class="dfn-paneled" id="term-for-iteration-break">break</span>
+     <li><span class="dfn-paneled" id="term-for-list-clone">clone</span>
      <li><span class="dfn-paneled" id="term-for-list-contain">contain</span>
      <li><span class="dfn-paneled" id="term-for-map-exists">exist <small>(for map)</small></span>
      <li><span class="dfn-paneled" id="term-for-list-iterate">for each</span>
