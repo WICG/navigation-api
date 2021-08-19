@@ -349,27 +349,31 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 </dl>
 
 <div algorithm>
-  The <dfn attribute for="AppHistory">current</dfn> getter steps are:
+  The <dfn for="AppHistory">current entry</dfn> for an {{AppHistory}} |appHistory| is the result running of the following algorithm:
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
+  1. If |appHistory|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
 
-  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return null.
+  1. If |appHistory|'s [=AppHistory/current index=] is &minus;1, then return null.
 
      <p class="note">This occurs if accessing the API while on the initial `about:blank` {{Document}}, where the [=AppHistory/update the entries=] algorithm will not yet have been run to completion.
 
-  1. Return [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]].
+  1. Return |appHistory|'s [=AppHistory/entry list=][|appHistory|'s [=AppHistory/current index=]].
 </div>
+
+<p algorithm>
+  The <dfn attribute for="AppHistory">current</dfn> getter steps are to return the [=AppHistory/current entry=] for [=this=].
+</p>
 
 <div algorithm>
   The <dfn method for="AppHistory">updateCurrent(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. Let |current| be the [=AppHistory/current entry=] for [=this=].
 
-  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If |current| is null, then throw an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |serializedState| be [$StructuredSerializeForStorage$](|options|["{{AppHistoryUpdateCurrentOptions/state}}"]), rethrowing any exceptions.
 
-  1. Set [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] to |serializedState|.
+  1. Set |current|'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] to |serializedState|.
 </div>
 
 <h3 id="ongoing-state">Ongoing navigation tracking</h3>
@@ -660,7 +664,11 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. If |options|["{{AppHistoryReloadOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryReloadOptions/state}}"]). If this throws an exception, return [=a promise rejected with=] that exception.
 
-  1. Otherwise, if [=this=]'s [=AppHistory/current index=] is not &minus;1, then set |serializedState| to [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=]]'s [=session history entry/app history state=].
+  1. Otherwise,
+
+    1. Let |current| be the [=AppHistory/current entry=] of [=this=].
+
+    1. If |current| is not null, then set |serializedState| to |current|'s [=session history entry/app history state=].
 
   1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it exists; otherwise, undefined.
 
@@ -785,7 +793,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. If |appHistory|'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. If |appHistory|'s [=AppHistory/entry list=][|appHistory|'s [=AppHistory/current index=]]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=] equals |key|, then return [=a promise resolved with=] undefined.
+  1. If |appHistory|'s [=AppHistory/current entry=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=] equals |key|, then return [=a promise resolved with=] undefined.
 
   1. Let |navigable| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=browsing context/containing navigable=].
 
@@ -1140,8 +1148,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Let |shouldContinue| be |dispatchResult|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
   1. If |dispatchResult| is true:
-    1. Assert: |appHistory|'s [=AppHistory/current index=] is not &minus;1.
-    1. Let |fromEntry| be |appHistory|'s [=AppHistory/entry list=][|appHistory|'s [=AppHistory/current index=]].
+    1. Let |fromEntry| be the [=AppHistory/current entry=] for |appHistory|.
+    1. Assert: |fromEntry| is not null.
     1. Let |transition| be a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
     1. Set |appHistory|'s [=AppHistory/transition=] to |transition|.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
