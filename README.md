@@ -865,19 +865,19 @@ async function showPhoto(photoId) {
 
 Note how in the event handler for these events, `appHistory.current` will be set as expected (and equal to `e.target`), so that the event handler can use its properties and methods (like `id`, `url`, or `getState()`) as needed.
 
-Finally, there's a `dispose` event, which occurs when an app history entry is permanently evicted and unreachable: for example, in the following scenario.
+Finally, there's a `beforedispose` event, which occurs when an app history entry is about to be permanently evicted and unreachable: for example, in the following scenario.
 
 ```js
 const startingKey = appHistory.current.key;
 
 await appHistory.navigate("/1");
-appHistory.current.addEventListener("dispose", () => console.log(1));
+appHistory.current.addEventListener("beforedispose", () => console.log(1));
 
 await appHistory.navigate("/2");
-appHistory.current.addEventListener("dispose", () => console.log(2));
+appHistory.current.addEventListener("beforedispose", () => console.log(2));
 
 await appHistory.navigate("/3");
-appHistory.current.addEventListener("dispose", () => console.log(3));
+appHistory.current.addEventListener("beforedispose", () => console.log(3));
 
 await appHistory.goTo(startingKey);
 await appHistory.navigate("/1-b");
@@ -886,6 +886,10 @@ await appHistory.navigate("/1-b");
 ```
 
 This can be useful for cleaning up any information in secondary stores, such as `sessionStorage` or caches, when we're guaranteed to never reach those particular history entries again.
+
+Note that this while this event is firing, `appHistory.entries()` will still return a snapshot containing the entry; only after all `beforedispose` events fire does it get updated.
+
+Also note that this event will fire right before the `pagehide` event, if the navigation causing the entries to be disposed is a cross-document navigation.
 
 ### Performance timeline API integration
 
@@ -926,9 +930,10 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
 1. Otherwise:
     1. `appHistory.current` fires `navigatefrom`.
     1. `location.href` updates.
-    1. `appHistory.current` updates. `appHistory.transition` is created.
+    1. `appHistory.transition` is created.
+    1. Any now-unreachable `AppHistoryEntry` instances fire `beforedispose`.
+    1. `appHistory.current` updates.
     1. `appHistory.current` fires `navigateto`.
-    1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
     1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.transitionWhile()`.
     1. After the promise passed to `event.transitionWhile()` fulfills, or after one microtask if `event.transitionWhile()` was not called:
@@ -1114,7 +1119,7 @@ The app history API provides several replacements that subsume these events:
 
 - To react to navigations that have completed, use the `navigatesuccess` or `navigateerror` events on `appHistory`. Note that these will only be fired asynchronously, after any handlers passed to the `navigate` event's `event.transitionWhile()` method have completed.
 
-- To watch a particular entry to see when it's navigated to, navigated from, or becomes unreachable, use that `AppHistoryEntry`'s `navigateto`, `navigatefrom`, and `dispose` events. See the [Per-entry events](#per-entry-events) section for more details.
+- To watch a particular entry to see when it's navigated to, navigated from, finishes any async navigation processes, or becomes unreachable, use that `AppHistoryEntry`'s `navigateto`, `navigatefrom`, `finish`, and `beforedispose` events. See the [Per-entry events](#per-entry-events) section for more details.
 
 ## Integration with the existing history API and spec
 

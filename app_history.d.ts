@@ -43,10 +43,10 @@ declare class AppHistoryTransition {
 }
 
 interface AppHistoryEntryEventMap {
+  "beforedispose": Event;
+  "finish": Event;
   "navigateto": Event;
   "navigatefrom": Event;
-  "finish": Event;
-  "dispose": Event;
 }
 
 declare class AppHistoryEntry extends EventTarget {
@@ -58,10 +58,10 @@ declare class AppHistoryEntry extends EventTarget {
 
   getState(): unknown;
 
+  onbeforedispose: ((this: AppHistoryEntry, ev: Event) => any)|null;
+  onfinish: ((this: AppHistoryEntry, ev: Event) => any)|null;
   onnavigateto: ((this: AppHistoryEntry, ev: Event) => any)|null;
   onnavigatefrom: ((this: AppHistoryEntry, ev: Event) => any)|null;
-  onfinish: ((this: AppHistoryEntry, ev: Event) => any)|null;
-  ondispose: ((this: AppHistoryEntry, ev: Event) => any)|null;
 
   addEventListener<K extends keyof AppHistoryEntryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEntryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;

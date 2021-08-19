@@ -47,6 +47,8 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: exceptionsEnabled; url: browsing-the-web.html#exceptions-enabled
     for: browsing context
       text: discard; url: window-object.html#a-browsing-context-is-discarded
+    for: navigation params
+      text: history handling; url: browsing-the-web.html#navigation-params-hh
   type: method
     for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
 spec: html; urlPrefix: https://whatpr.org/html/6315/
@@ -313,9 +315,31 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
     1. Set |index| to |index| + 1.
 
+  1. [=list/For each=] |oldAHE| of |appHistory|'s [=AppHistory/entry list=]:
+
+    1. If |newEntryList| does not [=list/contain=] |oldAHE|, then [=fire an event=] named {{AppHistoryEntry/beforedispose}} at |oldAHE|.
+
   1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
+</div>
+
+<div algorithm>
+  To <dfn>inform app history about document unloading</dfn> given a {{Document}} |document| and a <a spec="HTML">history handling behavior</a> |historyHandling|:
+
+  1. If |historyHandling| is not "<a for="history handling behavior">`default`</a>", then return.
+
+  1. Let |appHistory| be |document|'s [=relevant global object=]'s [=Window/app history=].
+
+  1. Let |index| be |appHistory|'s [=AppHistory/current index=] + 1.
+
+  1. While |index| &lt; |appHistory|'s [=AppHistory/entry list=]'s [=list/size=]:
+
+    1. [=Fire an event=] named {{AppHistoryEntry/beforedispose}} on |appHistory|'s [=AppHistory/entry list=][|index|].
+
+    1. Set |index| to |index| + 1.
+
+  1. [=list/Remove=] all items from |appHistory|'s [=AppHistory/entry list=] after |appHistory|'s [=AppHistory/current index=].
 </div>
 
 <div algorithm>
@@ -1278,7 +1302,10 @@ interface AppHistoryEntry : EventTarget {
 
   any getState();
 
-  // TODO event handlers
+  attribute EventHandler onbeforedispose;
+  attribute EventHandler onfinish;
+  attribute EventHandler onnavigateto;
+  attribute EventHandler onnavigatefrom;
 };
 </xmp>
 
@@ -1372,6 +1399,29 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
 
   <p class="note">This can in theory throw an exception, if attempting to deserialize a large {{ArrayBuffer}} when not enough memory is available.
 </div>
+
+The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistoryEntry}} interface:
+
+<table>
+  <thead>
+    <th>[=Event handler=]
+    <th>[=Event handler event type=]
+  <tbody>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onbeforedispose</dfn>
+      <td><dfn event for="AppHistoryEntry">beforedispose</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onfinish</dfn>
+      <td><dfn event for="AppHistoryEntry">finish</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onnavigateto</dfn>
+      <td><dfn event for="AppHistoryEntry">navigateto</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onnavigatefrom</dfn>
+      <td><dfn event for="AppHistoryEntry">navigatefrom</dfn>
+</table>
+
+TODO: actually fire {{AppHistoryEntry/finish}}, {{AppHistoryEntry/navigateto}}, and {{AppHistoryEntry/navigatefrom}}.
 
 <h2 id="navigate-patches">Patches to fire the {{AppHistory/navigate}} event</h2>
 
@@ -1617,6 +1667,14 @@ Potentially update the <a spec="HTML">traverse the history</a> algorithm to cons
 </div>
 
 <p class="note">We do not [=AppHistory/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any app history entry list.
+
+<div algorithm="unload a document patch">
+  Update the <a spec="HTML">unload a document</a> algorithm with a new parameter, a <a spec="HTML">history handling behavior</a> |historyHandling|. Ensure that <a spec="HTML">update the session history with the new page</a> passes along its <var ignore>navigationParams</var>'s [=navigation params/history handling=] when it calls <a spec="HTML">unload a document</a>.
+
+  Then, modify <a spec="HTML">unload a document</a> with the following step, before the step which fires {{Window/pagehide}}:
+
+  1. [=Inform app history about document unloading=] given <var ignore>document</var> and |historyHandling|.
+</div>
 
 <h2 id="other-patches">Other patches</h2>
 
