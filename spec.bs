@@ -1170,12 +1170,13 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |dispatchResult| is true:
     1. Let |fromEntry| be the [=AppHistory/current entry=] for |appHistory|.
     1. Assert: |fromEntry| is not null.
-    1. Let |transition| be a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
-    1. Set |appHistory|'s [=AppHistory/transition=] to |transition|.
-    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
-        1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
-        1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
-        1. Set |shouldContinue| to false.
+    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty:
+      1. Let |transition| be a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
+      1. Set |appHistory|'s [=AppHistory/transition=] to |transition|.
+      1. If |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
+          1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
+          1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+          1. Set |shouldContinue| to false.
     1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |destination|'s [=AppHistoryDestination/is same document=] is true, then [=wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
