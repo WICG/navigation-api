@@ -147,7 +147,7 @@ The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=th
 <xmp class="idl">
 [Exposed=Window]
 interface AppHistory : EventTarget {
-  sequence<AppHistoryEntry> entries();
+  FrozenArray<AppHistoryEntry> entries();
   readonly attribute AppHistoryEntry? current;
   undefined updateCurrent(AppHistoryUpdateCurrentOptions options);
   readonly attribute AppHistoryTransition? transition;
