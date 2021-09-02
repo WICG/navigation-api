@@ -1091,7 +1091,7 @@ To read the current entry's state, instead of using `history.state`, use `appHis
 
 In general, state in app history is expected to be more useful than state in the `window.history` API, because:
 
-- It can be introspected or modified even for the non-current entry, e.g. using `appHistory.entries()[i].getState()`.
+- It can be introspected even for the non-current entry, e.g. using `appHistory.entries()[i].getState()`.
 - It is not erased by navigations that are not under the developer's control, such as fragment navigations (for which the state is copied over) and iframe navigations (which don't affect the app history list).
 
 This means that the patterns that are often necessary to reliably store application and UI state with `window.history`, such as maintaining a side-table or using `sessionStorage`, should not be necessary with `window.appHistory`.
@@ -1267,6 +1267,7 @@ Thanks also to
 [@MelSumner](https://github.com/MelSumner),
 [@mmocny](https://github.com/mmocny),
 [@natechapin](https://github.com/natechapin),
+[@posva](https://github.com/posva),
 [@pshrmn](https://github.com/pshrmn),
 [@SetTrend](https://github.com/SetTrend),
 [@slightlyoff](https://github.com/slightlyoff),
