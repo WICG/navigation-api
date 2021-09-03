@@ -1163,19 +1163,21 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigation signal=] is null.
   1. Set |appHistory|'s [=AppHistory/ongoing navigation signal=] to |event|'s {{AppHistoryNavigateEvent/signal}}.
   1. Let |dispatchResult| be the result of [=dispatching=] |event| at |appHistory|.
-  1. Let |shouldContinue| be |dispatchResult|.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
-  1. If |dispatchResult| is true:
+  1. If |dispatchResult| is false:
+    1. If |navigationType| is not "{{AppHistoryNavigationType/traverse}}" and |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is unset, then [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
+       <p class="note">If |navigationType| is "{{AppHistoryNavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform an app history traversal=].
+    1. Return false.
+  1. Let |hadTransitionWhile| be true if |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty; otherwise false.
+  1. Let |endResultIsSameDocument| be true if |hadTransitionWhile| is true or |destination|'s [=AppHistoryDestination/is same document=] is true.
+  1. If |hadTransitionWhile| is true:
     1. Let |fromEntry| be the [=AppHistory/current entry=] for |appHistory|.
     1. Assert: |fromEntry| is not null.
-    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty:
-      1. Let |transition| be a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
-      1. Set |appHistory|'s [=AppHistory/transition=] to |transition|.
-      1. If |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
-          1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
-          1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
-          1. Set |shouldContinue| to false.
-    1. If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty or |destination|'s [=AppHistoryDestination/is same document=] is true, then [=wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
+    1. Set |appHistory|'s [=AppHistory/transition=] to a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
+  1. If |endResultIsSameDocument| is true:
+    1. Let |transition| be |appHistory|'s [=AppHistory/transition=].
+    1. Assert: |transition| is not null.
+    1. [=Wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
         1. [=Resolve=] |transition|'s [=AppHistoryTransition/finished promise=] with undefined.
@@ -1191,13 +1193,13 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
         1. If |ongoingNavigation| is non-null, then:
           1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/returned promise=] with |rejectionReason|.
           1. [=AppHistory/Clean up an API navigation=] given |appHistory| and |ongoingNavigation|.
-
-      <p class="note">If |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is non-empty, then {{AppHistoryNavigateEvent/transitionWhile()}} was called and so we're performing a same-document navigation, for which we want to fire {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events, and resolve or reject the promise returned by the corresponding {{AppHistory/navigate()|appHistory.navigate()}} call if one exists. Otherwise, if the navigation is same-document and was not canceled, we still perform these actions after a microtask (by waiting for zero promises), or after the appropriate task in the traversal case.
-    1. Otherwise, if |ongoingNavigation| is non-null, then set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
-       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
-  1. Otherwise, if |navigationType| is not "{{AppHistoryNavigationType/traverse}}" and |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is unset, then [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
-     <p class="note">If |navigationType| is "{{AppHistoryNavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform an app history traversal=].
-  1. Return |shouldContinue|.
+  1. Otherwise, if |ongoingNavigation| is non-null, then set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
+     <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
+  1. If |hadTransitionWhile| is true and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
+    1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
+    1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+    1. Return false.
+  1. Return true.
 </div>
 
 <div algorithm>
