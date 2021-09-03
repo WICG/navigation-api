@@ -1517,7 +1517,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-cantransition" id="ref-for-dom-apphistorynavigateevent-cantransition①">canTransition</a></code></code> 
     <dd>
      <p>True if <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⑧">transitionWhile()</a></code> can be called to convert this navigation into a single-page navigation; false otherwise. </p>
-     <p>Generally speaking, this will be true whenever the current <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document③">Document</a></code> <a data-link-type="dfn" href="#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten">can have its URL rewritten</a> to the destination URL, except for cross-document back/forward navigations, where it will always be false. </p>
+     <p>Generally speaking, this will be true whenever the current <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document③">Document</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten">can have its URL rewritten</a> to the destination URL, except for cross-document back/forward navigations, where it will always be false. </p>
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-userinitiated" id="ref-for-dom-apphistorynavigateevent-userinitiated①">userInitiated</a></code></code> 
     <dd>
      <p>True if this navigation was due to a user clicking on an <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element">a</a></code> element, submitting a <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/forms.html#the-form-element" id="ref-for-the-form-element">form</a></code> element, or using the browser UI to navigate; false otherwise. </p>
@@ -1696,7 +1696,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>document</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑦">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①①">associated document</a>.</p>
      <li data-md>
-      <p>If <var>document</var> <a data-link-type="dfn" href="#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten①">can have its URL rewritten</a> to <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url③">URL</a>, and either <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document③">is same document</a> is true or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①①">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-cantransition" id="ref-for-dom-apphistorynavigateevent-cantransition④">canTransition</a></code> to true. Otherwise, initialize it to false.</p>
+      <p>If <var>document</var> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten①">can have its URL rewritten</a> to <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url③">URL</a>, and either <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-is-same-document" id="ref-for-apphistorydestination-is-same-document③">is same document</a> is true or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①①">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-cantransition" id="ref-for-dom-apphistorynavigateevent-cantransition④">canTransition</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
       <p>If either <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui">browser UI</a></code>" or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①②">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable">cancelable</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
@@ -1909,26 +1909,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>For each <var>traversal</var> of <var>traversals</var>: <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑦">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>traversal</var>.</p>
     </ol>
    </div>
-   <div class="algorithm" data-algorithm="can have its URL rewritten">
-     A <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑥">Document</a></code> <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="can-have-its-url-rewritten">can have its URL rewritten</dfn> to a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url③">URL</a> <var>url</var> if the following algorithm returns true: 
-    <ol>
-     <li data-md>
-      <p>Let <var>documentURL</var> be <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url②">URL</a>.</p>
-     <li data-md>
-      <p>If <var>url</var> and <var>documentURL</var> differ in any component other than the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path">path</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-query" id="ref-for-concept-url-query">query</a>, or <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment②">fragment</a> components, then return false.</p>
-     <li data-md>
-      <p>If <var>url</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin④">same origin</a> with <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin">origin</a>, and <var>url</var> and <var>documentURL</var> differ in any component other than the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment③">fragment</a> component, then return false.</p>
-      <p class="note" role="note">This prevents sandboxed content from spoofing other pages on the same origin.</p>
-     <li data-md>
-      <p>Return true.</p>
-    </ol>
-    <p class="advisement">The intent here is to encapsulate what is currently steps 6.4 and 6.5 of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps" id="ref-for-shared-history-push/replace-state-steps">shared history push/replace state steps</a>, so that there is a common primitive shared between app history’s URL rewriting capabilities and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate" id="ref-for-dom-history-pushstate①">pushState()</a></code>/<code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate" id="ref-for-dom-history-replacestate">replaceState()</a></code>. However, note that per <a href="https://github.com/whatwg/html/issues/6836">whatwg/html#6836</a>, the spec doesn’t quite match browsers. We plan to straighten this out and continue using a shared primitive.</p>
-   </div>
-   <div class="example" id="example-rewritable-url">
-    <a class="self-link" href="#example-rewritable-url"></a> A <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑦">Document</a></code> whose <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url③">URL</a> is <code>https://example.com/foo</code> <a data-link-type="dfn" href="#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten②">can have its URL rewritten</a> to <code>https://example.com/foo?bar#baz</code>. 
-    <p>However, the concept is not the same as the two URLs' <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin①">origins</a> being <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin⑤">the same</a>: a <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑧">Document</a></code> whose <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url④">URL</a> is <code>https://user:password@example.com/qux</code> cannot have its URL rewritten to <code>https://example.com/qux</code>, despite the origins matching.</p>
-    <p>Similarly, a <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑨">Document</a></code> whose <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url⑤">URL</a> is <code>about:blank</code> or a <code>blob:</code> URL cannot have its URL rewritten to a <code>https:</code> URL, even if the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document①⓪">Document</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin①">origin</a> matches the <code>https:</code> URL in question.</p>
-   </div>
    <h2 class="heading settled" data-level="3" id="apphistoryentry-class"><span class="secno">3. </span><span class="content">App history entries</span><a class="self-link" href="#apphistoryentry-class"></a></h2>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed④"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="apphistoryentry"><code><c- g>AppHistoryEntry</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①"><c- n>EventTarget</c-></a> {
@@ -1960,7 +1940,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>The index of this app history entry within <code class="idl"><a data-link-type="idl" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries③">appHistory.entries()</a></code>, or −1 if the entry is not in the app history list. </p>
     <dt><code><var>entry</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-samedocument" id="ref-for-dom-apphistoryentry-samedocument①">sameDocument</a></code></code> 
     <dd>
-     <p>Indicates whether or not this app history entry is for the same <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document①①">Document</a></code> as the current <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-document-2" id="ref-for-dom-document-2①">document</a></code> value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations. </p>
+     <p>Indicates whether or not this app history entry is for the same <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑥">Document</a></code> as the current <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-document-2" id="ref-for-dom-document-2①">document</a></code> value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations. </p>
     <dt><code><var>state</var> = <var>entry</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-getstate" id="ref-for-dom-apphistoryentry-getstate②">getState</a></code>()</code> 
     <dd>
      <p>Returns the deserialization of the state stored in this entry, which was added to the entry using <code class="idl"><a data-link-type="idl" href="#dom-apphistory-navigate" id="ref-for-dom-apphistory-navigate①⓪">appHistory.navigate()</a></code>. This state survives session restores. </p>
@@ -2114,7 +2094,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <h3 class="heading settled" data-level="4.3" id="navigate-algorithm-patches"><span class="secno">4.3. </span><span class="content">Navigation algorithm updates</span><a class="self-link" href="#navigate-algorithm-patches"></a></h3>
    <p>With the above infrastructure in place, we can actually fire and handle the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②①">navigate</a></code> event in the following locations:</p>
    <div class="algorithm" data-algorithm="shared history push/replace steps">
-     Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps" id="ref-for-shared-history-push/replace-state-steps①">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps②">URL and history update steps</a>. 
+     Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps" id="ref-for-shared-history-push/replace-state-steps">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps②">URL and history update steps</a>. 
     <ol>
      <li data-md>
       <p>Let <var>appHistory</var> be <var>history</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑥">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history③">app history</a>.</p>
@@ -2152,9 +2132,9 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p><var>userInvolvement</var> is "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui④">browser UI</a></code>"</p>
        <li data-md>
-        <p><var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document②">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin②">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain①">same origin-domain</a> with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context" id="ref-for-source-browsing-context②">source browsing context</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document③">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a></p>
+        <p><var>browsingContext</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document②">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain①">same origin-domain</a> with the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context" id="ref-for-source-browsing-context②">source browsing context</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document③">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin①">origin</a></p>
        <li data-md>
-        <p><var>browsingContext</var>’s only entry in its <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history②">session history</a> is the <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document①②">Document</a></code> that was added when <var>browsingContext</var> was <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context">created</a></p>
+        <p><var>browsingContext</var>’s only entry in its <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history②">session history</a> is the <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑦">Document</a></code> that was added when <var>browsingContext</var> was <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context">created</a></p>
       </ul>
       <p>then:</p>
       <ol>
@@ -2196,7 +2176,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>traversable</var> be <var>source browsing context</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#bc-navigable" id="ref-for-bc-navigable①">containing navigable</a>'s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-traversable" id="ref-for-nav-traversable①">traversable navigable</a>.</p>
      <li data-md>
-      <p>Let <var>initiatorOrigin</var> be <var>source browsing context</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document④">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin④">origin</a>.</p>
+      <p>Let <var>initiatorOrigin</var> be <var>source browsing context</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document④">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin②">origin</a>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps①">Enqueue the following steps</a> to <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue②">session history traversal queue</a>:</p>
       <ol>
@@ -2235,7 +2215,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p>Let <var>destinationEntry</var> be the item in the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#getting-session-history-entries" id="ref-for-getting-session-history-entries①">getting the session history entries</a> for <var>navigable</var> that has the greatest <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#she-step" id="ref-for-she-step③">step</a> less than or equal to <var>step</var>.</p>
        <li data-md>
-        <p>If <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> is not equal to <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document①">active document</a>, and <var>initiatorOrigin</var> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain③">same origin-domain</a> with <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document②">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑤">origin</a>, then abort these steps.</p>
+        <p>If <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> is not equal to <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document①">active document</a>, and <var>initiatorOrigin</var> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain③">same origin-domain</a> with <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document②">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a>, then abort these steps.</p>
        <li data-md>
         <p>Let <var>appHistory</var> be <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-document" id="ref-for-nav-document③">active document</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑨">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑥">app history</a>.</p>
        <li data-md>
@@ -2270,16 +2250,16 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace③"><code>replace</code></a>" case by adding the following step after the construction of <var>newEntry</var>: 
     <ol>
      <li data-md>
-      <p>If <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑤">origin</a> is the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin⑥">same</a> as <var>sessionHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑤">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑥">origin</a>, then set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key⑦">app history key</a> to <var>sessionHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑥">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key⑧">app history key</a>.</p>
+      <p>If <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑤">origin</a> is the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin" id="ref-for-same-origin④">same</a> as <var>sessionHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑤">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑥">origin</a>, then set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key⑦">app history key</a> to <var>sessionHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑥">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key⑧">app history key</a>.</p>
     </ol>
    </div>
    <h3 class="heading settled" data-level="5.3" id="session-history-patches-state"><span class="secno">5.3. </span><span class="content">Carrying over the app history state</span><a class="self-link" href="#session-history-patches-state"></a></h3>
    <div class="algorithm" data-algorithm="navigate to a fragment state patch"> Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑥">navigate to a fragment</a> algorithm by updating the step which creates and appends a new session history entry to carry over the <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑨">app history state</a> from the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑦">current entry</a> as well. </div>
    <h3 class="heading settled" data-level="5.4" id="session-history-patches-origin"><span class="secno">5.4. </span><span class="content">Tracking the <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑦">origin</a> member</span><a class="self-link" href="#session-history-patches-origin"></a></h3>
-   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page①">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace④"><code>replace</code></a>" and "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default③"><code>default</code></a>" cases to set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑧">origin</a> to <var>newDocument</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑥">origin</a> as part of its creation.</p>
-   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑦">navigate to a fragment</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑧">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑨">origin</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑧">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document④">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑦">origin</a>.</p>
-   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps③">URL and history update steps</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①⓪">origin</a> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑧">origin</a>.</p>
-   <p>Potentially update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">traverse the history</a> algorithm to consult the new <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①①">origin</a> field, instead of checking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑤">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑨">origin</a>, since the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑥">document</a> can disappear?? Needs further investigation.</p>
+   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page①">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace④"><code>replace</code></a>" and "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default③"><code>default</code></a>" cases to set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑧">origin</a> to <var>newDocument</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin④">origin</a> as part of its creation.</p>
+   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑦">navigate to a fragment</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑧">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑨">origin</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑧">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document④">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑤">origin</a>.</p>
+   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps③">URL and history update steps</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①⓪">origin</a> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑥">origin</a>.</p>
+   <p>Potentially update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">traverse the history</a> algorithm to consult the new <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①①">origin</a> field, instead of checking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑤">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑦">origin</a>, since the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑥">document</a> can disappear?? Needs further investigation.</p>
    <h3 class="heading settled" data-level="5.5" id="session-history-patches-update"><span class="secno">5.5. </span><span class="content">Updating the <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑧">AppHistory</a></code> object</span><a class="self-link" href="#session-history-patches-update"></a></h3>
    <div class="algorithm" data-algorithm="traverse the history update patch">
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history①">traverse the history</a> algorithm by adding the following step before the final step which fires various events: 
@@ -2295,7 +2275,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p><a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries②">Update the entries</a> of <var>document</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global③①">relevant global object</a>'s <a data-link-type="dfn" href="#window-app-history" id="ref-for-window-app-history⑧">app history</a>.</p>
     </ol>
    </div>
-   <p class="note" role="note">We do not <a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries③">update the entries</a> when initially <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context①">creating a new browsing context</a>, as we intentionally don’t want to include the initial <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document①③">Document</a></code> in any app history entry list. </p>
+   <p class="note" role="note">We do not <a data-link-type="dfn" href="#apphistory-update-the-entries" id="ref-for-apphistory-update-the-entries③">update the entries</a> when initially <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context①">creating a new browsing context</a>, as we intentionally don’t want to include the initial <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑧">Document</a></code> in any app history entry list. </p>
    <h2 class="heading settled" data-level="6" id="other-patches"><span class="secno">6. </span><span class="content">Other patches</span><a class="self-link" href="#other-patches"></a></h2>
    <h3 class="heading settled" data-level="6.1" id="cancel-navigation"><span class="secno">6.1. </span><span class="content">Canceling navigation and traversals</span><a class="self-link" href="#cancel-navigation"></a></h3>
    <p>The existing HTML specification discusses canceling a navigation and traverals in a few places. However, the process is not very well-defined, and per <a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a>, is not very interoperable. We plan to make it more rigorous, after the <a href="https://github.com/whatwg/html/issues/5767">session history rewrite</a> lands.</p>
@@ -2360,7 +2340,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <li><a href="#user-navigation-involvement-browser-ui">browser UI</a><span>, in § 4.2</span>
    <li><a href="#dom-apphistory-cangoback">canGoBack</a><span>, in § 1.1</span>
    <li><a href="#dom-apphistory-cangoforward">canGoForward</a><span>, in § 1.1</span>
-   <li><a href="#can-have-its-url-rewritten">can have its URL rewritten</a><span>, in § 2.3</span>
    <li>
     canTransition
     <ul>
@@ -2569,10 +2548,10 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-document②">1.2. The current entry</a>
     <li><a href="#ref-for-document③">2.1. The AppHistoryNavigateEvent class</a>
     <li><a href="#ref-for-document④">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-document⑤">2.3. Firing the event</a> <a href="#ref-for-document⑥">(2)</a> <a href="#ref-for-document⑦">(3)</a> <a href="#ref-for-document⑧">(4)</a> <a href="#ref-for-document⑨">(5)</a> <a href="#ref-for-document①⓪">(6)</a>
-    <li><a href="#ref-for-document①①">3. App history entries</a>
-    <li><a href="#ref-for-document①②">4.3. Navigation algorithm updates</a>
-    <li><a href="#ref-for-document①③">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-document⑤">2.3. Firing the event</a>
+    <li><a href="#ref-for-document⑥">3. App history entries</a>
+    <li><a href="#ref-for-document⑦">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-document⑧">5.5. Updating the AppHistory object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-event">
@@ -2662,10 +2641,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-concept-document-origin">
    <a href="https://dom.spec.whatwg.org/#concept-document-origin">https://dom.spec.whatwg.org/#concept-document-origin</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-document-origin">2.3. Firing the event</a> <a href="#ref-for-concept-document-origin①">(2)</a>
-    <li><a href="#ref-for-concept-document-origin②">4.3. Navigation algorithm updates</a> <a href="#ref-for-concept-document-origin③">(2)</a>
-    <li><a href="#ref-for-concept-document-origin④">4.4. History traversal updates</a> <a href="#ref-for-concept-document-origin⑤">(2)</a>
-    <li><a href="#ref-for-concept-document-origin⑥">5.4. Tracking the origin member</a> <a href="#ref-for-concept-document-origin⑦">(2)</a> <a href="#ref-for-concept-document-origin⑧">(3)</a> <a href="#ref-for-concept-document-origin⑨">(4)</a>
+    <li><a href="#ref-for-concept-document-origin">4.3. Navigation algorithm updates</a> <a href="#ref-for-concept-document-origin①">(2)</a>
+    <li><a href="#ref-for-concept-document-origin②">4.4. History traversal updates</a> <a href="#ref-for-concept-document-origin③">(2)</a>
+    <li><a href="#ref-for-concept-document-origin④">5.4. Tracking the origin member</a> <a href="#ref-for-concept-document-origin⑤">(2)</a> <a href="#ref-for-concept-document-origin⑥">(3)</a> <a href="#ref-for-concept-document-origin⑦">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-abortsignal-signal-abort">
@@ -2685,7 +2663,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://dom.spec.whatwg.org/#concept-document-url">https://dom.spec.whatwg.org/#concept-document-url</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-document-url">1.4. Navigating</a>
-    <li><a href="#ref-for-concept-document-url①">2.3. Firing the event</a> <a href="#ref-for-concept-document-url②">(2)</a> <a href="#ref-for-concept-document-url③">(3)</a> <a href="#ref-for-concept-document-url④">(4)</a> <a href="#ref-for-concept-document-url⑤">(5)</a>
+    <li><a href="#ref-for-concept-document-url①">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-global-fetch">
@@ -2802,6 +2780,13 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element">https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-the-button-element">4.2. Browser UI/user-initiated patches</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-can-have-its-url-rewritten">
+   <a href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten">https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-can-have-its-url-rewritten">2.1. The AppHistoryNavigateEvent class</a>
+    <li><a href="#ref-for-can-have-its-url-rewritten①">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-colno">
@@ -3100,7 +3085,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate">https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-history-pushstate">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-dom-history-pushstate①">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-queue-a-global-task">
@@ -3156,12 +3140,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-hh-replace④">5.4. Tracking the origin member</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-dom-history-replacestate">
-   <a href="https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate">https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-dom-history-replacestate">2.3. Firing the event</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-report-the-exception">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception">https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception</a><b>Referenced in:</b>
    <ul>
@@ -3178,8 +3156,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/origin.html#same-origin">https://html.spec.whatwg.org/multipage/origin.html#same-origin</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-same-origin">1.1. Introspecting the app history entry list</a> <a href="#ref-for-same-origin①">(2)</a> <a href="#ref-for-same-origin②">(3)</a>
-    <li><a href="#ref-for-same-origin③">2.3. Firing the event</a> <a href="#ref-for-same-origin④">(2)</a> <a href="#ref-for-same-origin⑤">(3)</a>
-    <li><a href="#ref-for-same-origin⑥">5.2. Carrying over the app history key</a>
+    <li><a href="#ref-for-same-origin③">2.3. Firing the event</a>
+    <li><a href="#ref-for-same-origin④">5.2. Carrying over the app history key</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-same-origin-domain">
@@ -3244,8 +3222,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-shared-history-push/replace-state-steps">
    <a href="https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps">https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-shared-history-push/replace-state-steps">2.3. Firing the event</a>
-    <li><a href="#ref-for-shared-history-push/replace-state-steps①">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-shared-history-push/replace-state-steps">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-source-browsing-context">
@@ -3501,25 +3478,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-concept-url-fragment">
    <a href="https://url.spec.whatwg.org/#concept-url-fragment">https://url.spec.whatwg.org/#concept-url-fragment</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-url-fragment">2.3. Firing the event</a> <a href="#ref-for-concept-url-fragment①">(2)</a> <a href="#ref-for-concept-url-fragment②">(3)</a> <a href="#ref-for-concept-url-fragment③">(4)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-url-origin">
-   <a href="https://url.spec.whatwg.org/#concept-url-origin">https://url.spec.whatwg.org/#concept-url-origin</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-url-origin">2.3. Firing the event</a> <a href="#ref-for-concept-url-origin①">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-url-path">
-   <a href="https://url.spec.whatwg.org/#concept-url-path">https://url.spec.whatwg.org/#concept-url-path</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-url-path">2.3. Firing the event</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-url-query">
-   <a href="https://url.spec.whatwg.org/#concept-url-query">https://url.spec.whatwg.org/#concept-url-query</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-url-query">2.3. Firing the event</a>
+    <li><a href="#ref-for-concept-url-fragment">2.3. Firing the event</a> <a href="#ref-for-concept-url-fragment①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url">
@@ -3527,7 +3486,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-concept-url">1.4. Navigating</a>
     <li><a href="#ref-for-concept-url①">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-concept-url②">2.3. Firing the event</a> <a href="#ref-for-concept-url③">(2)</a>
+    <li><a href="#ref-for-concept-url②">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-serializer">
@@ -3796,6 +3755,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-concept-document-window">associated document</span>
      <li><span class="dfn-paneled" id="term-for-window-bc">browsing context <small>(for Window)</small></span>
      <li><span class="dfn-paneled" id="term-for-the-button-element">button</span>
+     <li><span class="dfn-paneled" id="term-for-can-have-its-url-rewritten">can have its url rewritten</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-colno">colno</span>
      <li><span class="dfn-paneled" id="term-for-bc-navigable">containing navigable</span>
      <li><span class="dfn-paneled" id="term-for-creating-a-new-browsing-context">create a new browsing context</span>
@@ -3845,7 +3805,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-relevant-settings-object">relevant settings object</span>
      <li><span class="dfn-paneled" id="term-for-hh-reload">reload</span>
      <li><span class="dfn-paneled" id="term-for-hh-replace">replace</span>
-     <li><span class="dfn-paneled" id="term-for-dom-history-replacestate">replaceState(data, unused)</span>
      <li><span class="dfn-paneled" id="term-for-report-the-exception">report an exception</span>
      <li><span class="dfn-paneled" id="term-for-resulting-url-record">resulting url record</span>
      <li><span class="dfn-paneled" id="term-for-same-origin">same origin</span>
@@ -3902,9 +3861,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-concept-url-equals">equal</span>
      <li><span class="dfn-paneled" id="term-for-url-equals-exclude-fragments">exclude fragments</span>
      <li><span class="dfn-paneled" id="term-for-concept-url-fragment">fragment</span>
-     <li><span class="dfn-paneled" id="term-for-concept-url-origin">origin</span>
-     <li><span class="dfn-paneled" id="term-for-concept-url-path">path</span>
-     <li><span class="dfn-paneled" id="term-for-concept-url-query">query</span>
      <li><span class="dfn-paneled" id="term-for-concept-url">url</span>
      <li><span class="dfn-paneled" id="term-for-concept-url-serializer">url serializer</span>
     </ul>
@@ -4859,13 +4815,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <b><a href="#inform-app-history-about-browsing-context-discarding">#inform-app-history-about-browsing-context-discarding</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-inform-app-history-about-browsing-context-discarding">6.1. Canceling navigation and traversals</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="can-have-its-url-rewritten">
-   <b><a href="#can-have-its-url-rewritten">#can-have-its-url-rewritten</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-can-have-its-url-rewritten">2.1. The AppHistoryNavigateEvent class</a>
-    <li><a href="#ref-for-can-have-its-url-rewritten①">2.3. Firing the event</a> <a href="#ref-for-can-have-its-url-rewritten②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistoryentry">
