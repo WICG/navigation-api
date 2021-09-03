@@ -297,9 +297,15 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
   1. Let |index| be 0.
 
+  1. Let |disposedAHEs| be a [=list/clone=] of |appHistory|'s [=AppHistory/entry list=].
+
   1. [=list/For each=] |she| of |appHistorySHEs|:
 
-    1. If |appHistory|'s [=AppHistory/entry list=] [=list/contains=] an {{AppHistoryEntry}} |existingAHE| whose [=AppHistoryEntry/session history entry=] is |she|, then [=list/append=] |existingAHE| to |newEntryList|.
+    1. If |appHistory|'s [=AppHistory/entry list=] [=list/contains=] an {{AppHistoryEntry}} |existingAHE| whose [=AppHistoryEntry/session history entry=] is |she|, then:
+
+      1. [=list/Append=] |existingAHE| to |newEntryList|.
+
+      1. [=list/Remove=] |existingAHE| from |disposedAHEs|.
 
     1. Otherwise:
 
@@ -316,6 +322,10 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
+
+  1. [=list/For each=] |disposedAHE| of |disposedAHEs|:
+
+    1. [=Fire an event=] named {{AppHistoryEntry/dispose}} at |disposedAHE|.
 </div>
 
 <div algorithm>
@@ -1254,7 +1264,10 @@ interface AppHistoryEntry : EventTarget {
 
   any getState();
 
-  // TODO event handlers
+  attribute EventHandler onnavigateto;
+  attribute EventHandler onnavigatefrom;
+  attribute EventHandler onfinish;
+  attribute EventHandler ondispose;
 };
 </xmp>
 
@@ -1348,6 +1361,29 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
 
   <p class="note">This can in theory throw an exception, if attempting to deserialize a large {{ArrayBuffer}} when not enough memory is available.
 </div>
+
+The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistoryEntry}} interface:
+
+<table>
+  <thead>
+    <th>[=Event handler=]
+    <th>[=Event handler event type=]
+  <tbody>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onnavigateto</dfn>
+      <td><dfn event for="AppHistoryEntry">navigateto</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onnavigatefrom</dfn>
+      <td><dfn event for="AppHistoryEntry">navigatefrom</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">onfinish</dfn>
+      <td><dfn event for="AppHistoryEntry">finish</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistoryEntry">ondispose</dfn>
+      <td><dfn event for="AppHistoryEntry">dispose</dfn>
+</table>
+
+TODO: actually fire {{AppHistoryEntry/finish}}, {{AppHistoryEntry/navigateto}}, and {{AppHistoryEntry/navigatefrom}}.
 
 <h2 id="navigate-patches">Patches to fire the {{AppHistory/navigate}} event</h2>
 
