@@ -8,6 +8,11 @@ interface AppHistoryEventMap {
   "navigateerror": ErrorEvent;
 }
 
+interface AppHistoryResult {
+  committed: Promise<AppHistoryEntry>;
+  finished: Promise<AppHistoryEntry>;
+}
+
 declare class AppHistory extends EventTarget {
   entries(): AppHistoryEntry[];
   readonly current: AppHistoryEntry|null;
@@ -17,12 +22,12 @@ declare class AppHistory extends EventTarget {
   readonly canGoBack: boolean;
   readonly canGoForward: boolean;
 
-  navigate(url: string, options?: AppHistoryNavigateOptions): Promise<void>;
-  reload(options?: AppHistoryReloadOptions): Promise<void>;
+  navigate(url: string, options?: AppHistoryNavigateOptions): AppHistoryResult;
+  reload(options?: AppHistoryReloadOptions): AppHistoryResult;
 
-  goTo(key: string, options?: AppHistoryNavigationOptions): Promise<void>;
-  back(options?: AppHistoryNavigationOptions): Promise<void>;
-  forward(options?: AppHistoryNavigationOptions): Promise<void>;
+  goTo(key: string, options?: AppHistoryNavigationOptions): AppHistoryResult;
+  back(options?: AppHistoryNavigationOptions): AppHistoryResult;
+  forward(options?: AppHistoryNavigationOptions): AppHistoryResult;
 
   onnavigate: ((this: AppHistory, ev: AppHistoryNavigateEvent) => any)|null;
   onnavigatesuccess: ((this: AppHistory, ev: Event) => any)|null;
@@ -39,7 +44,7 @@ declare class AppHistoryTransition {
   readonly from: AppHistoryEntry;
   readonly finished: Promise<void>;
 
-  rollback(options?: AppHistoryNavigationOptions): Promise<void>;
+  rollback(options?: AppHistoryNavigationOptions): AppHistoryResult;
 }
 
 interface AppHistoryEntryEventMap {
