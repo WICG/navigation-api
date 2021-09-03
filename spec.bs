@@ -991,9 +991,8 @@ The <dfn attribute for="AppHistoryNavigateEvent">navigationType</dfn>, <dfn attr
 An {{AppHistoryNavigateEvent}} has the following associated values which are only conditionally used:
 
 * <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/reload}}", "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}"
-* <dfn for="AppHistoryNavigateEvent">destination entry</dfn>, a [=session history entry=], used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/traverse}}"
 
-One of these is set appropriately when the event is [[#navigate-event-firing|fired]].
+This is set appropriately when the event is [[#navigate-event-firing|fired]].
 
 An {{AppHistoryNavigateEvent}} also has an associated <dfn for="AppHistoryNavigateEvent">navigation action promises list</dfn>, which is a [=list=] of {{Promise}} objects, initially empty.
 
@@ -1096,7 +1095,6 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   To <dfn>fire a traversal `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=session history entry=] <dfn for="fire a traversal navigate event">|destinationEntry|</dfn>, and an optional [=user navigation involvement=] <dfn for="fire a traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"):
 
   1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in |appHistory|'s [=relevant Realm=].
-  1. Set |event|'s [=AppHistoryNavigateEvent/destination entry=] to |destinationEntry|.
   1. Let |destination| be a [=new=] {{AppHistoryDestination}} created in |appHistory|'s [=relevant Realm=].
   1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
   1. If |destinationEntry|'s [=session history entry/origin=] is [=same origin=] with |appHistory|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
