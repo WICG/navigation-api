@@ -100,7 +100,7 @@ declare class AppHistoryNavigateEvent extends Event {
   readonly formData: FormData|null;
   readonly info: unknown;
 
-  transitionWhile(newNavigationAction: Promise<void>): void;
+  transitionWhile(newNavigationAction: Promise<any>): void;
 }
 
 interface AppHistoryNavigateEventInit extends EventInit {
