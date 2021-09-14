@@ -258,7 +258,7 @@ Unlike the existing history API's `history.go()` method, which navigates by offs
 
 All of these methods return `{ committed, finished }` pairs, where both values are promises. This because navigations can be intercepted and made asynchronous by the `navigate` event handlers that we're about to describe in the next section. There are then several possible outcomes:
 
-- The `navigate` event cancels the navigation without responding to it, in which case both promises reject with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
+- A `navigate` event handler calls `event.preventDefault()`, in which case both promises reject with an `"AbortError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
 - It's not possible to navigate to the given entry, e.g. `appHistory.goTo(key)` was given a non-existant `key`, or `appHistory.back()` was called when there's no previous entries in the app history list. In this case, both promises reject with an `"InvalidStateError"` `DOMException`, and `location.href` and `appHistory.current` stay on their original value.
 
