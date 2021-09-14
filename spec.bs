@@ -330,7 +330,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
   1. If |appHistory|'s [=AppHistory/ongoing navigation=] is non-null, then [=app history API navigation/notify about the committed-to entry=] given |appHistory|'s [=AppHistory/ongoing navigation=] and the [=AppHistory/current entry=] of |appHistory|.
 
-     <p class="note">It is important to do this before firing the {{AppHistoryEntry/dispose}} events, since event handlers for {{AppHistory/dispose}} could start another navigation, or otherwise change the value of |appHistory|'s [=AppHistory/ongoing navigation=].
+     <p class="note">It is important to do this before firing the {{AppHistoryEntry/dispose}} events, since event handlers for {{AppHistoryEntry/dispose}} could start another navigation, or otherwise change the value of |appHistory|'s [=AppHistory/ongoing navigation=].
 
   1. [=list/For each=] |disposedAHE| of |disposedAHEs|:
 
@@ -573,12 +573,14 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">upcoming trav
 
 An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=struct/items=]:
 
+* An <dfn for="app history API navigation">app history</dfn>, an {{AppHistory}}
 * A <dfn for="app history API navigation">key</dfn>, a string or null
 * An <dfn for="app history API navigation">info</dfn>, a JavaScript value
 * An <dfn for="app history API navigation">serialized state</dfn>, a [=serialized state=] or null
 * A <dfn for="app history API navigation">committed-to entry</dfn>, an {{AppHistoryEntry}} or null
 * A <dfn for="app history API navigation">committed promise</dfn>, a {{Promise}}
 * A <dfn for="app history API navigation">finished promise</dfn>, a {{Promise}}
+* A <dfn for="app history API navigation">wants to resolve finished promise</dfn>, a boolean
 
 <p class="note">We need to store the [=AppHistory/ongoing navigation signal=] separately from the [=app history API navigation=] struct, since it needs to be tracked even for navigations that are not via the app history APIs.
 
@@ -587,7 +589,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |appHistory|'s [=relevant Realm=].
 
-  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/key=] is null, [=app history API navigation/info=] is |info|, [=app history API navigation/serialized state=] is |serializedState|, [=app history API navigation/committed-to entry=] is null, [=app history API navigation/committed promise=] is |committedPromise|, and [=app history API navigation/finished promise=] is |finishedPromise|.
+  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/app history=] is |appHistory|, [=app history API navigation/key=] is null, [=app history API navigation/info=] is |info|, [=app history API navigation/serialized state=] is |serializedState|, [=app history API navigation/committed-to entry=] is null, [=app history API navigation/committed promise=] is |committedPromise|, [=app history API navigation/finished promise=] is |finishedPromise|, and [=app history API navigation/wants to resolve finished promise=] is false.
 
   1. Assert: |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is null.
 
@@ -601,7 +603,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |appHistory|'s [=relevant Realm=].
 
-  1. Let |traversal| be an [=app history API navigation=] whose [=app history API navigation/key=] is |key|, [=app history API navigation/info=] is |info|, [=app history API navigation/serialized state=] is null, [=app history API navigation/committed-to entry=] is null, [=app history API navigation/committed promise=] is |committedPromise|, and [=app history API navigation/finished promise=] is |finishedPromise|.
+  1. Let |traversal| be an [=app history API navigation=] whose whose [=app history API navigation/app history=] is |appHistory|, [=app history API navigation/key=] is |key|, [=app history API navigation/info=] is |info|, [=app history API navigation/serialized state=] is null, [=app history API navigation/committed-to entry=] is null, [=app history API navigation/committed promise=] is |committedPromise|, [=app history API navigation/finished promise=] is |finishedPromise|, and [=app history API navigation/wants to resolve finished promise=] is false.
 
   1. Set |appHistory|'s [=AppHistory/upcoming traverse navigations=][|key|]  to |traversal|.
 
@@ -631,7 +633,9 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 </div>
 
 <div algorithm>
-  To <dfn for="AppHistory">clean up an API navigation</dfn> given an {{AppHistory}} |appHistory| and an [=app history API navigation=] |navigation|:
+  To <dfn for="app history API navigation">clean up</dfn> an [=app history API navigation=] |navigation|:
+
+  1. Let |appHistory| be |navigation|'s [=app history API navigation/app history=].
 
   1. If |appHistory|'s [=AppHistory/ongoing navigation=] is |navigation|, then set |appHistory|'s [=AppHistory/ongoing navigation=] to null.
 
@@ -647,21 +651,43 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 <div algorithm>
   To <dfn for="app history API navigation">notify about the committed-to entry</dfn> given an [=app history API navigation=] |navigation| and an {{AppHistoryEntry}} |entry|:
 
+  1. Set |navigation|'s [=app history API navigation/committed-to entry=] to |entry|.
+
   1. [=Resolve=] |navigation|'s [=app history API navigation/committed promise=] with |entry|.
 
      <p class="note">After this point, |navigation|'s [=app history API navigation/committed promise=] is only needed in cases where it has not yet been returned to author code. Implementations might want to clear it out to avoid keeping it alive for the lifetime of the [=app history API navigation=].
 
-  1. Set |navigation|'s [=app history API navigation/committed-to entry=] to |entry|.
+  1. If |navigation|'s [=app history API navigation/wants to resolve finished promise=] is true, then [=app history API navigation/resolve the finished promise=] for |navigation|.
 </div>
 
 <div algorithm>
   To <dfn for="app history API navigation">resolve the finished promise</dfn> for an [=app history API navigation=] |navigation|:
 
-  1. Assert: |navigation|'s [=app history API navigation/committed-to entry=] is not null, due to a previous call to [=app history API navigation/notify about the committed-to entry=] for |navigation|.
+  1. If |navigation|'s [=app history API navigation/finished promise=] is null, then return.
+
+  1. If |navigation|'s [=app history API navigation/committed-to entry=] entry is null, then:
+
+    1. Set |navigation|'s [=app history API navigation/wants to resolve finished promise=] to true.
+
+    1. Return.
+
+    <p class="note">In same-document traversal cases, [=app history API navigation/resolve the finished promise=] can be called before [=app history API navigation/notify about the committed-to entry=], since the latter requires a roundtrip through the relevant [=traversable navigable/session history traversal queue=] and the former just depends on the settlement of promises passed to {{AppHistoryNavigateEvent/transitionWhile()}}.
 
   1. [=Resolve=] |navigation|'s [=app history API navigation/finished promise=] with its [=app history API navigation/committed-to entry=].
 
-     <p class="note">After this point, |navigation|'s [=app history API navigation/finished promise=] is only needed in cases where it has not yet been returned to author code, and its [=app history API navigation/committed-to entry=] is not needed at all. Implementations might want to clear these out to avoid keeping them alive for the lifetime of the [=app history API navigation=].
+  1. [=app history API navigation/Clean up=] |navigation|.
+</div>
+
+<div algorithm>
+  To <dfn for="app history API navigation">reject the finished promise</dfn> for an [=app history API navigation=] |navigation| with a JavaScript value |exception|:
+
+  1. If |navigation|'s [=app history API navigation/finished promise=] is null, then return.
+
+  1. [=Reject=] |navigation|'s [=app history API navigation/finished promise=] with |exception|.
+
+  1. If |navigation|'s [=app history API navigation/committed promise=] is not null, then [=reject=] |navigation|'s [=app history API navigation/committed promise=] with |exception|.
+
+  1. [=app history API navigation/Clean up=] |navigation|.
 </div>
 
 <h3 id="global-navigate">Navigating</h3>
@@ -884,11 +910,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
     1. Let |targetEntry| be the [=session history entry=] in |navigableEntries| whose [=session history entry/app history key=] equals |key|. If no such entry exists, then:
 
-      1. Let |exception| be an "{{InvalidStateError}}" {{DOMException}}.
-
-      1. [=Reject=] both |ongoingNavigation|'s [=app history API navigation/committed promise=] and its [=app history API navigation/finished promise=] with |exception|.
-
-      1. [=AppHistory/Clean up an API navigation=] given |appHistory| and |ongoingNavigation|.
+      1. [=app history API navigation/Reject the finished promise=] for |ongoingNavigation| with an "{{InvalidStateError}}" {{DOMException}}.
 
       1. Abort these steps.
 
@@ -1188,8 +1210,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If both |event|'s {{AppHistoryNavigateEvent/canTransition}} and |event|'s {{Event/cancelable}} are false, then return true.
      <p class="note">In this case we are definitely performing a cross-document navigation or traversal. We don't clean up |ongoingNavigation| however, since we might end up [=finalizing with an aborted navigation error=] before the current {{Document}} unloads.
   1. If |appHistory|'s [=relevant global object=]'s [=Window/browsing context=] is <a spec="HTML">still on its initial `about:blank` `Document`</a>, then:
-    1. If |ongoingNavigation| is not null, then [=queue a microtask=] on |appHistory|'s [=relevant agent=]'s [=agent/event loop=] to [=AppHistory/clean up an API navigation=] given |appHistory| and |ongoingNavigation|.
-       <p class="note">We need to delay a microtask so that, for same document navigations, [=AppHistory/update the entries=] can [=resolve=] the relevant promises before cleanup.
+    1. If |ongoingNavigation| is not null, then [=app history API navigation/clean up=] |ongoingNavigation|.
+       <p class="note">In this case the [=app history API navigation/committed promise=] and [=app history API navigation/finished promise=] will never fulfill, since we never create {{AppHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with.
     1. Return true.
   1. Initialize |event|'s {{Event/type}} to "{{AppHistory/navigate}}".
   1. Initialize |event|'s {{AppHistoryNavigateEvent/navigationType}} to |navigationType|.
@@ -1230,19 +1252,17 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
         1. [=Resolve=] |transition|'s [=AppHistoryTransition/finished promise=] with undefined.
         1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
-        1. If |ongoingNavigation| is non-null, then:
-          1. [=app history API navigation/Resolve the finished promise=] for |ongoingNavigation|.
-          1. [=AppHistory/Clean up an API navigation=] given |appHistory| and |ongoingNavigation|.
+        1. If |ongoingNavigation| is non-null, then [=app history API navigation/resolve the finished promise=] for |ongoingNavigation|.
       and the following failure steps given reason |rejectionReason|:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}}'s [=AbortSignal/aborted flag=] is set, then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
         1. [=Reject=] |transition|'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
         1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
-        1. If |ongoingNavigation| is non-null, then:
-          1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/finished promise=] with |rejectionReason|.
-          1. [=AppHistory/Clean up an API navigation=] given |appHistory| and |ongoingNavigation|.
-  1. Otherwise, if |ongoingNavigation| is non-null, then set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
-     <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
+        1. If |ongoingNavigation| is non-null, then [=app history API navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
+  1. Otherwise, if |ongoingNavigation| is non-null, then:
+    1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
+       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
+    1. [=app history API navigation/Clean up=] |ongoingNavigation|.
   1. If |hadTransitionWhile| is true and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
     1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
     1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
@@ -1265,10 +1285,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. If |ongoingNavigation| is non-null, then:
     1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
        <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for aborted navigations.
-    1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/committed promise=] with |error|.
-       <p class="note">This will have no effect if we have already [=app history API navigation/notified about the committed-to entry=] for |ongoingNavigation|.
-    1. [=Reject=] |ongoingNavigation|'s [=app history API navigation/finished promise=] with |error|.
-    1. [=AppHistory/Clean up an API navigation=] given |appHistory| and |ongoingNavigation|.
+    1. [=app history API navigation/Reject the finished promise=] for |ongoingNavigation| with |error|.
   1. If |appHistory|'s [=AppHistory/transition=] is not null, then:
     1. [=Reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |error|.
     1. Set |appHistory|'s [=AppHistory/transition=] to null.
