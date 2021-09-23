@@ -1565,7 +1565,8 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
     * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
     * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
     * <var ignore>browsingContext</var>'s [=active document=]'s [=Document/origin=] is not [=same origin-domain=] with the [=source browsing context=]'s [=active document=]'s [=Document/origin=]
-    * <var ignore>browsingContext</var>'s only entry in its <a spec="HTML">session history</a> is the `about:blank` {{Document}} that was added when <var ignore>browsingContext</var> was <a spec="HTML" lt="create a new browsing context">created</a>
+    * <var ignore>browsingContext</var> is <a spec="HTML">still on its initial `about:blank` `Document`</a>
+    * <var ignore>resource</var> is a [=request=], and <var ignore>resource</var>'s [=request/URL=]'s [=url/scheme=] is not a [=fetch scheme=]
 
     then:
 
