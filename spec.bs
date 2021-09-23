@@ -1566,8 +1566,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
     * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
     * <var ignore>browsingContext</var>'s [=active document=]'s [=Document/origin=] is not [=same origin-domain=] with the [=source browsing context=]'s [=active document=]'s [=Document/origin=]
     * <var ignore>browsingContext</var> is <a spec="HTML">still on its initial `about:blank` `Document`</a>
-    * <var ignore>resource</var> is not a [=request=]
-    * <var ignore>resource</var>'s [=request/URL=]'s [=url/scheme=] is not a [=fetch scheme=]
+    * <var ignore>resource</var> is a [=request=], and <var ignore>resource</var>'s [=request/URL=]'s [=url/scheme=] is not a [=fetch scheme=]
 
     then:
 
