@@ -190,6 +190,10 @@ dictionary AppHistoryResult {
 };
 </xmp>
 
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects, initially empty.
+
+Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
+
 <div algorithm>
   An {{AppHistory}} |appHistory| <dfn for="AppHistory">has entries and events disabled</dfn> if the following steps return true:
 
@@ -202,61 +206,6 @@ dictionary AppHistoryResult {
   1. If |appHistory|'s [=relevant global object=]'s [=associated Document=]'s [=Document/origin=] is [=opaque origin|opaque=], then return true.
 
   1. Return false.
-</div>
-
-<h3 id="entries-api">Introspecting the app history entry list</h3>
-
-<dl class="domintro non-normative">
-  <dt><code><var ignore>entries</var> = {{Window/appHistory}}.{{AppHistory/entries()|entries}}()</code>
-  <dd>
-    <p>Returns an array of {{AppHistoryEntry}} instances representing the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
-  </dd>
-
-  <dt><code>{{Window/appHistory}}.{{AppHistory/canGoBack}}</code>
-  <dd>
-    <p>Returns true if the current {{AppHistoryEntry}} is not the first one in the app history entries list.
-  </dd>
-
-  <dt><code>{{Window/appHistory}}.{{AppHistory/canGoForward}}</code>
-  <dd>
-    <p>Returns true if the current {{AppHistoryEntry}} is not the last one in the app history entries list.
-  </dd>
-</dl>
-
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects, initially empty.
-
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
-
-<div algorithm>
-  The <dfn method for="AppHistory">entries()</dfn> method steps are:
-
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return the empty list.
-
-  1. Return [=this=]'s [=AppHistory/entries list=].
-</div>
-
-<div algorithm>
-  The <dfn attribute for="AppHistory">canGoBack</dfn> getter steps are:
-
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return false.
-
-  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
-
-  1. If [=this=]'s [=AppHistory/current index=] is 0, then return false.
-
-  1. Return true.
-</div>
-
-<div algorithm>
-  The <dfn attribute for="AppHistory">canGoForward</dfn> getter steps are:
-
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return false.
-
-  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
-
-  1. If [=this=]'s [=AppHistory/current index=] is equal to [=this=]'s [=AppHistory/entry list=]'s [=list/size=] &minus; 1, then return false.
-
-  1. Return true.
 </div>
 
 <div algorithm>
@@ -357,6 +306,57 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
     1. Increment |index| by 1.
 
   1. Assert: this step is never reached.
+</div>
+
+<h3 id="entries-api">Introspecting the app history entry list</h3>
+
+<dl class="domintro non-normative">
+  <dt><code><var ignore>entries</var> = {{Window/appHistory}}.{{AppHistory/entries()|entries}}()</code>
+  <dd>
+    <p>Returns an array of {{AppHistoryEntry}} instances representing the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
+  </dd>
+
+  <dt><code>{{Window/appHistory}}.{{AppHistory/canGoBack}}</code>
+  <dd>
+    <p>Returns true if the current {{AppHistoryEntry}} is not the first one in the app history entries list.
+  </dd>
+
+  <dt><code>{{Window/appHistory}}.{{AppHistory/canGoForward}}</code>
+  <dd>
+    <p>Returns true if the current {{AppHistoryEntry}} is not the last one in the app history entries list.
+  </dd>
+</dl>
+
+<div algorithm>
+  The <dfn method for="AppHistory">entries()</dfn> method steps are:
+
+  1. If [=this=] [=AppHistory/has entries and events disabled=], then return the empty list.
+
+  1. Return [=this=]'s [=AppHistory/entries list=].
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">canGoBack</dfn> getter steps are:
+
+  1. If [=this=] [=AppHistory/has entries and events disabled=], then return false.
+
+  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
+
+  1. If [=this=]'s [=AppHistory/current index=] is 0, then return false.
+
+  1. Return true.
+</div>
+
+<div algorithm>
+  The <dfn attribute for="AppHistory">canGoForward</dfn> getter steps are:
+
+  1. If [=this=] [=AppHistory/has entries and events disabled=], then return false.
+
+  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
+
+  1. If [=this=]'s [=AppHistory/current index=] is equal to [=this=]'s [=AppHistory/entry list=]'s [=list/size=] &minus; 1, then return false.
+
+  1. Return true.
 </div>
 
 <h3 id="current-entry">The current entry</h3>
