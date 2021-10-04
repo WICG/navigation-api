@@ -11,7 +11,7 @@ Boilerplate: omit conformance, omit feedback-header
 Editor: Domenic Denicola, Google https://www.google.com/, d@domenic.me, https://domenic.me/
 Abstract: The app history API provides a web application-focused way of managing same-origin same-frame history entries and navigations.
 !Participate: <a href="https://github.com/WICG/app-history">GitHub WICG/app-history</a> (<a href="https://github.com/WICG/app-history/issues/new">new issue</a>, <a href="https://github.com/WICG/app-history/issues?state=open">open issues</a>)
-!Commits: <a href="https://github.com/WICG/app-history/commits/master/spec.bs">GitHub spec.bs commits</a>
+!Commits: <a href="https://github.com/WICG/app-history/commits/main/spec.bs">GitHub spec.bs commits</a>
 Complain About: accidental-2119 yes, missing-example-ids yes
 Indent: 2
 Default Biblio Status: current
