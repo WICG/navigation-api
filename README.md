@@ -963,6 +963,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
     1. `appHistory.current` fires `navigatefrom`.
     1. `location.href` updates.
     1. `appHistory.current` updates. `appHistory.transition` is created.
+    1. `currentchange` is fired on `appHistory`.
     1. `appHistory.current` fires `navigateto`.
     1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
