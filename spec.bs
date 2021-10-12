@@ -165,6 +165,7 @@ interface AppHistory : EventTarget {
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
+  attribute EventHandler oncurrentchange;
 };
 
 dictionary AppHistoryUpdateCurrentOptions {
@@ -220,6 +221,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. Let |sessionHistory| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=].
 
   1. Let |appHistorySHEs| be a new empty list.
+
+  1. Let |oldCurrentAHE| be the [=AppHistory/current entry=] of |appHistory|.
 
   1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
 
@@ -284,6 +287,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
 
   1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
+
+  1. If |oldCurrentAHE| is not null, then [=fire an event=] named {{AppHistory/currentchange}} at |appHistory| using {{AppHistoryCurrentChangeEvent}}, with its {{AppHistoryCurrentChangeEvent/navigationType}} attribute initialized to TODO and its {{AppHistoryCurrentChangeEvent/from}} initialized to |oldCurrentAHE|.
 
   1. If |appHistory|'s [=AppHistory/ongoing navigation=] is non-null, then [=app history API navigation/notify about the committed-to entry=] given |appHistory|'s [=AppHistory/ongoing navigation=] and the [=AppHistory/current entry=] of |appHistory|.
 
@@ -361,6 +366,21 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
 <h3 id="current-entry">The current entry</h3>
 
+<xmp class="idl">
+[Exposed=Window]
+interface AppHistoryCurrentChangeEvent : Event {
+  constructor(DOMString type, AppHistoryCurrentChangeEventInit eventInit);
+
+  readonly attribute AppHistoryNavigationType? navigationType;
+  readonly attribute AppHistoryEntry from;
+};
+
+dictionary AppHistoryCurrentChangeEventInit : EventInit {
+  AppHistoryNavigationType? navigationType = null;
+  required AppHistoryEntry destination;
+};
+</xmp>
+
 <dl class="domintro non-normative">
   <dt><code>{{Window/appHistory}}.{{AppHistory/current}}</code>
   <dd>
@@ -399,6 +419,8 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
   1. Let |serializedState| be [$StructuredSerializeForStorage$](|options|["{{AppHistoryUpdateCurrentOptions/state}}"]), rethrowing any exceptions.
 
   1. Set |current|'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] to |serializedState|.
+
+  1. [=Fire an event=] named {{AppHistory/currentchange}} at [=this=] using {{AppHistoryCurrentChangeEvent}}, with its {{AppHistoryCurrentChangeEvent/navigationType}} attribute initialized to null and its {{AppHistoryCurrentChangeEvent/from}} initialized to |current|.
 </div>
 
 <h3 id="ongoing-state">Ongoing navigation tracking</h3>
@@ -967,6 +989,9 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     <tr>
       <td><dfn attribute for="AppHistory">onnavigateerror</dfn>
       <td><dfn event for="AppHistory">navigateerror</dfn>
+    <tr>
+      <td><dfn attribute for="AppHistory">oncurrentchange</dfn>
+      <td><dfn event for="AppHistory">currentchange</dfn>
 </table>
 
 <h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>

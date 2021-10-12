@@ -6,6 +6,7 @@ interface AppHistoryEventMap {
   "navigate": AppHistoryNavigateEvent;
   "navigatesuccess": Event;
   "navigateerror": ErrorEvent;
+  "currentchange": AppHistoryCurrentChangeEvent;
 }
 
 interface AppHistoryResult {
@@ -32,6 +33,7 @@ declare class AppHistory extends EventTarget {
   onnavigate: ((this: AppHistory, ev: AppHistoryNavigateEvent) => any)|null;
   onnavigatesuccess: ((this: AppHistory, ev: Event) => any)|null;
   onnavigateerror: ((this: AppHistory, ev: ErrorEvent) => any)|null;
+  oncurrentchange: ((this: AppHistory, ev: AppHistoryCurrentChangeEvent) => any)|null;
 
   addEventListener<K extends keyof AppHistoryEventMap>(type: K, listener: (this: AppHistory, ev: AppHistoryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
@@ -91,6 +93,18 @@ interface AppHistoryNavigateOptions extends AppHistoryNavigationOptions {
 
 interface AppHistoryReloadOptions extends AppHistoryNavigationOptions {
   state?: unknown;
+}
+
+declare class AppHistoryCurrentChangeEvent extends Event {
+  constructor(type: string, eventInit: AppHistoryCurrentChangeEventInit);
+
+  readonly navigationType: AppHistoryNavigationType|null;
+  readonly from: AppHistoryEntry;
+}
+
+interface AppHistoryCurrentChangeEventInit extends EventInit {
+  navigationType?: AppHistoryNavigationType|null;
+  from: AppHistoryEntry;
 }
 
 declare class AppHistoryNavigateEvent extends Event {
