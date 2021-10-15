@@ -542,8 +542,6 @@ In this case:
 - The user pressing the stop button will have no effect, and after ten seconds `document.body` will get updated anyway with the destination URL of the original navigation.
 - Navigation to another URL will not prevent the fact that in ten seconds `document.body.innerHTML`  will be updated to show the original destination URL.
 
-See [the companion document](./interception-details.md#trying-to-interrupt-a-slow-navigation-but-the-navigate-handler-doesnt-care) for full details on exactly what happens in such scenarios.
-
 ### Transitional time after navigation interception
 
 Although calling `event.transitionWhile()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `appHistory.current`, and the URL bar, the promise passed to `transitionWhile()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `appHistory.transition`. It has the following properties:
@@ -968,7 +966,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
     1. Any now-unreachable `AppHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
     1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.transitionWhile()`.
-    1. After the promise passed to `event.transitionWhile()` fulfills, or after one microtask if `event.transitionWhile()` was not called:
+    1. After all the promises passed to `event.transitionWhile()` fulfill, or after one microtask if `event.transitionWhile()` was not called:
         1. `appHistory.current` fires `finish`.
         1. `navigatesuccess` is fired on `appHistory`.
         1. Any loading spinner UI stops.
@@ -976,7 +974,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. `appHistory.transition.finished` fulfills with undefined.
         1. `appHistory.transition` becomes null.
         1. Queue a new `SameDocumentNavigationEntry` indicating success.
-    1. Alternately, if the promise passed to `event.transitionWhile()` rejects:
+    1. Alternately, if any promise passed to `event.transitionWhile()` rejects:
         1. `appHistory.current` fires `finish`.
         1. `navigateerror` fires on `window.appHistory` with the rejection reason as its `error` property.
         1. Any loading spinner UI stops.
@@ -992,8 +990,7 @@ Between the per-`AppHistoryEntry` events and the `window.appHistory` events, as 
         1. `appHistory.transition.finished` rejects with the same `"AbortError"` `DOMException`.
         1. `appHistory.transition` becomes null.
         1. Queue a new `SameDocumentNavigationEntry` indicating failure.
-
-For more detailed analysis, including specific code examples, see [this dedicated document](./interception-details.md).
+    1. One task after firing `currentchange`, `hashchange` and/or `popstate` fire on `window`, if applicable. (Note: this can happen _before_ steps (ix)–(xi) if `event.transitionWhile()` is called with promises that take longer than a single task to settle.)
 
 ## Guide for migrating from the existing history API
 
@@ -1249,7 +1246,7 @@ Note that as currently planned, any such programmatic navigations, including one
 
 ### Integration with navigation
 
-To understand when navigation interception interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). In cases where interception is allowed and takes place, it is essentially equivalent to preventing the normal navigation and instead synchronously performing the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps). See more detail in the [dedicated document](./interception-details.md).
+To understand when navigation interception interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). In cases where interception is allowed and takes place, it is essentially equivalent to preventing the normal navigation and instead synchronously performing the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps).
 
 The way in which navigation interacts with session history entries generally is not meant to change; the correspondence of a session history entry to an `AppHistoryEntry` does not introduce anything novel there.
 
