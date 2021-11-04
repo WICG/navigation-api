@@ -464,11 +464,11 @@ There are many types of navigations a given page can experience; see [this appen
 
 First, the following navigations **will not fire `navigate`** at all:
 
-- User-initiated [cross-document](#appendix-types-of-navigations) navigations via browser UI, such as the URL bar, back/forward button, or bookmarks.
-- [Cross-document](#appendix-types-of-navigations) navigations initiated from other [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) windows, e.g. via `window.open(url, nameOfYourWindow)`, or clicking on `<a href="..." target="nameOfYourWindow">`
-- [`document.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/open), which can strip off the fragment from the current document's URL.
+- User-initiated [cross-document](#appendix-types-of-navigations) navigations via non-back/forward browser UI, such as the URL bar, bookmarks, or the reload button
+- [Cross-document](#appendix-types-of-navigations) navigations initiated from other cross origin windows, e.g. via `window.open(url, nameOfYourWindow)`, or clicking on `<a href="..." target="nameOfYourWindow">`
+- [`document.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/open), which can strip off the fragment from the current document's URL
 
-Navigations of the first sort are outside the scope of the webpage, and can never be intercepted or prevented. This is true even if they are to same-origin documents, e.g. if the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/bar` and presses enter. On the other hand, we do allow the page to intercept user-initiated _same_-document navigations via browser UI, e.g. if the the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/foo#fragment` and presses enter.
+Navigations of the first sort are outside the scope of the webpage, and can never be intercepted or prevented. This is true even if they are to same-origin documents, e.g. if the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/bar` and presses enter. On the other hand, we do allow the page to intercept user-initiated _same_-document navigations via browser UI, e.g. if the the browser is currently displaying `https://example.com/foo` and the user edits the URL bar to read `https://example.com/foo#fragment` and presses enter. (We do fire a `navigate` event for browser-UI back/forward buttons; see more discussion below.)
 
 Similarly, cross-document navigations initiated from other windows are not something that can be intercepted today, and for security reasons, we don't want to introduce the ability for your origin to mess with the operation of another origin's scripts. (Even if the purpose of those scripts is to navigate your frame.)
 
@@ -476,16 +476,21 @@ As for `document.open()`, it is a terrible legacy API with lots of strange side 
 
 Second, the following navigations **cannot be canceled** using `event.preventDefault()`, and as such will have `event.cancelable` equal to false:
 
-- User-initiated same-document navigations via the browser's back/forward buttons.
+- User-initiated traversals via the browser's back/forward buttons (either same- or cross-document)
+- Programmatic traversals via `history.back()`/`history.forward()`/`history.go()`
+- Programmatic traversals via `appHistory.back()`/`appHistory.forward()`/`appHistory.go()`
 
-This is important to avoid abusive pages trapping the user by disabling their back button. Note that adding a same-origin restriction would not help here: imagine a user which navigates to `https://evil-in-disguise.example/`, and then clicks a link to `https://evil-in-disguise.example/2`. If `https://evil-in-disguise.example/2` were allowed to cancel same-origin browser back button navigations, they have effectively disabled the user's back button.
+We would like to make these cancelable in the future. However, we need to take care when doing so:
 
-We're discussing this restriction in [#32](https://github.com/WICG/app-history/issues/32), as it does hurt some use cases, and we'd like to soften it in some way.
+- Canceling user-initiated traversals can be abused to trap the user by disabling their back button. Note that adding a same-origin restriction would not help here: imagine a user which navigates to `https://evil-in-disguise.example/`, and then clicks a link to `https://evil-in-disguise.example/2`. If `https://evil-in-disguise.example/2` were allowed to cancel same-origin browser back button navigations, they have effectively disabled the user's back button.
+- Both user-initiated and programmatic traversals of this sort are hard to intercept for technical reasons, as doing so can require cross-process communication.
+
+See discussion in [#32](https://github.com/WICG/app-history/issues/32) about how we can make user-initiated traversals cancelable in a safe way, and [#178](https://github.com/WICG/app-history/issues/178) for the general discussion of loosening the cancelability restrictions over time.
 
 Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.transitionWhile()`, and as such will have `event.canTransition` equal to false:
 
 - Any navigation to a URL which differs in scheme, username, password, host, or port. (I.e., you can only intercept URLs which differ in path, query, or fragment.)
-- Any programmatically-initiated [cross-document](#appendix-types-of-navigations) back/forward navigations. (Recall that _user_-initiated cross-document navigations will not fire the `navigate` event at all.) Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
+- Any [cross-document](#appendix-types-of-navigations) back/forward navigations. Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
 
 We'll note that these restrictions still allow canceling cross-origin non-back/forward navigations. Although this might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
 
@@ -1349,8 +1354,7 @@ Here's a summary table:
 
 |Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canTransition`|
 |-------|------------------------|-----------------|-----------------|--------------|--------------|
-|Browser UI (back/forward,<br>same-document)|Same|Yes|Yes|No|Yes|
-|Browser UI (back/forward,<br>cross-document)|Cross|No|—|—|—|
+|Browser UI (back/forward)|Either|Yes|Yes|No ❖|Yes †*|
 |Browser UI (non-back/forward<br>fragment change only)|Same|Yes|Yes|Yes|Yes|
 |Browser UI (non-back/forward<br>other)|Cross|No|—|—|—|
 |`<a>`/`<area>`/`<form>` (`target="_self"` or no `target=""`)|Either|Yes|Yes ‡|Yes|Yes *|
@@ -1358,9 +1362,9 @@ Here's a summary table:
 |`<meta http-equiv="refresh">`|Either ◊|Yes|No|Yes|Yes *|
 |`Refresh` header|Either ◊|Yes|No|Yes|Yes *|
 |`window.location`|Either|Yes Δ|No|Yes|Yes *|
-|`history.{back,forward,go}()`|Either|Yes|No|Yes|Yes †*|
+|`history.{back,forward,go}()`|Either|Yes|No|No ❖|Yes †*|
 |`history.{pushState,replaceState}()`|Same|Yes|No|Yes|Yes|
-|`appHistory.{back,forward,goTo}()`|Either|Yes|No|Yes|Yes †*|
+|`appHistory.{back,forward,goTo}()`|Either|Yes|No|No ❖|Yes †*|
 |`appHistory.navigate()`|Either|Yes|No|Yes|Yes *|
 |`appHistory.reload()`|Cross|Yes|No|Yes|Yes|
 |`window.open(url, "_self")`|Either|Yes|No|Yes|Yes *|
@@ -1372,6 +1376,7 @@ Here's a summary table:
 - \* = No if the URL differs from the page's current one in components besides path/query/fragment, or is cross-origin from the current page and differs in any component besides fragment.
 - Δ = No if cross-document and initiated from a [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) window, e.g. `frames['cross-origin-frame'].location.href = ...` or `<a target="cross-origin-frame">`
 - ◊ = fragment navigations initiated by `<meta http-equiv="refresh">` or the `Refresh` header are only same-document in some browsers: [whatwg/html#6451](https://github.com/whatwg/html/issues/6451)
+- ❖ = We would like to make these cancelable in the future, after additional implementation and spec work: see [#178](https://github.com/WICG/app-history/issues/178) and [#32](https://github.com/WICG/app-history/issues/32).
 
 See the discussion on [restrictions](#restrictions-on-firing-canceling-and-responding) to understand the reasons why the last few columns are filled out in the way they are.
 
