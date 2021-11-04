@@ -1212,7 +1212,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Set |destination|'s [=AppHistoryDestination/index=] to &minus;1.
     1. Set |destination|'s [=AppHistoryDestination/state=] to null.
   1. Set |destination|'s [=AppHistoryDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |appHistory|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
-  1. Return the result of performing the [=inner navigate event firing algorithm=] given |appHistory|, "{{AppHistoryNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, and null.
+  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |appHistory|, "{{AppHistoryNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, and null.
+  1. Assert: |result| is true (traversals are never cancelable).
 </div>
 
 <div algorithm="fire a push or replace navigate event">
@@ -1235,15 +1236,13 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 
   1. [=AppHistory/Promote the upcoming navigation to ongoing=] given |appHistory| and |destination|'s [=AppHistoryDestination/key=].
   1. Let |ongoingNavigation| be |appHistory|'s [=AppHistory/ongoing navigation=].
-  1. Let |document| be |appHistory|'s [=relevant global object=]'s [=associated document=].
-  1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=AppHistoryDestination/URL=], and either |destination|'s [=AppHistoryDestination/is same document=] is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
-  1. If either |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or  |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
-  1. If both |event|'s {{AppHistoryNavigateEvent/canTransition}} and |event|'s {{Event/cancelable}} are false, then return true.
-     <p class="note">In this case we are definitely performing a cross-document navigation or traversal. We don't clean up |ongoingNavigation| however, since we might end up [=finalizing with an aborted navigation error=] before the current {{Document}} unloads.
   1. If |appHistory| [=AppHistory/has entries and events disabled=], then:
     1. If |ongoingNavigation| is not null, then [=app history API navigation/clean up=] |ongoingNavigation|.
        <p class="note">In this case the [=app history API navigation/committed promise=] and [=app history API navigation/finished promise=] will never fulfill, since we never create {{AppHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with.
     1. Return true.
+  1. Let |document| be |appHistory|'s [=relevant global object=]'s [=associated document=].
+  1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=AppHistoryDestination/URL=], and either |destination|'s [=AppHistoryDestination/is same document=] is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
+  1. If |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
   1. Initialize |event|'s {{Event/type}} to "{{AppHistory/navigate}}".
   1. Initialize |event|'s {{AppHistoryNavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{AppHistoryNavigateEvent/destination}} to |destination|.
@@ -1257,7 +1256,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     * |destination|'s [=AppHistoryDestination/URL=]'s [=url/fragment=] is not [=string/is|identical to=] |currentURL|'s [=url/fragment=]
 
     then initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to true. Otherwise, initialize it to false.
-  1. If |userInvolvement| is "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to false. Otherwise, initialize it to true.
+  1. If |userInvolvement| is not "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to true. Otherwise, initialize it to false.
   1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |appHistory|'s [=relevant Realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigate event=] is null.
   1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to |event|.
@@ -1592,7 +1591,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
   Modify the <a spec="HTML">navigate</a> algorithm to take an optional <dfn for="navigate">|appHistoryState|</dfn> argument (default null). Then, insert the following steps right before the step which goes [=in parallel=]. (Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.)
 
   1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
-  1. If none of the following are true:
+  1. If all of the following are false:
     * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
     * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
     * <var ignore>browsingContext</var>'s [=active document=]'s [=Document/origin=] is not [=same origin-domain=] with the [=source browsing context=]'s [=active document=]'s [=Document/origin=]
@@ -1641,26 +1640,9 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 </div>
 
 <div algorithm="apply the history step">
-  Modify the <a spec="HTML">apply the history step</a> algorithm as follows. Change <var ignore>checkForUserCancellation</var> to |fireBeforeunloadAndNavigate|. Add the |userInvolvement| parameter. Then, insert the following step after step 12 (which assembles |toTraverse| and other lists) but before step 13 (which checks if unloading is user-cancelled):
+  Modify the <a spec="HTML">apply the history step</a> algorithm as follows. Inside the loop over each <var ignore>navigable</var> of <var ignore>toTraverse</var>, inside the task that is posted, after the check if |targetEntry|'s document is |previousDocument| that might abort the algorithm, add the following steps:
 
-  1. If |fireBeforeunloadAndNavigate| is true and the result of <a>firing traversal `navigate` events</a> given |toTraverse|, <var ignore>step</var>, <var ignore>initiatorToCheck</var>, and |userInvolvement| is false, then return.
-</div>
-
-<div algorithm>
-  To <dfn>fire traversal `navigate` events</dfn> for a [=list=] of [=navigables=] |toTraverse|, an integer |step|, an [=origin=] |initiatorOrigin|, and a [=user navigation involvement=] |userInvolvement|:
-
-  1. Let |overallResult| be true.
-  1. Let |totalTasks| be the [=list/size=] of |toTraverse|.
-  1. Let |completedTasks| be 0.
-  1. [=list/For each=] |navigable| of |toTraverse|, [=queue a global task=] on the [=history traversal task source=] given |navigable|'s [=navigable/active document=]'s [=relevant global object=] to run these steps:
-      1. Let |destinationEntry| be the item in the result of [=navigable/getting the session history entries=] for |navigable| that has the greatest [=session history entry/step=] less than or equal to |step|.
-      1. If |destinationEntry|'s [=session history entry/document=] is not equal to |navigable|'s [=navigable/active document=], and |initiatorOrigin| is not [=same origin-domain=] with |navigable|'s [=navigable/active document=]'s [=Document/origin=], then abort these steps.
-      1. Let |appHistory| be |navigable|'s [=navigable/active document=]'s [=relevant global object=]'s [=Window/app history=].
-      1. Let |result| be the result of [=firing a traversal navigate event=] at |appHistory| with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |destinationEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
-      1. If |result| is false, then set |overallResult| to false.
-      1. Increment |completedTasks|.
-  1. Wait for |completedTasks| to be |totalTasks|.
-  1. Return |overallResult|.
+  1. [=Fire a traversal navigate event=] at |previousDocument|'s [=relevant global object=]'s [=Window/app history=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
 </div>
 
 <h2 id="session-history-patches">Patches to session history</h2>
@@ -1760,4 +1742,4 @@ The integration is then as follows:
 
 * Wherever the spec ends up canceling not-yet-mature navigations for a [=browsing context=] |bc|, we also [=inform app history about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
 
-* When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform app history about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in fligh, or any traversals queued up.)
+* When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform app history about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)
