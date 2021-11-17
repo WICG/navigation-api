@@ -3,8 +3,8 @@
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <title>App History API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <link href="https://www.w3.org/StyleSheets/TR/2016/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 83b904c2e, updated Wed Nov 3 17:20:53 2021 -0700" name="generator">
+  <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
+  <meta content="Bikeshed version dfbc2b297, updated Thu Nov 11 15:52:32 2021 -0800" name="generator">
   <link href="https://wicg.github.io/app-history/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -647,9 +647,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
 </style>
  <body class="h-entry">
   <div class="head">
-   <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72"> </a> </p>
+   <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">Draft Community Group Report, <time class="dt-updated" datetime="2021-11-04">4 November 2021</time></span></h2>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2021-11-17">17 November 2021</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1868,7 +1868,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>If <var>dispatchResult</var> is false:</p>
       <ol>
        <li data-md>
-        <p>If <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①③">traverse</a></code>" and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑥">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag">aborted flag</a> is unset, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error③">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
+        <p>If <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①③">traverse</a></code>" and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑥">signal</a></code> is not <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted">aborted</a>, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error③">finalize with an aborted navigation error</a> given <var>appHistory</var> and <var>ongoingNavigation</var>.</p>
         <p class="note" role="note">If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse①④">traverse</a></code>", then we will <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error④">finalize with an aborted navigation error</a> in <a data-link-type="dfn" href="#perform-an-app-history-traversal" id="ref-for-perform-an-app-history-traversal③">perform an app history traversal</a>. </p>
        <li data-md>
         <p>Return false.</p>
@@ -1898,7 +1898,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#wait-for-all" id="ref-for-wait-for-all">Wait for all</a> of <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a>, with the following success steps:</p>
         <ol>
          <li data-md>
-          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑦">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag①">aborted flag</a> is set, then abort these steps.</p>
+          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑦">signal</a></code> is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted①">aborted</a>, then abort these steps.</p>
          <li data-md>
           <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire③">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess④">navigatesuccess</a></code> at <var>appHistory</var>.</p>
          <li data-md>
@@ -1911,7 +1911,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         and the following failure steps given reason <var>rejectionReason</var>: 
         <ol>
          <li data-md>
-          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑧">signal</a></code>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag" id="ref-for-abortsignal-aborted-flag②">aborted flag</a> is set, then abort these steps.</p>
+          <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑧">signal</a></code> is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted②">aborted</a>, then abort these steps.</p>
          <li data-md>
           <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire④">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑤">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
          <li data-md>
@@ -1949,6 +1949,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</dfn> given an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑦">AppHistory</a></code> <var>appHistory</var>, an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation①③">app history API navigation</a> or null <var>ongoingNavigation</var>, and an optional <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑥">DOMException</a></code> <var>error</var>: 
     <ol>
      <li data-md>
+      <p>If <var>error</var> was not given, then set <var>error</var> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑦">new</a> "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror③">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑦">DOMException</a></code>, created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①②">relevant Realm</a>.</p>
+     <li data-md>
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event③">ongoing navigate event</a> is non-null, then:</p>
       <ol>
        <li data-md>
@@ -1960,12 +1962,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation-signal" id="ref-for-apphistory-ongoing-navigation-signal③">ongoing navigation signal</a> is non-null, then:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-signal-abort" id="ref-for-abortsignal-signal-abort①">Signal abort</a> on <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation-signal" id="ref-for-apphistory-ongoing-navigation-signal④">ongoing navigation signal</a>.</p>
+        <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-signal-abort" id="ref-for-abortsignal-signal-abort①">Signal abort</a> on <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation-signal" id="ref-for-apphistory-ongoing-navigation-signal④">ongoing navigation signal</a> given <var>error</var>.</p>
        <li data-md>
         <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation-signal" id="ref-for-apphistory-ongoing-navigation-signal⑤">ongoing navigation signal</a> to null.</p>
       </ol>
-     <li data-md>
-      <p>If <var>error</var> was not given, then set <var>error</var> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑦">new</a> "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror③">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑦">DOMException</a></code>, created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①②">relevant Realm</a>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire⑤">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑥">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent①">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error①">error</a></code> initialized to <var>error</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message①">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename①">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno①">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno①">colno</a></code> initialized to appropriate values that can be extracted from <var>error</var> and the current JavaScript stack in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception①">report an exception</a> algorithm.</p>
       <p class="note" role="note">Thus, for example, if this algorithm is reached because of a call to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop">window.stop()</a></code>, these properties would probably end up initialized based on the line of script that called <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop①">window.stop()</a></code>. But if it’s because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0. </p>
@@ -2409,7 +2409,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <p>When the spec <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#a-browsing-context-is-discarded" id="ref-for-a-browsing-context-is-discarded①">discards</a> a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context⑤">browsing context</a> <var>bc</var>, we also <a data-link-type="dfn" href="#inform-app-history-about-browsing-context-discarding" id="ref-for-inform-app-history-about-browsing-context-discarding">inform app history about browsing context discarding</a> given <var>bc</var>. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)</p>
    </ul>
   </main>
-<script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
+<script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
   <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
@@ -2727,10 +2727,10 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-eventdef-abortsignal-abort①">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-abortsignal-aborted-flag">
-   <a href="https://dom.spec.whatwg.org/#abortsignal-aborted-flag">https://dom.spec.whatwg.org/#abortsignal-aborted-flag</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-abortsignal-aborted">
+   <a href="https://dom.spec.whatwg.org/#abortsignal-aborted">https://dom.spec.whatwg.org/#abortsignal-aborted</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-abortsignal-aborted-flag">2.3. Firing the event</a> <a href="#ref-for-abortsignal-aborted-flag①">(2)</a> <a href="#ref-for-abortsignal-aborted-flag②">(3)</a>
+    <li><a href="#ref-for-abortsignal-aborted">2.3. Firing the event</a> <a href="#ref-for-abortsignal-aborted①">(2)</a> <a href="#ref-for-abortsignal-aborted②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-eventtarget-activation-behavior">
@@ -3867,7 +3867,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-dictdef-eventinit">EventInit</span>
      <li><span class="dfn-paneled" id="term-for-eventtarget">EventTarget</span>
      <li><span class="dfn-paneled" id="term-for-eventdef-abortsignal-abort">abort</span>
-     <li><span class="dfn-paneled" id="term-for-abortsignal-aborted-flag">aborted flag</span>
+     <li><span class="dfn-paneled" id="term-for-abortsignal-aborted">aborted</span>
      <li><span class="dfn-paneled" id="term-for-eventtarget-activation-behavior">activation behavior</span>
      <li><span class="dfn-paneled" id="term-for-dom-event-cancelable">cancelable</span>
      <li><span class="dfn-paneled" id="term-for-canceled-flag">canceled flag</span>
