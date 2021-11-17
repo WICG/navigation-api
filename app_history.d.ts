@@ -59,7 +59,7 @@ interface AppHistoryEntryEventMap {
 declare class AppHistoryEntry extends EventTarget {
   readonly key: string;
   readonly id: string;
-  readonly url: string;
+  readonly url: string|null;
   readonly index: number;
   readonly sameDocument: boolean;
 

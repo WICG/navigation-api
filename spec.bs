@@ -35,6 +35,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: current entry; url: history.html#current-entry
     for: session history entry
       text: document; url: history.html#she-document
+      text: policy container; url: history.html#she-policy-container
       text: URL; url: history.html#she-url
     for: history handling behavior
       text: default; url: browsing-the-web.html#hh-default
@@ -49,6 +50,8 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: discard; url: window-object.html#a-browsing-context-is-discarded
   type: method
     for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
+  type: http-header
+    text: Cross-Origin-Opener-Policy; url: multipage/iana.html#cross-origin-opener-policy-2
 spec: html; urlPrefix: https://whatpr.org/html/6315/
   type: dfn
     text: traversable navigable; for: navigable; url: history.html#nav-traversable
@@ -219,6 +222,12 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
     1. Return.
 
   1. Let |sessionHistory| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=].
+
+     <div class="note">
+      <p>It is expected that this include session history entries in the entire [=browsing session=], including those in different <a spec="HTML">browsing context groups</a> due to \`<a http-header>`Cross-Origin-Opener-Policy`</a>\`-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept.
+
+      <p>Note that it is OK to expose the data in these entries to the current page through {{AppHistoryEntry}} instances, since any [=session history entry/app history state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{AppHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> [=referrer policy=].
+    </div>
 
   1. Let |appHistorySHEs| be a new empty list.
 
@@ -1343,7 +1352,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 <xmp class="idl">
 [Exposed=Window]
 interface AppHistoryEntry : EventTarget {
-  readonly attribute USVString url;
+  readonly attribute USVString? url;
   readonly attribute DOMString key;
   readonly attribute DOMString id;
   readonly attribute long long index;
@@ -1362,6 +1371,8 @@ interface AppHistoryEntry : EventTarget {
   <dt><code><var ignore>entry</var>.{{AppHistoryEntry/url}}</code>
   <dd>
     <p>The URL of this app history entry.
+
+    <p>This can return null if the entry corresponds to a different {{Document}} than the current one (i.e. if {{AppHistoryEntry/sameDocument}} is false), and that {{Document}}'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a>, since that indicates the {{Document}} in question is hiding its URL even from other same-origin pages.
   </dd>
 
   <dt><code><var ignore>entry</var>.{{AppHistoryEntry/key}}</code>
@@ -1419,7 +1430,9 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
 <div algorithm>
   The <dfn attribute for="AppHistoryEntry">url</dfn> getter steps are:
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty string.
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
+  1. Let |she| be [=this=]'s [=AppHistoryEntry/session history entry=].
+  1. If |she|'s [=session history entry/document=] does not equal [=this=]'s [=relevant global object=]'s [=associated Document=], and |she|'s [=session history entry/policy container=]'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a>, then return null.
   1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/URL=], [=URL serializer|serialized=].
 </div>
 
