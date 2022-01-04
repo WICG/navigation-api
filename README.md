@@ -203,7 +203,7 @@ appHistory.current.getState().test = 3;
 console.assert(appHistory.current.getState().test === 2);
 
 // Instead do this:
-appHistory.reload({ state: { ...appHistory.current.getState(), test: 3 });
+appHistory.reload({ state: { ...appHistory.current.getState(), test: 3 } });
 ```
 
 Crucially, `appHistory.current` stays the same regardless of what iframe navigations happen. It only reflects the current entry for the current frame. The complete list of ways the current app history entry can change to a new entry (with a new `AppHistoryEntry` object, and a new `key` value) are:
