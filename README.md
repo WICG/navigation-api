@@ -837,7 +837,7 @@ For cases like this, where the current app history entry's state needs to be upd
 ```js
 detailsEl.addEventListener("toggle", () => {
   appHistory.updateCurrent({
-    state: { ...appHistory.current.state, detailsOpen: detailsEl.open }
+    state: { ...appHistory.current.getState(), detailsOpen: detailsEl.open }
   });
 });
 ```
@@ -1301,6 +1301,7 @@ Thanks also to
 [@csreis](https://github.com/csreis),
 [@dvoytenko](https://github.com/dvoytenko),
 [@esprehn](https://github.com/esprehn),
+[@fabiancook](https://github.com/fabiancook),
 [@frehner](https://github.com/frehner),
 [@housseindjirdeh](https://github.com/housseindjirdeh),
 [@jakearchibald](https://github.com/jakearchibald),
