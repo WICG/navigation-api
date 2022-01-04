@@ -1226,7 +1226,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 </div>
 
 <div algorithm="fire a push or replace navigate event">
-  To <dfn>fire a push or replace `navigate` event</dfn> at an {{AppHistory}} |appHistory| given an {{AppHistoryNavigationType}} <dfn for="fire a push or replace navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a push or replace navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a push or replace navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a push or replace navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a push or replace navigate event">|state|</dfn> (default null), an optional [=list=] of {{FormData}} [=FormData/entries=] or null <dfn for="fire a push or replace navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a push or replace navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
+  To <dfn>fire a push or replace `navigate` event</dfn> at an {{AppHistory}} |appHistory| given an {{AppHistoryNavigationType}} <dfn for="fire a push or replace navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a push or replace navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a push or replace navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a push or replace navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a push or replace navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a push or replace navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a push or replace navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in |appHistory|'s [=relevant Realm=].
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
@@ -1241,7 +1241,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
 </div>
 
 <div algorithm>
-  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given an {{AppHistory}} |appHistory|, an {{AppHistoryNavigationType}} |navigationType|, an {{AppHistoryNavigateEvent}} |event|, an {{AppHistoryDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and a [=list=] of {{FormData}} [=FormData/entries=] or null |formDataEntryList|:
+  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given an {{AppHistory}} |appHistory|, an {{AppHistoryNavigationType}} |navigationType|, an {{AppHistoryNavigateEvent}} |event|, an {{AppHistoryDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and an [=entry list=] or null |formDataEntryList|:
 
   1. [=AppHistory/Promote the upcoming navigation to ongoing=] given |appHistory| and |destination|'s [=AppHistoryDestination/key=].
   1. Let |ongoingNavigation| be |appHistory|'s [=AppHistory/ongoing navigation=].
@@ -1494,7 +1494,7 @@ The following section details monkeypatches to [[!HTML]] that cause the {{AppHis
 To properly thread the form entry list from its creation through to {{AppHistoryNavigateEvent}}'s {{AppHistoryNavigateEvent/formData}} property, we need the following modifications:
 
 <div algorithm="form navigate">
-  Modify the <a spec="HTML">navigate</a> algorithm to take a [=list=] of [=FormData/entries=] or null <dfn for="navigate">|entryList|</dfn> (default null), replacing its |navigationType| parameter. Then insert a step somewhere early in the algorithm to convert this back into the |navigationType| variable used by the [=in parallel=] section that is ultimately passed to [[CSP]]:
+  Modify the <a spec="HTML">navigate</a> algorithm to take an [=entry list=] or null <dfn for="navigate">|entryList|</dfn> (default null), replacing its |navigationType| parameter. Then insert a step somewhere early in the algorithm to convert this back into the |navigationType| variable used by the [=in parallel=] section that is ultimately passed to [[CSP]]:
 
   1. Let |navigationType| be "`form-submission`" if |entryList| is non-null; otherwise, "`other`".
 </div>
@@ -1734,7 +1734,7 @@ That leaves us with two main operations: canceling not-yet-mature navigations, a
 
 <hr>
 
-App history introduces a new complication here, which is that a navigation might have <a spec="HTML">matured</a> but still be "ongoing", in the sense of [[#ongoing-state]]. That is, consider a case such as:
+App history introduces a new complication here, which is that a naFvigation might have <a spec="HTML">matured</a> but still be "ongoing", in the sense of [[#ongoing-state]]. That is, consider a case such as:
 
 <xmp highlight="js">
 appHistory.addEventListener("navigate", e => {
