@@ -4,7 +4,7 @@
   <title>App History API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version dfbc2b297, updated Thu Nov 11 15:52:32 2021 -0800" name="generator">
+  <meta content="Bikeshed version cace53f8c, updated Tue Dec 7 12:12:54 2021 -0800" name="generator">
   <link href="https://wicg.github.io/app-history/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2021-11-18">18 November 2021</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-04">4 January 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -663,7 +663,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     </dl>
    </div>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2021 the Contributors to the App History API Specification, published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>.
+   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2022 the Contributors to the App History API Specification, published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>.
 A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available. </p>
    <hr title="Separator for header">
   </div>
@@ -1782,7 +1782,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     </ol>
    </div>
    <div class="algorithm" data-algorithm="fire a push or replace navigate event">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event">fire a push or replace <code>navigate</code> event</dfn> at an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑤">AppHistory</a></code> <var>appHistory</var> given an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype⑥">AppHistoryNavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata③">FormData</a></code> <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry" id="ref-for-concept-formdata-entry">entries</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑥">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event">fire a push or replace <code>navigate</code> event</dfn> at an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑤">AppHistory</a></code> <var>appHistory</var> given an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype⑥">AppHistoryNavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑥">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
     <ol>
      <li data-md>
       <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create①">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑥">AppHistoryNavigateEvent</a></code>, in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑥">relevant Realm</a>.</p>
@@ -1807,7 +1807,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     </ol>
    </div>
    <div class="algorithm" data-algorithm="inner navigate event firing algorithm">
-     The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inner-navigate-event-firing-algorithm">inner <code>navigate</code> event firing algorithm</dfn> is the following steps, given an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑥">AppHistory</a></code> <var>appHistory</var>, an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype⑦">AppHistoryNavigationType</a></code> <var>navigationType</var>, an <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑦">AppHistoryNavigateEvent</a></code> <var>event</var>, an <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination①②">AppHistoryDestination</a></code> <var>destination</var>, a <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement②">user navigation involvement</a> <var>userInvolvement</var>, and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list③">list</a> of <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata④">FormData</a></code> <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry" id="ref-for-concept-formdata-entry①">entries</a> or null <var>formDataEntryList</var>: 
+     The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inner-navigate-event-firing-algorithm">inner <code>navigate</code> event firing algorithm</dfn> is the following steps, given an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑥">AppHistory</a></code> <var>appHistory</var>, an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype⑦">AppHistoryNavigationType</a></code> <var>navigationType</var>, an <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑦">AppHistoryNavigateEvent</a></code> <var>event</var>, an <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination①②">AppHistoryDestination</a></code> <var>destination</var>, a <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement②">user navigation involvement</a> <var>userInvolvement</var>, and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list①">entry list</a> or null <var>formDataEntryList</var>: 
     <ol>
      <li data-md>
       <p><a data-link-type="dfn" href="#apphistory-promote-the-upcoming-navigation-to-ongoing" id="ref-for-apphistory-promote-the-upcoming-navigation-to-ongoing①">Promote the upcoming navigation to ongoing</a> given <var>appHistory</var> and <var>destination</var>’s <a data-link-type="dfn" href="#apphistorydestination-key" id="ref-for-apphistorydestination-key④">key</a>.</p>
@@ -1855,7 +1855,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>If <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none③">none</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-userinitiated" id="ref-for-dom-apphistorynavigateevent-userinitiated②">userInitiated</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
-      <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-formdata" id="ref-for-dom-apphistorynavigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑤">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata⑤">FormData</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑨">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
+      <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-formdata" id="ref-for-dom-apphistorynavigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑤">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata③">FormData</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑨">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigate-event" id="ref-for-apphistory-ongoing-navigate-event">ongoing navigate event</a> is null.</p>
      <li data-md>
@@ -2148,7 +2148,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <h3 class="heading settled" data-level="4.1" id="form-patches"><span class="secno">4.1. </span><span class="content">Form submission patches</span><a class="self-link" href="#form-patches"></a></h3>
    <p>To properly thread the form entry list from its creation through to <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑧">AppHistoryNavigateEvent</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-formdata" id="ref-for-dom-apphistorynavigateevent-formdata③">formData</a></code> property, we need the following modifications:</p>
    <div class="algorithm" data-algorithm="form navigate">
-     Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate②">navigate</a> algorithm to take a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a> of <a data-link-type="dfn" href="https://xhr.spec.whatwg.org/#concept-formdata-entry" id="ref-for-concept-formdata-entry②">entries</a> or null <dfn class="dfn-paneled" data-dfn-for="navigate" data-dfn-type="dfn" data-noexport id="navigate-entrylist"><var>entryList</var></dfn> (default null), replacing its <var>navigationType</var> parameter. Then insert a step somewhere early in the algorithm to convert this back into the <var>navigationType</var> variable used by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in parallel</a> section that is ultimately passed to <a data-link-type="biblio" href="#biblio-csp">[CSP]</a>: 
+     Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate②">navigate</a> algorithm to take an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list②">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="navigate" data-dfn-type="dfn" data-noexport id="navigate-entrylist"><var>entryList</var></dfn> (default null), replacing its <var>navigationType</var> parameter. Then insert a step somewhere early in the algorithm to convert this back into the <var>navigationType</var> variable used by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in parallel</a> section that is ultimately passed to <a data-link-type="biblio" href="#biblio-csp">[CSP]</a>: 
     <ol>
      <li data-md>
       <p>Let <var>navigationType</var> be "<code>form-submission</code>" if <var>entryList</var> is non-null; otherwise, "<code>other</code>".</p>
@@ -2398,7 +2398,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <p><a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a> reveals that implementations don’t really follow this breakdown. In particular, modulo one case in Firefox, traversals are only canceled as part of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#a-browsing-context-is-discarded" id="ref-for-a-browsing-context-is-discarded">discarding</a> a browsing context.</p>
    <p>That leaves us with two main operations: canceling not-yet-mature navigations, and dealing with browsing context discarding.</p>
    <hr>
-   <p>App history introduces a new complication here, which is that a navigation might have <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#concept-navigate-mature" id="ref-for-concept-navigate-mature">matured</a> but still be "ongoing", in the sense of <a href="#ongoing-state">§ 1.3 Ongoing navigation tracking</a>. That is, consider a case such as:</p>
+   <p>App history introduces a new complication here, which is that a naFvigation might have <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#concept-navigate-mature" id="ref-for-concept-navigate-mature">matured</a> but still be "ongoing", in the sense of <a href="#ongoing-state">§ 1.3 Ongoing navigation tracking</a>. That is, consider a case such as:</p>
 <pre class="highlight">appHistory<c- p>.</c->addEventListener<c- p>(</c-><c- u>"navigate"</c-><c- p>,</c-> e <c- p>=></c-> <c- p>{</c->
   e<c- p>.</c->transitionWhile<c- p>(</c-><c- k>new</c-> Promise<c- p>(</c->r <c- p>=></c-> setTimeout<c- p>(</c->r<c- p>,</c-> <c- mf>1</c->_000<c- p>)));</c->
   e<c- p>.</c->signal<c- p>.</c->addEventListener<c- p>(</c-><c- u>"abort"</c-><c- p>,</c-> <c- p>()</c-> <c- p>=></c-> <c- p>{</c-> <c- p>...</c-> <c- p>});</c->
@@ -3061,6 +3061,13 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-enqueue-the-following-steps①">4.4. History traversal updates</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-entry-list">
+   <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list">https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-entry-list">2.3. Firing the event</a> <a href="#ref-for-entry-list①">(2)</a>
+    <li><a href="#ref-for-entry-list②">4.1. Form submission patches</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-hh-entry-update">
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update">https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update</a><b>Referenced in:</b>
    <ul>
@@ -3600,8 +3607,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-list">1. The AppHistory class</a>
     <li><a href="#ref-for-list①">2.1. The AppHistoryNavigateEvent class</a>
-    <li><a href="#ref-for-list②">2.3. Firing the event</a> <a href="#ref-for-list③">(2)</a>
-    <li><a href="#ref-for-list④">4.1. Form submission patches</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-ordered-map">
@@ -3900,14 +3905,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://xhr.spec.whatwg.org/#formdata">https://xhr.spec.whatwg.org/#formdata</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-formdata">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-formdata①">(2)</a> <a href="#ref-for-formdata②">(3)</a>
-    <li><a href="#ref-for-formdata③">2.3. Firing the event</a> <a href="#ref-for-formdata④">(2)</a> <a href="#ref-for-formdata⑤">(3)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-formdata-entry">
-   <a href="https://xhr.spec.whatwg.org/#concept-formdata-entry">https://xhr.spec.whatwg.org/#concept-formdata-entry</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-concept-formdata-entry">2.3. Firing the event</a> <a href="#ref-for-concept-formdata-entry①">(2)</a>
-    <li><a href="#ref-for-concept-formdata-entry②">4.1. Form submission patches</a>
+    <li><a href="#ref-for-formdata③">2.3. Firing the event</a>
    </ul>
   </aside>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
@@ -3976,6 +3974,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-she-document">document <small>(for session history entry)</small></span>
      <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps">enqueue steps</span>
      <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps①">enqueue the following steps</span>
+     <li><span class="dfn-paneled" id="term-for-entry-list">entry list</span>
      <li><span class="dfn-paneled" id="term-for-hh-entry-update">entry update</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-error">error</span>
      <li><span class="dfn-paneled" id="term-for-event-handlers">event handler</span>
@@ -4121,7 +4120,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <a data-link-type="biblio">[XHR]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-formdata">FormData</span>
-     <li><span class="dfn-paneled" id="term-for-concept-formdata-entry">entries</span>
     </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
