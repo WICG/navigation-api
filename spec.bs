@@ -226,7 +226,7 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
      <div class="note">
       <p>It is expected that this include session history entries in the entire [=browsing session=], including those in different <a spec="HTML">browsing context groups</a> due to \`<a http-header>`Cross-Origin-Opener-Policy`</a>\`-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept.
 
-      <p>Note that it is OK to expose the data in these entries to the current page through {{AppHistoryEntry}} instances, since any [=session history entry/app history state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{AppHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> [=referrer policy=].
+      <p>Note that it is OK to expose the data in these entries to the current page through {{AppHistoryEntry}} instances, since any [=session history entry/app history state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{AppHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
     </div>
 
   1. Let |appHistorySHEs| be a new empty list.
@@ -1372,7 +1372,7 @@ interface AppHistoryEntry : EventTarget {
   <dd>
     <p>The URL of this app history entry.
 
-    <p>This can return null if the entry corresponds to a different {{Document}} than the current one (i.e. if {{AppHistoryEntry/sameDocument}} is false), and that {{Document}}'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a>, since that indicates the {{Document}} in question is hiding its URL even from other same-origin pages.
+    <p>This can return null if the entry corresponds to a different {{Document}} than the current one (i.e. if {{AppHistoryEntry/sameDocument}} is false), and that {{Document}}'s [=policy container/referrer policy=] was <a>"`no-referrer`"</a> or <a>"`origin`"</a>, since that indicates the {{Document}} in question is hiding its URL even from other same-origin pages.
   </dd>
 
   <dt><code><var ignore>entry</var>.{{AppHistoryEntry/key}}</code>
@@ -1432,8 +1432,8 @@ Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
   1. Let |she| be [=this=]'s [=AppHistoryEntry/session history entry=].
-  1. If |she|'s [=session history entry/document=] does not equal [=this=]'s [=relevant global object=]'s [=associated Document=], and |she|'s [=session history entry/policy container=]'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a>, then return null.
-  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/URL=], [=URL serializer|serialized=].
+  1. If |she|'s [=session history entry/document=] does not equal [=this=]'s [=relevant global object=]'s [=associated Document=], and |she|'s [=session history entry/policy container=]'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a> or <a>"`origin`"</a>, then return null.
+  1. Return |she|'s [=session history entry/URL=], [=URL serializer|serialized=].
 </div>
 
 <div algorithm>
@@ -1697,6 +1697,12 @@ Update the <a spec="HTML">navigate to a fragment</a> algorithm to set the new [=
 Update the <a spec="HTML">URL and history update steps</a> algorithm to set the new [=session history entry=]'s [=session history entry/origin=] to <var ignore>document</var>'s [=Document/origin=].
 
 Potentially update the <a spec="HTML">traverse the history</a> algorithm to consult the new [=session history entry/origin=] field, instead of checking the [=session history entry/document=]'s [=Document/origin=], since the [=session history entry/document=] can disappear?? Needs further investigation.
+
+<h3 id="session-history-patches-policy-container">Tracking the [=session history entry/policy container=] member more often</h3>
+
+The [=session history entry/policy container=] field of the [=session history entry=] is null, except when we <a spec="HTML">require storing the policy container in history</a>. The specification for {{AppHistoryEntry/url|appHistoryEntry.url}} requires the relevant [=/referrer policy=] to be accessible for all entries, not just some.
+
+So, update the HTML Standard to always store the policy container on the [=session history entry=], and then only use it in the <a spec="HTML">determine navigation params policy container</a> algorithm in the cases currently covered by the <a spec="HTML">require storing the policy container in history</a> algorithm.
 
 <h3 id="session-history-patches-update">Updating the {{AppHistory}} object</h3>
 
