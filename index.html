@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-04">4 January 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-07">7 January 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -719,7 +719,8 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <li><a href="#session-history-patches-key"><span class="secno">5.2</span> <span class="content">Carrying over the app history key</span></a>
       <li><a href="#session-history-patches-state"><span class="secno">5.3</span> <span class="content">Carrying over the app history state</span></a>
       <li><a href="#session-history-patches-origin"><span class="secno">5.4</span> <span class="content">Tracking the <span>origin</span> member</span></a>
-      <li><a href="#session-history-patches-update"><span class="secno">5.5</span> <span class="content">Updating the <code class="idl"><span>AppHistory</span></code> object</span></a>
+      <li><a href="#session-history-patches-policy-container"><span class="secno">5.5</span> <span class="content">Tracking the <span>policy container</span> member more often</span></a>
+      <li><a href="#session-history-patches-update"><span class="secno">5.6</span> <span class="content">Updating the <code class="idl"><span>AppHistory</span></code> object</span></a>
      </ol>
     <li>
      <a href="#other-patches"><span class="secno">6</span> <span class="content">Other patches</span></a>
@@ -827,7 +828,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <p>Let <var>sessionHistory</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc①">browsing context</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history" id="ref-for-session-history">session history</a>.</p>
       <div class="note" role="note">
        <p>It is expected that this include session history entries in the entire <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#browsing-session" id="ref-for-browsing-session">browsing session</a>, including those in different <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context-group" id="ref-for-browsing-context-group">browsing context groups</a> due to `<a data-link-type="http-header" href="https://html.spec.whatwg.org/multipage/multipage/iana.html#cross-origin-opener-policy-2" id="ref-for-cross-origin-opener-policy-2"><code>Cross-Origin-Opener-Policy</code></a>`-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept. </p>
-       <p>Note that it is OK to expose the data in these entries to the current page through <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry⑤">AppHistoryEntry</a></code> instances, since any <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state">app history state</a> will have been put there affirmatively, and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url">URL</a> is hidden appropriately by the <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-url" id="ref-for-dom-apphistoryentry-url">url</a></code> getter when the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document">document</a> indicates that its URL is sensitive through the <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer">"<code>no-referrer</code>"</a> <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy" id="ref-for-referrer-policy">referrer policy</a>. </p>
+       <p>Note that it is OK to expose the data in these entries to the current page through <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry⑤">AppHistoryEntry</a></code> instances, since any <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state">app history state</a> will have been put there affirmatively, and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url">URL</a> is hidden appropriately by the <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-url" id="ref-for-dom-apphistoryentry-url">url</a></code> getter when the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document">document</a> indicates that its URL is sensitive through the <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer">"<code>no-referrer</code>"</a> or <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin" id="ref-for-referrer-policy-origin">"<code>origin</code>"</a> <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy" id="ref-for-referrer-policy">referrer policies</a>. </p>
       </div>
      <li data-md>
       <p>Let <var>appHistorySHEs</var> be a new empty list.</p>
@@ -2037,7 +2038,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code><var>entry</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-url" id="ref-for-dom-apphistoryentry-url②">url</a></code></code> 
     <dd>
      <p>The URL of this app history entry. </p>
-     <p>This can return null if the entry corresponds to a different <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document③">Document</a></code> than the current one (i.e. if <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-samedocument" id="ref-for-dom-apphistoryentry-samedocument①">sameDocument</a></code> is false), and that <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document④">Document</a></code>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#policy-container-referrer-policy" id="ref-for-policy-container-referrer-policy">referrer policy</a> is <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer①">"<code>no-referrer</code>"</a>, since that indicates the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑤">Document</a></code> in question is hiding its URL even from other same-origin pages. </p>
+     <p>This can return null if the entry corresponds to a different <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document③">Document</a></code> than the current one (i.e. if <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-samedocument" id="ref-for-dom-apphistoryentry-samedocument①">sameDocument</a></code> is false), and that <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document④">Document</a></code>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#policy-container-referrer-policy" id="ref-for-policy-container-referrer-policy">referrer policy</a> was <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer①">"<code>no-referrer</code>"</a> or <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin" id="ref-for-referrer-policy-origin①">"<code>origin</code>"</a>, since that indicates the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑤">Document</a></code> in question is hiding its URL even from other same-origin pages. </p>
     <dt><code><var>entry</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-key" id="ref-for-dom-apphistoryentry-key②">key</a></code></code> 
     <dd>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent">user agent</a>-generated random UUID string representing this app history entry’s place in the app history list. This value will be reused by other <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry③④">AppHistoryEntry</a></code> instances that replace this one due to replace-style navigations. This value will survive session restores. </p>
@@ -2086,38 +2087,38 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>she</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑧">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①⓪">session history entry</a>.</p>
      <li data-md>
-      <p>If <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document②">document</a> does not equal <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①②">associated Document</a>, and <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container">policy container</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#policy-container-referrer-policy" id="ref-for-policy-container-referrer-policy①">referrer policy</a> is <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer②">"<code>no-referrer</code>"</a>, then return null.</p>
+      <p>If <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document②">document</a> does not equal <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①②">associated Document</a>, and <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container">policy container</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#policy-container-referrer-policy" id="ref-for-policy-container-referrer-policy①">referrer policy</a> is <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer②">"<code>no-referrer</code>"</a> or <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin" id="ref-for-referrer-policy-origin②">"<code>origin</code>"</a>, then return null.</p>
      <li data-md>
-      <p>Return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⓪">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①①">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url②">URL</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-serializer" id="ref-for-concept-url-serializer①">serialized</a>.</p>
+      <p>Return <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url②">URL</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-serializer" id="ref-for-concept-url-serializer①">serialized</a>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="index" data-algorithm-for="AppHistoryEntry">
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryEntry" data-dfn-type="attribute" data-export id="dom-apphistoryentry-index"><code>index</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥①">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⓪">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①③">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑦">fully active</a>, then return −1.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⓪">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⓪">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①③">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑦">fully active</a>, then return −1.</p>
      <li data-md>
-      <p>Return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥②">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index②">index</a>.</p>
+      <p>Return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥①">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-index" id="ref-for-apphistoryentry-index②">index</a>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="sameDocument" data-algorithm-for="AppHistoryEntry">
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryEntry" data-dfn-type="attribute" data-export id="dom-apphistoryentry-samedocument"><code>sameDocument</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥③">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①④">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑧">fully active</a>, then return false.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥②">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①④">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑧">fully active</a>, then return false.</p>
      <li data-md>
-      <p>Return true if <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥④">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①②">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> equals <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑤">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑤">associated Document</a>, and false otherwise.</p>
+      <p>Return true if <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥③">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①①">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> equals <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥④">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑤">associated Document</a>, and false otherwise.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="getState()" data-algorithm-for="AppHistoryEntry">
      The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryEntry" data-dfn-type="method" data-export id="dom-apphistoryentry-getstate"><code>getState()</code></dfn> method steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑥">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑥">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑨">fully active</a>, then return undefined.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑤">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑥">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑨">fully active</a>, then return undefined.</p>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑦">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①③">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑧">app history state</a> is null, then return undefined.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑥">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①②">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑧">app history state</a> is null, then return undefined.</p>
      <li data-md>
-      <p>Return <a data-link-type="abstract-op" href="https://html.spec.whatwg.org/multipage/structured-data.html#structureddeserialize" id="ref-for-structureddeserialize①">StructuredDeserialize</a>(<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑧">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①④">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑨">app history state</a>).</p>
+      <p>Return <a data-link-type="abstract-op" href="https://html.spec.whatwg.org/multipage/structured-data.html#structureddeserialize" id="ref-for-structureddeserialize①">StructuredDeserialize</a>(<a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑦">this</a>'s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry①③">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑨">app history state</a>).</p>
     </ol>
     <p class="note" role="note">Unlike <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-state" id="ref-for-dom-history-state①">history.state</a></code>, this will deserialize upon each access. </p>
     <p class="note" role="note">This can in theory throw an exception, if attempting to deserialize a large <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer">ArrayBuffer</a></code> when not enough memory is available. </p>
@@ -2367,7 +2368,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑦">navigate to a fragment</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑧">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑨">origin</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑧">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑤">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑤">origin</a>.</p>
    <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps②">URL and history update steps</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①⓪">origin</a> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑥">origin</a>.</p>
    <p>Potentially update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">traverse the history</a> algorithm to consult the new <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①①">origin</a> field, instead of checking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑥">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑦">origin</a>, since the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑦">document</a> can disappear?? Needs further investigation.</p>
-   <h3 class="heading settled" data-level="5.5" id="session-history-patches-update"><span class="secno">5.5. </span><span class="content">Updating the <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑨">AppHistory</a></code> object</span><a class="self-link" href="#session-history-patches-update"></a></h3>
+   <h3 class="heading settled" data-level="5.5" id="session-history-patches-policy-container"><span class="secno">5.5. </span><span class="content">Tracking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container①">policy container</a> member more often</span><a class="self-link" href="#session-history-patches-policy-container"></a></h3>
+   <p>The <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container②">policy container</a> field of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①⓪">session history entry</a> is null, except when we <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history">require storing the policy container in history</a>. The specification for <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-url" id="ref-for-dom-apphistoryentry-url③">appHistoryEntry.url</a></code> requires the relevant <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy" id="ref-for-referrer-policy①">referrer policy</a> to be accessible for all entries, not just some.</p>
+   <p>So, update the HTML Standard to always store the policy container on the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①①">session history entry</a>, and then only use it in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#determining-navigation-params-policy-container" id="ref-for-determining-navigation-params-policy-container">determine navigation params policy container</a> algorithm in the cases currently covered by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history①">require storing the policy container in history</a> algorithm.</p>
+   <h3 class="heading settled" data-level="5.6" id="session-history-patches-update"><span class="secno">5.6. </span><span class="content">Updating the <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑨">AppHistory</a></code> object</span><a class="self-link" href="#session-history-patches-update"></a></h3>
    <div class="algorithm" data-algorithm="traverse the history update patch">
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history①">traverse the history</a> algorithm by adding the following step before the final step which fires various events: 
     <ol>
@@ -2704,7 +2708,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-document①">2.2. The AppHistoryDestination class</a>
     <li><a href="#ref-for-document②">2.3. Firing the event</a>
     <li><a href="#ref-for-document③">3. App history entries</a> <a href="#ref-for-document④">(2)</a> <a href="#ref-for-document⑤">(3)</a> <a href="#ref-for-document⑥">(4)</a>
-    <li><a href="#ref-for-document⑦">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-document⑦">5.6. Updating the AppHistory object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-event">
@@ -2995,7 +2999,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-creating-a-new-browsing-context">
    <a href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context">https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-creating-a-new-browsing-context">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-creating-a-new-browsing-context">5.6. Updating the AppHistory object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-cross-origin-opener-policy-2">
@@ -3029,6 +3033,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-hh-default">1.4. Navigating</a> <a href="#ref-for-hh-default①">(2)</a>
     <li><a href="#ref-for-hh-default②">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-hh-default③">5.4. Tracking the origin member</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-determining-navigation-params-policy-container">
+   <a href="https://html.spec.whatwg.org/multipage/origin.html#determining-navigation-params-policy-container">https://html.spec.whatwg.org/multipage/origin.html#determining-navigation-params-policy-container</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-determining-navigation-params-policy-container">5.5. Tracking the policy container member more often</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-a-browsing-context-is-discarded">
@@ -3275,6 +3285,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container">https://html.spec.whatwg.org/multipage/history.html#she-policy-container</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-she-policy-container">3. App history entries</a>
+    <li><a href="#ref-for-she-policy-container①">5.5. Tracking the policy container member more often</a> <a href="#ref-for-she-policy-container②">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-history-pushstate">
@@ -3300,7 +3311,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-relevant-global①⑥">3. App history entries</a> <a href="#ref-for-concept-relevant-global①⑦">(2)</a> <a href="#ref-for-concept-relevant-global①⑧">(3)</a> <a href="#ref-for-concept-relevant-global①⑨">(4)</a> <a href="#ref-for-concept-relevant-global②⓪">(5)</a> <a href="#ref-for-concept-relevant-global②①">(6)</a> <a href="#ref-for-concept-relevant-global②②">(7)</a> <a href="#ref-for-concept-relevant-global②③">(8)</a>
     <li><a href="#ref-for-concept-relevant-global②④">4.3. Navigation algorithm updates</a> <a href="#ref-for-concept-relevant-global②⑤">(2)</a>
     <li><a href="#ref-for-concept-relevant-global②⑥">4.4. History traversal updates</a>
-    <li><a href="#ref-for-concept-relevant-global②⑦">5.5. Updating the AppHistory object</a> <a href="#ref-for-concept-relevant-global②⑧">(2)</a>
+    <li><a href="#ref-for-concept-relevant-global②⑦">5.6. Updating the AppHistory object</a> <a href="#ref-for-concept-relevant-global②⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-relevant-realm">
@@ -3339,6 +3350,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception">https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-report-the-exception">2.3. Firing the event</a> <a href="#ref-for-report-the-exception①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-requires-storing-the-policy-container-in-history">
+   <a href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history">https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-requires-storing-the-policy-container-in-history">5.5. Tracking the policy container member more often</a> <a href="#ref-for-requires-storing-the-policy-container-in-history①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-resulting-url-record">
@@ -3404,6 +3421,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-session-history-entry⑤">5. Patches to session history</a>
     <li><a href="#ref-for-session-history-entry⑥">5.1. New session history entry items</a> <a href="#ref-for-session-history-entry⑦">(2)</a>
     <li><a href="#ref-for-session-history-entry⑧">5.4. Tracking the origin member</a> <a href="#ref-for-session-history-entry⑨">(2)</a>
+    <li><a href="#ref-for-session-history-entry①⓪">5.5. Tracking the policy container member more often</a> <a href="#ref-for-session-history-entry①①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-tn-session-history-traversal-queue">
@@ -3489,7 +3507,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history">https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-traverse-the-history">5.4. Tracking the origin member</a>
-    <li><a href="#ref-for-traverse-the-history①">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-traverse-the-history①">5.6. Updating the AppHistory object</a>
     <li><a href="#ref-for-traverse-the-history②">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
@@ -3530,7 +3548,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-url-and-history-update-steps">2.3. Firing the event</a>
     <li><a href="#ref-for-url-and-history-update-steps①">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-url-and-history-update-steps②">5.4. Tracking the origin member</a>
-    <li><a href="#ref-for-url-and-history-update-steps③">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-url-and-history-update-steps③">5.6. Updating the AppHistory object</a>
     <li><a href="#ref-for-url-and-history-update-steps④">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
@@ -3660,10 +3678,18 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-referrer-policy-no-referrer①">3. App history entries</a> <a href="#ref-for-referrer-policy-no-referrer②">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-referrer-policy-origin">
+   <a href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin">https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-referrer-policy-origin">1. The AppHistory class</a>
+    <li><a href="#ref-for-referrer-policy-origin①">3. App history entries</a> <a href="#ref-for-referrer-policy-origin②">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-referrer-policy">
    <a href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy">https://w3c.github.io/webappsec-referrer-policy/#referrer-policy</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-referrer-policy">1. The AppHistory class</a>
+    <li><a href="#ref-for-referrer-policy①">5.5. Tracking the policy container member more often</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-equals">
@@ -3884,7 +3910,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-this②⑧">1.5. Traversing</a> <a href="#ref-for-this②⑨">(2)</a> <a href="#ref-for-this③⓪">(3)</a> <a href="#ref-for-this③①">(4)</a> <a href="#ref-for-this③②">(5)</a> <a href="#ref-for-this③③">(6)</a> <a href="#ref-for-this③④">(7)</a> <a href="#ref-for-this③⑤">(8)</a> <a href="#ref-for-this③⑥">(9)</a> <a href="#ref-for-this③⑦">(10)</a> <a href="#ref-for-this③⑧">(11)</a> <a href="#ref-for-this③⑨">(12)</a>
     <li><a href="#ref-for-this④⓪">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-this④①">(2)</a> <a href="#ref-for-this④②">(3)</a> <a href="#ref-for-this④③">(4)</a> <a href="#ref-for-this④④">(5)</a> <a href="#ref-for-this④⑤">(6)</a>
     <li><a href="#ref-for-this④⑥">2.2. The AppHistoryDestination class</a> <a href="#ref-for-this④⑦">(2)</a> <a href="#ref-for-this④⑧">(3)</a> <a href="#ref-for-this④⑨">(4)</a> <a href="#ref-for-this⑤⓪">(5)</a> <a href="#ref-for-this⑤①">(6)</a> <a href="#ref-for-this⑤②">(7)</a>
-    <li><a href="#ref-for-this⑤③">3. App history entries</a> <a href="#ref-for-this⑤④">(2)</a> <a href="#ref-for-this⑤⑤">(3)</a> <a href="#ref-for-this⑤⑥">(4)</a> <a href="#ref-for-this⑤⑦">(5)</a> <a href="#ref-for-this⑤⑧">(6)</a> <a href="#ref-for-this⑤⑨">(7)</a> <a href="#ref-for-this⑥⓪">(8)</a> <a href="#ref-for-this⑥①">(9)</a> <a href="#ref-for-this⑥②">(10)</a> <a href="#ref-for-this⑥③">(11)</a> <a href="#ref-for-this⑥④">(12)</a> <a href="#ref-for-this⑥⑤">(13)</a> <a href="#ref-for-this⑥⑥">(14)</a> <a href="#ref-for-this⑥⑦">(15)</a> <a href="#ref-for-this⑥⑧">(16)</a>
+    <li><a href="#ref-for-this⑤③">3. App history entries</a> <a href="#ref-for-this⑤④">(2)</a> <a href="#ref-for-this⑤⑤">(3)</a> <a href="#ref-for-this⑤⑥">(4)</a> <a href="#ref-for-this⑤⑦">(5)</a> <a href="#ref-for-this⑤⑧">(6)</a> <a href="#ref-for-this⑤⑨">(7)</a> <a href="#ref-for-this⑥⓪">(8)</a> <a href="#ref-for-this⑥①">(9)</a> <a href="#ref-for-this⑥②">(10)</a> <a href="#ref-for-this⑥③">(11)</a> <a href="#ref-for-this⑥④">(12)</a> <a href="#ref-for-this⑥⑤">(13)</a> <a href="#ref-for-this⑥⑥">(14)</a> <a href="#ref-for-this⑥⑦">(15)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-undefined">
@@ -3970,6 +3996,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-current-entry">current entry</span>
      <li><span class="dfn-paneled" id="term-for-tn-current-session-history-step">current session history step</span>
      <li><span class="dfn-paneled" id="term-for-hh-default">default</span>
+     <li><span class="dfn-paneled" id="term-for-determining-navigation-params-policy-container">determine navigation params policy container</span>
      <li><span class="dfn-paneled" id="term-for-a-browsing-context-is-discarded">discard</span>
      <li><span class="dfn-paneled" id="term-for-she-document">document <small>(for session history entry)</small></span>
      <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps">enqueue steps</span>
@@ -4014,6 +4041,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-hh-reload">reload</span>
      <li><span class="dfn-paneled" id="term-for-hh-replace">replace</span>
      <li><span class="dfn-paneled" id="term-for-report-the-exception">report an exception</span>
+     <li><span class="dfn-paneled" id="term-for-requires-storing-the-policy-container-in-history">requires storing the policy container in history</span>
      <li><span class="dfn-paneled" id="term-for-resulting-url-record">resulting url record</span>
      <li><span class="dfn-paneled" id="term-for-same-origin">same origin</span>
      <li><span class="dfn-paneled" id="term-for-same-origin-domain">same origin-domain</span>
@@ -4067,6 +4095,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <a data-link-type="biblio">[referrer-policy]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-referrer-policy-no-referrer">"no-referrer"</span>
+     <li><span class="dfn-paneled" id="term-for-referrer-policy-origin">"origin"</span>
      <li><span class="dfn-paneled" id="term-for-referrer-policy">referrer policy</span>
     </ul>
    <li>
@@ -4290,7 +4319,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-window-app-history①">2.3. Firing the event</a> <a href="#ref-for-window-app-history②">(2)</a>
     <li><a href="#ref-for-window-app-history③">4.3. Navigation algorithm updates</a> <a href="#ref-for-window-app-history④">(2)</a> <a href="#ref-for-window-app-history⑤">(3)</a>
     <li><a href="#ref-for-window-app-history⑥">4.4. History traversal updates</a>
-    <li><a href="#ref-for-window-app-history⑦">5.5. Updating the AppHistory object</a> <a href="#ref-for-window-app-history⑧">(2)</a>
+    <li><a href="#ref-for-window-app-history⑦">5.6. Updating the AppHistory object</a> <a href="#ref-for-window-app-history⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-window-apphistory">
@@ -4315,7 +4344,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-apphistory②③">1.6. Event handlers</a>
     <li><a href="#ref-for-apphistory②④">2.3. Firing the event</a> <a href="#ref-for-apphistory②⑤">(2)</a> <a href="#ref-for-apphistory②⑥">(3)</a> <a href="#ref-for-apphistory②⑦">(4)</a>
     <li><a href="#ref-for-apphistory②⑧">5. Patches to session history</a>
-    <li><a href="#ref-for-apphistory②⑨">5.5. Updating the AppHistory object</a>
+    <li><a href="#ref-for-apphistory②⑨">5.6. Updating the AppHistory object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-apphistoryupdatecurrentoptions">
@@ -4430,7 +4459,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="apphistory-update-the-entries">
    <b><a href="#apphistory-update-the-entries">#apphistory-update-the-entries</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-apphistory-update-the-entries">5.5. Updating the AppHistory object</a> <a href="#ref-for-apphistory-update-the-entries①">(2)</a> <a href="#ref-for-apphistory-update-the-entries②">(3)</a>
+    <li><a href="#ref-for-apphistory-update-the-entries">5.6. Updating the AppHistory object</a> <a href="#ref-for-apphistory-update-the-entries①">(2)</a> <a href="#ref-for-apphistory-update-the-entries②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="get-the-app-history-index">
@@ -5203,7 +5232,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-apphistoryentry-session-history-entry">1. The AppHistory class</a> <a href="#ref-for-apphistoryentry-session-history-entry①">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry②">(3)</a>
     <li><a href="#ref-for-apphistoryentry-session-history-entry③">1.2. The current entry</a>
     <li><a href="#ref-for-apphistoryentry-session-history-entry④">1.5. Traversing</a> <a href="#ref-for-apphistoryentry-session-history-entry⑤">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑥">(3)</a> <a href="#ref-for-apphistoryentry-session-history-entry⑦">(4)</a>
-    <li><a href="#ref-for-apphistoryentry-session-history-entry⑧">3. App history entries</a> <a href="#ref-for-apphistoryentry-session-history-entry⑨">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry①⓪">(3)</a> <a href="#ref-for-apphistoryentry-session-history-entry①①">(4)</a> <a href="#ref-for-apphistoryentry-session-history-entry①②">(5)</a> <a href="#ref-for-apphistoryentry-session-history-entry①③">(6)</a> <a href="#ref-for-apphistoryentry-session-history-entry①④">(7)</a>
+    <li><a href="#ref-for-apphistoryentry-session-history-entry⑧">3. App history entries</a> <a href="#ref-for-apphistoryentry-session-history-entry⑨">(2)</a> <a href="#ref-for-apphistoryentry-session-history-entry①⓪">(3)</a> <a href="#ref-for-apphistoryentry-session-history-entry①①">(4)</a> <a href="#ref-for-apphistoryentry-session-history-entry①②">(5)</a> <a href="#ref-for-apphistoryentry-session-history-entry①③">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistoryentry-index">
@@ -5232,6 +5261,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-dom-apphistoryentry-url">1. The AppHistory class</a>
     <li><a href="#ref-for-dom-apphistoryentry-url①">3. App history entries</a> <a href="#ref-for-dom-apphistoryentry-url②">(2)</a>
+    <li><a href="#ref-for-dom-apphistoryentry-url③">5.5. Tracking the policy container member more often</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistoryentry-index">
