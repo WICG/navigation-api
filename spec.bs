@@ -35,6 +35,8 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: document; url: history.html#she-document
       text: policy container; url: history.html#she-policy-container
       text: URL; url: history.html#she-url
+      text: scroll position data; url: history.html#she-scroll-position
+      text: scroll restoration mode; url: history.html#she-scroll-restoration-mode
     for: history handling behavior
       text: default; url: browsing-the-web.html#hh-default
       text: reload; url: browsing-the-web.html#hh-reload
@@ -75,6 +77,7 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
       text: current session history entry; url: history.html#nav-current-history-entry
       text: active session history entry; url: history.html#nav-active-history-entry
       text: get the session history entries; url: history.html#getting-session-history-entries
+    text: navigable; for: Window; url: browsers.html#window-navigable
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
   text: generate a random UUID; url: #dfn-generate-a-random-uuid
 </pre>
@@ -564,6 +567,10 @@ During any given navigation, the {{Navigation}} object needs to keep track of th
       <td>Until all promises passed to {{NavigateEvent/transitionWhile()}} have settled
       <td>So that if the navigation is canceled, we can [=AbortSignal/signal abort=].
     <tr>
+      <td>Whether a new element was <a spec="HTML" lt="focusing steps">focused</a>
+      <td>Until all promises passed to {{NavigateEvent/transitionWhile()}} have settled
+      <td>So that if one was, focus is not [=potentially reset the focus|reset=]
+    <tr>
       <td>The {{NavigationHistoryEntry}} being navigated to
       <td>From when it is determined, until all promises passed to {{NavigateEvent/transitionWhile()}} have settled
       <td>So that we know what to [=resolve=] any {{NavigationResult/committed}} and {{NavigationResult/finished}} promises with.
@@ -603,6 +610,10 @@ During any given navigation, the {{Navigation}} object needs to keep track of th
       <td>Any {{NavigationResult/committed}} {{Promise}} that was returned
       <td>Until the [=session history=] is updated (inside that same task)
       <td>So that we can [=resolve=] or [=reject=] it appropriately.
+    <tr>
+      <td>Whether {{NavigateEvent/transitionWhile()}} was called
+      <td>Until the [=session history=] is updated (inside that same task)
+      <td>So that we can suppress the normal scroll restoration logic in favor of the chosen {{NavigationTransitionWhileOptions/scrollRestoration}} option value.
 </table>
 
 Furthermore, we need to account for the fact that there might be multiple traversals queued up, e.g. via
@@ -632,6 +643,10 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navig
 
 Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigation signal</dfn>, which is an {{AbortSignal}} or null, initially null.
 
+Each {{Navigation}} object has an associated <dfn for="Navigation">focus changed during ongoing navigation</dfn>, which is a boolean, initially false.
+
+Each {{Navigation}} object has an associated <dfn for="Navigation">suppress normal scroll restoration during ongoing navigation</dfn>, which is a boolean, initially false.
+
 Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigation</dfn>, which is a [=navigation API method navigation=] or null, initially null.
 
 Each {{Navigation}} object has an associated <dfn for="Navigation">upcoming non-traverse navigation</dfn>, which is a [=navigation API method navigation=] or null, initially null.
@@ -648,7 +663,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 * A <dfn for="navigation API method navigation">committed promise</dfn>, a {{Promise}}
 * A <dfn for="navigation API method navigation">finished promise</dfn>, a {{Promise}}
 
-<p class="note">We need to store the [=Navigation/ongoing navigation signal=] separately from the [=navigation API method navigation=] struct, since it needs to be tracked even for navigations that are not via the navigation API.
+<p class="note">We need to store the [=Navigation/ongoing navigation signal=], [=Navigation/focus changed during ongoing navigation=], and [=Navigation/suppress normal scroll restoration during ongoing navigation=] separately from the [=navigation API method navigation=] struct, since it needs to be tracked even for navigations that are not via the navigation API.
 
 <div algorithm>
   To <dfn for="Navigation">set the upcoming non-traverse navigation</dfn> given a {{Navigation}} |navigation|, a JavaScript value |info|, and a [=serialized state=]-or-null |serializedState|:
@@ -1076,7 +1091,9 @@ interface NavigateEvent : Event {
   readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
-  undefined transitionWhile(Promise<undefined> newNavigationAction);
+  undefined transitionWhile(Promise<undefined> newNavigationAction,
+                            optional NavigationTransitionWhileOptions options = {});
+  undefined restoreScroll();
 };
 
 dictionary NavigateEventInit : EventInit {
@@ -1089,6 +1106,21 @@ dictionary NavigateEventInit : EventInit {
   FormData? formData = null;
   DOMString? downloadRequest = null;
   any info;
+};
+
+dictionary NavigationTransitionWhileOptions {
+  NavigationFocusReset focusReset;
+  NavigationScrollRestoration scrollRestoration;
+};
+
+enum NavigationFocusReset {
+  "after-transition",
+  "manual"
+};
+
+enum NavigationScrollRestoration {
+  "after-transition",
+  "manual"
 };
 
 // TODO: rename to NavigationType after https://github.com/w3c/navigation-timing/pull/172 lands.
@@ -1161,10 +1193,16 @@ enum NavigationNavigationType {
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/transitionWhile()|transitionWhile}}(|newNavigationAction|)</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/transitionWhile()|transitionWhile}}(|newNavigationAction|, { {{NavigationTransitionWhileOptions/focusReset}}: "{{NavigationFocusReset/manual}}" })</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/transitionWhile()|transitionWhile}}(|newNavigationAction|, { {{NavigationTransitionWhileOptions/scrollRestoration}}: "{{NavigationScrollRestoration/manual}}" })</code>
   <dd>
-    <p>Synchronously converts this navigation into a same-document navigation to the destination URL.
+    <p>Converts this navigation into a same-document navigation to the destination URL.
 
     <p>The given |newNavigationAction| promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires {{Navigation/navigatesuccess}} or {{Navigation/navigateerror}} events as appropriate, which other parts of the web application can respond to.
+
+    <p>By default, using this method will cause focus to reset when the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. Focus will be reset to the first element with the <{html-global/autofocus}> attribute set, or the <{body}> element if the attribute isn't present. The {{NavigationTransitionWhileOptions/focusReset}} option can be set to "{{NavigationFocusReset/manual}}" to avoid this behavior.
+
+    <p>By default, using this method for "{{NavigationNavigationType/traverse}}" navigations will cause the browser's scroll restoration logic to be delayed until the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. The {{NavigationTransitionWhileOptions/scrollRestoration}} option can be set to "{{NavigationScrollRestoration/manual}}" to turn off scroll restoration entirely for this navigation.
 
     <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{NavigateEvent/canTransition}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
   </dd>
@@ -1172,16 +1210,18 @@ enum NavigationNavigationType {
 
 The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, <dfn attribute for="NavigateEvent">downloadRequest</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
-A {{NavigateEvent}} has the following associated values which are only conditionally used:
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null. It is only used in some cases where the event's {{NavigateEvent/navigationType}} is "{{NavigationNavigationType/push}}" or "{{NavigationNavigationType/replace}}", and is set appropriately when the event is [[#navigate-event-firing|fired]].
 
-* <dfn for="NavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used in some cases when its {{NavigateEvent/navigationType}} is "{{NavigationNavigationType/push}}" or "{{NavigationNavigationType/replace}}"
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">focus reset behavior</dfn>, a {{NavigationFocusReset}}-or-null, initially null.
 
-This is set appropriately when the event is [[#navigate-event-firing|fired]].
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">scroll restoration behavior</dfn>, a {{NavigationScrollRestoration}}-or-null, initially null.
 
-A {{NavigateEvent}} also has an associated <dfn for="NavigateEvent">navigation action promises list</dfn>, which is a [=list=] of {{Promise}} objects, initially empty.
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">did process scroll restoration</dfn>, a boolean, initially false.
+
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation action promises list</dfn>, which is a [=list=] of {{Promise}} objects, initially empty.
 
 <div algorithm>
-  The <dfn method for="NavigateEvent">transitionWhile(|newNavigationAction|)</dfn> method steps are:
+  The <dfn method for="NavigateEvent">transitionWhile(|newNavigationAction|, |options|)</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s {{Event/isTrusted}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
@@ -1189,6 +1229,21 @@ A {{NavigateEvent}} also has an associated <dfn for="NavigateEvent">navigation a
   1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/canceled flag=] is set, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. [=list/Append=] |newNavigationAction| to [=this=]'s [=NavigateEvent/navigation action promises list=].
+  1. If |options|["{{NavigationTransitionWhileOptions/focusReset}}"] [=map/exists=], then:
+    1. If [=this=]'s [=NavigateEvent/focus reset behavior=] is not null, and it is not equal to |options|["{{NavigationTransitionWhileOptions/focusReset}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationTransitionWhileOptions/focusReset}} option for a previous call to {{NavigateEvent/transitionWhile()}} was overridden by this new value, and the previous value will be ignored.
+    1. Set [=this=]'s [=NavigateEvent/focus reset behavior=] to |options|["{{NavigationTransitionWhileOptions/focusReset}}"].
+  1. If |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"] [=map/exists=], and [=this=]'s {{NavigateEvent/navigationType}} attribute was initialized to "{{NavigationNavigationType/traverse}}", then:
+    1. If [=this=]'s [=NavigateEvent/scroll restoration behavior=] is not null, and it is not equal to |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationTransitionWhileOptions/scrollRestoration}} option for a previous call to {{NavigateEvent/transitionWhile()}} was overridden by this new value, and the previous value will be ignored.
+    1. Set [=this=]'s [=NavigateEvent/scroll restoration behavior=] to |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"].
+</div>
+
+<div algorithm>
+  The <dfn method for="NavigateEvent">restoreScroll()</dfn> method steps are:
+
+  1. If [=this=]'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationNavigationType/traverse}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=NavigateEvent/scroll restoration behavior=] is not "{{NavigationScrollRestoration/manual}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=NavigateEvent/did process scroll restoration=] is true, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. [=Restore scroll position data=] given [=this=]'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
 </div>
 
 <h3 id="navigate-event-destination">The {{NavigationDestination}} class</h3>
@@ -1362,6 +1417,8 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Set |navigation|'s [=Navigation/ongoing navigate event=] to |event|.
   1. [=Assert=]: |navigation|'s [=Navigation/ongoing navigation signal=] is null.
   1. Set |navigation|'s [=Navigation/ongoing navigation signal=] to |event|'s {{NavigateEvent/signal}}.
+  1. Set |navigation|'s [=Navigation/focus changed during ongoing navigation=] to false.
+  1. Set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to false.
   1. Let |dispatchResult| be the result of [=dispatching=] |event| at |navigation|.
   1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
   1. If |dispatchResult| is false:
@@ -1376,6 +1433,8 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |navigation|'s [=Navigation/transition=] to a [=new=] {{NavigationTransition}} created in |navigation|'s [=relevant Realm=], whose [=NavigationTransition/navigation type=] is |navigationType|, [=NavigationTransition/from entry=] is |fromEntry|, and whose [=NavigationTransition/finished promise=] is [=a new promise=] created in |navigation|'s [=relevant Realm=].
     1. [=Mark as handled=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=].
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
+    1. If |navigationType| is "{{NavigationNavigationType/traverse}}", then set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to true.
+       <p class="note">If |event|'s [=NavigateEvent/scroll restoration behavior=] was set to "{{NavigationScrollRestoration/after-transition}}", then we will [=potentially perform scroll restoration=] below. Otherwise, there will be no scroll restoration. That is, no navigation which is intercepted by {{NavigateEvent/transitionWhile()}} goes through the normal scroll restoration process; scroll restoration for such navigations is either done manually, by the web developer, or is done after the transition.
   1. If |endResultIsSameDocument| is true:
     1. Let |tweakedPromisesList| be |event|'s  [=NavigateEvent/navigation action promises list=].
     1. If |tweakedPromisesList|'s [=list/size=] is 0, then set |tweakedPromisesList| to « [=a promise resolved with=] {{undefined}} ».
@@ -1386,12 +1445,16 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
         1. If |navigation|'s [=Navigation/transition=] is not null, then [=resolve=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with undefined.
         1. Set |navigation|'s [=Navigation/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/resolve the finished promise=] for |ongoingNavigation|.
+        1. [=Potentially reset the focus=] given |navigation| and |event|.
+        1. [=Potentially perform scroll restoration=] given |navigation| and |event|.
       and the following failure steps given reason |rejectionReason|:
         1. If |event|'s {{NavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
         1. [=Fire an event=] named {{Navigation/navigateerror}} at |navigation| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
         1. If |navigation|'s [=Navigation/transition=] is not null, then [=reject=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with |rejectionReason|.
         1. Set |navigation|'s [=Navigation/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
+        1. [=Potentially reset the focus=] given |navigation| and |event|.
+           <p class="note">Although we still [=potentially reset the focus=] for such failed transitions, we do <em>not</em> [=potentially perform scroll restoration=] for them.
   1. Otherwise, if |ongoingNavigation| is non-null, then:
     1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
        <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for cross-document navigations.
@@ -1407,6 +1470,8 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 <div algorithm>
   To <dfn>finalize with an aborted navigation error</dfn> given a {{Navigation}} |navigation|, a [=navigation API method navigation=] or null |ongoingNavigation|, and an optional {{DOMException}} |error|:
 
+  1. Set |navigation|'s [=Navigation/focus changed during ongoing navigation=] to false.
+  1. Set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to false.
   1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |navigation|'s [=relevant Realm=].
   1. If |navigation|'s [=Navigation/ongoing navigate event=] is non-null, then:
     1. Set |navigation|'s [=Navigation/ongoing navigate event=]'s [=Event/canceled flag=] to true.
@@ -1440,6 +1505,35 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |navigation| be |bc|'s [=browsing context/active window=]'s [=Window/navigation API=].
   1. Let |traversals| be a [=list/clone=] of |navigation|'s [=Navigation/upcoming traverse navigations=].
   1. For each |traversal| of |traversals|: [=finalize with an aborted navigation error=] given |navigation| and |traversal|.
+</div>
+
+<div algorithm>
+  To <dfn>potentially reset the focus</dfn> given a {{Navigation}} object |navigation| and an {{NavigateEvent}} |event|:
+
+  1. Let |focusChanged| be |navigation|'s [=Navigation/focus changed during ongoing navigation=].
+  1. Set |navigation|'s [=Navigation/focus changed during ongoing navigation=] to false.
+  1. If |focusChanged| is true, then return.
+  1. If |event|'s [=NavigateEvent/navigation action promises list=]'s [=list/size=] is 0, then return.
+  1. If |event|'s [=NavigateEvent/focus reset behavior=] is "{{NavigationFocusReset/manual}}", then return.
+     <p class="note">If it was left as null, then we treat that as "{{NavigationFocusReset/after-transition}}", and continue onward.
+  1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated Document=].
+  1. Let |focusTarget| be the <a spec="HTML">autofocus delegate</a> for |document|.
+  1. If |focusTarget| is null, then set |focusTarget| to |document|'s <a spec="HTML" lt="the body element">body element</a>.
+  1. If |focusTarget| is null, then set |focusTarget| to |document|'s [=document element=].
+  1. Run the <a spec="HTML">focusing steps</a> for |focusTarget|, with |document|'s <a spec="CSS2">viewport</a> as the fallback target.
+  1. Move the <a spec="HTML">sequential focus navigation starting point</a> to |focusTarget|.
+</div>
+
+<div algorithm>
+  To <dfn>potentially perform scroll restoration</dfn> given a {{Navigation}} object |navigation| and an {{NavigateEvent}} |event|:
+
+  1. If |event|'s [=NavigateEvent/navigation action promises list=]'s [=list/size=] is 0, then return.
+  1. If |event|'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationNavigationType/traverse}}", then return.
+  1. If |event|'s [=NavigateEvent/scroll restoration behavior=] is "{{NavigationScrollRestoration/manual}}", then return.
+     <p class="note">If it was left as null, then we treat that as "{{NavigationScrollRestoration/after-transition}}", and continue onward.
+  1. If |event|'s [=NavigateEvent/did process scroll restoration=] is true, then return.
+  1. Set |event|'s [=NavigateEvent/did process scroll restoration=] to true.
+  1. [=Restore scroll position data=] given |navigation|'s [=Navigation/current entry=]'s [=NavigationHistoryEntry/session history entry=].
 </div>
 
 <h2 id="NavigationHistoryEntry-class">Navigation API history entries</h2>
@@ -1875,6 +1969,44 @@ So, update the HTML Standard to always store the policy container on the [=sessi
 We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
 
 <h2 id="other-patches">Other patches</h2>
+
+<h3 id="focus-patches">Focus tracking</h3>
+
+To support the {{NavigationTransitionWhileOptions/focusReset}} option, the following patches need to be made:
+
+Update the <a spec="HTML">focusing steps</a> to, right before they call the <a spec="HTML">focus update steps</a>, set the {{Document}}'s [=relevant global object=]'s [=Window/navigation API=]'s [=Navigation/focus changed during ongoing navigation=] to true.
+
+Update the <a spec="HTML">focus fixup rule</a> to additionally set the {{Document}}'s [=relevant global object=]'s [=Window/navigation API=]'s [=Navigation/focus changed during ongoing navigation=] to false.
+
+<p class="note">In combination, these ensure that the [=Navigation/focus changed during ongoing navigation=] reflects any developer- or user-initiated focus changes, unless they were undone by the focus fixup rule. For example, if the user moved focus to an element which was removed from the DOM while the promise passed to {{NavigateEvent/transitionWhile()}} was settling, then that would not count as a focus change.
+
+<h3 id="scroll-restoration-patches">Scroll restoration</h3>
+
+To support the {{NavigationTransitionWhileOptions/scrollRestoration}} option, as well as to fix <a href="https://github.com/whatwg/html/issues/7517">whatwg/html#7517</a>, the following patches need to be made:
+
+Add a boolean, <dfn for="Document">has been scrolled by the user</dfn>, initially false, to {{Document}} objects. State that if the user scrolls the document, the user agent must set that document's [=Document/has been scrolled by the user=] to true. Modify the <a spec="HTML">unload a document</a> algorithm to set this back to false.
+
+<div algorithm>
+  Define the process of <dfn>restoring scroll position data</dfn> given a [=session history entry=] |entry| as follows:
+
+  1. Let |document| be |entry|'s [=session history entry/document=].
+  1. If |document|'s [=Document/has been scrolled by the user=] is true, then the user agent should return.
+  1. The user agent should attempt to use |entry|'s [=session history entry/scroll position data=] to restore the scroll positions of |document|'s <a spec="HTML">restorable scrollable regions</a>. The user agent may continue to attempt to do so periodically, until |document|'s [=Document/has been scrolled by the user=] becomes true.
+
+     <p class="note">This is formulated as an <em>attempt</em>, which is potentially repeated until success or until the user scrolls, due to the fact that relevant content indicated by the [=session history entry/scroll position data=] might take some time to load from the network.
+
+     <p class="note">Scroll restoration might be affected by scroll anchoring. [[CSS-SCROLL-ANCHORING-1]]
+</div>
+
+<div algorithm="restore persisted state">
+  With this in place, modify the <a spec="HTML">restore persisted state</a> algorithm's first step to read as follows:
+
+  1. If |entry|'s [=session history entry/scroll restoration mode=] is "{{ScrollRestoration/auto}}", and |entry|'s [=session history entry/document=]'s [=relevant global object=]'s [=Window/navigation API=]'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] is false, then [=restore scroll position data=] given |entry|.
+
+  In addition to the existing note, add the following one:
+
+  <p class="note">If the [=Navigation/suppress normal scroll restoration during ongoing navigation=] boolean is true, then [=restoring scroll position data=] might still happen at a later point, as part of [=potentially perform scroll restoration|potentially performing scroll restoration=] for the relevant {{Navigation}} object, or via a {{NavigateEvent/restoreScroll()|navigateEvent.restoreScroll()}} method call.
+</div>
 
 <h3 id="cancel-navigation">Canceling navigation and traversals</h3>
 
