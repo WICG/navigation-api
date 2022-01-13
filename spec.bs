@@ -1103,7 +1103,7 @@ The <dfn attribute for="AppHistoryNavigateEvent">navigationType</dfn>, <dfn attr
 
 An {{AppHistoryNavigateEvent}} has the following associated values which are only conditionally used:
 
-* <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/reload}}", "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}"
+* <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used in some cases when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}"
 
 This is set appropriately when the event is [[#navigate-event-firing|fired]].
 
@@ -1303,8 +1303,11 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
        <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
     1. [=app history API navigation/Clean up=] |ongoingNavigation|.
   1. If |hadTransitionWhile| is true and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
-    1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
-    1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+    1. If |navigationType| is not "{{AppHistoryNavigationType/reload}}", then:
+      1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
+      1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+
+      <p class="note">If |navigationType| is "{{AppHistoryNavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. App history-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/app history state=] if this was caused by a call to {{AppHistory/reload()|appHistory.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{AppHistoryNavigateEvent/transitionWhile()}}.
     1. Return false.
   1. Return true.
 </div>
