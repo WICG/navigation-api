@@ -1225,8 +1225,8 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. Assert: |result| is true (traversals are never cancelable).
 </div>
 
-<div algorithm="fire a push or replace navigate event">
-  To <dfn>fire a push or replace `navigate` event</dfn> at an {{AppHistory}} |appHistory| given an {{AppHistoryNavigationType}} <dfn for="fire a push or replace navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a push or replace navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a push or replace navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a push or replace navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a push or replace navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a push or replace navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a push or replace navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
+<div algorithm="fire a non-traversal navigate event">
+  To <dfn>fire a non-traversal `navigate` event</dfn> at an {{AppHistory}} |appHistory| given an {{AppHistoryNavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in |appHistory|'s [=relevant Realm=].
   1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
@@ -1590,7 +1590,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
   1. Let |appHistory| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |navigationType| be "{{AppHistoryNavigationType/push}}" if <var ignore>isPush</var> is true, and "{{AppHistoryNavigationType/replace}}" otherwise.
-  1. Let |continue| be the result of [=firing a push or replace navigate event=] at |appHistory| with <i>[=fire a push or replace navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a push or replace navigate event/isSameDocument=]</i> set to true, <i>[=fire a push or replace navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a push or replace navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |appHistory| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
   1. If |continue| is false, return.
 </div>
 
@@ -1599,7 +1599,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
   1. Let |appHistory| be the [=session history/current entry=]'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
   1. Let |navigationType| be the result of [=converting a history handling behavior to a navigation type=] given <var ignore>historyHandling</var>.
-  1. Let |continue| be the result of [=firing a push or replace navigate event=] at |appHistory| given with <i>[=fire a push or replace navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a push or replace navigate event/isSameDocument=]</i> set to true, <i>[=fire a push or replace navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a push or replace navigate event/destinationURL=]</i> set to <var ignore>url</var>.
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |appHistory| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
   1. If |continue| is false, return.
 </div>
 
@@ -1617,7 +1617,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
     then:
 
       1. Let |navigationType| be the result of [=converting a history handling behavior to a navigation type=] given <var ignore>historyHandling</var>.
-      1. Let |continue| be the result of [=firing a push or replace navigate event=] at |appHistory| with <i>[=fire a push or replace navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a push or replace navigate event/isSameDocument=]</i> set to false, <i>[=fire a push or replace navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a push or replace navigate event/formDataEntryList=]</i> set to |entryList|, <i>[=fire a push or replace navigate event/destinationURL=]</i> set to <var ignore>url</var>, and <i>[=fire a push or replace navigate event/state=]</i> set to |appHistoryState|.
+      1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |appHistory| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to false, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a non-traversal navigate event/formDataEntryList=]</i> set to |entryList|, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>, and <i>[=fire a non-traversal navigate event/state=]</i> set to |appHistoryState|.
       1. If |continue| is false, return.
 
     <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{AppHistory/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
