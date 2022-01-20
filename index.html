@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-19">19 January 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-20">20 January 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1782,8 +1782,8 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <p class="assertion">Assert: <var>result</var> is true (traversals are never cancelable).</p>
     </ol>
    </div>
-   <div class="algorithm" data-algorithm="fire a push or replace navigate event">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event">fire a push or replace <code>navigate</code> event</dfn> at an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑤">AppHistory</a></code> <var>appHistory</var> given an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype⑥">AppHistoryNavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑥">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a push or replace navigate event" data-dfn-type="dfn" data-noexport id="fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
+   <div class="algorithm" data-algorithm="fire a non-traversal navigate event">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event">fire a non-traversal <code>navigate</code> event</dfn> at an <code class="idl"><a data-link-type="idl" href="#apphistory" id="ref-for-apphistory②⑤">AppHistory</a></code> <var>appHistory</var> given an <code class="idl"><a data-link-type="idl" href="#enumdef-apphistorynavigationtype" id="ref-for-enumdef-apphistorynavigationtype⑥">AppHistoryNavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑥">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
     <ol>
      <li data-md>
       <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create①">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#apphistorynavigateevent" id="ref-for-apphistorynavigateevent⑥">AppHistoryNavigateEvent</a></code>, in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑥">relevant Realm</a>.</p>
@@ -2243,7 +2243,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-push" id="ref-for-dom-apphistorynavigationtype-push⑦">push</a></code>" if <var>isPush</var> is true, and "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-replace" id="ref-for-dom-apphistorynavigationtype-replace⑥">replace</a></code>" otherwise.</p>
      <li data-md>
-      <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event" id="ref-for-fire-a-push-or-replace-navigate-event">firing a push or replace navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-navigationtype" id="ref-for-fire-a-push-or-replace-navigate-event-navigationtype">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-issamedocument" id="ref-for-fire-a-push-or-replace-navigate-event-issamedocument">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-destinationurl" id="ref-for-fire-a-push-or-replace-navigate-event-destinationurl">destinationURL</a></i> set to <var>newURL</var>, and <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata" id="ref-for-fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a></i> set to <var>serializedData</var>.</p>
+      <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event" id="ref-for-fire-a-non-traversal-navigate-event">firing a non-traversal navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-navigationtype" id="ref-for-fire-a-non-traversal-navigate-event-navigationtype">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-issamedocument" id="ref-for-fire-a-non-traversal-navigate-event-issamedocument">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-destinationurl" id="ref-for-fire-a-non-traversal-navigate-event-destinationurl">destinationURL</a></i> set to <var>newURL</var>, and <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-classichistoryapiserializeddata" id="ref-for-fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a></i> set to <var>serializedData</var>.</p>
      <li data-md>
       <p>If <var>continue</var> is false, return.</p>
     </ol>
@@ -2256,7 +2256,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>navigationType</var> be the result of <a data-link-type="dfn" href="#convert-a-history-handling-behavior-to-a-navigation-type" id="ref-for-convert-a-history-handling-behavior-to-a-navigation-type">converting a history handling behavior to a navigation type</a> given <var>historyHandling</var>.</p>
      <li data-md>
-      <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event" id="ref-for-fire-a-push-or-replace-navigate-event①">firing a push or replace navigate event</a> at <var>appHistory</var> given with <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-navigationtype" id="ref-for-fire-a-push-or-replace-navigate-event-navigationtype①">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-issamedocument" id="ref-for-fire-a-push-or-replace-navigate-event-issamedocument①">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-userinvolvement" id="ref-for-fire-a-push-or-replace-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>, and <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-destinationurl" id="ref-for-fire-a-push-or-replace-navigate-event-destinationurl①">destinationURL</a></i> set to <var>url</var>.</p>
+      <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event" id="ref-for-fire-a-non-traversal-navigate-event①">firing a non-traversal navigate event</a> at <var>appHistory</var> given with <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-navigationtype" id="ref-for-fire-a-non-traversal-navigate-event-navigationtype①">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-issamedocument" id="ref-for-fire-a-non-traversal-navigate-event-issamedocument①">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-userinvolvement" id="ref-for-fire-a-non-traversal-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>, and <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-destinationurl" id="ref-for-fire-a-non-traversal-navigate-event-destinationurl①">destinationURL</a></i> set to <var>url</var>.</p>
      <li data-md>
       <p>If <var>continue</var> is false, return.</p>
     </ol>
@@ -2285,7 +2285,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p>Let <var>navigationType</var> be the result of <a data-link-type="dfn" href="#convert-a-history-handling-behavior-to-a-navigation-type" id="ref-for-convert-a-history-handling-behavior-to-a-navigation-type①">converting a history handling behavior to a navigation type</a> given <var>historyHandling</var>.</p>
        <li data-md>
-        <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event" id="ref-for-fire-a-push-or-replace-navigate-event②">firing a push or replace navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-navigationtype" id="ref-for-fire-a-push-or-replace-navigate-event-navigationtype②">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-issamedocument" id="ref-for-fire-a-push-or-replace-navigate-event-issamedocument②">isSameDocument</a></i> set to false, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-userinvolvement" id="ref-for-fire-a-push-or-replace-navigate-event-userinvolvement①">userInvolvement</a></i> set to <var>userInvolvement</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-formdataentrylist" id="ref-for-fire-a-push-or-replace-navigate-event-formdataentrylist">formDataEntryList</a></i> set to <var>entryList</var>, <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-destinationurl" id="ref-for-fire-a-push-or-replace-navigate-event-destinationurl②">destinationURL</a></i> set to <var>url</var>, and <i><a data-link-type="dfn" href="#fire-a-push-or-replace-navigate-event-state" id="ref-for-fire-a-push-or-replace-navigate-event-state">state</a></i> set to <var>appHistoryState</var>.</p>
+        <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event" id="ref-for-fire-a-non-traversal-navigate-event②">firing a non-traversal navigate event</a> at <var>appHistory</var> with <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-navigationtype" id="ref-for-fire-a-non-traversal-navigate-event-navigationtype②">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-issamedocument" id="ref-for-fire-a-non-traversal-navigate-event-issamedocument②">isSameDocument</a></i> set to false, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-userinvolvement" id="ref-for-fire-a-non-traversal-navigate-event-userinvolvement①">userInvolvement</a></i> set to <var>userInvolvement</var>, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-formdataentrylist" id="ref-for-fire-a-non-traversal-navigate-event-formdataentrylist">formDataEntryList</a></i> set to <var>entryList</var>, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-destinationurl" id="ref-for-fire-a-non-traversal-navigate-event-destinationurl②">destinationURL</a></i> set to <var>url</var>, and <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-state" id="ref-for-fire-a-non-traversal-navigate-event-state">state</a></i> set to <var>appHistoryState</var>.</p>
        <li data-md>
         <p>If <var>continue</var> is false, return.</p>
       </ol>
@@ -2473,7 +2473,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#dom-apphistorynavigateeventinit-cantransition">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
    <li><a href="#apphistorynavigateevent-classic-history-api-serialized-data">classic history API serialized data</a><span>, in § 2.1</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a><span>, in § 2.3</span>
    <li><a href="#app-history-api-navigation-clean-up">clean up</a><span>, in § 1.3</span>
    <li><a href="#dom-apphistoryresult-committed">committed</a><span>, in § 1</span>
    <li><a href="#app-history-api-navigation-committed-promise">committed promise</a><span>, in § 1.3</span>
@@ -2497,7 +2497,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#dom-apphistorynavigateeventinit-destination">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
    <li><a href="#fire-a-traversal-navigate-event-destinationentry">destinationEntry</a><span>, in § 2.3</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event-destinationurl">destinationURL</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-non-traversal-navigate-event-destinationurl">destinationURL</a><span>, in § 2.3</span>
    <li><a href="#app-history-api-navigation-did-finish-before-commit">did finish before commit</a><span>, in § 1.3</span>
    <li><a href="#eventdef-apphistoryentry-dispose">dispose</a><span>, in § 3</span>
    <li><a href="#dom-apphistory-entries">entries()</a><span>, in § 1.1</span>
@@ -2517,7 +2517,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#apphistorytransition-finished-promise">dfn for AppHistoryTransition</a><span>, in § 1.3</span>
      <li><a href="#app-history-api-navigation-finished-promise">dfn for app history API navigation</a><span>, in § 1.3</span>
     </ul>
-   <li><a href="#fire-a-push-or-replace-navigate-event">fire a push or replace navigate event</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-non-traversal-navigate-event">fire a non-traversal navigate event</a><span>, in § 2.3</span>
    <li><a href="#fire-a-traversal-navigate-event">fire a traversal navigate event</a><span>, in § 2.3</span>
    <li>
     formData
@@ -2525,7 +2525,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#dom-apphistorynavigateevent-formdata">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
      <li><a href="#dom-apphistorynavigateeventinit-formdata">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#fire-a-push-or-replace-navigate-event-formdataentrylist">formDataEntryList</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-non-traversal-navigate-event-formdataentrylist">formDataEntryList</a><span>, in § 2.3</span>
    <li><a href="#dom-apphistory-forward">forward()</a><span>, in § 1.5</span>
    <li><a href="#dom-apphistory-forward">forward(options)</a><span>, in § 1.5</span>
    <li>
@@ -2578,7 +2578,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <li><a href="#inform-app-history-about-canceling-navigation">inform app history about canceling navigation</a><span>, in § 2.3</span>
    <li><a href="#inner-navigate-event-firing-algorithm">inner navigate event firing algorithm</a><span>, in § 2.3</span>
    <li><a href="#apphistorydestination-is-same-document">is same document</a><span>, in § 2.2</span>
-   <li><a href="#fire-a-push-or-replace-navigate-event-issamedocument">isSameDocument</a><span>, in § 2.3</span>
+   <li><a href="#fire-a-non-traversal-navigate-event-issamedocument">isSameDocument</a><span>, in § 2.3</span>
    <li>
     key
     <ul>
@@ -2602,7 +2602,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#dom-apphistorycurrentchangeevent-navigationtype">attribute for AppHistoryCurrentChangeEvent</a><span>, in § 1.2</span>
      <li><a href="#dom-apphistorynavigateevent-navigationtype">attribute for AppHistoryNavigateEvent</a><span>, in § 2.1</span>
      <li><a href="#dom-apphistorytransition-navigationtype">attribute for AppHistoryTransition</a><span>, in § 1.3</span>
-     <li><a href="#fire-a-push-or-replace-navigate-event-navigationtype">dfn for fire a push or replace navigate event</a><span>, in § 2.3</span>
+     <li><a href="#fire-a-non-traversal-navigate-event-navigationtype">dfn for fire a non-traversal navigate event</a><span>, in § 2.3</span>
      <li><a href="#dom-apphistorycurrentchangeeventinit-navigationtype">dict-member for AppHistoryCurrentChangeEventInit</a><span>, in § 1.2</span>
      <li><a href="#dom-apphistorynavigateeventinit-navigationtype">dict-member for AppHistoryNavigateEventInit</a><span>, in § 2.1</span>
     </ul>
@@ -2653,7 +2653,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     state
     <ul>
      <li><a href="#apphistorydestination-state">dfn for AppHistoryDestination</a><span>, in § 2.2</span>
-     <li><a href="#fire-a-push-or-replace-navigate-event-state">dfn for fire a push or replace navigate event</a><span>, in § 2.3</span>
+     <li><a href="#fire-a-non-traversal-navigate-event-state">dfn for fire a non-traversal navigate event</a><span>, in § 2.3</span>
      <li><a href="#dom-apphistorynavigateoptions-state">dict-member for AppHistoryNavigateOptions</a><span>, in § 1</span>
      <li><a href="#dom-apphistoryreloadoptions-state">dict-member for AppHistoryReloadOptions</a><span>, in § 1</span>
      <li><a href="#dom-apphistoryupdatecurrentoptions-state">dict-member for AppHistoryUpdateCurrentOptions</a><span>, in § 1</span>
@@ -2686,7 +2686,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <li>
     userInvolvement
     <ul>
-     <li><a href="#fire-a-push-or-replace-navigate-event-userinvolvement">dfn for fire a push or replace navigate event</a><span>, in § 2.3</span>
+     <li><a href="#fire-a-non-traversal-navigate-event-userinvolvement">dfn for fire a non-traversal navigate event</a><span>, in § 2.3</span>
      <li><a href="#fire-a-traversal-navigate-event-userinvolvement">dfn for fire a traversal navigate event</a><span>, in § 2.3</span>
      <li><a href="#navigate-userinvolvement">dfn for navigate</a><span>, in § 4.2</span>
      <li><a href="#traverse-the-history-by-a-delta-userinvolvement">dfn for traverse the history by a delta</a><span>, in § 4.2</span>
@@ -5143,52 +5143,52 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-fire-a-traversal-navigate-event-userinvolvement">4.4. History traversal updates</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event">
-   <b><a href="#fire-a-push-or-replace-navigate-event">#fire-a-push-or-replace-navigate-event</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event">
+   <b><a href="#fire-a-non-traversal-navigate-event">#fire-a-non-traversal-navigate-event</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event①">(2)</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event②">(3)</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-non-traversal-navigate-event①">(2)</a> <a href="#ref-for-fire-a-non-traversal-navigate-event②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-navigationtype">
-   <b><a href="#fire-a-push-or-replace-navigate-event-navigationtype">#fire-a-push-or-replace-navigate-event-navigationtype</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-navigationtype">
+   <b><a href="#fire-a-non-traversal-navigate-event-navigationtype">#fire-a-non-traversal-navigate-event-navigationtype</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-navigationtype">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-navigationtype①">(2)</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-navigationtype②">(3)</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-navigationtype">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-navigationtype①">(2)</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-navigationtype②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-destinationurl">
-   <b><a href="#fire-a-push-or-replace-navigate-event-destinationurl">#fire-a-push-or-replace-navigate-event-destinationurl</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-destinationurl">
+   <b><a href="#fire-a-non-traversal-navigate-event-destinationurl">#fire-a-non-traversal-navigate-event-destinationurl</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-destinationurl">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-destinationurl①">(2)</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-destinationurl②">(3)</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-destinationurl">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-destinationurl①">(2)</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-destinationurl②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-issamedocument">
-   <b><a href="#fire-a-push-or-replace-navigate-event-issamedocument">#fire-a-push-or-replace-navigate-event-issamedocument</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-issamedocument">
+   <b><a href="#fire-a-non-traversal-navigate-event-issamedocument">#fire-a-non-traversal-navigate-event-issamedocument</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-issamedocument">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-issamedocument①">(2)</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-issamedocument②">(3)</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-issamedocument">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-issamedocument①">(2)</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-issamedocument②">(3)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-userinvolvement">
-   <b><a href="#fire-a-push-or-replace-navigate-event-userinvolvement">#fire-a-push-or-replace-navigate-event-userinvolvement</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-userinvolvement">
+   <b><a href="#fire-a-non-traversal-navigate-event-userinvolvement">#fire-a-non-traversal-navigate-event-userinvolvement</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-userinvolvement">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-push-or-replace-navigate-event-userinvolvement①">(2)</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-userinvolvement">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-non-traversal-navigate-event-userinvolvement①">(2)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-state">
-   <b><a href="#fire-a-push-or-replace-navigate-event-state">#fire-a-push-or-replace-navigate-event-state</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-state">
+   <b><a href="#fire-a-non-traversal-navigate-event-state">#fire-a-non-traversal-navigate-event-state</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-state">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-state">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-formdataentrylist">
-   <b><a href="#fire-a-push-or-replace-navigate-event-formdataentrylist">#fire-a-push-or-replace-navigate-event-formdataentrylist</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-formdataentrylist">
+   <b><a href="#fire-a-non-traversal-navigate-event-formdataentrylist">#fire-a-non-traversal-navigate-event-formdataentrylist</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-formdataentrylist">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-formdataentrylist">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">
-   <b><a href="#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">#fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata</a></b><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">
+   <b><a href="#fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">#fire-a-non-traversal-navigate-event-classichistoryapiserializeddata</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-fire-a-push-or-replace-navigate-event-classichistoryapiserializeddata">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="inner-navigate-event-firing-algorithm">
