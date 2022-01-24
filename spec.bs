@@ -1285,17 +1285,16 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Set |appHistory|'s [=AppHistory/transition=] to a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
   1. If |endResultIsSameDocument| is true:
     1. Let |transition| be |appHistory|'s [=AppHistory/transition=].
-    1. Assert: |transition| is not null.
     1. [=Wait for all=] of |event|'s [=AppHistoryNavigateEvent/navigation action promises list=], with the following success steps:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
-        1. [=Resolve=] |transition|'s [=AppHistoryTransition/finished promise=] with undefined.
+        1. If |transition| is not null, then [=resolve=] |transition|'s [=AppHistoryTransition/finished promise=] with undefined.
         1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=app history API navigation/resolve the finished promise=] for |ongoingNavigation|.
       and the following failure steps given reason |rejectionReason|:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
-        1. [=Reject=] |transition|'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
+        1. If |transition| is not null, then [=reject=] |transition|'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
         1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=app history API navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
   1. Otherwise, if |ongoingNavigation| is non-null, then:
