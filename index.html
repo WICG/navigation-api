@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-20">20 January 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-01-24">24 January 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1898,8 +1898,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p>Let <var>transition</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition②">transition</a>.</p>
        <li data-md>
-        <p class="assertion">Assert: <var>transition</var> is not null.</p>
-       <li data-md>
         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#wait-for-all" id="ref-for-wait-for-all">Wait for all</a> of <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a>, with the following success steps:</p>
         <ol>
          <li data-md>
@@ -1907,7 +1905,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
          <li data-md>
           <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire③">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess④">navigatesuccess</a></code> at <var>appHistory</var>.</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve⑥">Resolve</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise②">finished promise</a> with undefined.</p>
+          <p>If <var>transition</var> is not null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve⑥">resolve</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise②">finished promise</a> with undefined.</p>
          <li data-md>
           <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition③">transition</a> is <var>transition</var>, then set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition④">transition</a> to null.</p>
          <li data-md>
@@ -1920,7 +1918,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
          <li data-md>
           <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire④">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑤">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject④">Reject</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise③">finished promise</a> with <var>rejectionReason</var>.</p>
+          <p>If <var>transition</var> is not null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject④">reject</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise③">finished promise</a> with <var>rejectionReason</var>.</p>
          <li data-md>
           <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑤">transition</a> is <var>transition</var>, then set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑥">transition</a> to null.</p>
          <li data-md>
