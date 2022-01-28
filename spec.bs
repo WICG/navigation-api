@@ -1246,8 +1246,11 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
   1. [=AppHistory/Promote the upcoming navigation to ongoing=] given |appHistory| and |destination|'s [=AppHistoryDestination/key=].
   1. Let |ongoingNavigation| be |appHistory|'s [=AppHistory/ongoing navigation=].
   1. If |appHistory| [=AppHistory/has entries and events disabled=], then:
-    1. If |ongoingNavigation| is not null, then [=app history API navigation/clean up=] |ongoingNavigation|.
-       <p class="note">In this case the [=app history API navigation/committed promise=] and [=app history API navigation/finished promise=] will never fulfill, since we never create {{AppHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with.
+    1. If |ongoingNavigation| is not null, then:
+      1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
+      1. [=app history API navigation/Clean up=] |ongoingNavigation|.
+
+      <p class="note">In this case the [=app history API navigation/committed promise=] and [=app history API navigation/finished promise=] will never fulfill, since we never create {{AppHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with. We also need to prevent any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm from overwriting the [=session history entry/app history state=] of the current [=session history/current entry=].
     1. Return true.
   1. Let |document| be |appHistory|'s [=relevant global object=]'s [=associated document=].
   1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=AppHistoryDestination/URL=], and either |destination|'s [=AppHistoryDestination/is same document=] is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
