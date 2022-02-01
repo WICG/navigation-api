@@ -96,7 +96,7 @@ interface AppHistoryReloadOptions extends AppHistoryNavigationOptions {
 }
 
 declare class AppHistoryCurrentChangeEvent extends Event {
-  constructor(type: string, eventInit: AppHistoryCurrentChangeEventInit);
+  constructor(type: string, eventInit?: AppHistoryCurrentChangeEventInit);
 
   readonly navigationType: AppHistoryNavigationType|null;
   readonly from: AppHistoryEntry;
@@ -108,7 +108,7 @@ interface AppHistoryCurrentChangeEventInit extends EventInit {
 }
 
 declare class AppHistoryNavigateEvent extends Event {
-  constructor(type: string, eventInit: AppHistoryNavigateEventInit);
+  constructor(type: string, eventInit?: AppHistoryNavigateEventInit);
 
   readonly navigationType: AppHistoryNavigationType;
   readonly canTransition: boolean;
@@ -119,7 +119,7 @@ declare class AppHistoryNavigateEvent extends Event {
   readonly formData: FormData|null;
   readonly info: unknown;
 
-  transitionWhile(newNavigationAction: Promise<any>): void;
+  transitionWhile(newNavigationAction: Promise<any>, options?: AppHistoryTransitionWhileOptions): void;
 }
 
 interface AppHistoryNavigateEventInit extends EventInit {
@@ -131,6 +131,11 @@ interface AppHistoryNavigateEventInit extends EventInit {
   signal: AbortSignal;
   formData?: FormData|null;
   info?: unknown;
+}
+
+interface AppHistoryTransitionWhileOptions {
+  focusReset?: "after-transition"|"manual",
+  scrollRestoration?: "after-transition"|"manual"
 }
 
 declare class AppHistoryDestination {
