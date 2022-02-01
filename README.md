@@ -1389,9 +1389,9 @@ See also the [W3C TAG security and privacy questionnaire answers](./security-pri
 
 - W3C TAG: [w3ctag/design-reviews#605](https://github.com/w3ctag/design-reviews/issues/605)
 - Browser engines:
-  - Chromium: Excited about the design space; has not yet investigated implementation implications in depth.
-  - Gecko: No feedback so far
-  - WebKit: No feedback so far
+  - Chromium: Prototyping behind a flag
+  - Gecko: Some [non-official positive feedback](https://github.com/mozilla/standards-positions/issues/543) and continued collaboration
+  - WebKit: [No feedback so far](https://www.mail-archive.com/webkit-dev@lists.webkit.org/msg30257.html)
 - Web developers: Generally positive; see e.g. reactions and replies to [WICG/proposals#20](https://github.com/WICG/proposals/issues/20), or the participation on this repository's issue tracker.
 
 ## Acknowledgments
