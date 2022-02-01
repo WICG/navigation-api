@@ -72,9 +72,13 @@ for (const entry of performance.getEntriesByType("same-document-navigation")) {
     - [Example: async transitions with special back/forward handling](#example-async-transitions-with-special-backforward-handling)
     - [Example: progressively enhancing form submissions](#example-progressively-enhancing-form-submissions)
     - [Restrictions on firing, canceling, and responding](#restrictions-on-firing-canceling-and-responding)
-    - [Accessibility benefits of standardized single-page navigations](#accessibility-benefits-of-standardized-single-page-navigations)
     - [Measuring standardized single-page navigations](#measuring-standardized-single-page-navigations)
     - [Aborted navigations](#aborted-navigations)
+  - [Customizations and consequences of navigation interception](#customizations-and-consequences-of-navigation-interception)
+    - [Accessibility technology announcements](#accessibility-technology-announcements)
+    - [Loading spinners and stop buttons](#loading-spinners-and-stop-buttons)
+    - [Focus management](#focus-management)
+    - [Scroll position restoration](#scroll-position-restoration)
   - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
     - [Example: handling failed navigations](#example-handling-failed-navigations)
     - [Example: single-page app redirects and guards](#example-single-page-app-redirects-and-guards)
@@ -494,16 +498,6 @@ Finally, the following navigations **cannot be replaced with same-document navig
 
 We'll note that these restrictions still allow canceling cross-origin non-back/forward navigations. Although this might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
 
-#### Accessibility benefits of standardized single-page navigations
-
-The `navigate` event's `event.transitionWhile()` method provides a helpful convenience for implementing single-page navigations, as discussed above. But beyond that, providing a direct signal to the browser as to the duration and outcome of a single-page navigation has benefits for accessibility technology users.
-
-In particular, with [cross-document](#appendix-types-of-navigations) navigations, AT users get clear feedback that a navigation has occurred. But traditionally, single-page navigations have not been communicated in the same way to accessibility technology. This is in part because it is not clear to the browser when a user interaction causes a single-page navigation, because of the app-specific JavaScript that intermediates between such interactions and the eventual call to `history.pushState()`/`history.replaceState()`. In particular, it's unclear exactly when the navigation begins and ends: trying to use the URL change as a signal doesn't work, since when applications call `history.pushState()` during the content loading process varies.
-
-Implementing single-page navigations by using the `navigate` event and its `transitionWhile()` function solves this part of the problem. It gives the browser clear insight into when a navigation is being handled as a single-page navigation, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds. We expect browsers to use these to update their own UI (including any loading indicators; see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330) for previous feature requests). And we expect browsers to communicate these signals to accessibility technology, in the same way they do for traditional cross-document navigations.
-
-This does not yet solve all accessibility problems with single-page navigations. In particular, this proposal doesn't currently have a solution for focus management and placing the user's keyboard focus in the relevant place after navigation. However, we are very interested in finding a way to make usage of the app history API guide web developers toward creating accessible experiences, and would like to explore additions or changes that would help with these aspects of the problem as well. Please join us to discuss and brainstorm in [#25](https://github.com/WICG/app-history/issues/25).
-
 #### Measuring standardized single-page navigations
 
 Continuing with the theme of `transitionWhile()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
@@ -546,6 +540,116 @@ In this case:
 
 - The user pressing the stop button will have no effect, and after ten seconds `document.body` will get updated anyway with the destination URL of the original navigation.
 - Navigation to another URL will not prevent the fact that in ten seconds `document.body.innerHTML`  will be updated to show the original destination URL.
+
+### Customizations and consequences of navigation interception
+
+#### Accessibility technology announcements
+
+With [cross-document](#appendix-types-of-navigations) navigations, accessibility technology will announce the start of the navigation, and its completion. But traditionally, same-document navigations (i.e. single-page app navigations) have not been communicated in the same way to accessibility technology. This is in part because it is not clear to the browser when a user interaction causes a single-page navigation, because of the app-specific JavaScript that intermediates between such interactions and the eventual call to `history.pushState()`/`history.replaceState()`. In particular, it's unclear exactly when the navigation begins and ends: trying to use the URL change as a signal doesn't work, since when applications call `history.pushState()` during the content loading process varies.
+
+Any navigation that is intercepted and converted into a single-page navigation using `navigateEvent.transitionWhile()` will be communicated to accessibility technology in the same way as a cross-document one. Using `transitionWhile()` serves as a opt-in to this new behavior, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds.
+
+#### Loading spinners and stop buttons
+
+It is a long-requested feature (see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330)) to give pages control over the browser's loading indicator, i.e. the one they show while cross-document navigations are ongoing. This proposal gives the browsers the tools to do this: they can display the loading indicator while any promise passed to `navigateEvent.transitionWhile()` is settling.
+
+Additionally, in modern browsers, the reload button is replaced with a stop button while such loading is taking place. This can be done for app history-intercepted navigations as well, with the result communicated to the developer using `navigateEvent.signal`.
+
+You can see a [demo](https://gigantic-honored-octagon.glitch.me/) and [screencast](https://twitter.com/i/status/1471604621470846979) of this behavior in Chromium.
+
+_Note: specifications do not mandate browser UI, so this is not guaranteed behavior. But it's a nice feature that we hope browsers do end up implementing!_
+
+#### Focus management
+
+Like [accessibility technology announcements](#accessibility-technology-announcements), focus management currently behaves differently between same-document navigations and cross-document navigations. As [this post discusses](https://www.gatsbyjs.com/blog/2019-07-11-user-testing-accessible-client-routing/):
+
+> ... a user’s keyboard focus point may be kept in the same place as where they clicked, which isn’t intuitive. In layouts where the page changes partially to include a deep-linked modal dialog or other view layer, a user’s focus point could be left in an entirely wrong spot on the page.
+
+App history navigation interception again gives us the tool to fix this.
+
+By default, any navigation that is intercepted and converted into a single-page navigation using `navigateEvent.transitionWhile()` will cause focus to reset to the `<body>` element, or to the first element with the `autofocus=""` attribute set (if there is one). This focus reset will happen after the promise passed to `transitionWhile()` settles. However, this focus reset will not take place if the user or developer has manually changed focus while the promise was settling, and that element is still visible and focusable.
+
+This behavior can be customized using the second options argument to `transitionWhile()`:
+
+- `e.transitionWhile(promise, { focusReset: "after-transition" })`: the default behavior, described above.
+- `e.transitionWhile(promise, { focusReset: "manual" })`: does not reset the focus, and leaves it where it is. (Although, it might get [reset anyway](https://html.spec.whatwg.org/#focus-fixup-rule) if the element is removed from the DOM or similar.) The application will manually manage focus changes.
+
+In general, the default behavior is a best-effort attempt at cross-document navigation parity. But if developers invest some extra work, they can do even better:
+
+- Per the above-linked [research by Fable Tech Labs](https://www.gatsbyjs.com/blog/2019-07-11-user-testing-accessible-client-routing/), screen reader users generally prefer focus to be reset to a heading or wrapper element, instead of the `<body>` element. So to get the optimal experience with app history interception, developers should use `autofocus=""` appropriately on such elements.
+
+- For traversals (i.e. cases where `navigateEvent.navigationType === "traverse"`), getting parity with the [back/forward cache experience](https://web.dev/bfcache/) requires restoring focus to the same element that was previously focused when that history entry was active. Unfortunately, this isn't something the browser can do automatically for client-side rendered applications; the notion of "the same element" [is not generally stable](https://github.com/WICG/app-history/issues/190#:~:text=On%20the%20other%20hand%2C%20in%20the%20general%20case%20we%20won%27t%20be%20able%20to%20identify%20%22the%20same%20element%22!) in such cases. So for such cases, using `focusReset: "manual"`, storing some identifier for the currently-focused element in the app history state, and calling `element.focus()` appropriately upon transition could give a better experience, as in the following example:
+
+```js
+appHistory.addEventListener("navigate", e => {
+  const focusedIdentifier = computeIdentifierFor(document.activeElement);
+  appHistory.updateCurrent({ ...appHistory.current.getState(), focusedIdentifier });
+
+  if (e.canTransition) {
+    const focusReset = e.navigationType === "traverse" ? "manual" : "after-transition";
+    e.transitionWhile((async () => {
+      // Your logic here...
+    })(), { focusReset });
+  }
+});
+
+appHistory.addEventListener("navigatesuccess", () => {
+  if (appHistory.transition.navigationType === "traverse") {
+    const { focusedIdentifier } = appHistory.current.getState();
+    const elementToFocus = findByIdentifier(focusedIdentifier);
+    if (elementToFocus) {
+      elementToFocus.focus();
+    }
+  }
+});
+```
+
+An additional API that would be helpful, both for cases like these and more generally, would be one for [setting and getting the sequential focus navigation start point](https://github.com/whatwg/html/issues/5326). Especially for the custom traversals case, this would give even higher-fidelity focus restoration. (But that proposal is separate from app history.)
+
+We can also extend the `focusReset` option with other behaviors in the future. Here are a couple which have been proposed, but we are not planning to include in the initial version unless we get strong developer feedback that they would be helpful:
+
+- `e.transitionWhile(promise, { focusReset: "immediate" })`: immediately resets the focus to the `<body>` element, without waiting for the promise to settle.
+- `e.transitionWhile(promise, { focusReset: "two-stage" })`: immediately resets the focus to the `<body>` element, and then has the same behavior as `"after-transition"`.
+
+#### Scroll position restoration
+
+A common pain point for web developers is scroll restoration during traversal (back/forward) navigations. The essential problem is that scroll restoration happens unpredictably, and often at the wrong times. For example:
+
+- The browser tries to restore the user's scroll position, but the application logic is still setting up the DOM and the relevant elements aren't ready yet.
+- The browser tries to restore the user's scroll position, but the page's contents have changed and scroll restoration doesn't work that well. (For example, going back to a listing of files in a shared folder, after a different user deleted a bunch of the files.)
+- The application needs to perform some measurements in order to do a proper transition, but the browser does scroll restoration during the transition, which messes up those measurements. ([Demo of this problem](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html): notice how when going back to the grid view, the transition sends the square to the wrong location.)
+
+Currently the browser provides two options: performing scroll restoration automatically, or disabling it entirely with `history.scrollRestoration = "manual"`. App history gives us an opportunity to provide some intermediate options to developers, at least for the case of same-document transitions. We do this via another option to `transitionWhile()`:
+
+- `e.transitionWhile(promise, { scrollRestoration: "after-transition" })`: the default behavior. The browser delays its scroll restoration logic until `promise` fulfills; it will perform no scroll restoration if the promise rejects. If the user has scrolled during the transition then no scroll restoration will be performed ([like for multi-page navs](https://neat-equal-cent.glitch.me/)).
+- `e.transitionWhile(promise, { scrollRestoration: "manual" })`: The browser will perform no automatic scroll restoration. However, the developer can use the below API to get semi-automatic scroll restoration, or can use [`window.scrollTo()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo) or similar APIs to take full control.
+
+When using `scrollRestoration: "manual"`, the `e.restoreScroll()` API is available. This will perform the browser's scroll restoration logic at the specified time. This allows cases that require precise control over scroll restoration timing, such as a non-broken version of the [demo referenced above](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html), to be written like so:
+
+```js
+navigateEvent.transitionWhile((async () => {
+  await fetchDataAndSetUpDOM();
+  navigateEvent.restoreScroll();
+  await measureLayoutAndDoTransition();
+})(), { scrollRestoration: "manual" });
+```
+
+Some details:
+
+- The `scrollRestoration` option will be ignored for non-traversal navigations, i.e. those for which `e.navigationType !== "traverse"`. In such a case `restoreScroll()` will throw.
+
+- `restoreScroll()` will silently do nothing if called after the user has started scrolling the document.
+
+- `restoreScroll()` doesn't actually perform a single update of the scroll position. Rather, it puts the page in scroll-position-restoring mode. The scroll position could update several times as more elements load and [scroll anchoring](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor/Guide_to_scroll_anchoring) kicks in.
+
+- By default, any navigations which are intercepted with `e.transitionWhile()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `transitionWhile()` to control individual same-document navigations.
+
+We could also add the following APIs in the future, but we are currently not planning on including them until we hear developer feedback that they'd be helpful:
+
+- `e.transitionWhile(promise, { scrollRestoration: "immediate" })`: the browser performs its usual scroll restoration logic, but does so immediately instead of waiting for `promise`.
+- `e.transitionWhile(promise, { scrollRestoration: "auto" })`: the browser performs its usual scroll restoration logic, at its usual indeterminate time.
+- `const { x, y } = e.scrollDestination()` giving the current position the browser would restore to, if `e.restoreScroll()` was called.
+- `e.restoreScroll({ onlyOnce: true })` to avoid scroll anchoring.
 
 ### Transitional time after navigation interception
 
