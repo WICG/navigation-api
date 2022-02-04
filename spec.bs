@@ -625,7 +625,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |appHistory|'s [=relevant Realm=].
 
-  1. [=Mark as handled=] |finishedPromise|.
+  1. Mark as handled |finishedPromise|. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
 
      <div class="note" id="note-finished-promise-mark-as-handled">
       The web developer doesn't necessarily care about |finishedPromise| being rejected:
@@ -653,7 +653,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |appHistory|'s [=relevant Realm=].
 
-  1. [=Mark as handled=] |finishedPromise|.
+  1. Mark as handled |finishedPromise|. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
 
      <p class="note">See <a href="#note-finished-promise-mark-as-handled">the previous discussion</a> as to why this is done.</p>
 
@@ -1290,7 +1290,7 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Let |fromEntry| be the [=AppHistory/current entry=] for |appHistory|.
     1. Assert: |fromEntry| is not null.
     1. Set |appHistory|'s [=AppHistory/transition=] to a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
-    1. [=Mark as handled=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=].
+    1. Mark as handled |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=]. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
   1. If |endResultIsSameDocument| is true:
     1. Let |transition| be |appHistory|'s [=AppHistory/transition=].
