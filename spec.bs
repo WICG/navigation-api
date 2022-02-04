@@ -1296,21 +1296,20 @@ The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps a
     1. Mark as handled |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=]. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
   1. If |endResultIsSameDocument| is true:
-    1. Let |transition| be |appHistory|'s [=AppHistory/transition=].
     1. Let |tweakedPromisesList| be |event|'s  [=AppHistoryNavigateEvent/navigation action promises list=].
     1. If |tweakedPromisesList|'s [=list/size=] is 0, then set |tweakedPromisesList| to « [=a promise resolved with=] {{undefined}} ».
        <p class="note">There is a subtle timing difference between how [=waiting for all=] schedules its success and failure steps when given zero promises versus &geq;1 promises. For most uses of [=waiting for all=], this does not matter. However, with this API, there are so many events and promise handlers which could fire around the same time that the difference is pretty easily observable: it can cause the event/promise handler sequence to vary. (Some of the events and promises involved include: {{AppHistory/navigatesuccess}} / {{AppHistory/navigateerror}}, {{AppHistory/currentchange}}, {{AppHistoryEntry/dispose}}, |ongoingNavigation|'s promises, and the {{AppHistoryTransition/finished|appHistory.transition.finished}} promise.)
     1. [=Wait for all=] of |tweakedPromisesList|, with the following success steps:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
-        1. If |transition| is not null, then [=resolve=] |transition|'s [=AppHistoryTransition/finished promise=] with undefined.
-        1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
+        1. If |appHistory|'s [=AppHistory/transition=] is not null, then [=resolve=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with undefined.
+        1. Set |appHistory|'s [=AppHistory/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=app history API navigation/resolve the finished promise=] for |ongoingNavigation|.
       and the following failure steps given reason |rejectionReason|:
         1. If |event|'s {{AppHistoryNavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
         1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
-        1. If |transition| is not null, then [=reject=] |transition|'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
-        1. If |appHistory|'s [=AppHistory/transition=] is |transition|, then set |appHistory|'s [=AppHistory/transition=] to null.
+        1. If |appHistory|'s [=AppHistory/transition=] is not null, then [=reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
+        1. Set |appHistory|'s [=AppHistory/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=app history API navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
   1. Otherwise, if |ongoingNavigation| is non-null, then:
     1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
