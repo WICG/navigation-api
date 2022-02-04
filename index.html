@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-02-01">1 February 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-02-04">4 February 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -911,15 +911,15 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-current-index" id="ref-for-apphistory-current-index">current index</a> to <var>newCurrentIndex</var>.</p>
      <li data-md>
-      <p>If <var>oldCurrentAHE</var> is not null, then <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire">fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-currentchange" id="ref-for-eventdef-apphistory-currentchange">currentchange</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="#apphistorycurrentchangeevent" id="ref-for-apphistorycurrentchangeevent">AppHistoryCurrentChangeEvent</a></code>, with its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-navigationtype" id="ref-for-dom-apphistorycurrentchangeevent-navigationtype">navigationType</a></code> attribute initialized to TODO and its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-from" id="ref-for-dom-apphistorycurrentchangeevent-from">from</a></code> initialized to <var>oldCurrentAHE</var>.</p>
-     <li data-md>
       <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation" id="ref-for-apphistory-ongoing-navigation">ongoing navigation</a> is non-null, then <a data-link-type="dfn" href="#app-history-api-navigation-notify-about-the-committed-to-entry" id="ref-for-app-history-api-navigation-notify-about-the-committed-to-entry">notify about the committed-to entry</a> given <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation" id="ref-for-apphistory-ongoing-navigation①">ongoing navigation</a> and the <a data-link-type="dfn" href="#apphistory-current-entry" id="ref-for-apphistory-current-entry①">current entry</a> of <var>appHistory</var>.</p>
-      <p class="note" role="note">It is important to do this before firing the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistoryentry-dispose" id="ref-for-eventdef-apphistoryentry-dispose">dispose</a></code> events, since event handlers for <code class="idl"><a data-link-type="idl" href="#eventdef-apphistoryentry-dispose" id="ref-for-eventdef-apphistoryentry-dispose①">dispose</a></code> could start another navigation, or otherwise change the value of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation" id="ref-for-apphistory-ongoing-navigation②">ongoing navigation</a>. </p>
+      <p class="note" role="note">It is important to do this before firing the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistoryentry-dispose" id="ref-for-eventdef-apphistoryentry-dispose">dispose</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-currentchange" id="ref-for-eventdef-apphistory-currentchange">currentchange</a></code> events, since event handlers could start another navigation, or otherwise change the value of <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation" id="ref-for-apphistory-ongoing-navigation②">ongoing navigation</a>. </p>
+     <li data-md>
+      <p>If <var>oldCurrentAHE</var> is not null, then <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire">fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-currentchange" id="ref-for-eventdef-apphistory-currentchange①">currentchange</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="#apphistorycurrentchangeevent" id="ref-for-apphistorycurrentchangeevent">AppHistoryCurrentChangeEvent</a></code>, with its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-navigationtype" id="ref-for-dom-apphistorycurrentchangeevent-navigationtype">navigationType</a></code> attribute initialized to TODO and its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-from" id="ref-for-dom-apphistorycurrentchangeevent-from">from</a></code> initialized to <var>oldCurrentAHE</var>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate②">For each</a> <var>disposedAHE</var> of <var>disposedAHEs</var>:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire①">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistoryentry-dispose" id="ref-for-eventdef-apphistoryentry-dispose②">dispose</a></code> at <var>disposedAHE</var>.</p>
+        <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire①">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistoryentry-dispose" id="ref-for-eventdef-apphistoryentry-dispose①">dispose</a></code> at <var>disposedAHE</var>.</p>
       </ol>
     </ol>
    </div>
@@ -1034,7 +1034,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <li data-md>
       <p>Set <var>current</var>’s <a data-link-type="dfn" href="#apphistoryentry-session-history-entry" id="ref-for-apphistoryentry-session-history-entry③">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state②">app history state</a> to <var>serializedState</var>.</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire②">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-currentchange" id="ref-for-eventdef-apphistory-currentchange①">currentchange</a></code> at <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①④">this</a> using <code class="idl"><a data-link-type="idl" href="#apphistorycurrentchangeevent" id="ref-for-apphistorycurrentchangeevent①">AppHistoryCurrentChangeEvent</a></code>, with its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-navigationtype" id="ref-for-dom-apphistorycurrentchangeevent-navigationtype①">navigationType</a></code> attribute initialized to null and its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-from" id="ref-for-dom-apphistorycurrentchangeevent-from①">from</a></code> initialized to <var>current</var>.</p>
+      <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire②">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-currentchange" id="ref-for-eventdef-apphistory-currentchange②">currentchange</a></code> at <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①④">this</a> using <code class="idl"><a data-link-type="idl" href="#apphistorycurrentchangeevent" id="ref-for-apphistorycurrentchangeevent①">AppHistoryCurrentChangeEvent</a></code>, with its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-navigationtype" id="ref-for-dom-apphistorycurrentchangeevent-navigationtype①">navigationType</a></code> attribute initialized to null and its <code class="idl"><a data-link-type="idl" href="#dom-apphistorycurrentchangeevent-from" id="ref-for-dom-apphistorycurrentchangeevent-from①">from</a></code> initialized to <var>current</var>.</p>
     </ol>
    </div>
    <h3 class="heading settled" data-level="1.3" id="ongoing-state"><span class="secno">1.3. </span><span class="content">Ongoing navigation tracking</span><a class="self-link" href="#ongoing-state"></a></h3>
@@ -1187,8 +1187,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>A <dfn class="dfn-paneled" data-dfn-for="app history API navigation" data-dfn-type="dfn" data-noexport id="app-history-api-navigation-committed-promise">committed promise</dfn>, a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑦">Promise</a></code></p>
     <li data-md>
      <p>A <dfn class="dfn-paneled" data-dfn-for="app history API navigation" data-dfn-type="dfn" data-noexport id="app-history-api-navigation-finished-promise">finished promise</dfn>, a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑧">Promise</a></code></p>
-    <li data-md>
-     <p>A <dfn class="dfn-paneled" data-dfn-for="app history API navigation" data-dfn-type="dfn" data-noexport id="app-history-api-navigation-did-finish-before-commit">did finish before commit</dfn>, a boolean</p>
    </ul>
    <p class="note" role="note">We need to store the <a data-link-type="dfn" href="#apphistory-ongoing-navigation-signal" id="ref-for-apphistory-ongoing-navigation-signal">ongoing navigation signal</a> separately from the <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation③">app history API navigation</a> struct, since it needs to be tracked even for navigations that are not via the app history APIs. </p>
    <div class="algorithm" data-algorithm="set the upcoming non-traverse navigation" data-algorithm-for="AppHistory">
@@ -1197,7 +1195,21 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>committedPromise</var> and <var>finishedPromise</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise">new promises</a> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①">relevant Realm</a>.</p>
      <li data-md>
-      <p>Let <var>ongoingNavigation</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation④">app history API navigation</a> whose <a data-link-type="dfn" href="#app-history-api-navigation-app-history" id="ref-for-app-history-api-navigation-app-history">app history</a> is <var>appHistory</var>, <a data-link-type="dfn" href="#app-history-api-navigation-key" id="ref-for-app-history-api-navigation-key">key</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-serialized-state" id="ref-for-app-history-api-navigation-serialized-state">serialized state</a> is <var>serializedState</var>, <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry">committed-to entry</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-committed-promise" id="ref-for-app-history-api-navigation-committed-promise">committed promise</a> is <var>committedPromise</var>, <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise">finished promise</a> is <var>finishedPromise</var>, and <a data-link-type="dfn" href="#app-history-api-navigation-did-finish-before-commit" id="ref-for-app-history-api-navigation-did-finish-before-commit">did finish before commit</a> is false.</p>
+      <p>Mark as handled <var>finishedPromise</var>.</p>
+      <div class="note" id="note-finished-promise-mark-as-handled" role="note">
+       <a class="self-link" href="#note-finished-promise-mark-as-handled"></a> The web developer doesn’t necessarily care about <var>finishedPromise</var> being rejected: 
+       <ul>
+        <li data-md>
+         <p>They might only care about <var>committedPromise</var>.</p>
+        <li data-md>
+         <p>They could be doing multiple synchronous navigations within the same task, in which case all but the last will be aborted (causing their <var>finishedPromise</var> to reject). This could be an application bug, but also could just be an emergent feature of disparate parts of the application overriding each others' actions.</p>
+        <li data-md>
+         <p>They might prefer to listen to other transition-failure signals instead of <var>finishedPromise</var>, e.g., the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror④">navigateerror</a></code> event, or the <code class="idl"><a data-link-type="idl" href="#dom-apphistorytransition-finished" id="ref-for-dom-apphistorytransition-finished③">appHistory.transition.finished</a></code> promise.</p>
+       </ul>
+       <p>As such, we mark it as handled to ensure that it never triggers <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/indices.html#event-unhandledrejection" id="ref-for-event-unhandledrejection">unhandledrejection</a></code> events.</p>
+      </div>
+     <li data-md>
+      <p>Let <var>ongoingNavigation</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation④">app history API navigation</a> whose <a data-link-type="dfn" href="#app-history-api-navigation-app-history" id="ref-for-app-history-api-navigation-app-history">app history</a> is <var>appHistory</var>, <a data-link-type="dfn" href="#app-history-api-navigation-key" id="ref-for-app-history-api-navigation-key">key</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-serialized-state" id="ref-for-app-history-api-navigation-serialized-state">serialized state</a> is <var>serializedState</var>, <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry">committed-to entry</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-committed-promise" id="ref-for-app-history-api-navigation-committed-promise">committed promise</a> is <var>committedPromise</var>, and <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise">finished promise</a> is <var>finishedPromise</var>.</p>
      <li data-md>
       <p class="assertion">Assert: <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-upcoming-non-traverse-navigation" id="ref-for-apphistory-upcoming-non-traverse-navigation">upcoming non-traverse navigation</a> is null.</p>
      <li data-md>
@@ -1212,7 +1224,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>committedPromise</var> and <var>finishedPromise</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise①">new promises</a> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm②">relevant Realm</a>.</p>
      <li data-md>
-      <p>Let <var>traversal</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑤">app history API navigation</a> whose whose <a data-link-type="dfn" href="#app-history-api-navigation-app-history" id="ref-for-app-history-api-navigation-app-history①">app history</a> is <var>appHistory</var>, <a data-link-type="dfn" href="#app-history-api-navigation-key" id="ref-for-app-history-api-navigation-key①">key</a> is <var>key</var>, <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info①">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-serialized-state" id="ref-for-app-history-api-navigation-serialized-state①">serialized state</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry①">committed-to entry</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-committed-promise" id="ref-for-app-history-api-navigation-committed-promise①">committed promise</a> is <var>committedPromise</var>, <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise①">finished promise</a> is <var>finishedPromise</var>, and <a data-link-type="dfn" href="#app-history-api-navigation-did-finish-before-commit" id="ref-for-app-history-api-navigation-did-finish-before-commit①">did finish before commit</a> is false.</p>
+      <p>Mark as handled <var>finishedPromise</var>.</p>
+      <p class="note" role="note">See <a href="#note-finished-promise-mark-as-handled">the previous discussion</a> as to why this is done.</p>
+     <li data-md>
+      <p>Let <var>traversal</var> be an <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑤">app history API navigation</a> whose whose <a data-link-type="dfn" href="#app-history-api-navigation-app-history" id="ref-for-app-history-api-navigation-app-history①">app history</a> is <var>appHistory</var>, <a data-link-type="dfn" href="#app-history-api-navigation-key" id="ref-for-app-history-api-navigation-key①">key</a> is <var>key</var>, <a data-link-type="dfn" href="#app-history-api-navigation-info" id="ref-for-app-history-api-navigation-info①">info</a> is <var>info</var>, <a data-link-type="dfn" href="#app-history-api-navigation-serialized-state" id="ref-for-app-history-api-navigation-serialized-state①">serialized state</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry①">committed-to entry</a> is null, <a data-link-type="dfn" href="#app-history-api-navigation-committed-promise" id="ref-for-app-history-api-navigation-committed-promise①">committed promise</a> is <var>committedPromise</var>, and <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise①">finished promise</a> is <var>finishedPromise</var>.</p>
      <li data-md>
       <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-upcoming-traverse-navigations" id="ref-for-apphistory-upcoming-traverse-navigations">upcoming traverse navigations</a>[<var>key</var>]  to <var>traversal</var>.</p>
      <li data-md>
@@ -1275,8 +1290,6 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve③">Resolve</a> <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-committed-promise" id="ref-for-app-history-api-navigation-committed-promise②">committed promise</a> with <var>entry</var>.</p>
       <p class="note" role="note">After this point, <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-committed-promise" id="ref-for-app-history-api-navigation-committed-promise③">committed promise</a> is only needed in cases where it has not yet been returned to author code. Implementations might want to clear it out to avoid keeping it alive for the lifetime of the <a data-link-type="dfn" href="#app-history-api-navigation" id="ref-for-app-history-api-navigation⑧">app history API navigation</a>. </p>
-     <li data-md>
-      <p>If <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-did-finish-before-commit" id="ref-for-app-history-api-navigation-did-finish-before-commit②">did finish before commit</a> is true, then <a data-link-type="dfn" href="#app-history-api-navigation-resolve-the-finished-promise" id="ref-for-app-history-api-navigation-resolve-the-finished-promise">resolve the finished promise</a> for <var>navigation</var>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="resolve the finished promise" data-algorithm-for="app history API navigation">
@@ -1285,16 +1298,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>If <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise②">finished promise</a> is null, then return.</p>
      <li data-md>
-      <p>If <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry③">committed-to entry</a> entry is null, then:</p>
-      <ol>
-       <li data-md>
-        <p>Set <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-did-finish-before-commit" id="ref-for-app-history-api-navigation-did-finish-before-commit③">did finish before commit</a> to true.</p>
-       <li data-md>
-        <p>Return.</p>
-      </ol>
-      <p class="note" role="note">In same-document traversal cases, <a data-link-type="dfn" href="#app-history-api-navigation-resolve-the-finished-promise" id="ref-for-app-history-api-navigation-resolve-the-finished-promise①">resolve the finished promise</a> can be called before <a data-link-type="dfn" href="#app-history-api-navigation-notify-about-the-committed-to-entry" id="ref-for-app-history-api-navigation-notify-about-the-committed-to-entry①">notify about the committed-to entry</a>, since the latter requires a roundtrip through the relevant <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue①">session history traversal queue</a> and the former just depends on the settlement of promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile④">transitionWhile()</a></code>. </p>
-     <li data-md>
-      <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve④">Resolve</a> <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise③">finished promise</a> with its <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry④">committed-to entry</a>.</p>
+      <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve④">Resolve</a> <var>navigation</var>’s <a data-link-type="dfn" href="#app-history-api-navigation-finished-promise" id="ref-for-app-history-api-navigation-finished-promise③">finished promise</a> with its <a data-link-type="dfn" href="#app-history-api-navigation-committed-to-entry" id="ref-for-app-history-api-navigation-committed-to-entry③">committed-to entry</a>.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="#app-history-api-navigation-clean-up" id="ref-for-app-history-api-navigation-clean-up">Clean up</a> <var>navigation</var>.</p>
     </ol>
@@ -1326,13 +1330,13 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateoptions-state" id="ref-for-dom-apphistorynavigateoptions-state①">state</a></code> can be set to any <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/structured-data.html#serializable-objects" id="ref-for-serializable-objects">serializable</a> value; it will populate the state retrieved by <code class="idl"><a data-link-type="idl" href="#dom-apphistoryentry-getstate" id="ref-for-dom-apphistoryentry-getstate">appHistory.current.getState()</a></code> once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)</p>
      </ul>
-     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑤">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑤">transitionWhile()</a></code> method can be used to convert it into a same-document navigation. </p>
+     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑤">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile④">transitionWhile()</a></code> method can be used to convert it into a same-document navigation. </p>
      <p>The returned promises will behave as follows: </p>
      <ul>
       <li data-md>
        <p>For navigations that get aborted, both promises will reject with an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
       <li data-md>
-       <p>For same-document navigations created by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑥">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑥">transitionWhile()</a></code> method, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed⑥">committed</a></code> will fulfill immediately, and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished⑥">finished</a></code> will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑦">transitionWhile()</a></code>.</p>
+       <p>For same-document navigations created by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑥">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑤">transitionWhile()</a></code> method, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed⑥">committed</a></code> will fulfill immediately, and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished⑥">finished</a></code> will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑥">transitionWhile()</a></code>.</p>
       <li data-md>
        <p>For other same-document navigations (e.g., non-intercepted <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid">fragment navigations</a>), both promises will fulfill immediately.</p>
       <li data-md>
@@ -1342,13 +1346,13 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code>{ <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed⑦">committed</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished⑦">finished</a></code> } = <code class="idl"><a data-link-type="idl" href="#dom-window-apphistory" id="ref-for-dom-window-apphistory①④">appHistory</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-apphistory-reload" id="ref-for-dom-apphistory-reload③">reload</a></code>(<var>options</var>)</code> 
     <dd>
      <p>Reloads the current page. The <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-info" id="ref-for-dom-apphistorynavigationoptions-info④">info</a></code> and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryreloadoptions-state" id="ref-for-dom-apphistoryreloadoptions-state">state</a></code> options behave as described above. </p>
-     <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑦">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑧">transitionWhile()</a></code> method. Doing so will mean this call only updates state or passes along the appropriate <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-info" id="ref-for-dom-apphistorynavigationoptions-info⑤">info</a></code>, plus performing whatever actions the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑧">navigate</a></code> event handler sees fit to carry out. </p>
+     <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑦">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑦">transitionWhile()</a></code> method. Doing so will mean this call only updates state or passes along the appropriate <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationoptions-info" id="ref-for-dom-apphistorynavigationoptions-info⑤">info</a></code>, plus performing whatever actions the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑧">navigate</a></code> event handler sees fit to carry out. </p>
      <p>The returned promises will behave as follows: </p>
      <ul>
       <li data-md>
        <p>If the reload is aborted, both promises will reject with an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror①">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>.</p>
       <li data-md>
-       <p>If the reload is intercepted by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑨">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑨">transitionWhile()</a></code> method, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed⑧">committed</a></code> will fulfill immediately, and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished⑧">finished</a></code> will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⓪">transitionWhile()</a></code>.</p>
+       <p>If the reload is intercepted by using the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate⑨">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑧">transitionWhile()</a></code> method, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed⑧">committed</a></code> will fulfill immediately, and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished⑧">finished</a></code> will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile⑨">transitionWhile()</a></code>.</p>
       <li data-md>
        <p>Otherwise, both promises will never settle.</p>
      </ul>
@@ -1444,7 +1448,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
       <li data-md>
        <p>If there is no <code class="idl"><a data-link-type="idl" href="#apphistoryentry" id="ref-for-apphistoryentry②⑧">AppHistoryEntry</a></code> in <code class="idl"><a data-link-type="idl" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries②">appHistory.entries</a></code> with the given key, both will reject with an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror⑥">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
       <li data-md>
-       <p>For same-document traversals intercepted by the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①①">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①①">transitionWhile()</a></code> method, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed①③">committed</a></code> will fulfill as soon as the traversal is processed and <code class="idl"><a data-link-type="idl" href="#dom-apphistory-current" id="ref-for-dom-apphistory-current④">appHistory.current</a></code> is updated, and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished①③">finished</a></code> will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①②">transitionWhile()</a></code>.</p>
+       <p>For same-document traversals intercepted by the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate①①">navigate</a></code> event’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⓪">transitionWhile()</a></code> method, <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-committed" id="ref-for-dom-apphistoryresult-committed①③">committed</a></code> will fulfill as soon as the traversal is processed and <code class="idl"><a data-link-type="idl" href="#dom-apphistory-current" id="ref-for-dom-apphistory-current④">appHistory.current</a></code> is updated, and <code class="idl"><a data-link-type="idl" href="#dom-apphistoryresult-finished" id="ref-for-dom-apphistoryresult-finished①③">finished</a></code> will fulfill or reject according to the promises passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①①">transitionWhile()</a></code>.</p>
       <li data-md>
        <p>For non-intercepted same-document traversals, both promises will fulfill as soon as the traversal is processed and <code class="idl"><a data-link-type="idl" href="#dom-apphistory-current" id="ref-for-dom-apphistory-current⑤">appHistory.current</a></code> is updated</p>
       <li data-md>
@@ -1525,7 +1529,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>ongoingNavigation</var> be the result of <a data-link-type="dfn" href="#apphistory-set-an-upcoming-traverse-navigation" id="ref-for-apphistory-set-an-upcoming-traverse-navigation">setting an upcoming traverse navigation</a> for <var>appHistory</var> given <var>key</var> and <var>info</var>.</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps">Enqueue the following steps</a> on <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue②">session history traversal queue</a>:</p>
+      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps">Enqueue the following steps</a> on <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue①">session history traversal queue</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>navigableEntries</var> be the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#getting-session-history-entries" id="ref-for-getting-session-history-entries">getting the session history entries</a> given <var>navigable</var>.</p>
@@ -1605,7 +1609,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata"><c- n>FormData</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="FormData?" href="#dom-apphistorynavigateevent-formdata" id="ref-for-dom-apphistorynavigateevent-formdata"><c- g>formData</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-any" id="ref-for-idl-any④"><c- b>any</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="any" href="#dom-apphistorynavigateevent-info" id="ref-for-dom-apphistorynavigateevent-info⑤"><c- g>info</c-></a>;
 
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined②"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①③"><c- g>transitionWhile</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑨"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined③"><c- b>undefined</c-></a>> <dfn class="idl-code" data-dfn-for="AppHistoryNavigateEvent/transitionWhile(newNavigationAction)" data-dfn-type="argument" data-export id="dom-apphistorynavigateevent-transitionwhile-newnavigationaction-newnavigationaction"><code><c- g>newNavigationAction</c-></code><a class="self-link" href="#dom-apphistorynavigateevent-transitionwhile-newnavigationaction-newnavigationaction"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined②"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①②"><c- g>transitionWhile</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑨"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined③"><c- b>undefined</c-></a>> <dfn class="idl-code" data-dfn-for="AppHistoryNavigateEvent/transitionWhile(newNavigationAction)" data-dfn-type="argument" data-export id="dom-apphistorynavigateevent-transitionwhile-newnavigationaction-newnavigationaction"><code><c- g>newNavigationAction</c-></code><a class="self-link" href="#dom-apphistorynavigateevent-transitionwhile-newnavigationaction-newnavigationaction"></a></dfn>);
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-apphistorynavigateeventinit"><code><c- g>AppHistoryNavigateEventInit</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit" id="ref-for-dictdef-eventinit①"><c- n>EventInit</c-></a> {
@@ -1635,7 +1639,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <p>An <code class="idl"><a data-link-type="idl" href="#apphistorydestination" id="ref-for-apphistorydestination②">AppHistoryDestination</a></code> representing the destination of the navigation. </p>
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-cantransition" id="ref-for-dom-apphistorynavigateevent-cantransition①">canTransition</a></code></code> 
     <dd>
-     <p>True if <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①④">transitionWhile()</a></code> can be called to convert this navigation into a single-page navigation; false otherwise. </p>
+     <p>True if <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①③">transitionWhile()</a></code> can be called to convert this navigation into a single-page navigation; false otherwise. </p>
      <p>Generally speaking, this will be true whenever the current <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document">Document</a></code> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten">can have its URL rewritten</a> to the destination URL, except for cross-document back/forward navigations, where it will always be false. </p>
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-userinitiated" id="ref-for-dom-apphistorynavigateevent-userinitiated①">userInitiated</a></code></code> 
     <dd>
@@ -1654,10 +1658,10 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-info" id="ref-for-dom-apphistorynavigateevent-info⑥">info</a></code></code> 
     <dd>
      <p>An arbitrary JavaScript value passed via other app history APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-app history API. </p>
-    <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⑤">transitionWhile</a></code>(<var>newNavigationAction</var>)</code> 
+    <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①④">transitionWhile</a></code>(<var>newNavigationAction</var>)</code> 
     <dd>
      <p>Synchronously converts this navigation into a same-document navigation to the destination URL. </p>
-     <p>The given <var>newNavigationAction</var> promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess③">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror④">navigateerror</a></code> events as appropriate, which other parts of the web application can respond to. </p>
+     <p>The given <var>newNavigationAction</var> promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess③">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑤">navigateerror</a></code> events as appropriate, which other parts of the web application can respond to. </p>
      <p>This method will throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#securityerror" id="ref-for-securityerror①">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑨">DOMException</a></code> if <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-cantransition" id="ref-for-dom-apphistorynavigateevent-cantransition②">canTransition</a></code> is false, or if <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted">isTrusted</a></code> is false. It will throw an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①④">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⓪">DOMException</a></code> if not called synchronously, during event dispatch. </p>
    </dl>
    <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-navigationtype"><code>navigationType</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-destination"><code>destination</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-cantransition"><code>canTransition</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-userinitiated"><code>userInitiated</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-hashchange"><code>hashChange</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-signal"><code>signal</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-formdata"><code>formData</code></dfn>, and <dfn class="dfn-paneled idl-code" data-dfn-for="AppHistoryNavigateEvent" data-dfn-type="attribute" data-export id="dom-apphistorynavigateevent-info"><code>info</code></dfn> getter steps are to return the value that the corresponding attribute was initialized to.</p>
@@ -1713,7 +1717,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination⑥">destination</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorydestination-samedocument" id="ref-for-dom-apphistorydestination-samedocument①">sameDocument</a></code></code> 
     <dd>
      <p>Indicates whether or not this navigation is to the same <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document①">Document</a></code> as the current <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-document-2" id="ref-for-dom-document-2">document</a></code> value, or not. This will be true, for example, in cases of fragment navigations or <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate" id="ref-for-dom-history-pushstate">history.pushState()</a></code> navigations. </p>
-     <p>Note that this property indicates the original nature of the navigation. If a cross-document navigation is converted into a same-document navigation using <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⑥">event.transitionWhile()</a></code>, that will not change the value of this property. </p>
+     <p>Note that this property indicates the original nature of the navigation. If a cross-document navigation is converted into a same-document navigation using <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⑤">event.transitionWhile()</a></code>, that will not change the value of this property. </p>
     <dt><code><var>state</var> = <var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination⑦">destination</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-apphistorydestination-getstate" id="ref-for-dom-apphistorydestination-getstate①">getState()</a></code></code> 
     <dd>
      <p>For "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-traverse" id="ref-for-dom-apphistorynavigationtype-traverse⑨">traverse</a></code>" navigations, returns the deserialization of the state stored in the destination session history entry. </p>
@@ -1897,36 +1901,44 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p class="assertion">Assert: <var>fromEntry</var> is not null.</p>
        <li data-md>
         <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition①">transition</a> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑥">new</a> <code class="idl"><a data-link-type="idl" href="#apphistorytransition" id="ref-for-apphistorytransition⑧">AppHistoryTransition</a></code> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①⓪">relevant Realm</a>, whose <a data-link-type="dfn" href="#apphistorytransition-navigation-type" id="ref-for-apphistorytransition-navigation-type①">navigation type</a> is <var>navigationType</var>, <a data-link-type="dfn" href="#apphistorytransition-from-entry" id="ref-for-apphistorytransition-from-entry①">from entry</a> is <var>fromEntry</var>, and whose <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise①">finished promise</a> is <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise②">a new promise</a> created in <var>appHistory</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①①">relevant Realm</a>.</p>
+       <li data-md>
+        <p>Mark as handled <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition②">transition</a>'s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise②">finished promise</a>.</p>
+        <p class="note" role="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
       </ol>
      <li data-md>
       <p>If <var>endResultIsSameDocument</var> is true:</p>
       <ol>
        <li data-md>
-        <p>Let <var>transition</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition②">transition</a>.</p>
+        <p>Let <var>transition</var> be <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition③">transition</a>.</p>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#wait-for-all" id="ref-for-wait-for-all">Wait for all</a> of <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a>, with the following success steps:</p>
+        <p>Let <var>tweakedPromisesList</var> be <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-navigation-action-promises-list" id="ref-for-apphistorynavigateevent-navigation-action-promises-list②">navigation action promises list</a>.</p>
+       <li data-md>
+        <p>If <var>tweakedPromisesList</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size③">size</a> is 0, then set <var>tweakedPromisesList</var> to « <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-resolved-with" id="ref-for-a-promise-resolved-with②">a promise resolved with</a> <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined④">undefined</a></code> ».</p>
+        <p class="note" role="note">There is a subtle timing difference between how <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#wait-for-all" id="ref-for-wait-for-all">waiting for all</a> schedules its success and failure steps when given zero promises versus ≥1 promises. For most uses of <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#wait-for-all" id="ref-for-wait-for-all①">waiting for all</a>, this does not matter. However, with this API, there are so many events and promise handlers which could fire around the same time that the difference is pretty easily observable: it can cause the event/promise handler sequence to vary. (Some of the events and promises involved include: <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess④">navigatesuccess</a></code> / <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑥">navigateerror</a></code>, <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-currentchange" id="ref-for-eventdef-apphistory-currentchange③">currentchange</a></code>, <code class="idl"><a data-link-type="idl" href="#eventdef-apphistoryentry-dispose" id="ref-for-eventdef-apphistoryentry-dispose②">dispose</a></code>, <var>ongoingNavigation</var>’s promises, and the <code class="idl"><a data-link-type="idl" href="#dom-apphistorytransition-finished" id="ref-for-dom-apphistorytransition-finished④">appHistory.transition.finished</a></code> promise.) </p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#wait-for-all" id="ref-for-wait-for-all②">Wait for all</a> of <var>tweakedPromisesList</var>, with the following success steps:</p>
         <ol>
          <li data-md>
           <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑦">signal</a></code> is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted①">aborted</a>, then abort these steps.</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire③">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess④">navigatesuccess</a></code> at <var>appHistory</var>.</p>
+          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire③">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigatesuccess" id="ref-for-eventdef-apphistory-navigatesuccess⑤">navigatesuccess</a></code> at <var>appHistory</var>.</p>
          <li data-md>
-          <p>If <var>transition</var> is not null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve⑥">resolve</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise②">finished promise</a> with undefined.</p>
+          <p>If <var>transition</var> is not null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#resolve" id="ref-for-resolve⑥">resolve</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise③">finished promise</a> with undefined.</p>
          <li data-md>
-          <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition③">transition</a> is <var>transition</var>, then set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition④">transition</a> to null.</p>
+          <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition④">transition</a> is <var>transition</var>, then set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑤">transition</a> to null.</p>
          <li data-md>
-          <p>If <var>ongoingNavigation</var> is non-null, then <a data-link-type="dfn" href="#app-history-api-navigation-resolve-the-finished-promise" id="ref-for-app-history-api-navigation-resolve-the-finished-promise②">resolve the finished promise</a> for <var>ongoingNavigation</var>.</p>
+          <p>If <var>ongoingNavigation</var> is non-null, then <a data-link-type="dfn" href="#app-history-api-navigation-resolve-the-finished-promise" id="ref-for-app-history-api-navigation-resolve-the-finished-promise">resolve the finished promise</a> for <var>ongoingNavigation</var>.</p>
         </ol>
         and the following failure steps given reason <var>rejectionReason</var>: 
         <ol>
          <li data-md>
           <p>If <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-signal" id="ref-for-dom-apphistorynavigateevent-signal⑧">signal</a></code> is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#abortsignal-aborted" id="ref-for-abortsignal-aborted②">aborted</a>, then abort these steps.</p>
          <li data-md>
-          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire④">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑤">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
+          <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire④">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑦">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error">error</a></code> initialized to <var>rejectionReason</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno">colno</a></code> initialized to appropriate values that can be extracted from <var>rejectionReason</var> in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception">report an exception</a> algorithm.</p>
          <li data-md>
-          <p>If <var>transition</var> is not null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject④">reject</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise③">finished promise</a> with <var>rejectionReason</var>.</p>
+          <p>If <var>transition</var> is not null, then <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject④">reject</a> <var>transition</var>’s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise④">finished promise</a> with <var>rejectionReason</var>.</p>
          <li data-md>
-          <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑤">transition</a> is <var>transition</var>, then set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑥">transition</a> to null.</p>
+          <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑥">transition</a> is <var>transition</var>, then set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑦">transition</a> to null.</p>
          <li data-md>
           <p>If <var>ongoingNavigation</var> is non-null, then <a data-link-type="dfn" href="#app-history-api-navigation-reject-the-finished-promise" id="ref-for-app-history-api-navigation-reject-the-finished-promise①">reject the finished promise</a> for <var>ongoingNavigation</var> with <var>rejectionReason</var>.</p>
         </ol>
@@ -1951,7 +1963,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
          <li data-md>
           <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps">URL and history update steps</a> given <var>document</var> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-destination" id="ref-for-dom-apphistorynavigateevent-destination⑨">destination</a></code>'s <a data-link-type="dfn" href="#apphistorydestination-url" id="ref-for-apphistorydestination-url⑥">URL</a>, with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-serializeddata" id="ref-for-uhus-serializeddata">serializedData</a></i> set to <var>event</var>’s <a data-link-type="dfn" href="#apphistorynavigateevent-classic-history-api-serialized-data" id="ref-for-apphistorynavigateevent-classic-history-api-serialized-data①">classic history API serialized data</a> and <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-ispush" id="ref-for-uhus-ispush">isPush</a></i> set to <var>isPush</var>.</p>
         </ol>
-        <p class="note" role="note">If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-reload" id="ref-for-dom-apphistorynavigationtype-reload⑥">reload</a></code>", then we are converting a reload into a "same-document reload", for which the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps①">URL and history update steps</a> are not appropriate. App history-related stuff still happens, such as updating the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry④">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑧">app history state</a> if this was caused by a call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-reload" id="ref-for-dom-apphistory-reload⑥">appHistory.reload()</a></code>, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⑦">transitionWhile()</a></code>. </p>
+        <p class="note" role="note">If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigationtype-reload" id="ref-for-dom-apphistorynavigationtype-reload⑥">reload</a></code>", then we are converting a reload into a "same-document reload", for which the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps①">URL and history update steps</a> are not appropriate. App history-related stuff still happens, such as updating the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry④">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state⑧">app history state</a> if this was caused by a call to <code class="idl"><a data-link-type="idl" href="#dom-apphistory-reload" id="ref-for-dom-apphistory-reload⑥">appHistory.reload()</a></code>, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to <code class="idl"><a data-link-type="idl" href="#dom-apphistorynavigateevent-transitionwhile" id="ref-for-dom-apphistorynavigateevent-transitionwhile①⑥">transitionWhile()</a></code>. </p>
        <li data-md>
         <p>Return false.</p>
       </ol>
@@ -1981,7 +1993,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-ongoing-navigation-signal" id="ref-for-apphistory-ongoing-navigation-signal⑤">ongoing navigation signal</a> to null.</p>
       </ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire⑤">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑥">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent①">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error①">error</a></code> initialized to <var>error</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message①">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename①">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno①">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno①">colno</a></code> initialized to appropriate values that can be extracted from <var>error</var> and the current JavaScript stack in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception①">report an exception</a> algorithm.</p>
+      <p><a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-fire" id="ref-for-concept-event-fire⑤">Fire an event</a> named <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigateerror" id="ref-for-eventdef-apphistory-navigateerror⑧">navigateerror</a></code> at <var>appHistory</var> using <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent" id="ref-for-errorevent①">ErrorEvent</a></code>, with <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-error" id="ref-for-dom-errorevent-error①">error</a></code> initialized to <var>error</var>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-message" id="ref-for-dom-errorevent-message①">message</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-filename" id="ref-for-dom-errorevent-filename①">filename</a></code>, <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno" id="ref-for-dom-errorevent-lineno①">lineno</a></code>, and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno" id="ref-for-dom-errorevent-colno①">colno</a></code> initialized to appropriate values that can be extracted from <var>error</var> and the current JavaScript stack in the same underspecified way the user agent typically does for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#report-the-exception" id="ref-for-report-the-exception①">report an exception</a> algorithm.</p>
       <p class="note" role="note">Thus, for example, if this algorithm is reached because of a call to <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop">window.stop()</a></code>, these properties would probably end up initialized based on the line of script that called <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop①">window.stop()</a></code>. But if it’s because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0. </p>
      <li data-md>
       <p>If <var>ongoingNavigation</var> is non-null, then:</p>
@@ -1993,12 +2005,12 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
         <p><a data-link-type="dfn" href="#app-history-api-navigation-reject-the-finished-promise" id="ref-for-app-history-api-navigation-reject-the-finished-promise②">Reject the finished promise</a> for <var>ongoingNavigation</var> with <var>error</var>.</p>
       </ol>
      <li data-md>
-      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑦">transition</a> is not null, then:</p>
+      <p>If <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑧">transition</a> is not null, then:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject⑤">Reject</a> <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑧">transition</a>'s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise④">finished promise</a> with <var>error</var>.</p>
+        <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject⑤">Reject</a> <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑨">transition</a>'s <a data-link-type="dfn" href="#apphistorytransition-finished-promise" id="ref-for-apphistorytransition-finished-promise⑤">finished promise</a> with <var>error</var>.</p>
        <li data-md>
-        <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition⑨">transition</a> to null.</p>
+        <p>Set <var>appHistory</var>’s <a data-link-type="dfn" href="#apphistory-transition" id="ref-for-apphistory-transition①⓪">transition</a> to null.</p>
       </ol>
     </ol>
    </div>
@@ -2326,7 +2338,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>initiatorOrigin</var> be <var>source browsing context</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document④">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a>.</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps①">Enqueue the following steps</a> to <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue③">session history traversal queue</a>:</p>
+      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps①">Enqueue the following steps</a> to <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue②">session history traversal queue</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>allSteps</var> be the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#getting-all-history-steps" id="ref-for-getting-all-history-steps①">getting all history steps</a> for <var>traversable</var>.</p>
@@ -2502,7 +2514,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     </ul>
    <li><a href="#fire-a-traversal-navigate-event-destinationentry">destinationEntry</a><span>, in § 2.3</span>
    <li><a href="#fire-a-non-traversal-navigate-event-destinationurl">destinationURL</a><span>, in § 2.3</span>
-   <li><a href="#app-history-api-navigation-did-finish-before-commit">did finish before commit</a><span>, in § 1.3</span>
    <li><a href="#eventdef-apphistoryentry-dispose">dispose</a><span>, in § 3</span>
    <li><a href="#dom-apphistory-entries">entries()</a><span>, in § 1.1</span>
    <li><a href="#apphistory-entry-list">entry list</a><span>, in § 1</span>
@@ -3436,9 +3447,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-tn-session-history-traversal-queue">
    <a href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue">https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-tn-session-history-traversal-queue">1.3. Ongoing navigation tracking</a> <a href="#ref-for-tn-session-history-traversal-queue①">(2)</a>
-    <li><a href="#ref-for-tn-session-history-traversal-queue②">1.5. Traversing</a>
-    <li><a href="#ref-for-tn-session-history-traversal-queue③">4.4. History traversal updates</a>
+    <li><a href="#ref-for-tn-session-history-traversal-queue">1.3. Ongoing navigation tracking</a>
+    <li><a href="#ref-for-tn-session-history-traversal-queue①">1.5. Traversing</a>
+    <li><a href="#ref-for-tn-session-history-traversal-queue②">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-shared-history-push/replace-state-steps">
@@ -3527,6 +3538,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-traverse-the-history-by-a-delta②">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-traverse-the-history-by-a-delta③">4.4. History traversal updates</a>
     <li><a href="#ref-for-traverse-the-history-by-a-delta④">6.1. Canceling navigation and traversals</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-event-unhandledrejection">
+   <a href="https://html.spec.whatwg.org/multipage/indices.html#event-unhandledrejection">https://html.spec.whatwg.org/multipage/indices.html#event-unhandledrejection</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-event-unhandledrejection">1.3. Ongoing navigation tracking</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-unload-counter">
@@ -3660,6 +3677,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-list-size">1. The AppHistory class</a>
     <li><a href="#ref-for-list-size①">1.1. Introspecting the app history entry list</a>
     <li><a href="#ref-for-list-size②">1.5. Traversing</a>
+    <li><a href="#ref-for-list-size③">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-string">
@@ -3853,6 +3871,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://webidl.spec.whatwg.org/#a-promise-resolved-with">https://webidl.spec.whatwg.org/#a-promise-resolved-with</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-a-promise-resolved-with">1.5. Traversing</a> <a href="#ref-for-a-promise-resolved-with①">(2)</a>
+    <li><a href="#ref-for-a-promise-resolved-with②">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-any">
@@ -3928,12 +3947,19 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-idl-undefined">1. The AppHistory class</a>
     <li><a href="#ref-for-idl-undefined①">1.3. Ongoing navigation tracking</a>
     <li><a href="#ref-for-idl-undefined②">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-idl-undefined③">(2)</a>
+    <li><a href="#ref-for-idl-undefined④">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-wait-for-all">
    <a href="https://webidl.spec.whatwg.org/#wait-for-all">https://webidl.spec.whatwg.org/#wait-for-all</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-wait-for-all">2.3. Firing the event</a>
+    <li><a href="#ref-for-wait-for-all">2.3. Firing the event</a> <a href="#ref-for-wait-for-all①">(2)</a> <a href="#ref-for-wait-for-all②">(3)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-wait-for-all">
+   <a href="https://webidl.spec.whatwg.org/#wait-for-all">https://webidl.spec.whatwg.org/#wait-for-all</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-wait-for-all">2.3. Firing the event</a> <a href="#ref-for-wait-for-all①">(2)</a> <a href="#ref-for-wait-for-all②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-formdata">
@@ -4073,6 +4099,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-nav-traversable">traversable navigable</span>
      <li><span class="dfn-paneled" id="term-for-traverse-the-history">traverse the history</span>
      <li><span class="dfn-paneled" id="term-for-traverse-the-history-by-a-delta">traverse the history by a delta</span>
+     <li><span class="dfn-paneled" id="term-for-event-unhandledrejection">unhandledrejection</span>
      <li><span class="dfn-paneled" id="term-for-unload-counter">unload counter</span>
      <li><span class="dfn-paneled" id="term-for-update-the-session-history-with-the-new-page">update the session history with the new page</span>
      <li><span class="dfn-paneled" id="term-for-she-url">url</span>
@@ -4153,6 +4180,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-this">this</span>
      <li><span class="dfn-paneled" id="term-for-idl-undefined">undefined</span>
      <li><span class="dfn-paneled" id="term-for-wait-for-all">wait for all</span>
+     <li><span class="dfn-paneled" id="term-for-wait-for-all①">waiting for all</span>
     </ul>
    <li>
     <a data-link-type="biblio">[XHR]</a> defines the following terms:
@@ -4565,7 +4593,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <b><a href="#apphistory-transition">#apphistory-transition</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistory-transition">1.3. Ongoing navigation tracking</a>
-    <li><a href="#ref-for-apphistory-transition①">2.3. Firing the event</a> <a href="#ref-for-apphistory-transition②">(2)</a> <a href="#ref-for-apphistory-transition③">(3)</a> <a href="#ref-for-apphistory-transition④">(4)</a> <a href="#ref-for-apphistory-transition⑤">(5)</a> <a href="#ref-for-apphistory-transition⑥">(6)</a> <a href="#ref-for-apphistory-transition⑦">(7)</a> <a href="#ref-for-apphistory-transition⑧">(8)</a> <a href="#ref-for-apphistory-transition⑨">(9)</a>
+    <li><a href="#ref-for-apphistory-transition①">2.3. Firing the event</a> <a href="#ref-for-apphistory-transition②">(2)</a> <a href="#ref-for-apphistory-transition③">(3)</a> <a href="#ref-for-apphistory-transition④">(4)</a> <a href="#ref-for-apphistory-transition⑤">(5)</a> <a href="#ref-for-apphistory-transition⑥">(6)</a> <a href="#ref-for-apphistory-transition⑦">(7)</a> <a href="#ref-for-apphistory-transition⑧">(8)</a> <a href="#ref-for-apphistory-transition⑨">(9)</a> <a href="#ref-for-apphistory-transition①⓪">(10)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-transition">
@@ -4593,7 +4621,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <b><a href="#apphistorytransition-finished-promise">#apphistorytransition-finished-promise</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apphistorytransition-finished-promise">1.3. Ongoing navigation tracking</a>
-    <li><a href="#ref-for-apphistorytransition-finished-promise①">2.3. Firing the event</a> <a href="#ref-for-apphistorytransition-finished-promise②">(2)</a> <a href="#ref-for-apphistorytransition-finished-promise③">(3)</a> <a href="#ref-for-apphistorytransition-finished-promise④">(4)</a>
+    <li><a href="#ref-for-apphistorytransition-finished-promise①">2.3. Firing the event</a> <a href="#ref-for-apphistorytransition-finished-promise②">(2)</a> <a href="#ref-for-apphistorytransition-finished-promise③">(3)</a> <a href="#ref-for-apphistorytransition-finished-promise④">(4)</a> <a href="#ref-for-apphistorytransition-finished-promise⑤">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorytransition-navigationtype">
@@ -4611,7 +4639,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="dom-apphistorytransition-finished">
    <b><a href="#dom-apphistorytransition-finished">#dom-apphistorytransition-finished</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-apphistorytransition-finished">1.3. Ongoing navigation tracking</a> <a href="#ref-for-dom-apphistorytransition-finished①">(2)</a> <a href="#ref-for-dom-apphistorytransition-finished②">(3)</a>
+    <li><a href="#ref-for-dom-apphistorytransition-finished">1.3. Ongoing navigation tracking</a> <a href="#ref-for-dom-apphistorytransition-finished①">(2)</a> <a href="#ref-for-dom-apphistorytransition-finished②">(3)</a> <a href="#ref-for-dom-apphistorytransition-finished③">(4)</a>
+    <li><a href="#ref-for-dom-apphistorytransition-finished④">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistorytransition-rollback">
@@ -4694,7 +4723,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="app-history-api-navigation-committed-to-entry">
    <b><a href="#app-history-api-navigation-committed-to-entry">#app-history-api-navigation-committed-to-entry</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-app-history-api-navigation-committed-to-entry">1.3. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry①">(2)</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry②">(3)</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry③">(4)</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry④">(5)</a>
+    <li><a href="#ref-for-app-history-api-navigation-committed-to-entry">1.3. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry①">(2)</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry②">(3)</a> <a href="#ref-for-app-history-api-navigation-committed-to-entry③">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="app-history-api-navigation-committed-promise">
@@ -4713,12 +4742,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-app-history-api-navigation-finished-promise⑥">1.4. Navigating</a>
     <li><a href="#ref-for-app-history-api-navigation-finished-promise⑦">1.5. Traversing</a> <a href="#ref-for-app-history-api-navigation-finished-promise⑧">(2)</a>
     <li><a href="#ref-for-app-history-api-navigation-finished-promise⑨">2.3. Firing the event</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="app-history-api-navigation-did-finish-before-commit">
-   <b><a href="#app-history-api-navigation-did-finish-before-commit">#app-history-api-navigation-did-finish-before-commit</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-app-history-api-navigation-did-finish-before-commit">1.3. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-did-finish-before-commit①">(2)</a> <a href="#ref-for-app-history-api-navigation-did-finish-before-commit②">(3)</a> <a href="#ref-for-app-history-api-navigation-did-finish-before-commit③">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistory-set-the-upcoming-non-traverse-navigation">
@@ -4751,14 +4774,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <b><a href="#app-history-api-navigation-notify-about-the-committed-to-entry">#app-history-api-navigation-notify-about-the-committed-to-entry</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-app-history-api-navigation-notify-about-the-committed-to-entry">1. The AppHistory class</a>
-    <li><a href="#ref-for-app-history-api-navigation-notify-about-the-committed-to-entry①">1.3. Ongoing navigation tracking</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="app-history-api-navigation-resolve-the-finished-promise">
    <b><a href="#app-history-api-navigation-resolve-the-finished-promise">#app-history-api-navigation-resolve-the-finished-promise</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-app-history-api-navigation-resolve-the-finished-promise">1.3. Ongoing navigation tracking</a> <a href="#ref-for-app-history-api-navigation-resolve-the-finished-promise①">(2)</a>
-    <li><a href="#ref-for-app-history-api-navigation-resolve-the-finished-promise②">2.3. Firing the event</a>
+    <li><a href="#ref-for-app-history-api-navigation-resolve-the-finished-promise">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="app-history-api-navigation-reject-the-finished-promise">
@@ -4863,7 +4884,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-eventdef-apphistory-navigatesuccess">1.3. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-apphistory-navigatesuccess①">(2)</a> <a href="#ref-for-eventdef-apphistory-navigatesuccess②">(3)</a>
     <li><a href="#ref-for-eventdef-apphistory-navigatesuccess③">2.1. The AppHistoryNavigateEvent class</a>
-    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess④">2.3. Firing the event</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigatesuccess④">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigatesuccess⑤">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-onnavigateerror">
@@ -4875,9 +4896,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="eventdef-apphistory-navigateerror">
    <b><a href="#eventdef-apphistory-navigateerror">#eventdef-apphistory-navigateerror</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-eventdef-apphistory-navigateerror">1.3. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-apphistory-navigateerror①">(2)</a> <a href="#ref-for-eventdef-apphistory-navigateerror②">(3)</a> <a href="#ref-for-eventdef-apphistory-navigateerror③">(4)</a>
-    <li><a href="#ref-for-eventdef-apphistory-navigateerror④">2.1. The AppHistoryNavigateEvent class</a>
-    <li><a href="#ref-for-eventdef-apphistory-navigateerror⑤">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigateerror⑥">(2)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigateerror">1.3. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-apphistory-navigateerror①">(2)</a> <a href="#ref-for-eventdef-apphistory-navigateerror②">(3)</a> <a href="#ref-for-eventdef-apphistory-navigateerror③">(4)</a> <a href="#ref-for-eventdef-apphistory-navigateerror④">(5)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigateerror⑤">2.1. The AppHistoryNavigateEvent class</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigateerror⑥">2.3. Firing the event</a> <a href="#ref-for-eventdef-apphistory-navigateerror⑦">(2)</a> <a href="#ref-for-eventdef-apphistory-navigateerror⑧">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-oncurrentchange">
@@ -4889,8 +4910,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="eventdef-apphistory-currentchange">
    <b><a href="#eventdef-apphistory-currentchange">#eventdef-apphistory-currentchange</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-eventdef-apphistory-currentchange">1. The AppHistory class</a>
-    <li><a href="#ref-for-eventdef-apphistory-currentchange①">1.2. The current entry</a>
+    <li><a href="#ref-for-eventdef-apphistory-currentchange">1. The AppHistory class</a> <a href="#ref-for-eventdef-apphistory-currentchange①">(2)</a>
+    <li><a href="#ref-for-eventdef-apphistory-currentchange②">1.2. The current entry</a>
+    <li><a href="#ref-for-eventdef-apphistory-currentchange③">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistorynavigateevent">
@@ -5035,12 +5057,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="dom-apphistorynavigateevent-transitionwhile">
    <b><a href="#dom-apphistorynavigateevent-transitionwhile">#dom-apphistorynavigateevent-transitionwhile</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile">1.3. Ongoing navigation tracking</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile②">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile③">(4)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile④">(5)</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑤">1.4. Navigating</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑥">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑦">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑧">(4)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑨">(5)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⓪">(6)</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①①">1.5. Traversing</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①②">(2)</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①③">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①④">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⑤">(3)</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⑥">2.2. The AppHistoryDestination class</a>
-    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⑦">2.3. Firing the event</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile">1.3. Ongoing navigation tracking</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile②">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile③">(4)</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile④">1.4. Navigating</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑤">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑥">(3)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑦">(4)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑧">(5)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile⑨">(6)</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⓪">1.5. Traversing</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①①">(2)</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①②">2.1. The AppHistoryNavigateEvent class</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①③">(2)</a> <a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①④">(3)</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⑤">2.2. The AppHistoryDestination class</a>
+    <li><a href="#ref-for-dom-apphistorynavigateevent-transitionwhile①⑥">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="apphistorydestination">
@@ -5341,7 +5363,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="eventdef-apphistoryentry-dispose">
    <b><a href="#eventdef-apphistoryentry-dispose">#eventdef-apphistoryentry-dispose</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-eventdef-apphistoryentry-dispose">1. The AppHistory class</a> <a href="#ref-for-eventdef-apphistoryentry-dispose①">(2)</a> <a href="#ref-for-eventdef-apphistoryentry-dispose②">(3)</a>
+    <li><a href="#ref-for-eventdef-apphistoryentry-dispose">1. The AppHistory class</a> <a href="#ref-for-eventdef-apphistoryentry-dispose①">(2)</a>
+    <li><a href="#ref-for-eventdef-apphistoryentry-dispose②">2.3. Firing the event</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigate-entrylist">
