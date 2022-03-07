@@ -4,7 +4,7 @@
   <title>App History API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 2e3c4c68b, updated Fri Jan 14 14:49:00 2022 -0800" name="generator">
+  <meta content="Bikeshed version fb1e763a4, updated Tue Mar 1 13:13:50 2022 -0800" name="generator">
   <link href="https://wicg.github.io/app-history/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">App History API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-02-04">4 February 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-07">7 March 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -726,6 +726,14 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
      <a href="#other-patches"><span class="secno">6</span> <span class="content">Other patches</span></a>
      <ol class="toc">
       <li><a href="#cancel-navigation"><span class="secno">6.1</span> <span class="content">Canceling navigation and traversals</span></a>
+     </ol>
+    <li>
+     <a href="#security-privacy"><span class="secno">7</span> <span class="content">Security and privacy considerations</span></a>
+     <ol class="toc">
+      <li><a href="#sp-cross-site-tracking"><span class="secno">7.1</span> <span class="content">Cross-site tracking</span></a>
+      <li><a href="#sp-navigation-monitoring-interception"><span class="secno">7.2</span> <span class="content">Navigation monitoring and interception</span></a>
+      <li><a href="#sp-url-updates"><span class="secno">7.3</span> <span class="content">URL updates</span></a>
+      <li><a href="#sp-ua-ui"><span class="secno">7.4</span> <span class="content">Other user agent UI</span></a>
      </ol>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
@@ -2423,7 +2431,7 @@ appHistory<c- p>.</c->goTo<c- p>(</c->key2<c- p>);</c->
    <hr>
    <p>App history introduces a new complication here, which is that a naFvigation might have <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#concept-navigate-mature" id="ref-for-concept-navigate-mature">matured</a> but still be "ongoing", in the sense of <a href="#ongoing-state">§ 1.3 Ongoing navigation tracking</a>. That is, consider a case such as:</p>
 <pre class="highlight">appHistory<c- p>.</c->addEventListener<c- p>(</c-><c- u>"navigate"</c-><c- p>,</c-> e <c- p>=></c-> <c- p>{</c->
-  e<c- p>.</c->transitionWhile<c- p>(</c-><c- k>new</c-> Promise<c- p>(</c->r <c- p>=></c-> setTimeout<c- p>(</c->r<c- p>,</c-> <c- mf>1</c->_000<c- p>)));</c->
+  e<c- p>.</c->transitionWhile<c- p>(</c-><c- ow>new</c-> Promise<c- p>(</c->r <c- p>=></c-> setTimeout<c- p>(</c->r<c- p>,</c-> <c- mf>1</c->_000<c- p>)));</c->
   e<c- p>.</c->signal<c- p>.</c->addEventListener<c- p>(</c-><c- u>"abort"</c-><c- p>,</c-> <c- p>()</c-> <c- p>=></c-> <c- p>{</c-> <c- p>...</c-> <c- p>});</c->
 <c- p>});</c->
 
@@ -2440,6 +2448,47 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li data-md>
      <p>When the spec <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#a-browsing-context-is-discarded" id="ref-for-a-browsing-context-is-discarded①">discards</a> a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context⑤">browsing context</a> <var>bc</var>, we also <a data-link-type="dfn" href="#inform-app-history-about-browsing-context-discarding" id="ref-for-inform-app-history-about-browsing-context-discarding">inform app history about browsing context discarding</a> given <var>bc</var>. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)</p>
    </ul>
+   <h2 class="heading settled" data-level="7" id="security-privacy"><span class="secno">7. </span><span class="content">Security and privacy considerations</span><a class="self-link" href="#security-privacy"></a></h2>
+   <div nonnormative>
+    <h3 class="heading settled" data-level="7.1" id="sp-cross-site-tracking"><span class="secno">7.1. </span><span class="content">Cross-site tracking</span><a class="self-link" href="#sp-cross-site-tracking"></a></h3>
+    <p>This specification does not enable any new cross-site tracking capabilities. This is largely because the <code class="idl"><a data-link-type="idl" href="#dom-apphistory-entries" id="ref-for-dom-apphistory-entries④">appHistory.entries()</a></code> method only returns information about the same-origin, same-frame history entries.</p>
+    <p>In more detail:</p>
+    <ul>
+     <li data-md>
+      <p>The storage of <a data-link-type="dfn" href="#session-history-entry-app-history-state" id="ref-for-session-history-entry-app-history-state①③">app history state</a> in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as existing APIs such as <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webstorage.html#dom-sessionstorage" id="ref-for-dom-sessionstorage">sessionStorage</a></code>.</p>
+     <li data-md>
+      <p>The browser-generated UUIDs stored as <a data-link-type="dfn" href="#session-history-entry-app-history-id" id="ref-for-session-history-entry-app-history-id②">app history ID</a> and <a data-link-type="dfn" href="#session-history-entry-app-history-key" id="ref-for-session-history-entry-app-history-key⑨">app history key</a> live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.</p>
+    </ul>
+    <h3 class="heading settled" data-level="7.2" id="sp-navigation-monitoring-interception"><span class="secno">7.2. </span><span class="content">Navigation monitoring and interception</span><a class="self-link" href="#sp-navigation-monitoring-interception"></a></h3>
+    <p>Through the <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②④">navigate</a></code> event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.</p>
+    <p>Care has been taken to avoid this being dangerous, or giving insight into user behavior that would not otherwise be available to the site. In particular:</p>
+    <ul>
+     <li data-md>
+      <p>It is not possible to prevent a back/forward navigation, as this could lead to trapping the user on the page. (We would like to make this possible in the future by adding additional security mitigations; see <a href="https://github.com/WICG/app-history/issues/32">#32</a>.)</p>
+     <li data-md>
+      <p>Navigations initiated from cross-origin-domain frames do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②⑤">navigate</a></code> events. An example would be such a frame calling <code>window.open(url, name)</code> with <code>name</code> targeting the current frame.</p>
+     <li data-md>
+      <p>Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②⑥">navigate</a></code> events. An example would be the user directly editing the URL bar.</p>
+    </ul>
+    <p>We also have a few more restrictions worth noting, which don’t directly address any attack, but reduce the surface area and complexity of the navigation interception feature, which can have indirect security benefits:</p>
+    <ul>
+     <li data-md>
+      <p>Navigations initiated toward non-<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetch-scheme" id="ref-for-fetch-scheme①">fetch scheme</a> URLs, such as <code>javascript:</code> URLs, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②⑦">navigate</a></code> events.</p>
+     <li data-md>
+      <p>Navigations initiated on the initial <code>about:blank</code> document do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②⑧">navigate</a></code> events.</p>
+     <li data-md>
+      <p>Navigations initiated by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open" id="ref-for-dom-document-open">document.open()</a></code> do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-apphistory-navigate" id="ref-for-eventdef-apphistory-navigate②⑨">navigate</a></code> events.</p>
+     <li data-md>
+      <p>Cross-document traversals cannot be intercepted and converted into same-document traversals.</p>
+    </ul>
+    <h3 class="heading settled" data-level="7.3" id="sp-url-updates"><span class="secno">7.3. </span><span class="content">URL updates</span><a class="self-link" href="#sp-url-updates"></a></h3>
+    <p>This API, like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate" id="ref-for-dom-history-pushstate①">History.replaceState()</a></code> and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate" id="ref-for-dom-history-replacestate">history.replaceState()</a></code>, gives the ability to change what is shown in the browser’s URL bar. This is part of the navigation interception capability mentioned in the previous section.</p>
+    <p>This is not dangerous, because it is subject to the same restrictions: namely, the URL can only be changed if the page <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten②">can have its URL rewritten</a> to the new URL. So in particular no authority-granting components, such as the site or origin, are impacted.</p>
+    <h3 class="heading settled" data-level="7.4" id="sp-ua-ui"><span class="secno">7.4. </span><span class="content">Other user agent UI</span><a class="self-link" href="#sp-ua-ui"></a></h3>
+    <p>This specification does not add any requirements on how user agents implement their user interfaces. (Even the URL bar updates mentioned in the previous section, are not technically part of the specifcation; the specification only governs the return value of other APIs, like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-location-href" id="ref-for-dom-location-href①">location.href</a></code>.) This preserves the ability for user agents to protect users through UI changes.</p>
+    <p>For example, today some user agents take advantage of this flexibility to skip certain history entries when pressing the back button. This can be used to avoid back-trapping by abusive sites, by skipping entries with which the user did not interact and thus allowing the user to escape abusive sites faster.</p>
+    <p>The app history API preserves all of these freedoms.</p>
+   </div>
   </main>
 <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
@@ -2850,6 +2899,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://fetch.spec.whatwg.org/#fetch-scheme">https://fetch.spec.whatwg.org/#fetch-scheme</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-fetch-scheme">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-fetch-scheme①">7.2. Navigation monitoring and interception</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-global-fetch">
@@ -2999,6 +3049,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-can-have-its-url-rewritten">2.1. The AppHistoryNavigateEvent class</a>
     <li><a href="#ref-for-can-have-its-url-rewritten①">2.3. Firing the event</a>
+    <li><a href="#ref-for-can-have-its-url-rewritten②">7.3. URL updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-colno">
@@ -3195,6 +3246,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/history.html#dom-location-href">https://html.spec.whatwg.org/multipage/history.html#dom-location-href</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-location-href">1.3. Ongoing navigation tracking</a>
+    <li><a href="#ref-for-dom-location-href①">7.4. Other user agent UI</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-in-parallel">
@@ -3280,6 +3332,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-origin-opaque">1. The AppHistory class</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-document-open">
+   <a href="https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open">https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-document-open">7.2. Navigation monitoring and interception</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-concept-settings-object-origin">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin">https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin</a><b>Referenced in:</b>
    <ul>
@@ -3310,6 +3368,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate">https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-history-pushstate">2.2. The AppHistoryDestination class</a>
+    <li><a href="#ref-for-dom-history-pushstate①">7.3. URL updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-policy-container-referrer-policy">
@@ -3362,6 +3421,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-hh-replace②">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-hh-replace③">5.2. Carrying over the app history key</a>
     <li><a href="#ref-for-hh-replace④">5.4. Tracking the origin member</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-history-replacestate">
+   <a href="https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate">https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-history-replacestate">7.3. URL updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-report-the-exception">
@@ -3448,6 +3513,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-tn-session-history-traversal-queue">1.3. Ongoing navigation tracking</a>
     <li><a href="#ref-for-tn-session-history-traversal-queue①">1.5. Traversing</a>
     <li><a href="#ref-for-tn-session-history-traversal-queue②">4.4. History traversal updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dom-sessionstorage">
+   <a href="https://html.spec.whatwg.org/multipage/webstorage.html#dom-sessionstorage">https://html.spec.whatwg.org/multipage/webstorage.html#dom-sessionstorage</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-sessionstorage">7.1. Cross-site tracking</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-shared-history-push/replace-state-steps">
@@ -4062,6 +4133,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-navigate-fragid">navigate to a fragment</span>
      <li><span class="dfn-paneled" id="term-for-navigation-navigationtype">navigationtype</span>
      <li><span class="dfn-paneled" id="term-for-concept-origin-opaque">opaque origin</span>
+     <li><span class="dfn-paneled" id="term-for-dom-document-open">open(unused1, unused2)</span>
      <li><span class="dfn-paneled" id="term-for-concept-settings-object-origin">origin <small>(for environment settings object)</small></span>
      <li><span class="dfn-paneled" id="term-for-parse-a-url">parse a url</span>
      <li><span class="dfn-paneled" id="term-for-plan-to-navigate">plan to navigate</span>
@@ -4073,6 +4145,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-relevant-settings-object">relevant settings object</span>
      <li><span class="dfn-paneled" id="term-for-hh-reload">reload</span>
      <li><span class="dfn-paneled" id="term-for-hh-replace">replace</span>
+     <li><span class="dfn-paneled" id="term-for-dom-history-replacestate">replaceState(data, unused)</span>
      <li><span class="dfn-paneled" id="term-for-report-the-exception">report an exception</span>
      <li><span class="dfn-paneled" id="term-for-requires-storing-the-policy-container-in-history">requires storing the policy container in history</span>
      <li><span class="dfn-paneled" id="term-for-resulting-url-record">resulting url record</span>
@@ -4084,6 +4157,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-session-history">session history</span>
      <li><span class="dfn-paneled" id="term-for-session-history-entry">session history entry</span>
      <li><span class="dfn-paneled" id="term-for-tn-session-history-traversal-queue">session history traversal queue</span>
+     <li><span class="dfn-paneled" id="term-for-dom-sessionstorage">sessionStorage</span>
      <li><span class="dfn-paneled" id="term-for-shared-history-push/replace-state-steps">shared history push/replace state steps</span>
      <li><span class="dfn-paneled" id="term-for-source-browsing-context">source browsing context</span>
      <li><span class="dfn-paneled" id="term-for-dom-history-state">state</span>
@@ -4510,6 +4584,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-dom-apphistory-entries①">1.1. Introspecting the app history entry list</a>
     <li><a href="#ref-for-dom-apphistory-entries②">1.5. Traversing</a>
     <li><a href="#ref-for-dom-apphistory-entries③">3. App history entries</a>
+    <li><a href="#ref-for-dom-apphistory-entries④">7.1. Cross-site tracking</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-cangoback">
@@ -4869,6 +4944,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-eventdef-apphistory-navigate①⑦">4. Patches to fire the navigate event</a> <a href="#ref-for-eventdef-apphistory-navigate①⑧">(2)</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate①⑨">4.3. Navigation algorithm updates</a> <a href="#ref-for-eventdef-apphistory-navigate②⓪">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate②①">(3)</a>
     <li><a href="#ref-for-eventdef-apphistory-navigate②②">6.1. Canceling navigation and traversals</a> <a href="#ref-for-eventdef-apphistory-navigate②③">(2)</a>
+    <li><a href="#ref-for-eventdef-apphistory-navigate②④">7.2. Navigation monitoring and interception</a> <a href="#ref-for-eventdef-apphistory-navigate②⑤">(2)</a> <a href="#ref-for-eventdef-apphistory-navigate②⑥">(3)</a> <a href="#ref-for-eventdef-apphistory-navigate②⑦">(4)</a> <a href="#ref-for-eventdef-apphistory-navigate②⑧">(5)</a> <a href="#ref-for-eventdef-apphistory-navigate②⑨">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-apphistory-onnavigatesuccess">
@@ -5444,6 +5520,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-session-history-entry-app-history-key⑤">2.3. Firing the event</a>
     <li><a href="#ref-for-session-history-entry-app-history-key⑥">3. App history entries</a>
     <li><a href="#ref-for-session-history-entry-app-history-key⑦">5.2. Carrying over the app history key</a> <a href="#ref-for-session-history-entry-app-history-key⑧">(2)</a>
+    <li><a href="#ref-for-session-history-entry-app-history-key⑨">7.1. Cross-site tracking</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="session-history-entry-app-history-id">
@@ -5451,6 +5528,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-session-history-entry-app-history-id">2.3. Firing the event</a>
     <li><a href="#ref-for-session-history-entry-app-history-id①">3. App history entries</a>
+    <li><a href="#ref-for-session-history-entry-app-history-id②">7.1. Cross-site tracking</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="session-history-entry-app-history-state">
@@ -5462,6 +5540,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-session-history-entry-app-history-state⑤">2.3. Firing the event</a> <a href="#ref-for-session-history-entry-app-history-state⑥">(2)</a> <a href="#ref-for-session-history-entry-app-history-state⑦">(3)</a> <a href="#ref-for-session-history-entry-app-history-state⑧">(4)</a> <a href="#ref-for-session-history-entry-app-history-state⑨">(5)</a>
     <li><a href="#ref-for-session-history-entry-app-history-state①⓪">3. App history entries</a> <a href="#ref-for-session-history-entry-app-history-state①①">(2)</a>
     <li><a href="#ref-for-session-history-entry-app-history-state①②">5.3. Carrying over the app history state</a>
+    <li><a href="#ref-for-session-history-entry-app-history-state①③">7.1. Cross-site tracking</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
