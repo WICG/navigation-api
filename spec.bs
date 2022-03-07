@@ -1778,3 +1778,54 @@ The integration is then as follows:
 * Wherever the spec ends up canceling not-yet-mature navigations for a [=browsing context=] |bc|, we also [=inform app history about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
 
 * When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform app history about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)
+
+<h2 id="security-privacy">Security and privacy considerations</h2>
+
+<div nonnormative>
+
+<h3 id="sp-cross-site-tracking">Cross-site tracking</h3>
+
+This specification does not enable any new cross-site tracking capabilities. This is largely because the {{AppHistory/entries()|appHistory.entries()}} method only returns information about the same-origin, same-frame history entries.
+
+In more detail:
+
+* The storage of [=session history entry/app history state=] in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as existing APIs such as {{WindowSessionStorage/sessionStorage}}.
+* The browser-generated UUIDs stored as [=session history entry/app history ID=] and [=session history entry/app history key=] live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.
+
+<h3 id="sp-navigation-monitoring-interception">Navigation monitoring and interception</h3>
+
+Through the {{AppHistory/navigate}} event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.
+
+Care has been taken to avoid this being dangerous, or giving insight into user behavior that would not otherwise be available to the site. In particular:
+
+* It is not possible to prevent a back/forward navigation, as this could lead to trapping the user on the page. (We would like to make this possible in the future by adding additional security mitigations; see <a href="https://github.com/WICG/app-history/issues/32">#32</a>.)
+
+* Navigations initiated from cross-origin-domain frames do not fire {{AppHistory/navigate}} events. An example would be such a frame calling `window.open(url, name)` with `name` targeting the current frame.
+
+* Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire {{AppHistory/navigate}} events. An example would be the user directly editing the URL bar.
+
+We also have a few more restrictions worth noting, which don't directly address any attack, but reduce the surface area and complexity of the navigation interception feature, which can have indirect security benefits:
+
+* Navigations initiated toward non-[=fetch scheme=] URLs, such as `javascript:` URLs, do not fire {{AppHistory/navigate}} events.
+
+* Navigations initiated on the initial `about:blank` document do not fire {{AppHistory/navigate}} events.
+
+* Navigations initiated by {{Document/open()|document.open()}} do not fire {{AppHistory/navigate}} events.
+
+* Cross-document traversals cannot be intercepted and converted into same-document traversals.
+
+<h3 id="sp-url-updates">URL updates</h3>
+
+This API, like {{History/pushState()|History.replaceState()}} and {{History/replaceState()|history.replaceState()}}, gives the ability to change what is shown in the browser's URL bar. This is part of the navigation interception capability mentioned in the previous section.
+
+This is not dangerous, because it is subject to the same restrictions: namely, the URL can only be changed if the page <a spec="HTML">can have its URL rewritten</a> to the new URL. So in particular no authority-granting components, such as the site or origin, are impacted.
+
+<h3 id="sp-ua-ui">Other user agent UI</h3>
+
+This specification does not add any requirements on how user agents implement their user interfaces. (Even the URL bar updates mentioned in the previous section, are not technically part of the specifcation; the specification only governs the return value of other APIs, like {{Location/href|location.href}}.) This preserves the ability for user agents to protect users through UI changes.
+
+For example, today some user agents take advantage of this flexibility to skip certain history entries when pressing the back button. This can be used to avoid back-trapping by abusive sites, by skipping entries with which the user did not interact and thus allowing the user to escape abusive sites faster.
+
+The app history API preserves all of these freedoms.
+
+</div>

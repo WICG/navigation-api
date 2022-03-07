@@ -1383,7 +1383,7 @@ Security-wise, this feature has been carefully designed to give no new abilities
 
 In particular, note that navigation interception can only update the URL bar to perform single-page app navigations to the same extent as `history.pushState()` does: the destination URL must only differ from the page's current URL in path, query, or fragment components. Thus, the `navigate` event does not allow URL spoofing by updating the URL bar to a cross-origin destination while providing your own origin's content.
 
-See also the [W3C TAG security and privacy questionnaire answers](./security-privacy-questionnaire.md).
+See also the [W3C TAG security and privacy questionnaire answers](./security-privacy-questionnaire.md). We also have a [corresponding specification section](https://wicg.github.io/app-history/#security-privacy), which largely restates the points here but with links to specification concepts instead of explainer sections.
 
 ## Stakeholder feedback
 
@@ -1484,8 +1484,6 @@ Here's a summary table:
 - ❖ = We would like to make these cancelable in the future, after additional implementation and spec work: see [#178](https://github.com/WICG/app-history/issues/178) and [#32](https://github.com/WICG/app-history/issues/32).
 
 See the discussion on [restrictions](#restrictions-on-firing-canceling-and-responding) to understand the reasons why the last few columns are filled out in the way they are.
-
-Note that today it is not possible to intercept or cancel cases where `history.back()` in a subframe or outer frame causes your frame to navigate, but this proposal currently allows that. We may further restrict that per discussions in [#78](https://github.com/WICG/app-history/issues/78).
 
 As a final note, we only fire the `navigate` event when navigating to URLs that have a [fetch scheme](https://fetch.spec.whatwg.org/#fetch-scheme). Notably, this excludes navigations to `javascript:` URLs.
 

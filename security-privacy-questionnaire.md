@@ -70,7 +70,7 @@ Probably no differently. If there are any differences, they will come from exist
 
 **Does this specification have both "Security Considerations" and "Privacy Considerations" sections?**
 
-Not yet, as we're not at the specification stage.
+[Yes](https://wicg.github.io/app-history/#security-privacy).
 
 **Do features in your specification enable downgrading default security characteristics?**
 
