@@ -1,17 +1,17 @@
 <pre class="metadata">
-Title: App History API
-Shortname: app-history
-Repository: WICG/app-history
+Title: Navigation API
+Shortname: navigation-api
+Repository: WICG/navigation-api
 Inline Github Issues: true
 Group: WICG
 Status: CG-DRAFT
 Level: 1
-URL: https://wicg.github.io/app-history/
+URL: https://wicg.github.io/navigation-api/
 Boilerplate: omit conformance, omit feedback-header
 Editor: Domenic Denicola, Google https://www.google.com/, d@domenic.me, https://domenic.me/
-Abstract: The app history API provides a web application-focused way of managing same-origin same-frame history entries and navigations.
-!Participate: <a href="https://github.com/WICG/app-history">GitHub WICG/app-history</a> (<a href="https://github.com/WICG/app-history/issues/new">new issue</a>, <a href="https://github.com/WICG/app-history/issues?state=open">open issues</a>)
-!Commits: <a href="https://github.com/WICG/app-history/commits/main/spec.bs">GitHub spec.bs commits</a>
+Abstract: The navigation API provides a web application-focused way of managing same-origin same-frame history entries and navigations.
+!Participate: <a href="https://github.com/WICG/navigation-api">GitHub WICG/navigation-api</a> (<a href="https://github.com/WICG/navigation-api/issues/new">new issue</a>, <a href="https://github.com/WICG/navigation-api/issues?state=open">open issues</a>)
+!Commits: <a href="https://github.com/WICG/navigation-api/commits/main/spec.bs">GitHub spec.bs commits</a>
 Complain About: accidental-2119 yes, missing-example-ids yes
 Indent: 2
 Default Biblio Status: current
@@ -135,103 +135,103 @@ table {
 
 <script src="https://resources.whatwg.org/file-issue.js" async></script>
 
-<h2 id="global">The {{AppHistory}} class</h2>
+<h2 id="global">The {{Navigation}} class</h2>
 
 <xmp class="idl">
 partial interface Window {
-  readonly attribute AppHistory appHistory;
+  readonly attribute Navigation navigation;
 };
 </xmp>
 
-Each {{Window}} object has an associated <dfn for="Window">app history</dfn>, which is a new {{AppHistory}} instance created alongside the {{Window}}.
+Each {{Window}} object has an associated <dfn for="Window">navigation API</dfn>, which is a new {{Navigation}} instance created alongside the {{Window}}.
 
-The <dfn attribute for="Window">appHistory</dfn> getter steps are to return [=this=]'s [=Window/app history=].
+The <dfn attribute for="Window">navigation</dfn> getter steps are to return [=this=]'s [=Window/navigation API=].
 
 <xmp class="idl">
 [Exposed=Window]
-interface AppHistory : EventTarget {
-  sequence<AppHistoryEntry> entries();
-  readonly attribute AppHistoryEntry? current;
-  undefined updateCurrent(AppHistoryUpdateCurrentOptions options);
-  readonly attribute AppHistoryTransition? transition;
+interface Navigation : EventTarget {
+  sequence<NavigationHistoryEntry> entries();
+  readonly attribute NavigationHistoryEntry? currentEntry;
+  undefined updateCurrentEntry(NavigationUpdateCurrentEntryOptions options);
+  readonly attribute NavigationTransition? transition;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  AppHistoryResult navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  AppHistoryResult reload(optional AppHistoryReloadOptions options = {});
+  NavigationResult navigate(USVString url, optional NavigationNavigateOptions options = {});
+  NavigationResult reload(optional NavigationReloadOptions options = {});
 
-  AppHistoryResult goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
-  AppHistoryResult back(optional AppHistoryNavigationOptions options = {});
-  AppHistoryResult forward(optional AppHistoryNavigationOptions options = {});
+  NavigationResult traverseTo(DOMString key, optional NavigationOptions options = {});
+  NavigationResult back(optional NavigationOptions options = {});
+  NavigationResult forward(optional NavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
-  attribute EventHandler oncurrentchange;
+  attribute EventHandler oncurrententrychange;
 };
 
-dictionary AppHistoryUpdateCurrentOptions {
+dictionary NavigationUpdateCurrentEntryOptions {
   required any state;
 };
 
-dictionary AppHistoryNavigationOptions {
+dictionary NavigationOptions {
   any info;
 };
 
-dictionary AppHistoryNavigateOptions : AppHistoryNavigationOptions {
+dictionary NavigationNavigateOptions : NavigationOptions {
   any state;
   boolean replace = false;
 };
 
-dictionary AppHistoryReloadOptions : AppHistoryNavigationOptions {
+dictionary NavigationReloadOptions : NavigationOptions {
   any state;
 };
 
-dictionary AppHistoryResult {
-  Promise<AppHistoryEntry> committed;
-  Promise<AppHistoryEntry> finished;
+dictionary NavigationResult {
+  Promise<NavigationHistoryEntry> committed;
+  Promise<NavigationHistoryEntry> finished;
 };
 </xmp>
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">entry list</dfn>, a [=list=] of {{AppHistoryEntry}} objects, initially empty.
+Each {{Navigation}} object has an associated <dfn for="Navigation">entry list</dfn>, a [=list=] of {{NavigationHistoryEntry}} objects, initially empty.
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index</dfn>, an integer, initially &minus;1.
+Each {{Navigation}} object has an associated <dfn for="Navigation">current entry index</dfn>, an integer, initially &minus;1.
 
 <div algorithm>
-  An {{AppHistory}} |appHistory| <dfn for="AppHistory">has entries and events disabled</dfn> if the following steps return true:
+  A {{Navigation}} |navigation| <dfn for="Navigation">has entries and events disabled</dfn> if the following steps return true:
 
-  1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
+  1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
 
   1. If |browsingContext| is null, then return true.
 
   1. If |browsingContext| is <a spec="HTML">still on its initial `about:blank` `Document`</a>, then return true.
 
-  1. If |appHistory|'s [=relevant global object=]'s [=associated Document=]'s [=Document/origin=] is [=opaque origin|opaque=], then return true.
+  1. If |navigation|'s [=relevant global object=]'s [=associated Document=]'s [=Document/origin=] is [=opaque origin|opaque=], then return true.
 
   1. Return false.
 </div>
 
 <div algorithm>
-  To <dfn for="AppHistory">update the entries</dfn> for an {{AppHistory}} instance |appHistory|:
+  To <dfn for="Navigation">update the entries</dfn> for a {{Navigation}} instance |navigation|:
 
-  1. If |appHistory| [=AppHistory/has entries and events disabled=], then:
+  1. If |navigation| [=Navigation/has entries and events disabled=], then:
 
-    1. Assert: |appHistory|'s [=AppHistory/entry list=] [=list/is empty=].
+    1. Assert: |navigation|'s [=Navigation/entry list=] [=list/is empty=].
 
     1. Return.
 
-  1. Let |sessionHistory| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=].
+  1. Let |sessionHistory| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=].
 
      <div class="note">
       <p>It is expected that this include session history entries in the entire [=browsing session=], including those in different <a spec="HTML">browsing context groups</a> due to \`<a http-header>`Cross-Origin-Opener-Policy`</a>\`-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept.
 
-      <p>Note that it is OK to expose the data in these entries to the current page through {{AppHistoryEntry}} instances, since any [=session history entry/app history state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{AppHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
+      <p>Note that it is OK to expose the data in these entries to the current page through {{NavigationHistoryEntry}} instances, since any [=session history entry/navigation API state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{NavigationHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
     </div>
 
-  1. Let |appHistorySHEs| be a new empty list.
+  1. Let |navigationAPISHEs| be a new empty list.
 
-  1. Let |oldCurrentAHE| be the [=AppHistory/current entry=] of |appHistory|.
+  1. Let |oldCurrentAHE| be the [=Navigation/current entry=] of |navigation|.
 
   1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
 
@@ -241,13 +241,13 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
     1. Let |she| be |sessionHistory|[|backwardIndex|].
 
-    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/prepend=] |she| to |appHistorySHEs|.
+    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/prepend=] |she| to |navigationAPISHEs|.
 
     1. Otherwise, [=iteration/break=].
 
     1. Set |backwardIndex| to |backwardIndex| &minus; 1.
 
-  1. [=list/Append=] |currentSHE| to |appHistorySHEs|.
+  1. [=list/Append=] |currentSHE| to |navigationAPISHEs|.
 
   1. Let |forwardIndex| be the index of |currentSHE| within |sessionHistory|, plus 1.
 
@@ -255,27 +255,27 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
     1. Let |she| be |sessionHistory|[|forwardIndex|].
 
-    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/append=] |she| to |appHistorySHEs|.
+    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/append=] |she| to |navigationAPISHEs|.
 
     1. Otherwise, [=iteration/break=].
 
     1. Set |forwardIndex| to |forwardIndex| + 1.
 
-  1. Let |newCurrentIndex| be the index of |currentSHE| within |appHistorySHEs|.
+  1. Let |newCurrentIndex| be the index of |currentSHE| within |navigationAPISHEs|.
 
   1. Let |newEntryList| be an empty list.
 
-  1. [=list/For each=] |oldAHE| of |appHistory|'s [=AppHistory/entry list=]:
+  1. [=list/For each=] |oldAHE| of |navigation|'s [=Navigation/entry list=]:
 
-    1. Set |oldAHE|'s [=AppHistoryEntry/index=] to &minus;1.
+    1. Set |oldAHE|'s [=NavigationHistoryEntry/index=] to &minus;1.
 
   1. Let |index| be 0.
 
-  1. Let |disposedAHEs| be a [=list/clone=] of |appHistory|'s [=AppHistory/entry list=].
+  1. Let |disposedAHEs| be a [=list/clone=] of |navigation|'s [=Navigation/entry list=].
 
-  1. [=list/For each=] |she| of |appHistorySHEs|:
+  1. [=list/For each=] |she| of |navigationAPISHEs|:
 
-    1. If |appHistory|'s [=AppHistory/entry list=] [=list/contains=] an {{AppHistoryEntry}} |existingAHE| whose [=AppHistoryEntry/session history entry=] is |she|, then:
+    1. If |navigation|'s [=Navigation/entry list=] [=list/contains=] A {{NavigationHistoryEntry}} |existingAHE| whose [=NavigationHistoryEntry/session history entry=] is |she|, then:
 
       1. [=list/Append=] |existingAHE| to |newEntryList|.
 
@@ -283,92 +283,92 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
     1. Otherwise:
 
-      1. Let |newAHE| be a [=new=] {{AppHistoryEntry}} created in the [=relevant realm=] of |appHistory|.
+      1. Let |newAHE| be a [=new=] {{NavigationHistoryEntry}} created in the [=relevant realm=] of |navigation|.
 
-      1. Set |newAHE|'s [=AppHistoryEntry/session history entry=] to |she|.
+      1. Set |newAHE|'s [=NavigationHistoryEntry/session history entry=] to |she|.
 
       1. [=list/Append=] |newAHE| to |newEntryList|.
 
-    1. Set |newEntryList|[|index|]'s [=AppHistoryEntry/index=] to |index|.
+    1. Set |newEntryList|[|index|]'s [=NavigationHistoryEntry/index=] to |index|.
 
     1. Set |index| to |index| + 1.
 
-  1. Set |appHistory|'s [=AppHistory/entry list=] to |newEntryList|.
+  1. Set |navigation|'s [=Navigation/entry list=] to |newEntryList|.
 
-  1. Set |appHistory|'s [=AppHistory/current index=] to |newCurrentIndex|.
+  1. Set |navigation|'s [=Navigation/current entry index=] to |newCurrentIndex|.
 
-  1. If |appHistory|'s [=AppHistory/ongoing navigation=] is non-null, then [=app history API navigation/notify about the committed-to entry=] given |appHistory|'s [=AppHistory/ongoing navigation=] and the [=AppHistory/current entry=] of |appHistory|.
+  1. If |navigation|'s [=Navigation/ongoing navigation=] is non-null, then [=navigation API method navigation/notify about the committed-to entry=] given |navigation|'s [=Navigation/ongoing navigation=] and the [=Navigation/current entry=] of |navigation|.
 
-     <p class="note">It is important to do this before firing the {{AppHistoryEntry/dispose}} or {{AppHistory/currentchange}} events, since event handlers could start another navigation, or otherwise change the value of |appHistory|'s [=AppHistory/ongoing navigation=].
+     <p class="note">It is important to do this before firing the {{NavigationHistoryEntry/dispose}} or {{Navigation/currententrychange}} events, since event handlers could start another navigation, or otherwise change the value of |navigation|'s [=Navigation/ongoing navigation=].
 
-  1. If |oldCurrentAHE| is not null, then [=fire an event=] named {{AppHistory/currentchange}} at |appHistory| using {{AppHistoryCurrentChangeEvent}}, with its {{AppHistoryCurrentChangeEvent/navigationType}} attribute initialized to TODO and its {{AppHistoryCurrentChangeEvent/from}} initialized to |oldCurrentAHE|.
+  1. If |oldCurrentAHE| is not null, then [=fire an event=] named {{Navigation/currententrychange}} at |navigation| using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to TODO and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |oldCurrentAHE|.
 
   1. [=list/For each=] |disposedAHE| of |disposedAHEs|:
 
-    1. [=Fire an event=] named {{AppHistoryEntry/dispose}} at |disposedAHE|.
+    1. [=Fire an event=] named {{NavigationHistoryEntry/dispose}} at |disposedAHE|.
 </div>
 
 <div algorithm>
-  To <dfn>get the app history index</dfn> of a [=session history entry=] |she| within an {{AppHistory}} |appHistory|:
+  To <dfn>get the navigation API history index</dfn> of a [=session history entry=] |she| within a {{Navigation}} |navigation|:
 
   1. Let |index| be 0.
 
-  1. [=list/For each=] |ahe| of |appHistory|'s [=AppHistory/entry list=]:
+  1. [=list/For each=] |ahe| of |navigation|'s [=Navigation/entry list=]:
 
-    1. If |ahe|'s [=AppHistoryEntry/session history entry=] is equal to |she|, then return |index|.
+    1. If |ahe|'s [=NavigationHistoryEntry/session history entry=] is equal to |she|, then return |index|.
 
     1. Increment |index| by 1.
 
   1. Assert: this step is never reached.
 </div>
 
-<h3 id="entries-api">Introspecting the app history entry list</h3>
+<h3 id="entries-api">Introspecting the navigation API history entry list</h3>
 
 <dl class="domintro non-normative">
-  <dt><code><var ignore>entries</var> = {{Window/appHistory}}.{{AppHistory/entries()|entries}}()</code>
+  <dt><code><var ignore>entries</var> = {{Window/navigation}}.{{Navigation/entries()|entries}}()</code>
   <dd>
-    <p>Returns an array of {{AppHistoryEntry}} instances representing the current app history list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
+    <p>Returns an array of {{NavigationHistoryEntry}} instances representing the current navigation history entry list, i.e. all session history entries for this {{Window}} that are [=same origin=] and contiguous to the current session history entry.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/canGoBack}}</code>
+  <dt><code>{{Window/navigation}}.{{Navigation/canGoBack}}</code>
   <dd>
-    <p>Returns true if the current {{AppHistoryEntry}} is not the first one in the app history entries list.
+    <p>Returns true if the current {{NavigationHistoryEntry}} is not the first one in the navigation history entry list.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/canGoForward}}</code>
+  <dt><code>{{Window/navigation}}.{{Navigation/canGoForward}}</code>
   <dd>
-    <p>Returns true if the current {{AppHistoryEntry}} is not the last one in the app history entries list.
+    <p>Returns true if the current {{NavigationHistoryEntry}} is not the last one in the navigation history entry list.
   </dd>
 </dl>
 
 <div algorithm>
-  The <dfn method for="AppHistory">entries()</dfn> method steps are:
+  The <dfn method for="Navigation">entries()</dfn> method steps are:
 
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return the empty list.
+  1. If [=this=] [=Navigation/has entries and events disabled=], then return the empty list.
 
-  1. Return [=this=]'s [=AppHistory/entries list=].
+  1. Return [=this=]'s [=Navigation/entries list=].
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistory">canGoBack</dfn> getter steps are:
+  The <dfn attribute for="Navigation">canGoBack</dfn> getter steps are:
 
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return false.
+  1. If [=this=] [=Navigation/has entries and events disabled=], then return false.
 
-  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
+  1. Assert: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
 
-  1. If [=this=]'s [=AppHistory/current index=] is 0, then return false.
+  1. If [=this=]'s [=Navigation/current entry index=] is 0, then return false.
 
   1. Return true.
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistory">canGoForward</dfn> getter steps are:
+  The <dfn attribute for="Navigation">canGoForward</dfn> getter steps are:
 
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return false.
+  1. If [=this=] [=Navigation/has entries and events disabled=], then return false.
 
-  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
+  1. Assert: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
 
-  1. If [=this=]'s [=AppHistory/current index=] is equal to [=this=]'s [=AppHistory/entry list=]'s [=list/size=] &minus; 1, then return false.
+  1. If [=this=]'s [=Navigation/current entry index=] is equal to [=this=]'s [=Navigation/entry list=]'s [=list/size=] &minus; 1, then return false.
 
   1. Return true.
 </div>
@@ -377,145 +377,145 @@ Each {{AppHistory}} object has an associated <dfn for="AppHistory">current index
 
 <xmp class="idl">
 [Exposed=Window]
-interface AppHistoryCurrentChangeEvent : Event {
-  constructor(DOMString type, AppHistoryCurrentChangeEventInit eventInit);
+interface NavigationCurrentEntryChangeEvent : Event {
+  constructor(DOMString type, NavigationCurrentEntryChangeEventInit eventInit);
 
-  readonly attribute AppHistoryNavigationType? navigationType;
-  readonly attribute AppHistoryEntry from;
+  readonly attribute NavigationNavigationType? navigationType;
+  readonly attribute NavigationHistoryEntry from;
 };
 
-dictionary AppHistoryCurrentChangeEventInit : EventInit {
-  AppHistoryNavigationType? navigationType = null;
-  required AppHistoryEntry destination;
+dictionary NavigationCurrentEntryChangeEventInit : EventInit {
+  NavigationNavigationType? navigationType = null;
+  required NavigationHistoryEntry destination;
 };
 </xmp>
 
 <dl class="domintro non-normative">
-  <dt><code>{{Window/appHistory}}.{{AppHistory/current}}</code>
+  <dt><code>{{Window/navigation}}.{{Navigation/currentEntry}}</code>
   <dd>
-    <p>The current {{AppHistoryEntry}}.
+    <p>The current {{NavigationHistoryEntry}}.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/updateCurrent()|updateCurrent}}({ {{AppHistoryUpdateCurrentOptions/state}} })</code>
+  <dt><code>{{Window/navigation}}.{{Navigation/updateCurrentEntry()|updateCurrentEntry}}({ {{NavigationUpdateCurrentEntryOptions/state}} })</code>
   <dd>
-    <p>Update the [=session history entry/app history state=] of the current {{AppHistoryEntry}}, without performing a navigation like {{AppHistory/reload()|appHistory.reload()}} would do.
+    <p>Update the [=session history entry/navigation API state=] of the current {{NavigationHistoryEntry}}, without performing a navigation like {{Navigation/reload()|navigation.reload()}} would do.
 
-    <p>This method is best used to capture updates to the page that have already happened, and need to be reflected into the app history state. For cases where the state update is meant to drive a page update, instead use {{AppHistory/navigate()|appHistory.navigate()}} or {{AppHistory/reload()|appHistory.reload()}}.
+    <p>This method is best used to capture updates to the page that have already happened, and need to be reflected into the navigation API state. For cases where the state update is meant to drive a page update, instead use {{Navigation/navigate()|navigation.navigate()}} or {{Navigation/reload()|navigation.reload()}}.
   </dd>
 </dl>
 
 <div algorithm>
-  The <dfn for="AppHistory">current entry</dfn> for an {{AppHistory}} |appHistory| is the result running of the following algorithm:
+  The <dfn for="Navigation">current entry</dfn> for a {{Navigation}} |navigation| is the result running of the following algorithm:
 
-  1. If [=this=] [=AppHistory/has entries and events disabled=], then return null.
+  1. If [=this=] [=Navigation/has entries and events disabled=], then return null.
 
-  1. Assert: [=this=]'s [=AppHistory/current index=] is not &minus;1.
+  1. Assert: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
 
-  1. Return |appHistory|'s [=AppHistory/entry list=][|appHistory|'s [=AppHistory/current index=]].
+  1. Return |navigation|'s [=Navigation/entry list=][|navigation|'s [=Navigation/current entry index=]].
 </div>
 
 <p algorithm>
-  The <dfn attribute for="AppHistory">current</dfn> getter steps are to return the [=AppHistory/current entry=] for [=this=].
+  The <dfn attribute for="Navigation">current</dfn> getter steps are to return the [=Navigation/current entry=] for [=this=].
 </p>
 
 <div algorithm>
-  The <dfn method for="AppHistory">updateCurrent(|options|)</dfn> method steps are:
+  The <dfn method for="Navigation">updateCurrentEntry(|options|)</dfn> method steps are:
 
-  1. Let |current| be the [=AppHistory/current entry=] for [=this=].
+  1. Let |current| be the [=Navigation/current entry=] for [=this=].
 
   1. If |current| is null, then throw an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. Let |serializedState| be [$StructuredSerializeForStorage$](|options|["{{AppHistoryUpdateCurrentOptions/state}}"]), rethrowing any exceptions.
+  1. Let |serializedState| be [$StructuredSerializeForStorage$](|options|["{{NavigationUpdateCurrentEntryOptions/state}}"]), rethrowing any exceptions.
 
-  1. Set |current|'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] to |serializedState|.
+  1. Set |current|'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API state=] to |serializedState|.
 
-  1. [=Fire an event=] named {{AppHistory/currentchange}} at [=this=] using {{AppHistoryCurrentChangeEvent}}, with its {{AppHistoryCurrentChangeEvent/navigationType}} attribute initialized to null and its {{AppHistoryCurrentChangeEvent/from}} initialized to |current|.
+  1. [=Fire an event=] named {{Navigation/currententrychange}} at [=this=] using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to null and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |current|.
 </div>
 
 <h3 id="ongoing-state">Ongoing navigation tracking</h3>
 
 <xmp class="idl">
 [Exposed=Window]
-interface AppHistoryTransition {
-  readonly attribute AppHistoryNavigationType navigationType;
-  readonly attribute AppHistoryEntry from;
+interface NavigationTransition {
+  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationHistoryEntry from;
   readonly attribute Promise<undefined> finished;
 
-  AppHistoryResult rollback(optional AppHistoryNavigationOptions options = {});
+  NavigationResult rollback(optional NavigationOptions options = {});
 };
 </xmp>
 
 <dl class="domintro">
-  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}</code>
+  <dt><code>{{Window/navigation}}.{{Navigation/transition}}</code>
   <dd>
-    <p>An {{AppHistoryTransition}} object representing any ongoing navigation that hasn't yet reached the {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} stage, if one exists, or null if there is no such transition ongoing.
+    <p>A {{NavigationTransition}} object representing any ongoing navigation that hasn't yet reached the {{Navigation/navigatesuccess}} or {{Navigation/navigateerror}} stage, if one exists, or null if there is no such transition ongoing.
 
-    <p>Since {{AppHistory/current|appHistory.current}} (and other properties like {{Location/href|location.href}}) are updated immediately upon navigation, this {{AppHistory/transition|appHistory.transition}} property is useful for determining when such navigations are not yet fully settled, according to any promises passed to {{AppHistoryNavigateEvent/transitionWhile()|event.transitionWhile()}}.
+    <p>Since {{Navigation/currentEntry|navigation.currentEntry}} (and other properties like {{Location/href|location.href}}) are updated immediately upon navigation, this {{Navigation/transition|navigation.transition}} property is useful for determining when such navigations are not yet fully settled, according to any promises passed to {{NavigateEvent/transitionWhile()|event.transitionWhile()}}.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/navigationType}}</code></dt>
+  <dt><code>{{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/navigationType}}</code></dt>
   <dd>
-    <p>One of "{{AppHistoryNavigationType/reload}}", "{{AppHistoryNavigationType/push}}", "{{AppHistoryNavigationType/replace}}", or "{{AppHistoryNavigationType/traverse}}", indicating what type of navigation this transition is for.
+    <p>One of "{{NavigationNavigationType/reload}}", "{{NavigationNavigationType/push}}", "{{NavigationNavigationType/replace}}", or "{{NavigationNavigationType/traverse}}", indicating what type of navigation this transition is for.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/from}}</code></dt>
+  <dt><code>{{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/from}}</code></dt>
   <dd>
-    <p>The {{AppHistoryEntry}} from which the transition is coming. This can be useful to compare against {{AppHistory/current|appHistory.current}}.
+    <p>The {{NavigationHistoryEntry}} from which the transition is coming. This can be useful to compare against {{Navigation/currentEntry|navigation.currentEntry}}.
   </dd>
 
-  <dt><code>{{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/finished}}</code></dt>
+  <dt><code>{{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/finished}}</code></dt>
   <dd>
-    <p>A promise which fulfills at the same time the {{AppHistory/navigatesuccess}} event fires, or rejects at the same time the {{AppHistory/navigateerror}} fires.
+    <p>A promise which fulfills at the same time the {{Navigation/navigatesuccess}} event fires, or rejects at the same time the {{Navigation/navigateerror}} fires.
   </dd>
 
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } = {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}()</code></dt>
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } = {{Window/appHistory}}.{{AppHistory/transition}}.{{AppHistoryTransition/rollback(options)|rollback}}({ {{AppHistoryNavigationOptions/info}} })</code></dt>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/rollback(options)|rollback}}()</code></dt>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/rollback(options)|rollback}}({ {{NavigationOptions/info}} })</code></dt>
   <dd>
     <p>Aborts the ongoing navigation, and immediately performs another navigation which is the logical opposite of the one represented by this transition:
 
-    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/reload}}", it will perform a replace navigation that resets the app history state to that found in the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}.
+    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/reload}}", it will perform a replace navigation that resets the navigation API state to that found in the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}.
 
-    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/push}}", it will traverse to the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}, and then delete the previously-current {{AppHistoryEntry}} from the app history list, so that it cannot be reached with {{AppHistory/forward()|appHistory.forward()}} or the forward button.
+    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/push}}", it will traverse to the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}, and then delete the previously-current {{NavigationHistoryEntry}} from the navigation history entry list, so that it cannot be reached with {{Navigation/forward()|navigation.forward()}} or the forward button.
 
-    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/replace}}", it will perform another replace navigation that resets the URL and app history state to those found in the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}.
+    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/replace}}", it will perform another replace navigation that resets the URL and navigation API state to those found in the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}.
 
-    * If {{AppHistoryTransition/navigationType}} is "{{AppHistoryNavigationType/traverse}}", it will traverse to the {{AppHistoryEntry}} stored in {{AppHistoryTransition/from}}. (This could involve going either forward or backward in the app history list.)
+    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/traverse}}", it will traverse to the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}. (This could involve going either forward or backward in the navigation history entry list.)
 
-    <p>Aborting the ongoing navigation will cause {{AppHistory/navigateerror}} to fire, any {{AppHistoryNavigateEvent/signal|navigateEvent.signal}} instances to fire {{AbortSignal/abort}}, and any relevant promises to reject. This includes {{AppHistoryTransition/finished|appHistory.transition.finished}}.
+    <p>Aborting the ongoing navigation will cause {{Navigation/navigateerror}} to fire, any {{NavigateEvent/signal|navigateEvent.signal}} instances to fire {{AbortSignal/abort}}, and any relevant promises to reject. This includes {{NavigationTransition/finished|navigation.transition.finished}}.
 
-    <p>Then, the rollback navigation described above starts. This will fire a {{AppHistory/navigate}} event, and reset {{AppHistory/transition|appHistory.transition}} to a new {{AppHistoryTransition}} instance. The {{AppHistoryNavigationOptions/info}} option, if provided, will populate the {{AppHistoryNavigateEvent/info}} property of the fired event.
+    <p>Then, the rollback navigation described above starts. This will fire a {{Navigation/navigate}} event, and reset {{Navigation/transition|navigation.transition}} to a new {{NavigationTransition}} instance. The {{NavigationOptions/info}} option, if provided, will populate the {{NavigateEvent/info}} property of the fired event.
 
-    <p>This method can only be called while the transition is still ongoing, i.e. while {{AppHistory/transition|appHistory.transition}} equals this {{AppHistoryTransition}} object. Calling it afterward will cause both returned promises rejected with an "{{InvalidStateError}}" {{DOMException}}.
+    <p>This method can only be called while the transition is still ongoing, i.e. while {{Navigation/transition|navigation.transition}} equals this {{NavigationTransition}} object. Calling it afterward will cause both returned promises rejected with an "{{InvalidStateError}}" {{DOMException}}.
   </dd>
 </dl>
 
-An {{AppHistory}} has a <dfn for="AppHistory">transition</dfn>, which is an {{AppHistoryTransition}} or null.
+A {{Navigation}} has a <dfn for="Navigation">transition</dfn>, which is A {{NavigationTransition}} or null.
 
-The <dfn attribute for="AppHistory">transition</dfn> getter steps are to return [=this=]'s [=AppHistory/transition=].
+The <dfn attribute for="Navigation">transition</dfn> getter steps are to return [=this=]'s [=Navigation/transition=].
 
 <hr>
 
-An {{AppHistoryTransition}} has an associated <dfn for="AppHistoryTransition">navigation type</dfn>, which is an {{AppHistoryNavigationType}}.
+A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">navigation type</dfn>, which is A {{NavigationNavigationType}}.
 
-An {{AppHistoryTransition}} has an associated <dfn for="AppHistoryTransition">from entry</dfn>, which is an {{AppHistoryEntry}}.
+A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">from entry</dfn>, which is A {{NavigationHistoryEntry}}.
 
-An {{AppHistoryTransition}} has an associated <dfn for="AppHistoryTransition">finished promise</dfn>, which is an {{Promise}}.
+A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">finished promise</dfn>, which is an {{Promise}}.
 
-The <dfn attribute for="AppHistoryTransition">navigationType</dfn> getter steps are to return [=this=]'s [=AppHistoryTransition/navigation type=].
+The <dfn attribute for="NavigationTransition">navigationType</dfn> getter steps are to return [=this=]'s [=NavigationTransition/navigation type=].
 
-The <dfn attribute for="AppHistoryTransition">from</dfn> getter steps are to return [=this=]'s [=AppHistoryTransition/from entry=].
+The <dfn attribute for="NavigationTransition">from</dfn> getter steps are to return [=this=]'s [=NavigationTransition/from entry=].
 
-The <dfn attribute for="AppHistoryTransition">finished</dfn> getter steps are to return [=this=]'s [=AppHistoryTransition/finished promise=].
+The <dfn attribute for="NavigationTransition">finished</dfn> getter steps are to return [=this=]'s [=NavigationTransition/finished promise=].
 
 <div algorithm>
-  The <dfn method for="AppHistoryTransition">rollback(|options|)</dfn> method steps are:
+  The <dfn method for="NavigationTransition">rollback(|options|)</dfn> method steps are:
 
   1. TODO use |options|.
 </div>
 
 <hr>
 
-During any given navigation, the {{AppHistory}} object needs to keep track of the following:
+During any given navigation, the {{Navigation}} object needs to keep track of the following:
 
 <table class="data">
   <caption>For all navigations
@@ -526,25 +526,25 @@ During any given navigation, the {{AppHistory}} object needs to keep track of th
       <th>Explanation
   <tbody>
     <tr>
-      <td>The {{AppHistoryNavigateEvent}}
+      <td>The {{NavigateEvent}}
       <td>For the duration of event firing
       <td>So that if the navigation is canceled while the event is firing, we can [=Event/canceled flag|cancel=] the event.
     <tr>
-      <td>The event's {{AppHistoryNavigateEvent/signal}}
-      <td>Until all promises passed to {{AppHistoryNavigateEvent/transitionWhile()}} have settled
+      <td>The event's {{NavigateEvent/signal}}
+      <td>Until all promises passed to {{NavigateEvent/transitionWhile()}} have settled
       <td>So that if the navigation is canceled, we can [=AbortSignal/signal abort=].
     <tr>
-      <td>The {{AppHistoryEntry}} being navigated to
-      <td>From when it is determined, until all promises passed to {{AppHistoryNavigateEvent/transitionWhile()}} have settled
-      <td>So that we know what to [=resolve=] any {{AppHistoryResult/committed}} and {{AppHistoryResult/finished}} promises with.
+      <td>The {{NavigationHistoryEntry}} being navigated to
+      <td>From when it is determined, until all promises passed to {{NavigateEvent/transitionWhile()}} have settled
+      <td>So that we know what to [=resolve=] any {{NavigationResult/committed}} and {{NavigationResult/finished}} promises with.
     <tr>
-      <td>Any {{AppHistoryResult/finished}} {{Promise}} that was returned
-      <td>Until all promises passed to {{AppHistoryNavigateEvent/transitionWhile()}} have settled
+      <td>Any {{NavigationResult/finished}} {{Promise}} that was returned
+      <td>Until all promises passed to {{NavigateEvent/transitionWhile()}} have settled
       <td>So that we can [=resolve=] or [=reject=] it appropriately.
 </table>
 
 <table class="data">
-  <caption>For non-"{{AppHistoryNavigationType/traverse}}" navigations
+  <caption>For non-"{{NavigationNavigationType/traverse}}" navigations
   <thead>
     <tr>
       <th>State
@@ -552,13 +552,13 @@ During any given navigation, the {{AppHistory}} object needs to keep track of th
       <th>Explanation
   <tbody>
     <tr>
-      <td>Any {{AppHistoryNavigateOptions/state}}
+      <td>Any {{NavigationNavigateOptions/state}}
       <td>For the duration of event firing
       <td>So that we can update the current entry's state after the event successfully finishes firing without being canceled.
 </table>
 
 <table class="data">
-  <caption>For "{{AppHistoryNavigationType/traverse}}" navigations
+  <caption>For "{{NavigationNavigationType/traverse}}" navigations
   <thead>
     <tr>
       <th>State
@@ -566,11 +566,11 @@ During any given navigation, the {{AppHistory}} object needs to keep track of th
       <th>Explanation
   <tbody>
     <tr>
-      <td>Any {{AppHistoryNavigationOptions/info}}
-      <td>Until the task is queued to fire the {{AppHistory/navigate}} event
-      <td>So that we can use it to fire the {{AppHistory/navigate}} event after the the trip through the [=traversable navigable/session history traversal queue=].
+      <td>Any {{NavigationOptions/info}}
+      <td>Until the task is queued to fire the {{Navigation/navigate}} event
+      <td>So that we can use it to fire the {{Navigation/navigate}} event after the the trip through the [=traversable navigable/session history traversal queue=].
     <tr>
-      <td>Any {{AppHistoryResult/committed}} {{Promise}} that was returned
+      <td>Any {{NavigationResult/committed}} {{Promise}} that was returned
       <td>Until the [=session history=] is updated (inside that same task)
       <td>So that we can [=resolve=] or [=reject=] it appropriately.
 </table>
@@ -578,52 +578,52 @@ During any given navigation, the {{AppHistory}} object needs to keep track of th
 Furthermore, we need to account for the fact that there might be multiple traversals queued up, e.g. via
 
 <xmp highlight="js">
-const key1 = appHistory.entries()[appHistory.current.index - 1].key;
-const key2 = appHistory.entries()[appHistory.current.index + 1].key;
+const key1 = navigation.entries()[navigation.currentEntry.index - 1].key;
+const key2 = navigation.entries()[navigation.currentEntry.index + 1].key;
 
-appHistory.goTo(key1); // intentionally no await
-appHistory.goTo(key2);
+navigation.traverseTo(key1); // intentionally no await
+navigation.traverseTo(key2);
 </xmp>
 
 And, while non-traversal navigations cannot be queued in the same way since a new non-traversal navigation cancels an old one, we need to keep some state around so that we can properly cancel the old one. That is, given
 
 <xmp highlight="js">
-const p1 = appHistory.navigate(url1).finished;
-const p2 = appHistory.navigate(url2).finished;
+const p1 = navigation.navigate(url1).finished;
+const p2 = navigation.navigate(url2).finished;
 </xmp>
 
-we need to ensure that when navigating to `url2`, we still have the {{Promise}} `p1` around so that we can reject it. We can't just get rid of any ongoing navigation promises the moment the second call to {{AppHistory/navigate()}} happens.
+we need to ensure that when navigating to `url2`, we still have the {{Promise}} `p1` around so that we can reject it. We can't just get rid of any ongoing navigation promises the moment the second call to {{Navigation/navigate()}} happens.
 
-We also need to ensure that, if we start a new navigation, navigations which have gotten as far as firing {{AppHistory/navigate}} events, but not yet as far as firing {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}}, get [=finalized with an aborted navigation error=].
+We also need to ensure that, if we start a new navigation, navigations which have gotten as far as firing {{Navigation/navigate}} events, but not yet as far as firing {{Navigation/navigatesuccess}} or {{Navigation/navigateerror}}, get [=finalized with an aborted navigation error=].
 
 We end up accomplishing all this using the following setup:
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">ongoing navigate event</dfn>, an {{AppHistoryNavigateEvent}} or null, initially null.
+Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigate event</dfn>, A {{NavigateEvent}} or null, initially null.
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">ongoing navigation signal</dfn>, which is an {{AbortSignal}} or null, initially null.
+Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigation signal</dfn>, which is an {{AbortSignal}} or null, initially null.
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">ongoing navigation</dfn>, which is an [=app history API navigation=] or null, initially null.
+Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigation</dfn>, which is a [=navigation API method navigation=] or null, initially null.
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">upcoming non-traverse navigation</dfn>, which is an [=app history API navigation=] or null, initially null.
+Each {{Navigation}} object has an associated <dfn for="Navigation">upcoming non-traverse navigation</dfn>, which is a [=navigation API method navigation=] or null, initially null.
 
-Each {{AppHistory}} object has an associated <dfn for="AppHistory">upcoming traverse navigations</dfn>, which is a [=map=] from strings to [=app history API navigations=], initially empty.
+Each {{Navigation}} object has an associated <dfn for="Navigation">upcoming traverse navigations</dfn>, which is a [=map=] from strings to [=navigation API method navigations=], initially empty.
 
-An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=struct/items=]:
+An <dfn>navigation API method navigation</dfn> is a [=struct=] with the following [=struct/items=]:
 
-* An <dfn for="app history API navigation">app history</dfn>, an {{AppHistory}}
-* A <dfn for="app history API navigation">key</dfn>, a string or null
-* An <dfn for="app history API navigation">info</dfn>, a JavaScript value
-* An <dfn for="app history API navigation">serialized state</dfn>, a [=serialized state=] or null
-* A <dfn for="app history API navigation">committed-to entry</dfn>, an {{AppHistoryEntry}} or null
-* A <dfn for="app history API navigation">committed promise</dfn>, a {{Promise}}
-* A <dfn for="app history API navigation">finished promise</dfn>, a {{Promise}}
+* An <dfn for="navigation API method navigation">navigation object</dfn>, a {{Navigation}}
+* A <dfn for="navigation API method navigation">key</dfn>, a string or null
+* An <dfn for="navigation API method navigation">info</dfn>, a JavaScript value
+* An <dfn for="navigation API method navigation">serialized state</dfn>, a [=serialized state=] or null
+* A <dfn for="navigation API method navigation">committed-to entry</dfn>, A {{NavigationHistoryEntry}} or null
+* A <dfn for="navigation API method navigation">committed promise</dfn>, a {{Promise}}
+* A <dfn for="navigation API method navigation">finished promise</dfn>, a {{Promise}}
 
-<p class="note">We need to store the [=AppHistory/ongoing navigation signal=] separately from the [=app history API navigation=] struct, since it needs to be tracked even for navigations that are not via the app history APIs.
+<p class="note">We need to store the [=Navigation/ongoing navigation signal=] separately from the [=navigation API method navigation=] struct, since it needs to be tracked even for navigations that are not via the navigation API.
 
 <div algorithm>
-  To <dfn for="AppHistory">set the upcoming non-traverse navigation</dfn> given an {{AppHistory}} |appHistory|, a JavaScript value |info|, and a [=serialized state=]-or-null |serializedState|:
+  To <dfn for="Navigation">set the upcoming non-traverse navigation</dfn> given a {{Navigation}} |navigation|, a JavaScript value |info|, and a [=serialized state=]-or-null |serializedState|:
 
-  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |appHistory|'s [=relevant Realm=].
+  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant Realm=].
 
   1. Mark as handled |finishedPromise|. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
 
@@ -634,140 +634,140 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
       * They could be doing multiple synchronous navigations within the same task, in which case all but the last will be aborted (causing their |finishedPromise| to reject). This could be an application bug, but also could just be an emergent feature of disparate parts of the application overriding each others' actions.
 
-      * They might prefer to listen to other transition-failure signals instead of |finishedPromise|, e.g., the {{AppHistory/navigateerror}} event, or the {{AppHistoryTransition/finished|appHistory.transition.finished}} promise.
+      * They might prefer to listen to other transition-failure signals instead of |finishedPromise|, e.g., the {{Navigation/navigateerror}} event, or the {{NavigationTransition/finished|navigation.transition.finished}} promise.
 
       As such, we mark it as handled to ensure that it never triggers {{Window/unhandledrejection}} events.
      </div>
 
-  1. Let |ongoingNavigation| be an [=app history API navigation=] whose [=app history API navigation/app history=] is |appHistory|, [=app history API navigation/key=] is null, [=app history API navigation/info=] is |info|, [=app history API navigation/serialized state=] is |serializedState|, [=app history API navigation/committed-to entry=] is null, [=app history API navigation/committed promise=] is |committedPromise|, and [=app history API navigation/finished promise=] is |finishedPromise|.
+  1. Let |ongoingNavigation| be a [=navigation API method navigation=] whose [=navigation API method navigation/navigation object=] is |navigation|, [=navigation API method navigation/key=] is null, [=navigation API method navigation/info=] is |info|, [=navigation API method navigation/serialized state=] is |serializedState|, [=navigation API method navigation/committed-to entry=] is null, [=navigation API method navigation/committed promise=] is |committedPromise|, and [=navigation API method navigation/finished promise=] is |finishedPromise|.
 
-  1. Assert: |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is null.
+  1. Assert: |navigation|'s [=Navigation/upcoming non-traverse navigation=] is null.
 
-  1. Set |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] to |ongoingNavigation|.
+  1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to |ongoingNavigation|.
 
   1. Return |ongoingNavigation|.
 </div>
 
 <div algorithm>
-  To <dfn for="AppHistory">set an upcoming traverse navigation</dfn> given an {{AppHistory}} |appHistory|, a string |key|, and a JavaScript value |info|:
+  To <dfn for="Navigation">set an upcoming traverse navigation</dfn> given a {{Navigation}} |navigation|, a string |key|, and a JavaScript value |info|:
 
-  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |appHistory|'s [=relevant Realm=].
+  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant Realm=].
 
   1. Mark as handled |finishedPromise|. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
 
      <p class="note">See <a href="#note-finished-promise-mark-as-handled">the previous discussion</a> as to why this is done.</p>
 
-  1. Let |traversal| be an [=app history API navigation=] whose whose [=app history API navigation/app history=] is |appHistory|, [=app history API navigation/key=] is |key|, [=app history API navigation/info=] is |info|, [=app history API navigation/serialized state=] is null, [=app history API navigation/committed-to entry=] is null, [=app history API navigation/committed promise=] is |committedPromise|, and [=app history API navigation/finished promise=] is |finishedPromise|.
+  1. Let |traversal| be a [=navigation API method navigation=] whose whose [=navigation API method navigation/navigation object=] is |navigation|, [=navigation API method navigation/key=] is |key|, [=navigation API method navigation/info=] is |info|, [=navigation API method navigation/serialized state=] is null, [=navigation API method navigation/committed-to entry=] is null, [=navigation API method navigation/committed promise=] is |committedPromise|, and [=navigation API method navigation/finished promise=] is |finishedPromise|.
 
-  1. Set |appHistory|'s [=AppHistory/upcoming traverse navigations=][|key|]  to |traversal|.
+  1. Set |navigation|'s [=Navigation/upcoming traverse navigations=][|key|]  to |traversal|.
 
   1. Return |traversal|.
 </div>
 
 <div algorithm>
-  To <dfn for="AppHistory">promote the upcoming navigation to ongoing</dfn> given an {{AppHistory}} |appHistory| and a string-or-null |destinationKey|:
+  To <dfn for="Navigation">promote the upcoming navigation to ongoing</dfn> given a {{Navigation}} |navigation| and a string-or-null |destinationKey|:
 
-  1. Assert: |appHistory|'s [=AppHistory/ongoing navigation=] is null.
+  1. Assert: |navigation|'s [=Navigation/ongoing navigation=] is null.
 
   1. If |destinationKey| is not null, then:
 
-    1. Assert: |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is null.
+    1. Assert: |navigation|'s [=Navigation/upcoming non-traverse navigation=] is null.
 
-    1. If |appHistory|'s [=AppHistory/upcoming traverse navigations=][|destinationKey|] [=map/exists=], then:
+    1. If |navigation|'s [=Navigation/upcoming traverse navigations=][|destinationKey|] [=map/exists=], then:
 
-      1. Set |appHistory|'s [=AppHistory/ongoing navigation=] to |appHistory|'s [=AppHistory/upcoming traverse navigations=][|destinationKey|].
+      1. Set |navigation|'s [=Navigation/ongoing navigation=] to |navigation|'s [=Navigation/upcoming traverse navigations=][|destinationKey|].
 
-      1. [=map/Remove=] |appHistory|'s [=AppHistory/upcoming traverse navigations=][|destinationKey|].
-
-  1. Otherwise,
-
-    1. Set |appHistory|'s [=AppHistory/ongoing navigation=] to |appHistory|'s [=AppHistory/upcoming non-traverse navigation=].
-
-    1. Set |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] to null.
-</div>
-
-<div algorithm>
-  To <dfn for="app history API navigation">clean up</dfn> an [=app history API navigation=] |navigation|:
-
-  1. Let |appHistory| be |navigation|'s [=app history API navigation/app history=].
-
-  1. If |appHistory|'s [=AppHistory/ongoing navigation=] is |navigation|, then set |appHistory|'s [=AppHistory/ongoing navigation=] to null.
+      1. [=map/Remove=] |navigation|'s [=Navigation/upcoming traverse navigations=][|destinationKey|].
 
   1. Otherwise,
 
-    1. Assert: |navigation|'s [=app history API navigation/key=] is not null.
+    1. Set |navigation|'s [=Navigation/ongoing navigation=] to |navigation|'s [=Navigation/upcoming non-traverse navigation=].
 
-    1. Assert: |appHistory|'s [=AppHistory/upcoming traverse navigations=][|navigation|'s [=app history API navigation/key=]] [=map/exists=].
-
-    1. [=map/Remove=] |appHistory|'s [=AppHistory/upcoming traverse navigations=][|navigation|'s [=app history API navigation/key=]].
+    1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to null.
 </div>
 
 <div algorithm>
-  To <dfn for="app history API navigation">notify about the committed-to entry</dfn> given an [=app history API navigation=] |navigation| and an {{AppHistoryEntry}} |entry|:
+  To <dfn for="navigation API method navigation">clean up</dfn> a [=navigation API method navigation=] |navigation|:
 
-  1. Set |navigation|'s [=app history API navigation/committed-to entry=] to |entry|.
+  1. Let |navigation| be |navigation|'s [=navigation API method navigation/navigation object=].
 
-  1. [=Resolve=] |navigation|'s [=app history API navigation/committed promise=] with |entry|.
+  1. If |navigation|'s [=Navigation/ongoing navigation=] is |navigation|, then set |navigation|'s [=Navigation/ongoing navigation=] to null.
 
-     <p class="note">After this point, |navigation|'s [=app history API navigation/committed promise=] is only needed in cases where it has not yet been returned to author code. Implementations might want to clear it out to avoid keeping it alive for the lifetime of the [=app history API navigation=].
+  1. Otherwise,
+
+    1. Assert: |navigation|'s [=navigation API method navigation/key=] is not null.
+
+    1. Assert: |navigation|'s [=Navigation/upcoming traverse navigations=][|navigation|'s [=navigation API method navigation/key=]] [=map/exists=].
+
+    1. [=map/Remove=] |navigation|'s [=Navigation/upcoming traverse navigations=][|navigation|'s [=navigation API method navigation/key=]].
 </div>
 
 <div algorithm>
-  To <dfn for="app history API navigation">resolve the finished promise</dfn> for an [=app history API navigation=] |navigation|:
+  To <dfn for="navigation API method navigation">notify about the committed-to entry</dfn> given a [=navigation API method navigation=] |navigation| and A {{NavigationHistoryEntry}} |entry|:
 
-  1. If |navigation|'s [=app history API navigation/finished promise=] is null, then return.
+  1. Set |navigation|'s [=navigation API method navigation/committed-to entry=] to |entry|.
 
-  1. [=Resolve=] |navigation|'s [=app history API navigation/finished promise=] with its [=app history API navigation/committed-to entry=].
+  1. [=Resolve=] |navigation|'s [=navigation API method navigation/committed promise=] with |entry|.
 
-  1. [=app history API navigation/Clean up=] |navigation|.
+     <p class="note">After this point, |navigation|'s [=navigation API method navigation/committed promise=] is only needed in cases where it has not yet been returned to author code. Implementations might want to clear it out to avoid keeping it alive for the lifetime of the [=navigation API method navigation=].
 </div>
 
 <div algorithm>
-  To <dfn for="app history API navigation">reject the finished promise</dfn> for an [=app history API navigation=] |navigation| with a JavaScript value |exception|:
+  To <dfn for="navigation API method navigation">resolve the finished promise</dfn> for a [=navigation API method navigation=] |navigation|:
 
-  1. If |navigation|'s [=app history API navigation/finished promise=] is null, then return.
+  1. If |navigation|'s [=navigation API method navigation/finished promise=] is null, then return.
 
-  1. [=Reject=] |navigation|'s [=app history API navigation/finished promise=] with |exception|.
+  1. [=Resolve=] |navigation|'s [=navigation API method navigation/finished promise=] with its [=navigation API method navigation/committed-to entry=].
 
-  1. If |navigation|'s [=app history API navigation/committed promise=] is not null, then [=reject=] |navigation|'s [=app history API navigation/committed promise=] with |exception|.
+  1. [=navigation API method navigation/Clean up=] |navigation|.
+</div>
 
-  1. [=app history API navigation/Clean up=] |navigation|.
+<div algorithm>
+  To <dfn for="navigation API method navigation">reject the finished promise</dfn> for a [=navigation API method navigation=] |navigation| with a JavaScript value |exception|:
+
+  1. If |navigation|'s [=navigation API method navigation/finished promise=] is null, then return.
+
+  1. [=Reject=] |navigation|'s [=navigation API method navigation/finished promise=] with |exception|.
+
+  1. If |navigation|'s [=navigation API method navigation/committed promise=] is not null, then [=reject=] |navigation|'s [=navigation API method navigation/committed promise=] with |exception|.
+
+  1. [=navigation API method navigation/Clean up=] |navigation|.
 </div>
 
 <h3 id="global-navigate">Navigating</h3>
 
 <dl class="domintro non-normative">
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } = {{Window/appHistory}}.{{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>)</code>
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } = {{Window/appHistory}}.{{AppHistory/navigate(url, options)|navigate}}(<var ignore>url</var>, <var ignore>options</var>)</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/navigate(url, options)|navigate}}(<var ignore>url</var>)</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/navigate(url, options)|navigate}}(<var ignore>url</var>, <var ignore>options</var>)</code>
   <dd>
     <p>Navigates the current page to the given <var ignore>url</var>. <var ignore>options</var> can contain the following values:
 
-    * {{AppHistoryNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one.
-    * {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
-    * {{AppHistoryNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{AppHistoryEntry/getState()|appHistory.current.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
+    * {{NavigationNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one.
+    * {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
+    * {{NavigationNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{NavigationHistoryEntry/getState()|navigation.currentEntry.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
-    <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/transitionWhile()}} method can be used to convert it into a same-document navigation.
+    <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method can be used to convert it into a same-document navigation.
 
     <p>The returned promises will behave as follows:
 
     * For navigations that get aborted, both promises will reject with an "{{AbortError}}" {{DOMException}}.
-    * For same-document navigations created by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/transitionWhile()}} method, {{AppHistoryResult/committed}} will fulfill immediately, and {{AppHistoryResult/finished}} will fulfill or reject according to the promises passed to {{AppHistoryNavigateEvent/transitionWhile()}}.
+    * For same-document navigations created by using the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method, {{NavigationResult/committed}} will fulfill immediately, and {{NavigationResult/finished}} will fulfill or reject according to the promises passed to {{NavigateEvent/transitionWhile()}}.
     * For other same-document navigations (e.g., non-intercepted <a spec="HTML" lt="navigate to a fragment">fragment navigations</a>), both promises will fulfill immediately.
     * For cross-document navigations, both promises will never settle.
 
-    <p>In all cases, when the returned promises fulfill, it will be with the {{AppHistoryEntry}} that was navigated to.
+    <p>In all cases, when the returned promises fulfill, it will be with the {{NavigationHistoryEntry}} that was navigated to.
   </dd>
 
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } = {{Window/appHistory}}.{{AppHistory/reload(options)|reload}}(<var ignore>options</var>)</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/reload(options)|reload}}(<var ignore>options</var>)</code>
   <dd>
-    <p>Reloads the current page. The {{AppHistoryNavigationOptions/info}} and {{AppHistoryReloadOptions/state}} options behave as described above.
+    <p>Reloads the current page. The {{NavigationOptions/info}} and {{NavigationReloadOptions/state}} options behave as described above.
 
-    <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/transitionWhile()}} method. Doing so will mean this call only updates state or passes along the appropriate {{AppHistoryNavigationOptions/info}}, plus performing whatever actions the {{AppHistory/navigate}} event handler sees fit to carry out.
+    <p>The default behavior of performing a from-network-or-cache reload of the current page can be overriden by using the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method. Doing so will mean this call only updates state or passes along the appropriate {{NavigationOptions/info}}, plus performing whatever actions the {{Navigation/navigate}} event handler sees fit to carry out.
 
     <p>The returned promises will behave as follows:
 
     * If the reload is aborted, both promises will reject with an "{{AbortError}}" {{DOMException}}.
-    * If the reload is intercepted by using the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/transitionWhile()}} method, {{AppHistoryResult/committed}} will fulfill immediately, and {{AppHistoryResult/finished}} will fulfill or reject according to the promises passed to {{AppHistoryNavigateEvent/transitionWhile()}}.
+    * If the reload is intercepted by using the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method, {{NavigationResult/committed}} will fulfill immediately, and {{NavigationResult/finished}} will fulfill or reject according to the promises passed to {{NavigateEvent/transitionWhile()}}.
     * Otherwise, both promises will never settle.
   </dd>
 </dl>
@@ -775,7 +775,7 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 <!-- The following algorithms have several steps that would benefit from https://github.com/heycam/webidl/issues/983. -->
 
 <div algorithm>
-  The <dfn method for="AppHistory">navigate(|url|, |options|)</dfn> method steps are:
+  The <dfn method for="Navigation">navigate(|url|, |options|)</dfn> method steps are:
 
   1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=an early error result=] for a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
@@ -785,17 +785,17 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |serializedState| be null.
 
-  1. If |options|["{{AppHistoryNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryNavigateOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
+  1. If |options|["{{NavigationNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{NavigationNavigateOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
 
-  1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it exists; otherwise, undefined.
+  1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
-  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{AppHistoryNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
+  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{NavigationNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
 
-  1. Return the result of [=performing a non-traverse app history navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and |historyHandling|.
+  1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and |historyHandling|.
 </div>
 
 <div algorithm>
-  The <dfn method for="AppHistory">reload(|options|)</dfn> method steps are:
+  The <dfn method for="Navigation">reload(|options|)</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
@@ -805,160 +805,160 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
   1. Let |serializedState| be null.
 
-  1. If |options|["{{AppHistoryReloadOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{AppHistoryReloadOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
+  1. If |options|["{{NavigationReloadOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{NavigationReloadOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
 
   1. Otherwise,
 
-    1. Let |current| be the [=AppHistory/current entry=] of [=this=].
+    1. Let |current| be the [=Navigation/current entry=] of [=this=].
 
-    1. If |current| is not null, then set |serializedState| to |current|'s [=session history entry/app history state=].
+    1. If |current| is not null, then set |serializedState| to |current|'s [=session history entry/navigation API state=].
 
-  1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it exists; otherwise, undefined.
+  1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
-  1. Return the result of [=performing a non-traverse app history navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and "<a for="history handling behavior">`reload`</a>".
+  1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and "<a for="history handling behavior">`reload`</a>".
 </div>
 
 <div algorithm>
-  To <dfn>perform a non-traverse app history navigation</dfn> given an {{AppHistory}} object |appHistory|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
+  To <dfn>perform a non-traverse navigation API navigation</dfn> given a {{Navigation}} object |navigation|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
 
-  1. Let |browsingContext| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
+  1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
 
   1. [=Assert=]: |browsingContext| is not null.
 
   1. Assert: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
 
-  1. Let |ongoingNavigation| be the result of [=AppHistory/setting the upcoming non-traverse navigation=] for |appHistory| given |info| and |serializedState|.
+  1. Let |ongoingNavigation| be the result of [=Navigation/setting the upcoming non-traverse navigation=] for |navigation| given |info| and |serializedState|.
 
-  1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/appHistoryState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+  1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/navigationAPIState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
 
-  1. If |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] is |ongoingNavigation|, then:
+  1. If |navigation|'s [=Navigation/upcoming non-traverse navigation=] is |ongoingNavigation|, then:
 
-    <p class="note">This means the <a spec="HTML">navigate</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=AppHistory/promote the upcoming navigation to ongoing=].
+    <p class="note">This means the <a spec="HTML">navigate</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=Navigation/promote the upcoming navigation to ongoing=].
 
-    1. Set |appHistory|'s [=AppHistory/upcoming non-traverse navigation=] to null.
+    1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to null.
 
     1. Return [=an early error result=] for an "{{AbortError}}" {{DOMException}}.
 
-  1. If |ongoingNavigation|'s [=app history API navigation/serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/app history state=] to |ongoingNavigation|'s [=app history API navigation/serialized state=].
+  1. If |ongoingNavigation|'s [=navigation API method navigation/serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/navigation API state=] to |ongoingNavigation|'s [=navigation API method navigation/serialized state=].
 
-     <p class="note">At this point |ongoingNavigation|'s [=app history API navigation/serialized state=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=app history API navigation=].
+     <p class="note">At this point |ongoingNavigation|'s [=navigation API method navigation/serialized state=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=navigation API method navigation=].
 
-  1. Return «[ "{{AppHistoryResult/committed}}" → |ongoingNavigation|'s [=app history API navigation/committed promise=], "{{AppHistoryResult/finished}}" → |ongoingNavigation|'s [=app history API navigation/finished promise=] ]».
+  1. Return «[ "{{NavigationResult/committed}}" → |ongoingNavigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |ongoingNavigation|'s [=navigation API method navigation/finished promise=] ]».
 </div>
 
-<p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{AppHistory/navigate()|appHistory.navigate()}} and {{AppHistory/reload()|appHistory.reload()}} can only be accessed by code with direct synchronous access to the {{Window/appHistory}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{AppHistory}} object itself.
+<p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{Navigation/navigate()|navigation.navigate()}} and {{Navigation/reload()|navigation.reload()}} can only be accessed by code with direct synchronous access to the {{Window/navigation}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{Navigation}} object itself.
 
 <p algorithm>
-  An <dfn>an early error result</dfn> for an exception |e| is a dictionary instance given by  «[ "{{AppHistoryResult/committed}}" → [=a promise rejected with=] |e|, "{{AppHistoryResult/finished}}" → [=a promise rejected with=] |e| ]».
+  An <dfn>an early error result</dfn> for an exception |e| is a dictionary instance given by  «[ "{{NavigationResult/committed}}" → [=a promise rejected with=] |e|, "{{NavigationResult/finished}}" → [=a promise rejected with=] |e| ]».
 </p>
 
 <h3 id="global-traversing">Traversing</h3>
 
 <dl class="domintro non-normative">
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } =  {{Window/appHistory}}.{{AppHistory/goTo(key)|goTo}}(<var ignore>key</var>)</code>
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } =  {{Window/appHistory}}.{{AppHistory/goTo(key, options)|goTo}}(<var ignore>key</var>, { {{AppHistoryNavigationOptions/info}} })</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/traverseTo(key)|traverseTo}}(<var ignore>key</var>)</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/traverseTo(key, options)|traverseTo}}(<var ignore>key</var>, { {{NavigationOptions/info}} })</code>
   <dd>
-    <p>Traverses the <a spec=HTML>joint session history</a> to the closest joint session history entry that matches the {{AppHistoryEntry}} with the given key. {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    <p>Traverses the <a spec=HTML>joint session history</a> to the closest joint session history entry that matches the {{NavigationHistoryEntry}} with the given key. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{AppHistoryNavigationOptions/info}} will be ignored.
+    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
 
     <p>The returned promises will behave as follows:
 
-    * If there is no {{AppHistoryEntry}} in {{AppHistory/entries|appHistory.entries}} with the given key, both will reject with an "{{InvalidStateError}}" {{DOMException}}.
-    * For same-document traversals intercepted by the {{AppHistory/navigate}} event's {{AppHistoryNavigateEvent/transitionWhile()}} method, {{AppHistoryResult/committed}} will fulfill as soon as the traversal is processed and {{AppHistory/current|appHistory.current}} is updated, and {{AppHistoryResult/finished}} will fulfill or reject according to the promises passed to {{AppHistoryNavigateEvent/transitionWhile()}}.
-    * For non-intercepted same-document traversals, both promises will fulfill as soon as the traversal is processed and {{AppHistory/current|appHistory.current}} is updated
+    * If there is no {{NavigationHistoryEntry}} in {{Navigation/entries|navigation.entries}} with the given key, both will reject with an "{{InvalidStateError}}" {{DOMException}}.
+    * For same-document traversals intercepted by the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method, {{NavigationResult/committed}} will fulfill as soon as the traversal is processed and {{Navigation/currentEntry|navigation.currentEntry}} is updated, and {{NavigationResult/finished}} will fulfill or reject according to the promises passed to {{NavigateEvent/transitionWhile()}}.
+    * For non-intercepted same-document traversals, both promises will fulfill as soon as the traversal is processed and {{Navigation/currentEntry|navigation.currentEntry}} is updated
     * For cross-document traversals, both promises will never settle.
   </dd>
 
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } =  {{Window/appHistory}}.{{AppHistory/back()|back}}()</code>
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } =  {{Window/appHistory}}.{{AppHistory/back(options)|back}}({ {{AppHistoryNavigationOptions/info}} })</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/back()|back}}()</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/back(options)|back}}({ {{NavigationOptions/info}} })</code>
   <dd>
-    <p>Traverse the <a spec=HTML>joint session history</a> to the closest previous joint session history entry which results in this frame navigating, i.e. results in {{AppHistory/current|appHistory.current}} updating. {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    <p>Traverse the <a spec=HTML>joint session history</a> to the closest previous joint session history entry which results in this frame navigating, i.e. results in {{Navigation/currentEntry|navigation.currentEntry}} updating. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{AppHistoryNavigationOptions/info}} will be ignored.
+    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
 
-    <p>The returned promises behave equivalently to those returned by {{AppHistory/goTo()}}.
+    <p>The returned promises behave equivalently to those returned by {{Navigation/traverseTo()}}.
   </dd>
 
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } =  {{Window/appHistory}}.{{AppHistory/forward()|forward}}()</code>
-  <dt><code>{ {{AppHistoryResult/committed}}, {{AppHistoryResult/finished}} } =  {{Window/appHistory}}.{{AppHistory/forward(options)|forward}}({ {{AppHistoryNavigationOptions/info}} })</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/forward()|forward}}()</code>
+  <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/forward(options)|forward}}({ {{NavigationOptions/info}} })</code>
   <dd>
-    <p>Traverse the <a spec=HTML>joint session history</a> to the closest forward joint session history entry which results in this frame navigating, i.e. results in {{AppHistory/current|appHistory.current}} updating. {{AppHistoryNavigationOptions/info}} can be set to any value; it will populate the {{AppHistoryNavigateEvent/info}} property of the corresponding {{AppHistory/navigate}} event.
+    <p>Traverse the <a spec=HTML>joint session history</a> to the closest forward joint session history entry which results in this frame navigating, i.e. results in {{Navigation/currentEntry|navigation.currentEntry}} updating. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{AppHistoryNavigationOptions/info}} will be ignored.
+    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
 
-    <p>The returned promises behave equivalently to those returned by {{AppHistory/goTo()}}.
+    <p>The returned promises behave equivalently to those returned by {{Navigation/traverseTo()}}.
   </dd>
 </dl>
 
 <div algorithm>
-  The <dfn method for="AppHistory">goTo(|key|, |options|)</dfn> method steps are:
+  The <dfn method for="Navigation">traverseTo(|key|, |options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=AppHistory/current index=] is &minus;1, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=Navigation/current entry index=] is &minus;1, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. If [=this=]'s [=AppHistory/entry list=] does not contain any {{AppHistoryEntry}} whose [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=] equals |key|, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=Navigation/entry list=] does not contain any {{NavigationHistoryEntry}} whose [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=] equals |key|, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. Return the result of [=performing an app history traversal=] given [=this=], |key|, and |options|.
+  1. Return the result of [=performing a navigation API traversal=] given [=this=], |key|, and |options|.
 </div>
 
 <div algorithm>
-  The <dfn method for="AppHistory">back(|options|)</dfn> method steps are:
+  The <dfn method for="Navigation">back(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=AppHistory/current index=] is &minus;1 or 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=Navigation/current entry index=] is &minus;1 or 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. Let |key| be [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=] &minus; 1]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=].
+  1. Let |key| be [=this=]'s [=Navigation/entry list=][[=this=]'s [=Navigation/current entry index=] &minus; 1]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=].
 
-  1. Return the result of [=performing an app history traversal=] given [=this=], |key|, and |options|.
+  1. Return the result of [=performing a navigation API traversal=] given [=this=], |key|, and |options|.
 </div>
 
 <div algorithm>
-  The <dfn method for="AppHistory">forward(|options|)</dfn> method steps are:
+  The <dfn method for="Navigation">forward(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=AppHistory/current index=] is &minus;1 or is equal to [=this=]'s [=AppHistory/entry list=]'s [=list/size=] &minus; 1, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=Navigation/current entry index=] is &minus;1 or is equal to [=this=]'s [=Navigation/entry list=]'s [=list/size=] &minus; 1, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. Let |key| be [=this=]'s [=AppHistory/entry list=][[=this=]'s [=AppHistory/current index=] + 1]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=].
+  1. Let |key| be [=this=]'s [=Navigation/entry list=][[=this=]'s [=Navigation/current entry index=] + 1]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=].
 
-  1. Return the result of [=performing an app history traversal=] given [=this=], |key|, and |options|.
+  1. Return the result of [=performing a navigation API traversal=] given [=this=], |key|, and |options|.
 </div>
 
 <div algorithm>
   <p class="advisement">The following algorithm is specified in terms of the <a href="https://github.com/whatwg/html/pull/6315">session history rewrite pull request</a> against the HTML Standard, because the existing session history traversal infrastructure is broken enough that it's hard to build on. It is expected to track that work as it continues.</p>
 
-  To <dfn>perform an app history traversal</dfn> given an {{AppHistory}} object |appHistory|, a string |key|, and an {{AppHistoryNavigationOptions}} |options|:
+  To <dfn>perform a navigation API traversal</dfn> given a {{Navigation}} object |navigation|, a string |key|, and A {{NavigationOptions}} |options|:
 
-  1. If |appHistory|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If |navigation|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. If |appHistory|'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If |navigation|'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-  1. If |appHistory|'s [=AppHistory/current entry=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=] equals |key|, then return «[ "{{AppHistoryResult/committed}}" → [=a promise resolved with=] |appHistory|'s [=AppHistory/current entry=], "{{AppHistoryResult/finished}}" → [=a promise resolved with=] |appHistory|'s [=AppHistory/current entry=] ]»
+  1. If |navigation|'s [=Navigation/current entry=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=] equals |key|, then return «[ "{{NavigationResult/committed}}" → [=a promise resolved with=] |navigation|'s [=Navigation/current entry=], "{{NavigationResult/finished}}" → [=a promise resolved with=] |navigation|'s [=Navigation/current entry=] ]»
 
-  1. If |appHistory|'s [=AppHistory/upcoming traverse navigations=][|key|] [=map/exists=], then:
+  1. If |navigation|'s [=Navigation/upcoming traverse navigations=][|key|] [=map/exists=], then:
 
-    1. Let |navigation| be |appHistory|'s [=AppHistory/upcoming traverse navigations=][|key|].
+    1. Let |navigation| be |navigation|'s [=Navigation/upcoming traverse navigations=][|key|].
 
-    1. Return «[ "{{AppHistoryResult/committed}}" → |navigation|'s [=app history API navigation/committed promise=], "{{AppHistoryResult/finished}}" → |navigation|'s [=app history API navigation/finished promise=] ]».
+    1. Return «[ "{{NavigationResult/committed}}" → |navigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |navigation|'s [=navigation API method navigation/finished promise=] ]».
 
-  1. Let |navigable| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=]'s [=browsing context/containing navigable=].
+  1. Let |navigable| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=]'s [=browsing context/containing navigable=].
 
   1. Let |traversable| be |navigable|'s [=navigable/traversable navigable=].
 
-  1. Let |initiatorBC| be |appHistory|'s [=relevant global object=]'s [=Window/browsing context=].
+  1. Let |initiatorBC| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
 
-  1. Let |info| be |options|["{{AppHistoryNavigationOptions/info}}"] if it [=map/exists=], or undefined otherwise.
+  1. Let |info| be |options|["{{NavigationOptions/info}}"] if it [=map/exists=], or undefined otherwise.
 
-  1. Let |ongoingNavigation| be the result of [=AppHistory/setting an upcoming traverse navigation=] for |appHistory| given |key| and |info|.
+  1. Let |ongoingNavigation| be the result of [=Navigation/setting an upcoming traverse navigation=] for |navigation| given |key| and |info|.
 
   1. [=parallel queue/Enqueue the following steps=] on |traversable|'s [=traversable navigable/session history traversal queue=]:
 
     1. Let |navigableEntries| be the result of [=navigable/getting the session history entries=] given |navigable|.
 
-    1. Let |targetEntry| be the [=session history entry=] in |navigableEntries| whose [=session history entry/app history key=] equals |key|. If no such entry exists, then:
+    1. Let |targetEntry| be the [=session history entry=] in |navigableEntries| whose [=session history entry/navigation API key=] equals |key|. If no such entry exists, then:
 
-      1. [=app history API navigation/Reject the finished promise=] for |ongoingNavigation| with an "{{InvalidStateError}}" {{DOMException}}.
+      1. [=navigation API method navigation/Reject the finished promise=] for |ongoingNavigation| with an "{{InvalidStateError}}" {{DOMException}}.
 
       1. Abort these steps.
 
-      <p class="note">This can occur if the |appHistory| object's view of session history is outdated, which can happen for brief periods while all the relevant threads and processes are being synchronized in reaction to a history change (such as the user clearing their history).
+      <p class="note">This can occur if the |navigation| object's view of session history is outdated, which can happen for brief periods while all the relevant threads and processes are being synchronized in reaction to a history change (such as the user clearing their history).
 
     1. If |targetEntry| is |navigable|'s [=navigable/active session history entry=], then abort these steps.
 
@@ -978,18 +978,18 @@ An <dfn>app history API navigation</dfn> is a [=struct=] with the following [=st
 
     1. [=Apply the history step=] |targetStep| to |traversable|, with true, |initiatorBC|, and "<code>[=user navigation involvement/none=]</code>".
 
-      - If this aborts due to user-canceled unloading or due to the {{AppHistory/navigate}} event being canceled, then [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
+      - If this aborts due to user-canceled unloading or due to the {{Navigation/navigate}} event being canceled, then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
 
-      - If this aborts due to the initiator allowed-to-navigate check, then [=finalize with an aborted navigation error=] given |appHistory|, |ongoingNavigation|, and a [=new=] "{{SecurityError}}" {{DOMException}} created in |appHistory|'s [=relevant Realm=].
+      - If this aborts due to the initiator allowed-to-navigate check, then [=finalize with an aborted navigation error=] given |navigation|, |ongoingNavigation|, and a [=new=] "{{SecurityError}}" {{DOMException}} created in |navigation|'s [=relevant Realm=].
 
       <p class="advisement">Eventually [=apply the history step=] will have well-specified hooks for communicating these conditions back to its caller.</p>
 
-  1. Return «[ "{{AppHistoryResult/committed}}" → |ongoingNavigation|'s [=app history API navigation/committed promise=], "{{AppHistoryResult/finished}}" → |ongoingNavigation|'s [=app history API navigation/finished promise=] ]».
+  1. Return «[ "{{NavigationResult/committed}}" → |ongoingNavigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |ongoingNavigation|'s [=navigation API method navigation/finished promise=] ]».
 </div>
 
 <h3 id="global-events">Event handlers</h3>
 
-The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistory}} interface:
+The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{Navigation}} interface:
 
 <table>
   <thead>
@@ -997,30 +997,30 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     <th>[=Event handler event type=]
   <tbody>
     <tr>
-      <td><dfn attribute for="AppHistory">onnavigate</dfn>
-      <td><dfn event for="AppHistory">navigate</dfn>
+      <td><dfn attribute for="Navigation">onnavigate</dfn>
+      <td><dfn event for="Navigation">navigate</dfn>
     <tr>
-      <td><dfn attribute for="AppHistory">onnavigatesuccess</dfn>
-      <td><dfn event for="AppHistory">navigatesuccess</dfn>
+      <td><dfn attribute for="Navigation">onnavigatesuccess</dfn>
+      <td><dfn event for="Navigation">navigatesuccess</dfn>
     <tr>
-      <td><dfn attribute for="AppHistory">onnavigateerror</dfn>
-      <td><dfn event for="AppHistory">navigateerror</dfn>
+      <td><dfn attribute for="Navigation">onnavigateerror</dfn>
+      <td><dfn event for="Navigation">navigateerror</dfn>
     <tr>
-      <td><dfn attribute for="AppHistory">oncurrentchange</dfn>
-      <td><dfn event for="AppHistory">currentchange</dfn>
+      <td><dfn attribute for="Navigation">oncurrententrychange</dfn>
+      <td><dfn event for="Navigation">currententrychange</dfn>
 </table>
 
-<h2 id="navigate-event">The {{AppHistory/navigate}} event</h2>
+<h2 id="navigate-event">The {{Navigation/navigate}} event</h2>
 
-<h3 id="navigate-event-class">The {{AppHistoryNavigateEvent}} class</h3>
+<h3 id="navigate-event-class">The {{NavigateEvent}} class</h3>
 
 <xmp class="idl">
 [Exposed=Window]
-interface AppHistoryNavigateEvent : Event {
-  constructor(DOMString type, AppHistoryNavigateEventInit eventInit);
+interface NavigateEvent : Event {
+  constructor(DOMString type, NavigateEventInit eventInit);
 
-  readonly attribute AppHistoryNavigationType navigationType;
-  readonly attribute AppHistoryDestination destination;
+  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationDestination destination;
   readonly attribute boolean canTransition;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
@@ -1031,9 +1031,9 @@ interface AppHistoryNavigateEvent : Event {
   undefined transitionWhile(Promise<undefined> newNavigationAction);
 };
 
-dictionary AppHistoryNavigateEventInit : EventInit {
-  AppHistoryNavigationType navigationType = "push";
-  required AppHistoryDestination destination;
+dictionary NavigateEventInit : EventInit {
+  NavigationNavigationType navigationType = "push";
+  required NavigationDestination destination;
   boolean canTransition = false;
   boolean userInitiated = false;
   boolean hashChange = false;
@@ -1042,7 +1042,8 @@ dictionary AppHistoryNavigateEventInit : EventInit {
   any info;
 };
 
-enum AppHistoryNavigationType {
+// TODO: rename to NavigationType after https://github.com/w3c/navigation-timing/pull/172 lands.
+enum NavigationNavigationType {
   "reload",
   "push",
   "replace",
@@ -1051,87 +1052,87 @@ enum AppHistoryNavigationType {
 </xmp>
 
 <dl class="domintro non-normative">
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/navigationType}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/navigationType}}</code>
   <dd>
-    <p>One of "{{AppHistoryNavigationType/reload}}", "{{AppHistoryNavigationType/push}}", "{{AppHistoryNavigationType/replace}}", or "{{AppHistoryNavigationType/traverse}}", indicating what type of navigation this is.
+    <p>One of "{{NavigationNavigationType/reload}}", "{{NavigationNavigationType/push}}", "{{NavigationNavigationType/replace}}", or "{{NavigationNavigationType/traverse}}", indicating what type of navigation this is.
   </dd>
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}</code>
   <dd>
-    <p>An {{AppHistoryDestination}} representing the destination of the navigation.
+    <p>A {{NavigationDestination}} representing the destination of the navigation.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/canTransition}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/canTransition}}</code>
   <dd>
-    <p>True if {{AppHistoryNavigateEvent/transitionWhile()}} can be called to convert this navigation into a single-page navigation; false otherwise.
+    <p>True if {{NavigateEvent/transitionWhile()}} can be called to convert this navigation into a single-page navigation; false otherwise.
 
     <p>Generally speaking, this will be true whenever the current {{Document}} <a spec="HTML">can have its URL rewritten</a> to the destination URL, except for cross-document back/forward navigations, where it will always be false.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/userInitiated}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/userInitiated}}</code>
   <dd>
     <p>True if this navigation was due to a user clicking on an <{a}> element, submitting a <{form}> element, or using the browser UI to navigate; false otherwise.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/hashChange}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/hashChange}}</code>
   <dd>
     <p>True if this navigation is a <a spec="HTML" lt="navigate to a fragment">fragment navigation</a>; false otherwise.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/signal}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/signal}}</code>
   <dd>
     <p>An {{AbortSignal}} which will become aborted if the navigation gets canceled, e.g. by the user pressing their browser's "Stop" button, or another higher-priority navigation interrupting this one.
 
     <p>The expected pattern is for developers to pass this along to any async operations, such as {{WindowOrWorkerGlobalScope/fetch()}}, which they perform as part of handling this navigation.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/formData}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/formData}}</code>
   <dd>
-    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation is a "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}" navigation representing a POST <a spec="HTML" lt="submit">form submission</a>; null otherwise.
+    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation is a "{{NavigationNavigationType/push}}" or "{{NavigationNavigationType/replace}}" navigation representing a POST <a spec="HTML" lt="submit">form submission</a>; null otherwise.
 
-    <p>(Notably, this will be null even for "{{AppHistoryNavigationType/reload}}" and "{{AppHistoryNavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
+    <p>(Notably, this will be null even for "{{NavigationNavigationType/reload}}" and "{{NavigationNavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/info}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/info}}</code>
   <dd>
-    <p>An arbitrary JavaScript value passed via other app history APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-app history API.
+    <p>An arbitrary JavaScript value passed via {{Window/navigation}} APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-{{Window/navigation}} API.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/transitionWhile()|transitionWhile}}(|newNavigationAction|)</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/transitionWhile()|transitionWhile}}(|newNavigationAction|)</code>
   <dd>
     <p>Synchronously converts this navigation into a same-document navigation to the destination URL.
 
-    <p>The given |newNavigationAction| promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires {{AppHistory/navigatesuccess}} or {{AppHistory/navigateerror}} events as appropriate, which other parts of the web application can respond to.
+    <p>The given |newNavigationAction| promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires {{Navigation/navigatesuccess}} or {{Navigation/navigateerror}} events as appropriate, which other parts of the web application can respond to.
 
-    <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{AppHistoryNavigateEvent/canTransition}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
+    <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{NavigateEvent/canTransition}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
   </dd>
 </dl>
 
-The <dfn attribute for="AppHistoryNavigateEvent">navigationType</dfn>, <dfn attribute for="AppHistoryNavigateEvent">destination</dfn>, <dfn attribute for="AppHistoryNavigateEvent">canTransition</dfn>, <dfn attribute for="AppHistoryNavigateEvent">userInitiated</dfn>, <dfn attribute for="AppHistoryNavigateEvent">hashChange</dfn>, <dfn attribute for="AppHistoryNavigateEvent">signal</dfn>, <dfn attribute for="AppHistoryNavigateEvent">formData</dfn>, and <dfn attribute for="AppHistoryNavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
+The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
-An {{AppHistoryNavigateEvent}} has the following associated values which are only conditionally used:
+A {{NavigateEvent}} has the following associated values which are only conditionally used:
 
-* <dfn for="AppHistoryNavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used in some cases when its {{AppHistoryNavigateEvent/navigationType}} is "{{AppHistoryNavigationType/push}}" or "{{AppHistoryNavigationType/replace}}"
+* <dfn for="NavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null, used in some cases when its {{NavigateEvent/navigationType}} is "{{NavigationNavigationType/push}}" or "{{NavigationNavigationType/replace}}"
 
 This is set appropriately when the event is [[#navigate-event-firing|fired]].
 
-An {{AppHistoryNavigateEvent}} also has an associated <dfn for="AppHistoryNavigateEvent">navigation action promises list</dfn>, which is a [=list=] of {{Promise}} objects, initially empty.
+A {{NavigateEvent}} also has an associated <dfn for="NavigateEvent">navigation action promises list</dfn>, which is a [=list=] of {{Promise}} objects, initially empty.
 
 <div algorithm>
-  The <dfn method for="AppHistoryNavigateEvent">transitionWhile(|newNavigationAction|)</dfn> method steps are:
+  The <dfn method for="NavigateEvent">transitionWhile(|newNavigationAction|)</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s {{Event/isTrusted}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
-  1. If [=this=]'s {{AppHistoryNavigateEvent/canTransition}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
+  1. If [=this=]'s {{NavigateEvent/canTransition}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/canceled flag=] is set, then throw an "{{InvalidStateError}}" {{DOMException}}.
-  1. [=list/Append=] |newNavigationAction| to [=this=]'s [=AppHistoryNavigateEvent/navigation action promises list=].
+  1. [=list/Append=] |newNavigationAction| to [=this=]'s [=NavigateEvent/navigation action promises list=].
 </div>
 
-<h3 id="navigate-event-destination">The {{AppHistoryDestination}} class</h3>
+<h3 id="navigate-event-destination">The {{NavigationDestination}} class</h3>
 
 <xmp class="idl">
 [Exposed=Window]
-interface AppHistoryDestination {
+interface NavigationDestination {
   readonly attribute USVString url;
   readonly attribute DOMString? key;
   readonly attribute DOMString? id;
@@ -1143,231 +1144,231 @@ interface AppHistoryDestination {
 </xmp>
 
 <dl class="domintro non-normative">
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}.{{AppHistoryDestination/url}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/url}}</code>
   <dd>
     <p>The URL being navigated to.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}.{{AppHistoryDestination/key}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/key}}</code>
   <dd>
-    <p>The value of the {{AppHistoryEntry/key}} property of the destination {{AppHistoryEntry}}, if this is a "{{AppHistoryNavigationType/traverse}}" navigation, or null otherwise.
+    <p>The value of the {{NavigationHistoryEntry/key}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationNavigationType/traverse}}" navigation, or null otherwise.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}.{{AppHistoryDestination/id}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/id}}</code>
   <dd>
-    <p>The value of the {{AppHistoryEntry/id}} property of the destination {{AppHistoryEntry}}, if this is a "{{AppHistoryNavigationType/traverse}}" navigation, or null otherwise.
+    <p>The value of the {{NavigationHistoryEntry/id}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationNavigationType/traverse}}" navigation, or null otherwise.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}.{{AppHistoryDestination/index}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/index}}</code>
   <dd>
-    <p>The value of the {{AppHistoryEntry/index}} property of the destination {{AppHistoryEntry}}, if this is a "{{AppHistoryNavigationType/traverse}}" navigation, or &minus;1 otherwise.
+    <p>The value of the {{NavigationHistoryEntry/index}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationNavigationType/traverse}}" navigation, or &minus;1 otherwise.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}.{{AppHistoryDestination/sameDocument}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/sameDocument}}</code>
   <dd>
     <p>Indicates whether or not this navigation is to the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, in cases of fragment navigations or {{History/pushState()|history.pushState()}} navigations.
 
-    <p>Note that this property indicates the original nature of the navigation. If a cross-document navigation is converted into a same-document navigation using {{AppHistoryNavigateEvent/transitionWhile()|event.transitionWhile()}}, that will not change the value of this property.
+    <p>Note that this property indicates the original nature of the navigation. If a cross-document navigation is converted into a same-document navigation using {{NavigateEvent/transitionWhile()|event.transitionWhile()}}, that will not change the value of this property.
   </dd>
 
-  <dt><code><var ignore>state</var> = <var ignore>event</var>.{{AppHistoryNavigateEvent/destination}}.{{AppHistoryDestination/getState()}}</code>
+  <dt><code><var ignore>state</var> = <var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/getState()}}</code>
   <dd>
-    <p>For "{{AppHistoryNavigationType/traverse}}" navigations, returns the deserialization of the state stored in the destination session history entry.
+    <p>For "{{NavigationNavigationType/traverse}}" navigations, returns the deserialization of the state stored in the destination session history entry.
 
-    <p>For "{{AppHistoryNavigationType/push}}" and "{{AppHistoryNavigationType/replace}}" navigations, returns the deserialization of the state passed to {{AppHistory/navigate()|appHistory.navigate()}}, if the navigation was initiated in that way, or undefined if it wasn't.
+    <p>For "{{NavigationNavigationType/push}}" and "{{NavigationNavigationType/replace}}" navigations, returns the deserialization of the state passed to {{Navigation/navigate()|navigation.navigate()}}, if the navigation was initiated in that way, or undefined if it wasn't.
 
-    <p>For "{{AppHistoryNavigationType/reload}}" navigations, returns the deserialization of the state passed to {{AppHistory/reload()|appHistory.reload()}}, if the reload was initiated in that way, or undefined if it wasn't.
+    <p>For "{{NavigationNavigationType/reload}}" navigations, returns the deserialization of the state passed to {{Navigation/reload()|navigation.reload()}}, if the reload was initiated in that way, or undefined if it wasn't.
   </dd>
 </dl>
 
-An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">URL</dfn>, which is a [=URL=].
+A {{NavigationDestination}} has an associated <dfn for="NavigationDestination">URL</dfn>, which is a [=URL=].
 
-An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">key</dfn>, which is a [=string=]-or-null.
+A {{NavigationDestination}} has an associated <dfn for="NavigationDestination">key</dfn>, which is a [=string=]-or-null.
 
-An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">id</dfn>, which is a [=string=]-or-null.
+A {{NavigationDestination}} has an associated <dfn for="NavigationDestination">id</dfn>, which is a [=string=]-or-null.
 
-An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">index</dfn>, which is an integer.
+A {{NavigationDestination}} has an associated <dfn for="NavigationDestination">index</dfn>, which is an integer.
 
-An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">state</dfn>, which is a [=serialized state=]-or-null.
+A {{NavigationDestination}} has an associated <dfn for="NavigationDestination">state</dfn>, which is a [=serialized state=]-or-null.
 
-An {{AppHistoryDestination}} has an associated <dfn for="AppHistoryDestination">is same document</dfn>, which is a boolean.
+A {{NavigationDestination}} has an associated <dfn for="NavigationDestination">is same document</dfn>, which is a boolean.
 
-The <dfn attribute for="AppHistoryDestination">url</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/URL=], [=URL serializer|serialized=].
+The <dfn attribute for="NavigationDestination">url</dfn> getter steps are to return [=this=]'s [=NavigationDestination/URL=], [=URL serializer|serialized=].
 
-The <dfn attribute for="AppHistoryDestination">key</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/key=].
+The <dfn attribute for="NavigationDestination">key</dfn> getter steps are to return [=this=]'s [=NavigationDestination/key=].
 
-The <dfn attribute for="AppHistoryDestination">id</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/id=].
+The <dfn attribute for="NavigationDestination">id</dfn> getter steps are to return [=this=]'s [=NavigationDestination/id=].
 
-The <dfn attribute for="AppHistoryDestination">index</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/index=].
+The <dfn attribute for="NavigationDestination">index</dfn> getter steps are to return [=this=]'s [=NavigationDestination/index=].
 
-The <dfn attribute for="AppHistoryDestination">sameDocument</dfn> getter steps are to return [=this=]'s [=AppHistoryDestination/is same document=].
+The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps are to return [=this=]'s [=NavigationDestination/is same document=].
 
 <div algorithm>
-  The <dfn method for="AppHistoryDestination">getState()</dfn> method steps are:
+  The <dfn method for="NavigationDestination">getState()</dfn> method steps are:
 
-  1. If [=this=]'s [=AppHistoryDestination/state=] is null, then return undefined.
-  1. Return [$StructuredDeserialize$]([=this=]'s [=AppHistoryDestination/state=]).
+  1. If [=this=]'s [=NavigationDestination/state=] is null, then return undefined.
+  1. Return [$StructuredDeserialize$]([=this=]'s [=NavigationDestination/state=]).
 </div>
 
 <h3 id="navigate-event-firing">Firing the event</h3>
 
 <div algorithm="fire a traversal navigate event">
-  To <dfn>fire a traversal `navigate` event</dfn> at an {{AppHistory}} |appHistory| given a [=session history entry=] <dfn for="fire a traversal navigate event">|destinationEntry|</dfn>, and an optional [=user navigation involvement=] <dfn for="fire a traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"):
+  To <dfn>fire a traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a [=session history entry=] <dfn for="fire a traversal navigate event">|destinationEntry|</dfn>, and an optional [=user navigation involvement=] <dfn for="fire a traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"):
 
-  1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in |appHistory|'s [=relevant Realm=].
-  1. Let |destination| be a [=new=] {{AppHistoryDestination}} created in |appHistory|'s [=relevant Realm=].
-  1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
-  1. If |destinationEntry|'s [=session history entry/origin=] is [=same origin=] with |appHistory|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
-    1. Set |destination|'s [=AppHistoryDestination/key=] to |destinationEntry|'s [=session history entry/app history key=].
-    1. Set |destination|'s [=AppHistoryDestination/id=] to |destinationEntry|'s [=session history entry/app history id=].
-    1. Set |destination|'s [=AppHistoryDestination/index=] to the result of [=getting the app history index=] of |destinationEntry| within |appHistory|.
-    1. Set |destination|'s [=AppHistoryDestination/state=] to |destinationEntry|'s [=session history entry/app history state=].
+  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
+  1. Set |destination|'s [=NavigationDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
+  1. If |destinationEntry|'s [=session history entry/origin=] is [=same origin=] with |navigation|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
+    1. Set |destination|'s [=NavigationDestination/key=] to |destinationEntry|'s [=session history entry/navigation API key=].
+    1. Set |destination|'s [=NavigationDestination/id=] to |destinationEntry|'s [=session history entry/navigation API ID=].
+    1. Set |destination|'s [=NavigationDestination/index=] to the result of [=getting the navigation API history index=] of |destinationEntry| within |navigation|.
+    1. Set |destination|'s [=NavigationDestination/state=] to |destinationEntry|'s [=session history entry/navigation API state=].
   1. Otherwise,
-    1. Set |destination|'s [=AppHistoryDestination/key=] to null.
-    1. Set |destination|'s [=AppHistoryDestination/id=] to null.
-    1. Set |destination|'s [=AppHistoryDestination/index=] to &minus;1.
-    1. Set |destination|'s [=AppHistoryDestination/state=] to null.
-  1. Set |destination|'s [=AppHistoryDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |appHistory|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
-  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |appHistory|, "{{AppHistoryNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, and null.
+    1. Set |destination|'s [=NavigationDestination/key=] to null.
+    1. Set |destination|'s [=NavigationDestination/id=] to null.
+    1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
+    1. Set |destination|'s [=NavigationDestination/state=] to null.
+  1. Set |destination|'s [=NavigationDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |navigation|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
+  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, and null.
   1. Assert: |result| is true (traversals are never cancelable).
 </div>
 
 <div algorithm="fire a non-traversal navigate event">
-  To <dfn>fire a non-traversal `navigate` event</dfn> at an {{AppHistory}} |appHistory| given an {{AppHistoryNavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
+  To <dfn>fire a non-traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given A {{NavigationNavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
 
-  1. Let |event| be the result of [=creating an event=] given {{AppHistoryNavigateEvent}}, in |appHistory|'s [=relevant Realm=].
-  1. Set |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
-  1. Let |destination| be a [=new=] {{AppHistoryDestination}} created in |appHistory|'s [=relevant Realm=].
-  1. Set |destination|'s [=AppHistoryDestination/URL=] to |destinationURL|.
-  1. Set |destination|'s [=AppHistoryDestination/key=] to null.
-  1. Set |destination|'s [=AppHistoryDestination/id=] to null.
-  1. Set |destination|'s [=AppHistoryDestination/index=] to &minus;1.
-  1. Set |destination|'s [=AppHistoryDestination/state=] to |state|.
-  1. Set |destination|'s [=AppHistoryDestination/is same document=] to |isSameDocument|.
-  1. Return the result of performing the [=inner navigate event firing algorithm=] given |appHistory|, |navigationType|, |event|, |destination|, |userInvolvement|, and |formDataEntryList|.
+  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
+  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
+  1. Set |destination|'s [=NavigationDestination/URL=] to |destinationURL|.
+  1. Set |destination|'s [=NavigationDestination/key=] to null.
+  1. Set |destination|'s [=NavigationDestination/id=] to null.
+  1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
+  1. Set |destination|'s [=NavigationDestination/state=] to |state|.
+  1. Set |destination|'s [=NavigationDestination/is same document=] to |isSameDocument|.
+  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, |navigationType|, |event|, |destination|, |userInvolvement|, and |formDataEntryList|.
 </div>
 
 <div algorithm>
-  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given an {{AppHistory}} |appHistory|, an {{AppHistoryNavigationType}} |navigationType|, an {{AppHistoryNavigateEvent}} |event|, an {{AppHistoryDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and an [=entry list=] or null |formDataEntryList|:
+  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, A {{NavigationNavigationType}} |navigationType|, A {{NavigateEvent}} |event|, A {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and an [=entry list=] or null |formDataEntryList|:
 
-  1. [=AppHistory/Promote the upcoming navigation to ongoing=] given |appHistory| and |destination|'s [=AppHistoryDestination/key=].
-  1. Let |ongoingNavigation| be |appHistory|'s [=AppHistory/ongoing navigation=].
-  1. If |appHistory| [=AppHistory/has entries and events disabled=], then:
+  1. [=Navigation/Promote the upcoming navigation to ongoing=] given |navigation| and |destination|'s [=NavigationDestination/key=].
+  1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
+  1. If |navigation| [=Navigation/has entries and events disabled=], then:
     1. If |ongoingNavigation| is not null, then:
-      1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
-      1. [=app history API navigation/Clean up=] |ongoingNavigation|.
+      1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
+      1. [=navigation API method navigation/Clean up=] |ongoingNavigation|.
 
-      <p class="note">In this case the [=app history API navigation/committed promise=] and [=app history API navigation/finished promise=] will never fulfill, since we never create {{AppHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with. We also need to prevent any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm from overwriting the [=session history entry/app history state=] of the current [=session history/current entry=].
+      <p class="note">In this case the [=navigation API method navigation/committed promise=] and [=navigation API method navigation/finished promise=] will never fulfill, since we never create {{NavigationHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with. We also need to prevent any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm from overwriting the [=session history entry/navigation API state=] of the [=session history/current entry=].
     1. Return true.
-  1. Let |document| be |appHistory|'s [=relevant global object=]'s [=associated document=].
-  1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=AppHistoryDestination/URL=], and either |destination|'s [=AppHistoryDestination/is same document=] is true or |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{AppHistoryNavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
-  1. If |navigationType| is not "{{AppHistoryNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
-  1. Initialize |event|'s {{Event/type}} to "{{AppHistory/navigate}}".
-  1. Initialize |event|'s {{AppHistoryNavigateEvent/navigationType}} to |navigationType|.
-  1. Initialize |event|'s {{AppHistoryNavigateEvent/destination}} to |destination|.
-  1. If |ongoingNavigation| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/info}} to |ongoingNavigation|'s [=app history API navigation/info=]. Otherwise, initialize it to undefined.
-     <p class="note">At this point |ongoingNavigation|'s [=app history API navigation/info=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=app history API navigation=].
-  1. Initialize |event|'s {{AppHistoryNavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |appHistory|'s [=relevant Realm=].
+  1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
+  1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationNavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
+  1. If |navigationType| is not "{{NavigationNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
+  1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
+  1. Initialize |event|'s {{NavigateEvent/navigationType}} to |navigationType|.
+  1. Initialize |event|'s {{NavigateEvent/destination}} to |destination|.
+  1. If |ongoingNavigation| is not null, then initialize |event|'s {{NavigateEvent/info}} to |ongoingNavigation|'s [=navigation API method navigation/info=]. Otherwise, initialize it to undefined.
+     <p class="note">At this point |ongoingNavigation|'s [=navigation API method navigation/info=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=navigation API method navigation=].
+  1. Initialize |event|'s {{NavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |navigation|'s [=relevant Realm=].
   1. Let |currentURL| be |document|'s [=Document/URL=].
   1. If all of the following are true:
-    * |destination|'s [=AppHistoryDestination/is same document=] is true;
-    * |destination|'s [=AppHistoryDestination/URL=] [=url/equals=] |currentURL| with <i>[=url/equals/exclude fragments=]</i> set to true; and
-    * |destination|'s [=AppHistoryDestination/URL=]'s [=url/fragment=] is not [=string/is|identical to=] |currentURL|'s [=url/fragment=]
+    * |destination|'s [=NavigationDestination/is same document=] is true;
+    * |destination|'s [=NavigationDestination/URL=] [=url/equals=] |currentURL| with <i>[=url/equals/exclude fragments=]</i> set to true; and
+    * |destination|'s [=NavigationDestination/URL=]'s [=url/fragment=] is not [=string/is|identical to=] |currentURL|'s [=url/fragment=]
 
-    then initialize |event|'s {{AppHistoryNavigateEvent/hashChange}} to true. Otherwise, initialize it to false.
-  1. If |userInvolvement| is not "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{AppHistoryNavigateEvent/userInitiated}} to true. Otherwise, initialize it to false.
-  1. If |formDataEntryList| is not null, then initialize |event|'s {{AppHistoryNavigateEvent/formData}} to a [=new=] {{FormData}} created in |appHistory|'s [=relevant Realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
-  1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigate event=] is null.
-  1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to |event|.
-  1. [=Assert=]: |appHistory|'s [=AppHistory/ongoing navigation signal=] is null.
-  1. Set |appHistory|'s [=AppHistory/ongoing navigation signal=] to |event|'s {{AppHistoryNavigateEvent/signal}}.
-  1. Let |dispatchResult| be the result of [=dispatching=] |event| at |appHistory|.
-  1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
+    then initialize |event|'s {{NavigateEvent/hashChange}} to true. Otherwise, initialize it to false.
+  1. If |userInvolvement| is not "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{NavigateEvent/userInitiated}} to true. Otherwise, initialize it to false.
+  1. If |formDataEntryList| is not null, then initialize |event|'s {{NavigateEvent/formData}} to a [=new=] {{FormData}} created in |navigation|'s [=relevant Realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
+  1. [=Assert=]: |navigation|'s [=Navigation/ongoing navigate event=] is null.
+  1. Set |navigation|'s [=Navigation/ongoing navigate event=] to |event|.
+  1. [=Assert=]: |navigation|'s [=Navigation/ongoing navigation signal=] is null.
+  1. Set |navigation|'s [=Navigation/ongoing navigation signal=] to |event|'s {{NavigateEvent/signal}}.
+  1. Let |dispatchResult| be the result of [=dispatching=] |event| at |navigation|.
+  1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
   1. If |dispatchResult| is false:
-    1. If |navigationType| is not "{{AppHistoryNavigationType/traverse}}" and |event|'s {{AppHistoryNavigateEvent/signal}} is not [=AbortSignal/aborted=], then [=finalize with an aborted navigation error=] given |appHistory| and |ongoingNavigation|.
-       <p class="note">If |navigationType| is "{{AppHistoryNavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform an app history traversal=].
+    1. If |navigationType| is not "{{NavigationNavigationType/traverse}}" and |event|'s {{NavigateEvent/signal}} is not [=AbortSignal/aborted=], then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
+       <p class="note">If |navigationType| is "{{NavigationNavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform a navigation API traversal=].
     1. Return false.
-  1. Let |hadTransitionWhile| be true if |event|'s [=AppHistoryNavigateEvent/navigation action promises list=] is not empty; otherwise false.
-  1. Let |endResultIsSameDocument| be true if |hadTransitionWhile| is true or |destination|'s [=AppHistoryDestination/is same document=] is true.
+  1. Let |hadTransitionWhile| be true if |event|'s [=NavigateEvent/navigation action promises list=] is not empty; otherwise false.
+  1. Let |endResultIsSameDocument| be true if |hadTransitionWhile| is true or |destination|'s [=NavigationDestination/is same document=] is true.
   1. If |hadTransitionWhile| is true:
-    1. Let |fromEntry| be the [=AppHistory/current entry=] for |appHistory|.
+    1. Let |fromEntry| be the [=Navigation/current entry=] for |navigation|.
     1. Assert: |fromEntry| is not null.
-    1. Set |appHistory|'s [=AppHistory/transition=] to a [=new=] {{AppHistoryTransition}} created in |appHistory|'s [=relevant Realm=], whose [=AppHistoryTransition/navigation type=] is |navigationType|, [=AppHistoryTransition/from entry=] is |fromEntry|, and whose [=AppHistoryTransition/finished promise=] is [=a new promise=] created in |appHistory|'s [=relevant Realm=].
-    1. Mark as handled |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=]. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
+    1. Set |navigation|'s [=Navigation/transition=] to a [=new=] {{NavigationTransition}} created in |navigation|'s [=relevant Realm=], whose [=NavigationTransition/navigation type=] is |navigationType|, [=NavigationTransition/from entry=] is |fromEntry|, and whose [=NavigationTransition/finished promise=] is [=a new promise=] created in |navigation|'s [=relevant Realm=].
+    1. Mark as handled |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=]. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
   1. If |endResultIsSameDocument| is true:
-    1. Let |tweakedPromisesList| be |event|'s  [=AppHistoryNavigateEvent/navigation action promises list=].
+    1. Let |tweakedPromisesList| be |event|'s  [=NavigateEvent/navigation action promises list=].
     1. If |tweakedPromisesList|'s [=list/size=] is 0, then set |tweakedPromisesList| to « [=a promise resolved with=] {{undefined}} ».
-       <p class="note">There is a subtle timing difference between how [=waiting for all=] schedules its success and failure steps when given zero promises versus &geq;1 promises. For most uses of [=waiting for all=], this does not matter. However, with this API, there are so many events and promise handlers which could fire around the same time that the difference is pretty easily observable: it can cause the event/promise handler sequence to vary. (Some of the events and promises involved include: {{AppHistory/navigatesuccess}} / {{AppHistory/navigateerror}}, {{AppHistory/currentchange}}, {{AppHistoryEntry/dispose}}, |ongoingNavigation|'s promises, and the {{AppHistoryTransition/finished|appHistory.transition.finished}} promise.)
+       <p class="note">There is a subtle timing difference between how [=waiting for all=] schedules its success and failure steps when given zero promises versus &geq;1 promises. For most uses of [=waiting for all=], this does not matter. However, with this API, there are so many events and promise handlers which could fire around the same time that the difference is pretty easily observable: it can cause the event/promise handler sequence to vary. (Some of the events and promises involved include: {{Navigation/navigatesuccess}} / {{Navigation/navigateerror}}, {{Navigation/currententrychange}}, {{NavigationHistoryEntry/dispose}}, |ongoingNavigation|'s promises, and the {{NavigationTransition/finished|navigation.transition.finished}} promise.)
     1. [=Wait for all=] of |tweakedPromisesList|, with the following success steps:
-        1. If |event|'s {{AppHistoryNavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
-        1. [=Fire an event=] named {{AppHistory/navigatesuccess}} at |appHistory|.
-        1. If |appHistory|'s [=AppHistory/transition=] is not null, then [=resolve=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with undefined.
-        1. Set |appHistory|'s [=AppHistory/transition=] to null.
-        1. If |ongoingNavigation| is non-null, then [=app history API navigation/resolve the finished promise=] for |ongoingNavigation|.
+        1. If |event|'s {{NavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
+        1. [=Fire an event=] named {{Navigation/navigatesuccess}} at |navigation|.
+        1. If |navigation|'s [=Navigation/transition=] is not null, then [=resolve=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with undefined.
+        1. Set |navigation|'s [=Navigation/transition=] to null.
+        1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/resolve the finished promise=] for |ongoingNavigation|.
       and the following failure steps given reason |rejectionReason|:
-        1. If |event|'s {{AppHistoryNavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
-        1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
-        1. If |appHistory|'s [=AppHistory/transition=] is not null, then [=reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |rejectionReason|.
-        1. Set |appHistory|'s [=AppHistory/transition=] to null.
-        1. If |ongoingNavigation| is non-null, then [=app history API navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
+        1. If |event|'s {{NavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
+        1. [=Fire an event=] named {{Navigation/navigateerror}} at |navigation| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+        1. If |navigation|'s [=Navigation/transition=] is not null, then [=reject=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with |rejectionReason|.
+        1. Set |navigation|'s [=Navigation/transition=] to null.
+        1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
   1. Otherwise, if |ongoingNavigation| is non-null, then:
-    1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
-       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for cross-document navigations.
-    1. [=app history API navigation/Clean up=] |ongoingNavigation|.
-  1. If |hadTransitionWhile| is true and |navigationType| is not "{{AppHistoryNavigationType/traverse}}":
-    1. If |navigationType| is not "{{AppHistoryNavigationType/reload}}", then:
-      1. Let |isPush| be true if |navigationType| is "{{AppHistoryNavigationType/push}}"; otherwise, false.
-      1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{AppHistoryNavigateEvent/destination}}'s [=AppHistoryDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=AppHistoryNavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+    1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
+       <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for cross-document navigations.
+    1. [=navigation API method navigation/Clean up=] |ongoingNavigation|.
+  1. If |hadTransitionWhile| is true and |navigationType| is not "{{NavigationNavigationType/traverse}}":
+    1. If |navigationType| is not "{{NavigationNavigationType/reload}}", then:
+      1. Let |isPush| be true if |navigationType| is "{{NavigationNavigationType/push}}"; otherwise, false.
+      1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
 
-      <p class="note">If |navigationType| is "{{AppHistoryNavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. App history-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/app history state=] if this was caused by a call to {{AppHistory/reload()|appHistory.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{AppHistoryNavigateEvent/transitionWhile()}}.
+      <p class="note">If |navigationType| is "{{NavigationNavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{NavigateEvent/transitionWhile()}}.
     1. Return false.
   1. Return true.
 </div>
 
 <div algorithm>
-  To <dfn>finalize with an aborted navigation error</dfn> given an {{AppHistory}} |appHistory|, an [=app history API navigation=] or null |ongoingNavigation|, and an optional {{DOMException}} |error|:
+  To <dfn>finalize with an aborted navigation error</dfn> given a {{Navigation}} |navigation|, a [=navigation API method navigation=] or null |ongoingNavigation|, and an optional {{DOMException}} |error|:
 
-  1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |appHistory|'s [=relevant Realm=].
-  1. If |appHistory|'s [=AppHistory/ongoing navigate event=] is non-null, then:
-    1. Set |appHistory|'s [=AppHistory/ongoing navigate event=]'s [=Event/canceled flag=] to true.
-    1. Set |appHistory|'s [=AppHistory/ongoing navigate event=] to null.
-  1. If |appHistory|'s [=AppHistory/ongoing navigation signal=] is non-null, then:
-    1. [=AbortSignal/Signal abort=] on |appHistory|'s [=AppHistory/ongoing navigation signal=] given |error|.
-    1. Set |appHistory|'s [=AppHistory/ongoing navigation signal=] to null.
-  1. [=Fire an event=] named {{AppHistory/navigateerror}} at |appHistory| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |error| and the current JavaScript stack in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
+  1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |navigation|'s [=relevant Realm=].
+  1. If |navigation|'s [=Navigation/ongoing navigate event=] is non-null, then:
+    1. Set |navigation|'s [=Navigation/ongoing navigate event=]'s [=Event/canceled flag=] to true.
+    1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
+  1. If |navigation|'s [=Navigation/ongoing navigation signal=] is non-null, then:
+    1. [=AbortSignal/Signal abort=] on |navigation|'s [=Navigation/ongoing navigation signal=] given |error|.
+    1. Set |navigation|'s [=Navigation/ongoing navigation signal=] to null.
+  1. [=Fire an event=] named {{Navigation/navigateerror}} at |navigation| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |error| and the current JavaScript stack in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
      <p class="note">Thus, for example, if this algorithm is reached because of a call to {{Window/stop()|window.stop()}}, these properties would probably end up initialized based on the line of script that called {{Window/stop()|window.stop()}}. But if it's because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0.
   1. If |ongoingNavigation| is non-null, then:
-    1. Set |ongoingNavigation|'s [=app history API navigation/serialized state=] to null.
-       <p class="note">This ensures that any call to {{AppHistory/navigate()|appHistory.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/app history state=] of the [=session history/current entry=] for aborted navigations.
-    1. [=app history API navigation/Reject the finished promise=] for |ongoingNavigation| with |error|.
-  1. If |appHistory|'s [=AppHistory/transition=] is not null, then:
-    1. [=Reject=] |appHistory|'s [=AppHistory/transition=]'s [=AppHistoryTransition/finished promise=] with |error|.
-    1. Set |appHistory|'s [=AppHistory/transition=] to null.
+    1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
+       <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for aborted navigations.
+    1. [=navigation API method navigation/Reject the finished promise=] for |ongoingNavigation| with |error|.
+  1. If |navigation|'s [=Navigation/transition=] is not null, then:
+    1. [=Reject=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with |error|.
+    1. Set |navigation|'s [=Navigation/transition=] to null.
 </div>
 
 <div algorithm>
-  To <dfn>inform app history about canceling navigation</dfn> in a [=browsing context=] |bc|:
+  To <dfn>inform the navigation API about canceling navigation</dfn> in a [=browsing context=] |bc|:
 
-  1. Let |appHistory| be |bc|'s [=browsing context/active window=]'s [=Window/app history=].
-  1. If |appHistory|'s [=AppHistory/ongoing navigation signal=] is null, then return.
-  1. [=Finalize with an aborted navigation error=] given |appHistory| and |appHistory|'s [=AppHistory/ongoing navigation=].
+  1. Let |navigation| be |bc|'s [=browsing context/active window=]'s [=Window/navigation API=].
+  1. If |navigation|'s [=Navigation/ongoing navigation signal=] is null, then return.
+  1. [=Finalize with an aborted navigation error=] given |navigation| and |navigation|'s [=Navigation/ongoing navigation=].
 </div>
 
 <div algorithm>
-  To <dfn>inform app history about browsing context discarding</dfn> given a [=browsing context=] |bc|:
+  To <dfn>inform the navigation API about browsing context discarding</dfn> given a [=browsing context=] |bc|:
 
-  1. [=Inform app history about canceling navigation=] in |bc|.
-  1. Let |appHistory| be |bc|'s [=browsing context/active window=]'s [=Window/app history=].
-  1. Let |traversals| be a [=list/clone=] of |appHistory|'s [=AppHistory/upcoming traverse navigations=].
-  1. For each |traversal| of |traversals|: [=finalize with an aborted navigation error=] given |appHistory| and |traversal|.
+  1. [=Inform the navigation API about canceling navigation=] in |bc|.
+  1. Let |navigation| be |bc|'s [=browsing context/active window=]'s [=Window/navigation API=].
+  1. Let |traversals| be a [=list/clone=] of |navigation|'s [=Navigation/upcoming traverse navigations=].
+  1. For each |traversal| of |traversals|: [=finalize with an aborted navigation error=] given |navigation| and |traversal|.
 </div>
 
-<h2 id="apphistoryentry-class">App history entries</h2>
+<h2 id="NavigationHistoryEntry-class">Navigation API history entries</h2>
 
 <xmp class="idl">
 [Exposed=Window]
-interface AppHistoryEntry : EventTarget {
+interface NavigationHistoryEntry : EventTarget {
   readonly attribute USVString? url;
   readonly attribute DOMString key;
   readonly attribute DOMString id;
@@ -1384,40 +1385,40 @@ interface AppHistoryEntry : EventTarget {
 </xmp>
 
 <dl class="domintro non-normative">
-  <dt><code><var ignore>entry</var>.{{AppHistoryEntry/url}}</code>
+  <dt><code><var ignore>entry</var>.{{NavigationHistoryEntry/url}}</code>
   <dd>
-    <p>The URL of this app history entry.
+    <p>The URL of this navigation history entry.
 
-    <p>This can return null if the entry corresponds to a different {{Document}} than the current one (i.e. if {{AppHistoryEntry/sameDocument}} is false), and that {{Document}}'s [=policy container/referrer policy=] was <a>"`no-referrer`"</a> or <a>"`origin`"</a>, since that indicates the {{Document}} in question is hiding its URL even from other same-origin pages.
+    <p>This can return null if the entry corresponds to a different {{Document}} than the current one (i.e. if {{NavigationHistoryEntry/sameDocument}} is false), and that {{Document}}'s [=policy container/referrer policy=] was <a>"`no-referrer`"</a> or <a>"`origin`"</a>, since that indicates the {{Document}} in question is hiding its URL even from other same-origin pages.
   </dd>
 
-  <dt><code><var ignore>entry</var>.{{AppHistoryEntry/key}}</code>
+  <dt><code><var ignore>entry</var>.{{NavigationHistoryEntry/key}}</code>
   <dd>
-    <p>A [=user agent=]-generated random UUID string representing this app history entry's place in the app history list. This value will be reused by other {{AppHistoryEntry}} instances that replace this one due to replace-style navigations. This value will survive session restores.
+    <p>A [=user agent=]-generated random UUID string representing this navigation history entry's place in the navigation history list. This value will be reused by other {{NavigationHistoryEntry}} instances that replace this one due to replace-style navigations. This value will survive session restores.
 
-    <p>This is useful for navigating back to this location in the app history entry list, using {{AppHistory/goTo(key)|appHistory.goTo(key)}}.
+    <p>This is useful for navigating back to this entry in the navigation history list, using {{Navigation/traverseTo(key)|navigation.traverseTo(key)}}.
   </dd>
 
-  <dt><code><var ignore>entry</var>.{{AppHistoryEntry/id}}</code>
+  <dt><code><var ignore>entry</var>.{{NavigationHistoryEntry/id}}</code>
   <dd>
-    <p>A [=user agent=]-generated random UUID string representing this specific app history entry. This value will <em>not</em> be reused by other {{AppHistoryEntry}} instances. This value will survive session restores.
+    <p>A [=user agent=]-generated random UUID string representing this specific navigation history entry. This value will <em>not</em> be reused by other {{NavigationHistoryEntry}} instances. This value will survive session restores.
 
-    <p>This is useful for associating data with this app history entry using other storage APIs.
+    <p>This is useful for associating data with this navigation history entry using other storage APIs.
   </dd>
 
-  <dt><code><var ignore>entry</var>.{{AppHistoryEntry/index}}</code>
+  <dt><code><var ignore>entry</var>.{{NavigationHistoryEntry/index}}</code>
   <dd>
-    <p>The index of this app history entry within {{AppHistory/entries()|appHistory.entries()}}, or &minus;1 if the entry is not in the app history list.
+    <p>The index of this navigation history entry within {{Navigation/entries()|navigation.entries()}}, or &minus;1 if the entry is not in the navigation history entry list.
   </dd>
 
-  <dt><code><var ignore>entry</var>.{{AppHistoryEntry/sameDocument}}</code>
+  <dt><code><var ignore>entry</var>.{{NavigationHistoryEntry/sameDocument}}</code>
   <dd>
-    <p>Indicates whether or not this app history entry is for the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations.
+    <p>Indicates whether or not this navigation history entry is for the same {{Document}} as the current {{Window/document}} value, or not. This will be true, for example, when the entry represents a fragment navigation or single-page app navigations.
   </dd>
 
-  <dt><code><var ignore>state</var> = <var ignore>entry</var>.{{AppHistoryEntry/getState()|getState}}()</code>
+  <dt><code><var ignore>state</var> = <var ignore>entry</var>.{{NavigationHistoryEntry/getState()|getState}}()</code>
   <dd>
-    <p>Returns the deserialization of the state stored in this entry, which was added to the entry using {{AppHistory/navigate()|appHistory.navigate()}}. This state survives session restores.
+    <p>Returns the deserialization of the state stored in this entry, which was added to the entry using {{Navigation/navigate()|navigation.navigate()}}. This state survives session restores.
 
     <p>Note that in general, unless the state value is a primitive, <code>entry.getState() !== entry.getState()</code>, since a fresh copy is returned each time.
 
@@ -1425,60 +1426,60 @@ interface AppHistoryEntry : EventTarget {
   </dd>
 </dl>
 
-Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">session history entry</dfn>, which is a [=session history entry=].
+Each {{NavigationHistoryEntry}} has an associated <dfn for="NavigationHistoryEntry">session history entry</dfn>, which is a [=session history entry=].
 
-Each {{AppHistoryEntry}} has an associated <dfn for="AppHistoryEntry">index</dfn>, which is an integer.
+Each {{NavigationHistoryEntry}} has an associated <dfn for="NavigationHistoryEntry">index</dfn>, which is an integer.
 
 <div algorithm>
-  The <dfn attribute for="AppHistoryEntry">key</dfn> getter steps are:
+  The <dfn attribute for="NavigationHistoryEntry">key</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty string.
-  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history key=].
+  1. Return [=this=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=].
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistoryEntry">id</dfn> getter steps are:
+  The <dfn attribute for="NavigationHistoryEntry">id</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return the empty string.
-  1. Return [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history id=].
+  1. Return [=this=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API ID=].
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistoryEntry">url</dfn> getter steps are:
+  The <dfn attribute for="NavigationHistoryEntry">url</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
-  1. Let |she| be [=this=]'s [=AppHistoryEntry/session history entry=].
+  1. Let |she| be [=this=]'s [=NavigationHistoryEntry/session history entry=].
   1. If |she|'s [=session history entry/document=] does not equal [=this=]'s [=relevant global object=]'s [=associated Document=], and |she|'s [=session history entry/policy container=]'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a> or <a>"`origin`"</a>, then return null.
   1. Return |she|'s [=session history entry/URL=], [=URL serializer|serialized=].
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistoryEntry">index</dfn> getter steps are:
+  The <dfn attribute for="NavigationHistoryEntry">index</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return &minus;1.
-  1. Return [=this=]'s [=AppHistoryEntry/index=].
+  1. Return [=this=]'s [=NavigationHistoryEntry/index=].
 </div>
 
 <div algorithm>
-  The <dfn attribute for="AppHistoryEntry">sameDocument</dfn> getter steps are:
+  The <dfn attribute for="NavigationHistoryEntry">sameDocument</dfn> getter steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return false.
-  1. Return true if [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/document=] equals [=this=]'s [=relevant global object=]'s [=associated Document=], and false otherwise.
+  1. Return true if [=this=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/document=] equals [=this=]'s [=relevant global object=]'s [=associated Document=], and false otherwise.
 </div>
 
 <div algorithm>
-  The <dfn method for="AppHistoryEntry">getState()</dfn> method steps are:
+  The <dfn method for="NavigationHistoryEntry">getState()</dfn> method steps are:
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return undefined.
-  1. If [=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=] is null, then return undefined.
-  1. Return [$StructuredDeserialize$]([=this=]'s [=AppHistoryEntry/session history entry=]'s [=session history entry/app history state=]).
+  1. If [=this=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API state=] is null, then return undefined.
+  1. Return [$StructuredDeserialize$]([=this=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API state=]).
 
   <p class="note">Unlike {{History/state|history.state}}, this will deserialize upon each access.
 
   <p class="note">This can in theory throw an exception, if attempting to deserialize a large {{ArrayBuffer}} when not enough memory is available.
 </div>
 
-The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{AppHistoryEntry}} interface:
+The following are the [=event handlers=] (and their corresponding [=event handler event types=]) that must be supported, as [=event handler IDL attributes=], by objects implementing the {{NavigationHistoryEntry}} interface:
 
 <table>
   <thead>
@@ -1486,28 +1487,28 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     <th>[=Event handler event type=]
   <tbody>
     <tr>
-      <td><dfn attribute for="AppHistoryEntry">onnavigateto</dfn>
-      <td><dfn event for="AppHistoryEntry">navigateto</dfn>
+      <td><dfn attribute for="NavigationHistoryEntry">onnavigateto</dfn>
+      <td><dfn event for="NavigationHistoryEntry">navigateto</dfn>
     <tr>
-      <td><dfn attribute for="AppHistoryEntry">onnavigatefrom</dfn>
-      <td><dfn event for="AppHistoryEntry">navigatefrom</dfn>
+      <td><dfn attribute for="NavigationHistoryEntry">onnavigatefrom</dfn>
+      <td><dfn event for="NavigationHistoryEntry">navigatefrom</dfn>
     <tr>
-      <td><dfn attribute for="AppHistoryEntry">onfinish</dfn>
-      <td><dfn event for="AppHistoryEntry">finish</dfn>
+      <td><dfn attribute for="NavigationHistoryEntry">onfinish</dfn>
+      <td><dfn event for="NavigationHistoryEntry">finish</dfn>
     <tr>
-      <td><dfn attribute for="AppHistoryEntry">ondispose</dfn>
-      <td><dfn event for="AppHistoryEntry">dispose</dfn>
+      <td><dfn attribute for="NavigationHistoryEntry">ondispose</dfn>
+      <td><dfn event for="NavigationHistoryEntry">dispose</dfn>
 </table>
 
-TODO: actually fire {{AppHistoryEntry/finish}}, {{AppHistoryEntry/navigateto}}, and {{AppHistoryEntry/navigatefrom}}.
+TODO: actually fire {{NavigationHistoryEntry/finish}}, {{NavigationHistoryEntry/navigateto}}, and {{NavigationHistoryEntry/navigatefrom}}.
 
-<h2 id="navigate-patches">Patches to fire the {{AppHistory/navigate}} event</h2>
+<h2 id="navigate-patches">Patches to fire the {{Navigation/navigate}} event</h2>
 
-The following section details monkeypatches to [[!HTML]] that cause the {{AppHistory/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, [[#navigate-algorithm-patches]] contains the actual firing of the event.
+The following section details monkeypatches to [[!HTML]] that cause the {{Navigation/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, [[#navigate-algorithm-patches]] contains the actual firing of the event.
 
 <h3 id="form-patches">Form submission patches</h3>
 
-To properly thread the form entry list from its creation through to {{AppHistoryNavigateEvent}}'s {{AppHistoryNavigateEvent/formData}} property, we need the following modifications:
+To properly thread the form entry list from its creation through to {{NavigateEvent}}'s {{NavigateEvent/formData}} property, we need the following modifications:
 
 <div algorithm="form navigate">
   Modify the <a spec="HTML">navigate</a> algorithm to take an [=entry list=] or null <dfn for="navigate">|entryList|</dfn> (default null), replacing its |navigationType| parameter. Then insert a step somewhere early in the algorithm to convert this back into the |navigationType| variable used by the [=in parallel=] section that is ultimately passed to [[CSP]]:
@@ -1527,7 +1528,7 @@ To properly thread the form entry list from its creation through to {{AppHistory
 
 <h3 id="user-initiated-patches">Browser UI/user-initiated patches</h3>
 
-To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <{a}>, <{area}>, and <{form}> elements, both for the purposes of the {{AppHistoryNavigateEvent}}'s {{AppHistoryNavigateEvent/userInitiated}} property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:
+To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <{a}>, <{area}>, and <{form}> elements, both for the purposes of the {{NavigateEvent}}'s {{NavigateEvent/userInitiated}} property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:
 
 Introduce (right before the definition of the <a spec="HTML">navigate</a> algorithm) the concept of a <dfn>user navigation involvement</dfn>, which is one of the following:
 
@@ -1596,30 +1597,30 @@ Modify the no-<a spec="HTML">submit button</a> case for <a href="https://html.sp
 
 <h3 id="navigate-algorithm-patches">Navigation algorithm updates</h3>
 
-With the above infrastructure in place, we can actually fire and handle the {{AppHistory/navigate}} event in the following locations:
+With the above infrastructure in place, we can actually fire and handle the {{Navigation/navigate}} event in the following locations:
 
 <div algorithm="shared history push/replace steps">
   Modify the <a spec="HTML">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a spec="HTML">URL and history update steps</a>.
 
-  1. Let |appHistory| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/app history=].
-  1. Let |navigationType| be "{{AppHistoryNavigationType/push}}" if <var ignore>isPush</var> is true, and "{{AppHistoryNavigationType/replace}}" otherwise.
-  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |appHistory| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
+  1. Let |navigation| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/navigation API=].
+  1. Let |navigationType| be "{{NavigationNavigationType/push}}" if <var ignore>isPush</var> is true, and "{{NavigationNavigationType/replace}}" otherwise.
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
   1. If |continue| is false, return.
 </div>
 
 <div algorithm="navigate to a fragment">
   Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
 
-  1. Let |appHistory| be the [=session history/current entry=]'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/app history=].
+  1. Let |navigation| be the [=session history/current entry=]'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/navigation API=].
   1. Let |navigationType| be the result of [=converting a history handling behavior to a navigation type=] given <var ignore>historyHandling</var>.
-  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |appHistory| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
   1. If |continue| is false, return.
 </div>
 
 <div algorithm="navigate" id="navigate-modifications">
-  Modify the <a spec="HTML">navigate</a> algorithm to take an optional <dfn for="navigate">|appHistoryState|</dfn> argument (default null). Then, insert the following steps right before the step which goes [=in parallel=]. (Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.)
+  Modify the <a spec="HTML">navigate</a> algorithm to take an optional <dfn for="navigate">|navigationAPIState|</dfn> argument (default null). Then, insert the following steps right before the step which goes [=in parallel=]. (Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.)
 
-  1. Let |appHistory| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/app history=].
+  1. Let |navigation| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/navigation API=].
   1. If all of the following are false:
     * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
     * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
@@ -1630,12 +1631,12 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
     then:
 
       1. Let |navigationType| be the result of [=converting a history handling behavior to a navigation type=] given <var ignore>historyHandling</var>.
-      1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |appHistory| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to false, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a non-traversal navigate event/formDataEntryList=]</i> set to |entryList|, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>, and <i>[=fire a non-traversal navigate event/state=]</i> set to |appHistoryState|.
+      1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to false, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a non-traversal navigate event/formDataEntryList=]</i> set to |entryList|, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>, and <i>[=fire a non-traversal navigate event/state=]</i> set to |navigationAPIState|.
       1. If |continue| is false, return.
 
-    <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{AppHistory/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
+    <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{Navigation/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
 
-    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{AppHistory/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
+    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{Navigation/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
 </div>
 
 <div algorithm>
@@ -1646,17 +1647,17 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 
     <dl class="switch">
     : "<a spec="HTML" for="history handling behavior">`reload`</a>"
-    :: "{{AppHistoryNavigationType/reload}}"
+    :: "{{NavigationNavigationType/reload}}"
     : "<a spec="HTML" for="history handling behavior">`replace`</a>"
-    :: "{{AppHistoryNavigationType/replace}}"
+    :: "{{NavigationNavigationType/replace}}"
     : "<a spec="HTML" for="history handling behavior">`default`</a>"
-    :: "{{AppHistoryNavigationType/push}}"
+    :: "{{NavigationNavigationType/push}}"
 </div>
 
 <h3 id="navigate-event-traversal-patches">History traversal updates</h3>
 
 <div algorithm="traverse the history by a delta">
-  The <a spec="HTML">traverse the history by a delta</a> algorithm will be totally re-written as part of <a href="https://github.com/whatwg/html/pull/6315">the session history rewrite</a>. Here we reproduce the final version of the algorithm, after both that rewrite and with appropriate app history updates. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument, so the arguments are now |delta|, |source browsing context|, and |userInvolvement|.
+  The <a spec="HTML">traverse the history by a delta</a> algorithm will be totally re-written as part of <a href="https://github.com/whatwg/html/pull/6315">the session history rewrite</a>. Here we reproduce the final version of the algorithm, after both that rewrite and with appropriate navigation API updates. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument, so the arguments are now |delta|, |source browsing context|, and |userInvolvement|.
 
   1. Let |traversable| be |source browsing context|'s [=browsing context/containing navigable=]'s [=navigable/traversable navigable=].
   1. Let |initiatorOrigin| be |source browsing context|'s [=active document=]'s [=Document/origin=].
@@ -1671,12 +1672,12 @@ With the above infrastructure in place, we can actually fire and handle the {{Ap
 <div algorithm="apply the history step">
   Modify the <a spec="HTML">apply the history step</a> algorithm as follows. Inside the loop over each <var ignore>navigable</var> of <var ignore>toTraverse</var>, inside the task that is posted, after the check if |targetEntry|'s document is |previousDocument| that might abort the algorithm, add the following steps:
 
-  1. [=Fire a traversal navigate event=] at |previousDocument|'s [=relevant global object=]'s [=Window/app history=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
+  1. [=Fire a traversal navigate event=] at |previousDocument|'s [=relevant global object=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
 </div>
 
 <h2 id="session-history-patches">Patches to session history</h2>
 
-This section details monkeypatches to [[!HTML]] to track appropriate data for associating an {{AppHistory}} with a [=session history entry=].
+This section details monkeypatches to [[!HTML]] to track appropriate data for associating a {{Navigation}} with a [=session history entry=].
 
 <h3 id="session-history-new-she-fields">New [=session history entry=] items</h3>
 
@@ -1684,24 +1685,24 @@ Each [=session history entry=] gains the following new [=struct/items=]:
 
 * <dfn for="session history entry">origin</dfn>, an [=origin=]
 
-* <dfn for="session history entry">app history key</dfn>, a string, initially set to the result of [=generating a random UUID=]
+* <dfn for="session history entry">navigation API key</dfn>, a string, initially set to the result of [=generating a random UUID=]
 
-* <dfn for="session history entry">app history id</dfn>, a string, initially set to the result of [=generating a random UUID=]
+* <dfn for="session history entry">navigation API ID</dfn>, a string, initially set to the result of [=generating a random UUID=]
 
-* <dfn for="session history entry">app history state</dfn>, which is [=serialized state=] or null, initially null
+* <dfn for="session history entry">navigation API state</dfn>, which is [=serialized state=] or null, initially null
 
-<h3 id="session-history-patches-key">Carrying over the app history key</h3>
+<h3 id="session-history-patches-key">Carrying over the navigation API key</h3>
 
 <div algorithm="update the session history with the new page key patch">
   Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" case by adding the following step after the construction of |newEntry|:
 
-  1. If |newEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |sessionHistory|'s [=session history/current entry=]'s [=session history entry/origin=], then set |newEntry|'s [=session history entry/app history key=] to |sessionHistory|'s [=session history/current entry=]'s [=session history entry/app history key=].
+  1. If |newEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |sessionHistory|'s [=session history/current entry=]'s [=session history entry/origin=], then set |newEntry|'s [=session history entry/navigation API key=] to |sessionHistory|'s [=session history/current entry=]'s [=session history entry/navigation API key=].
 </div>
 
-<h3 id="session-history-patches-state">Carrying over the app history state</h3>
+<h3 id="session-history-patches-state">Carrying over the navigation API state</h3>
 
 <div algorithm="navigate to a fragment state patch">
-  Update the <a spec="HTML">navigate to a fragment</a> algorithm by updating the step which creates and appends a new session history entry to carry over the [=session history entry/app history state=] from the [=session history/current entry=] as well.
+  Update the <a spec="HTML">navigate to a fragment</a> algorithm by updating the step which creates and appends a new session history entry to carry over the [=session history entry/navigation API state=] from the [=session history/current entry=] as well.
 </div>
 
 <h3 id="session-history-patches-origin">Tracking the [=session history entry/origin=] member</h3>
@@ -1716,25 +1717,25 @@ Potentially update the <a spec="HTML">traverse the history</a> algorithm to cons
 
 <h3 id="session-history-patches-policy-container">Tracking the [=session history entry/policy container=] member more often</h3>
 
-The [=session history entry/policy container=] field of the [=session history entry=] is null, except when we <a spec="HTML">require storing the policy container in history</a>. The specification for {{AppHistoryEntry/url|appHistoryEntry.url}} requires the relevant [=/referrer policy=] to be accessible for all entries, not just some.
+The [=session history entry/policy container=] field of the [=session history entry=] is null, except when we <a spec="HTML">require storing the policy container in history</a>. The specification for {{NavigationHistoryEntry/url|NavigationHistoryEntry.url}} requires the relevant [=/referrer policy=] to be accessible for all entries, not just some.
 
 So, update the HTML Standard to always store the policy container on the [=session history entry=], and then only use it in the <a spec="HTML">determine navigation params policy container</a> algorithm in the cases currently covered by the <a spec="HTML">require storing the policy container in history</a> algorithm.
 
-<h3 id="session-history-patches-update">Updating the {{AppHistory}} object</h3>
+<h3 id="session-history-patches-update">Updating the {{Navigation}} object</h3>
 
 <div algorithm="traverse the history update patch">
   Update the <a spec="HTML">traverse the history</a> algorithm by adding the following step before the final step which fires various events:
 
-  1. [=AppHistory/Update the entries=] of <var ignore>newDocument</var>'s [=relevant global object=]'s [=Window/app history=].
+  1. [=Navigation/Update the entries=] of <var ignore>newDocument</var>'s [=relevant global object=]'s [=Window/navigation API=].
 </div>
 
 <div algorithm="URL and history update steps update patch">
   Update the <a spec="HTML">URL and history update steps</a> by appending the following final step:
 
-  1. [=AppHistory/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/app history=].
+  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=].
 </div>
 
-<p class="note">We do not [=AppHistory/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any app history entry list.
+<p class="note">We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
 
 <h2 id="other-patches">Other patches</h2>
 
@@ -1756,28 +1757,28 @@ That leaves us with two main operations: canceling not-yet-mature navigations, a
 
 <hr>
 
-App history introduces a new complication here, which is that a naFvigation might have <a spec="HTML">matured</a> but still be "ongoing", in the sense of [[#ongoing-state]]. That is, consider a case such as:
+The navigation API introduces a new complication here, which is that a navigation might have <a spec="HTML">matured</a> but still be "ongoing", in the sense of [[#ongoing-state]]. That is, consider a case such as:
 
 <xmp highlight="js">
-appHistory.addEventListener("navigate", e => {
+navigation.addEventListener("navigate", e => {
   e.transitionWhile(new Promise(r => setTimeout(r, 1_000)));
   e.signal.addEventListener("abort", () => { ... });
 });
 
-const p = appHistory.navigate("#1");
+const p = navigation.navigate("#1");
 
 setTimeout(() => window.stop(), 500);
 </xmp>
 
-Without the {{AppHistory/navigate}} event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the {{Window/stop()}} call does nothing. But because we have used the {{AppHistory/navigate}} handler to indicate that the navigation is still ongoing, we want the {{Window/stop()}} call to [=finalize with an aborted navigation error|finalize that navigation with an aborted navigation error=], in particular causing `p` to reject and the {{AbortSignal/abort}} event to fire on `e.signal`.
+Without the {{Navigation/navigate}} event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the {{Window/stop()}} call does nothing. But because we have used the {{Navigation/navigate}} handler to indicate that the navigation is still ongoing, we want the {{Window/stop()}} call to [=finalize with an aborted navigation error|finalize that navigation with an aborted navigation error=], in particular causing `p` to reject and the {{AbortSignal/abort}} event to fire on `e.signal`.
 
 <hr>
 
 The integration is then as follows:
 
-* Wherever the spec ends up canceling not-yet-mature navigations for a [=browsing context=] |bc|, we also [=inform app history about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
+* Wherever the spec ends up canceling not-yet-mature navigations for a [=browsing context=] |bc|, we also [=inform the navigation API about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
 
-* When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform app history about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)
+* When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform the navigation API about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)
 
 <h2 id="security-privacy">Security and privacy considerations</h2>
 
@@ -1785,32 +1786,32 @@ The integration is then as follows:
 
 <h3 id="sp-cross-site-tracking">Cross-site tracking</h3>
 
-This specification does not enable any new cross-site tracking capabilities. This is largely because the {{AppHistory/entries()|appHistory.entries()}} method only returns information about the same-origin, same-frame history entries.
+This specification does not enable any new cross-site tracking capabilities. This is largely because the {{Navigation/entries()|navigation.entries()}} method only returns information about the same-origin, same-frame history entries.
 
 In more detail:
 
-* The storage of [=session history entry/app history state=] in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as existing APIs such as {{WindowSessionStorage/sessionStorage}}.
-* The browser-generated UUIDs stored as [=session history entry/app history ID=] and [=session history entry/app history key=] live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.
+* The storage of [=session history entry/navigation API state=] in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as existing APIs such as {{WindowSessionStorage/sessionStorage}}.
+* The browser-generated UUIDs stored as [=session history entry/navigation API ID=] and [=session history entry/navigation API key=] live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.
 
 <h3 id="sp-navigation-monitoring-interception">Navigation monitoring and interception</h3>
 
-Through the {{AppHistory/navigate}} event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.
+Through the {{Navigation/navigate}} event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.
 
 Care has been taken to avoid this being dangerous, or giving insight into user behavior that would not otherwise be available to the site. In particular:
 
-* It is not possible to prevent a back/forward navigation, as this could lead to trapping the user on the page. (We would like to make this possible in the future by adding additional security mitigations; see <a href="https://github.com/WICG/app-history/issues/32">#32</a>.)
+* It is not possible to prevent a back/forward navigation, as this could lead to trapping the user on the page. (We would like to make this possible in the future by adding additional security mitigations; see <a href="https://github.com/WICG/navigation-api/issues/32">#32</a>.)
 
-* Navigations initiated from cross-origin-domain frames do not fire {{AppHistory/navigate}} events. An example would be such a frame calling `window.open(url, name)` with `name` targeting the current frame.
+* Navigations initiated from cross-origin-domain frames do not fire {{Navigation/navigate}} events. An example would be such a frame calling `window.open(url, name)` with `name` targeting the current frame.
 
-* Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire {{AppHistory/navigate}} events. An example would be the user directly editing the URL bar.
+* Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire {{Navigation/navigate}} events. An example would be the user directly editing the URL bar.
 
 We also have a few more restrictions worth noting, which don't directly address any attack, but reduce the surface area and complexity of the navigation interception feature, which can have indirect security benefits:
 
-* Navigations initiated toward non-[=fetch scheme=] URLs, such as `javascript:` URLs, do not fire {{AppHistory/navigate}} events.
+* Navigations initiated toward non-[=fetch scheme=] URLs, such as `javascript:` URLs, do not fire {{Navigation/navigate}} events.
 
-* Navigations initiated on the initial `about:blank` document do not fire {{AppHistory/navigate}} events.
+* Navigations initiated on the initial `about:blank` document do not fire {{Navigation/navigate}} events.
 
-* Navigations initiated by {{Document/open()|document.open()}} do not fire {{AppHistory/navigate}} events.
+* Navigations initiated by {{Document/open()|document.open()}} do not fire {{Navigation/navigate}} events.
 
 * Cross-document traversals cannot be intercepted and converted into same-document traversals.
 
@@ -1826,6 +1827,6 @@ This specification does not add any requirements on how user agents implement th
 
 For example, today some user agents take advantage of this flexibility to skip certain history entries when pressing the back button. This can be used to avoid back-trapping by abusive sites, by skipping entries with which the user did not interact and thus allowing the user to escape abusive sites faster.
 
-The app history API preserves all of these freedoms.
+The navigation API preserves all of these freedoms.
 
 </div>

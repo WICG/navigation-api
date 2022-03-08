@@ -1,4 +1,4 @@
-# App History: Security and Privacy Questionnaire Answers
+# Navigation API: Security and Privacy Questionnaire Answers
 
 The following are the answers to the W3C TAG's [security and privacy self-review questionnaire](https://w3ctag.github.io/security-questionnaire/).
 
@@ -6,7 +6,7 @@ The following are the answers to the W3C TAG's [security and privacy self-review
 
 We can think of two pieces of relevant information that might be of interest:
 
-- The exposure, through the app history API, of information that was previously stored in the app history API, through the `appHistoryEntry.state` property. This is necessary to allow associating application and UI state with app history entries. Note that app history entries are scoped to same-origin contiguous documents, so this is not a new capability.
+- The exposure, through the navigation API, of information that was previously stored in the navigation API, through the `historyEntry.state` property. This is necessary to allow associating application and UI state with history entries. Note that history entries exposed through this API are scoped to same-origin contiguous documents, so this is not a new capability.
 
 - The exposure of information about navigations, through the `navigate` event. This is necessary to fulfill some of the core [goals](./README.md#goals) of the API, around intercepting navigations to centralize application logic and implement single-page navigation patterns. The information exposed here is the same as can be currently gathered through less-ergonomic means, e.g. global `click` handlers or a `beforeunload` handler.
 
@@ -24,7 +24,7 @@ They do not consume such information.
 
 **Do the features in your specification introduce new state for an origin that persists across browsing sessions?**
 
-No. The persistent state in `appHistoryEntry.state` is specifically scoped to session history entries, which are scoped to browsing sessions.
+No. The persistent state in `historyEntry.state` is specifically scoped to session history entries, which are scoped to browsing sessions.
 
 **Do the features in your specification expose information about the underlying platform to origins?**
 
@@ -58,11 +58,11 @@ So, this can't be used for spoofing the URL by, for example, responding to a nav
 
 **What temporary identifiers do the features in this specification create or expose to the web?**
 
-Each app history entry has associated auto-generated `key` and `id` properties, which are random UUIDs. We believe this is not problematic; see more discussion in [the main explainer](./README.md#security-and-privacy-considerations).
+Each history entry has associated auto-generated `key` and `id` properties, which are random UUIDs. We believe this is not problematic; see more discussion in [the main explainer](./README.md#security-and-privacy-considerations).
 
 **How does this specification distinguish between behavior in first-party and third-party contexts?**
 
-It does not really distinguish. The specification's by-design segregation by browsing context, browsing session, and origin means that each party (in the rough sense) will get its own app history list, each of which behave uniformly and only give information about that party.
+It does not really distinguish. The specification's by-design segregation by browsing context, browsing session, and origin means that each party (in the rough sense) will get its own navigation API history entry list, each of which behave uniformly and only give information about that party.
 
 **How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?**
 
@@ -70,7 +70,7 @@ Probably no differently. If there are any differences, they will come from exist
 
 **Does this specification have both "Security Considerations" and "Privacy Considerations" sections?**
 
-[Yes](https://wicg.github.io/app-history/#security-privacy).
+[Yes](https://wicg.github.io/navigation-api/#security-privacy).
 
 **Do features in your specification enable downgrading default security characteristics?**
 
