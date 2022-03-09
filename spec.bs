@@ -139,7 +139,7 @@ table {
 
 <xmp class="idl">
 partial interface Window {
-  readonly attribute Navigation navigation;
+  [Replaceable] readonly attribute Navigation navigation;
 };
 </xmp>
 
