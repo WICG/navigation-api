@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Navigation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-08">8 March 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-14">14 March 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -754,7 +754,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
 <script async src="https://resources.whatwg.org/file-issue.js"></script>
    <h2 class="heading settled" data-level="1" id="global"><span class="secno">1. </span><span class="content">The <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation">Navigation</a></code> class</span><a class="self-link" href="#global"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/window-object.html#window" id="ref-for-window"><c- g>Window</c-></a> {
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#navigation" id="ref-for-navigation①"><c- n>Navigation</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="Navigation" href="#dom-window-navigation" id="ref-for-dom-window-navigation"><c- g>navigation</c-></a>;
+  [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Replaceable" id="ref-for-Replaceable"><c- g>Replaceable</c-></a>] <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#navigation" id="ref-for-navigation①"><c- n>Navigation</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="Navigation" href="#dom-window-navigation" id="ref-for-dom-window-navigation"><c- g>navigation</c-></a>;
 };
 </pre>
    <p>Each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#window" id="ref-for-window①">Window</a></code> object has an associated <dfn class="dfn-paneled" data-dfn-for="Window" data-dfn-type="dfn" data-noexport id="window-navigation-api">navigation API</dfn>, which is a new <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②">Navigation</a></code> instance created alongside the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#window" id="ref-for-window②">Window</a></code>.</p>
@@ -2456,7 +2456,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <p>In more detail:</p>
     <ul>
      <li data-md>
-      <p>The storage of <a data-link-type="dfn" href="#session-history-entry-navigation-api-state" id="ref-for-session-history-entry-navigation-api-state①③">navigation API state</a> in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as existing APIs such as <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webstorage.html#dom-sessionstorage" id="ref-for-dom-sessionstorage">sessionStorage</a></code>.</p>
+      <p>The storage of <a data-link-type="dfn" href="#session-history-entry-navigation-api-state" id="ref-for-session-history-entry-navigation-api-state①③">navigation API state</a> in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as APIs such as <a href="https://github.com/privacycg/storage-partitioning">partitioned</a> <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/webstorage.html#dom-sessionstorage" id="ref-for-dom-sessionstorage">sessionStorage</a></code>.</p>
      <li data-md>
       <p>The browser-generated UUIDs stored as <a data-link-type="dfn" href="#session-history-entry-navigation-api-id" id="ref-for-session-history-entry-navigation-api-id②">navigation API ID</a> and <a data-link-type="dfn" href="#session-history-entry-navigation-api-key" id="ref-for-session-history-entry-navigation-api-key⑨">navigation API key</a> live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.</p>
     </ul>
@@ -2483,10 +2483,10 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
       <p>Cross-document traversals cannot be intercepted and converted into same-document traversals.</p>
     </ul>
     <h3 class="heading settled" data-level="7.3" id="sp-url-updates"><span class="secno">7.3. </span><span class="content">URL updates</span><a class="self-link" href="#sp-url-updates"></a></h3>
-    <p>This API, like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate" id="ref-for-dom-history-pushstate①">History.replaceState()</a></code> and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate" id="ref-for-dom-history-replacestate">history.replaceState()</a></code>, gives the ability to change what is shown in the browser’s URL bar. This is part of the navigation interception capability mentioned in the previous section.</p>
-    <p>This is not dangerous, because it is subject to the same restrictions: namely, the URL can only be changed if the page <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten②">can have its URL rewritten</a> to the new URL. So in particular no authority-granting components, such as the site or origin, are impacted.</p>
+    <p>This API, like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-pushstate" id="ref-for-dom-history-pushstate①">history.pushState()</a></code> and <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-replacestate" id="ref-for-dom-history-replacestate">history.replaceState()</a></code>, gives the ability to change what is shown in the browser’s URL bar. This is part of the navigation interception capability mentioned in the previous section.</p>
+    <p>This is not dangerous, because the navigation API is subject to the same restrictions as the classic history API: namely, the page’s URL can only be changed if the page <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten②">can have its URL rewritten</a> to the new URL. So in particular no authority-granting components, such as the site or origin, are impacted.</p>
     <h3 class="heading settled" data-level="7.4" id="sp-ua-ui"><span class="secno">7.4. </span><span class="content">Other user agent UI</span><a class="self-link" href="#sp-ua-ui"></a></h3>
-    <p>This specification does not add any requirements on how user agents implement their user interfaces. (Even the URL bar updates mentioned in the previous section, are not technically part of the specifcation; the specification only governs the return value of other APIs, like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-location-href" id="ref-for-dom-location-href①">location.href</a></code>.) This preserves the ability for user agents to protect users through UI changes.</p>
+    <p>This specification does not add any requirements on how user agents implement their user interfaces. (Even the URL bar updates mentioned in the previous section are not technically part of the specification; the specification only governs the return value of other APIs, like <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-location-href" id="ref-for-dom-location-href①">location.href</a></code>.) This preserves the ability for user agents to protect users through UI changes.</p>
     <p>For example, today some user agents take advantage of this flexibility to skip certain history entries when pressing the back button. This can be used to avoid back-trapping by abusive sites, by skipping entries with which the user did not interact and thus allowing the user to escape abusive sites faster.</p>
     <p>The navigation API preserves all of these freedoms.</p>
    </div>
@@ -3900,6 +3900,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-idl-promise⑨">2.1. The NavigateEvent class</a> <a href="#ref-for-idl-promise①⓪">(2)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-Replaceable">
+   <a href="https://webidl.spec.whatwg.org/#Replaceable">https://webidl.spec.whatwg.org/#Replaceable</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-Replaceable">1. The Navigation class</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-securityerror">
    <a href="https://webidl.spec.whatwg.org/#securityerror">https://webidl.spec.whatwg.org/#securityerror</a><b>Referenced in:</b>
    <ul>
@@ -4234,6 +4240,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-Exposed">Exposed</span>
      <li><span class="dfn-paneled" id="term-for-invalidstateerror">InvalidStateError</span>
      <li><span class="dfn-paneled" id="term-for-idl-promise">Promise</span>
+     <li><span class="dfn-paneled" id="term-for-Replaceable">Replaceable</span>
      <li><span class="dfn-paneled" id="term-for-securityerror">SecurityError</span>
      <li><span class="dfn-paneled" id="term-for-syntaxerror">SyntaxError</span>
      <li><span class="dfn-paneled" id="term-for-idl-USVString">USVString</span>
@@ -4287,7 +4294,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/window-object.html#window"><c- g>Window</c-></a> {
-  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#navigation"><c- n>Navigation</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="Navigation" href="#dom-window-navigation"><c- g>navigation</c-></a>;
+  [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Replaceable"><c- g>Replaceable</c-></a>] <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#navigation"><c- n>Navigation</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="Navigation" href="#dom-window-navigation"><c- g>navigation</c-></a>;
 };
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->]
