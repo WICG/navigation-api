@@ -1790,7 +1790,7 @@ This specification does not enable any new cross-site tracking capabilities. Thi
 
 In more detail:
 
-* The storage of [=session history entry/navigation API state=] in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as existing APIs such as {{WindowSessionStorage/sessionStorage}}.
+* The storage of [=session history entry/navigation API state=] in session history entries is a convenience with no tracking abilities, since the state is only accessible same-origin. That is, it provides the same power as APIs such as <a href="https://github.com/privacycg/storage-partitioning">partitioned</a> {{WindowSessionStorage/sessionStorage}}.
 * The browser-generated UUIDs stored as [=session history entry/navigation API ID=] and [=session history entry/navigation API key=] live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.
 
 <h3 id="sp-navigation-monitoring-interception">Navigation monitoring and interception</h3>
@@ -1817,13 +1817,13 @@ We also have a few more restrictions worth noting, which don't directly address 
 
 <h3 id="sp-url-updates">URL updates</h3>
 
-This API, like {{History/pushState()|History.replaceState()}} and {{History/replaceState()|history.replaceState()}}, gives the ability to change what is shown in the browser's URL bar. This is part of the navigation interception capability mentioned in the previous section.
+This API, like {{History/pushState()|history.pushState()}} and {{History/replaceState()|history.replaceState()}}, gives the ability to change what is shown in the browser's URL bar. This is part of the navigation interception capability mentioned in the previous section.
 
-This is not dangerous, because it is subject to the same restrictions: namely, the URL can only be changed if the page <a spec="HTML">can have its URL rewritten</a> to the new URL. So in particular no authority-granting components, such as the site or origin, are impacted.
+This is not dangerous, because the navigation API is subject to the same restrictions as the classic history API: namely, the page's URL can only be changed if the page <a spec="HTML">can have its URL rewritten</a> to the new URL. So in particular no authority-granting components, such as the site or origin, are impacted.
 
 <h3 id="sp-ua-ui">Other user agent UI</h3>
 
-This specification does not add any requirements on how user agents implement their user interfaces. (Even the URL bar updates mentioned in the previous section, are not technically part of the specifcation; the specification only governs the return value of other APIs, like {{Location/href|location.href}}.) This preserves the ability for user agents to protect users through UI changes.
+This specification does not add any requirements on how user agents implement their user interfaces. (Even the URL bar updates mentioned in the previous section are not technically part of the specification; the specification only governs the return value of other APIs, like {{Location/href|location.href}}.) This preserves the ability for user agents to protect users through UI changes.
 
 For example, today some user agents take advantage of this flexibility to skip certain history entries when pressing the back button. This can be used to avoid back-trapping by abusive sites, by skipping entries with which the user did not interact and thus allowing the user to escape abusive sites faster.
 
