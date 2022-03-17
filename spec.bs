@@ -753,7 +753,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
     * For navigations that get aborted, both promises will reject with an "{{AbortError}}" {{DOMException}}.
     * For same-document navigations created by using the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method, {{NavigationResult/committed}} will fulfill immediately, and {{NavigationResult/finished}} will fulfill or reject according to the promises passed to {{NavigateEvent/transitionWhile()}}.
     * For other same-document navigations (e.g., non-intercepted <a spec="HTML" lt="navigate to a fragment">fragment navigations</a>), both promises will fulfill immediately.
-    * For cross-document navigations, both promises will never settle.
+    * For cross-document navigations, or navigations that result in 204/205 [=response/statuses=] or `Content-Disposition: attachment` header fields from the server (and thus do not actually navigate), both promises will never settle.
 
     <p>In all cases, when the returned promises fulfill, it will be with the {{NavigationHistoryEntry}} that was navigated to.
   </dd>
@@ -867,7 +867,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
     * If there is no {{NavigationHistoryEntry}} in {{Navigation/entries|navigation.entries}} with the given key, both will reject with an "{{InvalidStateError}}" {{DOMException}}.
     * For same-document traversals intercepted by the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method, {{NavigationResult/committed}} will fulfill as soon as the traversal is processed and {{Navigation/currentEntry|navigation.currentEntry}} is updated, and {{NavigationResult/finished}} will fulfill or reject according to the promises passed to {{NavigateEvent/transitionWhile()}}.
     * For non-intercepted same-document traversals, both promises will fulfill as soon as the traversal is processed and {{Navigation/currentEntry|navigation.currentEntry}} is updated
-    * For cross-document traversals, both promises will never settle.
+    * For cross-document traversals, or traversals that result in 204/205 [=response/statuses=] or `Content-Disposition: attachment` header fields from the server (and thus do not actually traverse), both promises will never settle.
   </dd>
 
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/back()|back}}()</code>
@@ -1637,6 +1637,14 @@ With the above infrastructure in place, we can actually fire and handle the {{Na
     <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{Navigation/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
 
     <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{Navigation/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
+</div>
+
+Expand the section of the navigation/traversal response handling which deals with 204s, 205s, and `Content-Disposition: attachment` responses with the following note:
+
+<div class="note">
+  These kinds of failed navigations or traversals will not be signaled to the navigation API (e.g., through the promises of any [=Navigation/ongoing navigation=], or the {{NavigationTransition/finished|navigation.transition.finished}} promise, or the {{Navigation/navigateerror}} event). Doing so would leak information about the timing of responses from other origins, in the cross-origin case, and providing different results in the cross-origin versus same-origin cases was deemed too confusing.
+
+  However, implementations could use this opportunity to clear any promise handlers for the {{NavigationTransition/finished|navigation.transition.finished}} promise, as they are guaranteed at this point to never run. And, they might wish to [=report a warning to the console=] if any part of the navigation API initiated these navigations, to make it clear to the web developer the reason why their promises will never settle and events will never fire.
 </div>
 
 <div algorithm>
