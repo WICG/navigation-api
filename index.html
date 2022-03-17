@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Navigation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-14">14 March 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-17">17 March 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1348,7 +1348,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <li data-md>
        <p>For other same-document navigations (e.g., non-intercepted <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid">fragment navigations</a>), both promises will fulfill immediately.</p>
       <li data-md>
-       <p>For cross-document navigations, both promises will never settle.</p>
+       <p>For cross-document navigations, or navigations that result in 204/205 <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status">statuses</a> or <code>Content-Disposition: attachment</code> header fields from the server (and thus do not actually navigate), both promises will never settle.</p>
      </ul>
      <p>In all cases, when the returned promises fulfill, it will be with the <code class="idl"><a data-link-type="idl" href="#navigationhistoryentry" id="ref-for-navigationhistoryentry②⑥">NavigationHistoryEntry</a></code> that was navigated to. </p>
     <dt><code>{ <code class="idl"><a data-link-type="idl" href="#dom-navigationresult-committed" id="ref-for-dom-navigationresult-committed⑦">committed</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-navigationresult-finished" id="ref-for-dom-navigationresult-finished⑦">finished</a></code> } = <code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation①④">navigation</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-navigation-reload" id="ref-for-dom-navigation-reload③">reload</a></code>(<var>options</var>)</code> 
@@ -1460,7 +1460,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <li data-md>
        <p>For non-intercepted same-document traversals, both promises will fulfill as soon as the traversal is processed and <code class="idl"><a data-link-type="idl" href="#dom-navigation-currententry" id="ref-for-dom-navigation-currententry④">navigation.currentEntry</a></code> is updated</p>
       <li data-md>
-       <p>For cross-document traversals, both promises will never settle.</p>
+       <p>For cross-document traversals, or traversals that result in 204/205 <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status①">statuses</a> or <code>Content-Disposition: attachment</code> header fields from the server (and thus do not actually traverse), both promises will never settle.</p>
      </ul>
     <dt><code>{ <code class="idl"><a data-link-type="idl" href="#dom-navigationresult-committed" id="ref-for-dom-navigationresult-committed①④">committed</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-navigationresult-finished" id="ref-for-dom-navigationresult-finished①④">finished</a></code> } = <code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation①⑧">navigation</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-navigation-back" id="ref-for-dom-navigation-back①">back</a></code>()</code> 
     <dt><code>{ <code class="idl"><a data-link-type="idl" href="#dom-navigationresult-committed" id="ref-for-dom-navigationresult-committed①⑤">committed</a></code>, <code class="idl"><a data-link-type="idl" href="#dom-navigationresult-finished" id="ref-for-dom-navigationresult-finished①⑤">finished</a></code> } = <code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation①⑨">navigation</a></code>.<code class="idl"><a data-link-type="idl" href="#dom-navigation-back" id="ref-for-dom-navigation-back②">back</a></code>({ <code class="idl"><a data-link-type="idl" href="#dom-navigationoptions-info" id="ref-for-dom-navigationoptions-info①①">info</a></code> })</code> 
@@ -2316,6 +2316,11 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <p class="note" role="note">"<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui④">browser UI</a></code>" or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain②">cross origin-domain</a> navigations that cause <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid④">fragment navigations</a> <em>do</em> fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②①">navigate</a></code> event; those are handled as part of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑤">navigate to a fragment</a> algorithm called earlier in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①②">navigate</a>, which is not guarded by this condition. </p>
     </ol>
    </div>
+   <p>Expand the section of the navigation/traversal response handling which deals with 204s, 205s, and <code>Content-Disposition: attachment</code> responses with the following note:</p>
+   <div class="note" role="note">
+     These kinds of failed navigations or traversals will not be signaled to the navigation API (e.g., through the promises of any <a data-link-type="dfn" href="#navigation-ongoing-navigation" id="ref-for-navigation-ongoing-navigation①⓪">ongoing navigation</a>, or the <code class="idl"><a data-link-type="idl" href="#dom-navigationtransition-finished" id="ref-for-dom-navigationtransition-finished⑤">navigation.transition.finished</a></code> promise, or the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigateerror" id="ref-for-eventdef-navigation-navigateerror⑨">navigateerror</a></code> event). Doing so would leak information about the timing of responses from other origins, in the cross-origin case, and providing different results in the cross-origin versus same-origin cases was deemed too confusing. 
+    <p>However, implementations could use this opportunity to clear any promise handlers for the <code class="idl"><a data-link-type="idl" href="#dom-navigationtransition-finished" id="ref-for-dom-navigationtransition-finished⑥">navigation.transition.finished</a></code> promise, as they are guaranteed at this point to never run. And, they might wish to <a data-link-type="dfn" href="https://console.spec.whatwg.org/#report-a-warning-to-the-console" id="ref-for-report-a-warning-to-the-console">report a warning to the console</a> if any part of the navigation API initiated these navigations, to make it clear to the web developer the reason why their promises will never settle and events will never fire.</p>
+   </div>
    <div class="algorithm" data-algorithm="convert a history handling behavior to a navigation type">
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="convert-a-history-handling-behavior-to-a-navigation-type">convert a history handling behavior to a navigation type</dfn> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#history-handling-behavior" id="ref-for-history-handling-behavior①">history handling behavior</a> <var>historyHandling</var>: 
     <ol>
@@ -2758,6 +2763,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#event-user-navigation-involvement">dfn for Event</a><span>, in § 4.2</span>
     </ul>
   </ul>
+  <aside class="dfn-panel" data-for="term-for-report-a-warning-to-the-console">
+   <a href="https://console.spec.whatwg.org/#report-a-warning-to-the-console">https://console.spec.whatwg.org/#report-a-warning-to-the-console</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-report-a-warning-to-the-console">4.3. Navigation algorithm updates</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-abortsignal">
    <a href="https://dom.spec.whatwg.org/#abortsignal">https://dom.spec.whatwg.org/#abortsignal</a><b>Referenced in:</b>
    <ul>
@@ -2910,6 +2921,13 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://fetch.spec.whatwg.org/#concept-request">https://fetch.spec.whatwg.org/#concept-request</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-concept-request">4.3. Navigation algorithm updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-concept-response-status">
+   <a href="https://fetch.spec.whatwg.org/#concept-response-status">https://fetch.spec.whatwg.org/#concept-response-status</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-response-status">1.4. Navigating</a>
+    <li><a href="#ref-for-concept-response-status①">1.5. Traversing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-request-url">
@@ -4045,6 +4063,11 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
+    <a data-link-type="biblio">[CONSOLE]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-report-a-warning-to-the-console">report a warning to the console</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[DOM]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-abortsignal">AbortSignal</span>
@@ -4073,6 +4096,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-fetch-scheme">fetch scheme</span>
      <li><span class="dfn-paneled" id="term-for-dom-global-fetch">fetch(input)</span>
      <li><span class="dfn-paneled" id="term-for-concept-request">request</span>
+     <li><span class="dfn-paneled" id="term-for-concept-response-status">status</span>
      <li><span class="dfn-paneled" id="term-for-concept-request-url">url</span>
     </ul>
    <li>
@@ -4287,6 +4311,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   </dl>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
+   <dt id="biblio-console">[CONSOLE]
+   <dd>Dominic Farolino; Robert Kowalski; Terin Stock. <a href="https://console.spec.whatwg.org/"><cite>Console Standard</cite></a>. Living Standard. URL: <a href="https://console.spec.whatwg.org/">https://console.spec.whatwg.org/</a>
    <dt id="biblio-csp">[CSP]
    <dd>Mike West. <a href="https://w3c.github.io/webappsec-csp/"><cite>Content Security Policy Level 3</cite></a>. URL: <a href="https://w3c.github.io/webappsec-csp/">https://w3c.github.io/webappsec-csp/</a>
    <dt id="biblio-webappsec-fetch-metadata-1">[WEBAPPSEC-FETCH-METADATA-1]
@@ -4720,6 +4746,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-dom-navigationtransition-finished">1.3. Ongoing navigation tracking</a> <a href="#ref-for-dom-navigationtransition-finished①">(2)</a> <a href="#ref-for-dom-navigationtransition-finished②">(3)</a> <a href="#ref-for-dom-navigationtransition-finished③">(4)</a>
     <li><a href="#ref-for-dom-navigationtransition-finished④">2.3. Firing the event</a>
+    <li><a href="#ref-for-dom-navigationtransition-finished⑤">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-navigationtransition-finished⑥">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-navigationtransition-rollback">
@@ -4747,6 +4774,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-navigation-ongoing-navigation">1. The Navigation class</a> <a href="#ref-for-navigation-ongoing-navigation①">(2)</a> <a href="#ref-for-navigation-ongoing-navigation②">(3)</a>
     <li><a href="#ref-for-navigation-ongoing-navigation③">1.3. Ongoing navigation tracking</a> <a href="#ref-for-navigation-ongoing-navigation④">(2)</a> <a href="#ref-for-navigation-ongoing-navigation⑤">(3)</a> <a href="#ref-for-navigation-ongoing-navigation⑥">(4)</a> <a href="#ref-for-navigation-ongoing-navigation⑦">(5)</a>
     <li><a href="#ref-for-navigation-ongoing-navigation⑧">2.3. Firing the event</a> <a href="#ref-for-navigation-ongoing-navigation⑨">(2)</a>
+    <li><a href="#ref-for-navigation-ongoing-navigation①⓪">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigation-upcoming-non-traverse-navigation">
@@ -4979,6 +5007,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-eventdef-navigation-navigateerror">1.3. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-navigation-navigateerror①">(2)</a> <a href="#ref-for-eventdef-navigation-navigateerror②">(3)</a> <a href="#ref-for-eventdef-navigation-navigateerror③">(4)</a> <a href="#ref-for-eventdef-navigation-navigateerror④">(5)</a>
     <li><a href="#ref-for-eventdef-navigation-navigateerror⑤">2.1. The NavigateEvent class</a>
     <li><a href="#ref-for-eventdef-navigation-navigateerror⑥">2.3. Firing the event</a> <a href="#ref-for-eventdef-navigation-navigateerror⑦">(2)</a> <a href="#ref-for-eventdef-navigation-navigateerror⑧">(3)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigateerror⑨">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-navigation-oncurrententrychange">
