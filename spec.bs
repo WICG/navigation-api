@@ -275,7 +275,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. [=list/For each=] |she| of |navigationAPISHEs|:
 
-    1. If |navigation|'s [=Navigation/entry list=] [=list/contains=] A {{NavigationHistoryEntry}} |existingAHE| whose [=NavigationHistoryEntry/session history entry=] is |she|, then:
+    1. If |navigation|'s [=Navigation/entry list=] [=list/contains=] a {{NavigationHistoryEntry}} |existingAHE| whose [=NavigationHistoryEntry/session history entry=] is |she|, then:
 
       1. [=list/Append=] |existingAHE| to |newEntryList|.
 
@@ -598,7 +598,7 @@ We also need to ensure that, if we start a new navigation, navigations which hav
 
 We end up accomplishing all this using the following setup:
 
-Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigate event</dfn>, A {{NavigateEvent}} or null, initially null.
+Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigate event</dfn>, a {{NavigateEvent}} or null, initially null.
 
 Each {{Navigation}} object has an associated <dfn for="Navigation">ongoing navigation signal</dfn>, which is an {{AbortSignal}} or null, initially null.
 
@@ -614,7 +614,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 * A <dfn for="navigation API method navigation">key</dfn>, a string or null
 * An <dfn for="navigation API method navigation">info</dfn>, a JavaScript value
 * An <dfn for="navigation API method navigation">serialized state</dfn>, a [=serialized state=] or null
-* A <dfn for="navigation API method navigation">committed-to entry</dfn>, A {{NavigationHistoryEntry}} or null
+* A <dfn for="navigation API method navigation">committed-to entry</dfn>, a {{NavigationHistoryEntry}} or null
 * A <dfn for="navigation API method navigation">committed promise</dfn>, a {{Promise}}
 * A <dfn for="navigation API method navigation">finished promise</dfn>, a {{Promise}}
 
@@ -703,7 +703,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 </div>
 
 <div algorithm>
-  To <dfn for="navigation API method navigation">notify about the committed-to entry</dfn> given a [=navigation API method navigation=] |navigation| and A {{NavigationHistoryEntry}} |entry|:
+  To <dfn for="navigation API method navigation">notify about the committed-to entry</dfn> given a [=navigation API method navigation=] |navigation| and a {{NavigationHistoryEntry}} |entry|:
 
   1. Set |navigation|'s [=navigation API method navigation/committed-to entry=] to |entry|.
 
@@ -924,7 +924,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 <div algorithm>
   <p class="advisement">The following algorithm is specified in terms of the <a href="https://github.com/whatwg/html/pull/6315">session history rewrite pull request</a> against the HTML Standard, because the existing session history traversal infrastructure is broken enough that it's hard to build on. It is expected to track that work as it continues.</p>
 
-  To <dfn>perform a navigation API traversal</dfn> given a {{Navigation}} object |navigation|, a string |key|, and A {{NavigationOptions}} |options|:
+  To <dfn>perform a navigation API traversal</dfn> given a {{Navigation}} object |navigation|, a string |key|, and a {{NavigationOptions}} |options|:
 
   1. If |navigation|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
@@ -1234,7 +1234,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 </div>
 
 <div algorithm="fire a non-traversal navigate event">
-  To <dfn>fire a non-traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given A {{NavigationNavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
+  To <dfn>fire a non-traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a {{NavigationNavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
   1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
@@ -1249,7 +1249,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 </div>
 
 <div algorithm>
-  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, A {{NavigationNavigationType}} |navigationType|, A {{NavigateEvent}} |event|, A {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and an [=entry list=] or null |formDataEntryList|:
+  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, a {{NavigationNavigationType}} |navigationType|, a {{NavigateEvent}} |event|, a {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and an [=entry list=] or null |formDataEntryList|:
 
   1. [=Navigation/Promote the upcoming navigation to ongoing=] given |navigation| and |destination|'s [=NavigationDestination/key=].
   1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
