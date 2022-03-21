@@ -779,13 +779,15 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=an early error result=] for a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
   1. Let |serializedState| be null.
 
   1. If |options|["{{NavigationNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{NavigationNavigateOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
+
+     <p class="note">It is important to perform this step early, since serialization can invoke web developer code, which in turn might change the state checked in later steps.</p>
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
@@ -797,21 +799,23 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 <div algorithm>
   The <dfn method for="Navigation">reload(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
   1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
 
   1. Let |serializedState| be null.
 
   1. If |options|["{{NavigationReloadOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{NavigationReloadOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
 
+     <p class="note">It is important to perform this step early, since serialization can invoke web developer code, which in turn might change the state checked in later steps.</p>
+
   1. Otherwise,
 
     1. Let |current| be the [=Navigation/current entry=] of [=this=].
 
     1. If |current| is not null, then set |serializedState| to |current|'s [=session history entry/navigation API state=].
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
