@@ -489,15 +489,15 @@ interface NavigationTransition {
   </dd>
 </dl>
 
-A {{Navigation}} has a <dfn for="Navigation">transition</dfn>, which is A {{NavigationTransition}} or null.
+A {{Navigation}} has a <dfn for="Navigation">transition</dfn>, which is a {{NavigationTransition}} or null.
 
 The <dfn attribute for="Navigation">transition</dfn> getter steps are to return [=this=]'s [=Navigation/transition=].
 
 <hr>
 
-A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">navigation type</dfn>, which is A {{NavigationNavigationType}}.
+A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">navigation type</dfn>, which is a {{NavigationNavigationType}}.
 
-A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">from entry</dfn>, which is A {{NavigationHistoryEntry}}.
+A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">from entry</dfn>, which is a {{NavigationHistoryEntry}}.
 
 A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">finished promise</dfn>, which is an {{Promise}}.
 
