@@ -217,7 +217,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. If |navigation| [=Navigation/has entries and events disabled=], then:
 
-    1. Assert: |navigation|'s [=Navigation/entry list=] [=list/is empty=].
+    1. [=Assert=]: |navigation|'s [=Navigation/entry list=] [=list/is empty=].
 
     1. Return.
 
@@ -319,7 +319,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
     1. Increment |index| by 1.
 
-  1. Assert: this step is never reached.
+  1. [=Assert=]: this step is never reached.
 </div>
 
 <h3 id="entries-api">Introspecting the navigation API history entry list</h3>
@@ -354,7 +354,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. If [=this=] [=Navigation/has entries and events disabled=], then return false.
 
-  1. Assert: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
+  1. [=Assert=]: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
 
   1. If [=this=]'s [=Navigation/current entry index=] is 0, then return false.
 
@@ -366,7 +366,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. If [=this=] [=Navigation/has entries and events disabled=], then return false.
 
-  1. Assert: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
+  1. [=Assert=]: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
 
   1. If [=this=]'s [=Navigation/current entry index=] is equal to [=this=]'s [=Navigation/entry list=]'s [=list/size=] &minus; 1, then return false.
 
@@ -407,15 +407,15 @@ dictionary NavigationCurrentEntryChangeEventInit : EventInit {
 <div algorithm>
   The <dfn for="Navigation">current entry</dfn> for a {{Navigation}} |navigation| is the result running of the following algorithm:
 
-  1. If [=this=] [=Navigation/has entries and events disabled=], then return null.
+  1. If |navigation| [=Navigation/has entries and events disabled=], then return null.
 
-  1. Assert: [=this=]'s [=Navigation/current entry index=] is not &minus;1.
+  1. [=Assert=]: |navigation|'s [=Navigation/current entry index=] is not &minus;1.
 
   1. Return |navigation|'s [=Navigation/entry list=][|navigation|'s [=Navigation/current entry index=]].
 </div>
 
 <p algorithm>
-  The <dfn attribute for="Navigation">current</dfn> getter steps are to return the [=Navigation/current entry=] for [=this=].
+  The <dfn attribute for="Navigation">currentEntry</dfn> getter steps are to return the [=Navigation/current entry=] for [=this=].
 </p>
 
 <div algorithm>
@@ -625,7 +625,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant Realm=].
 
-  1. Mark as handled |finishedPromise|. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
+  1. [=Mark as handled=] |finishedPromise|.
 
      <div class="note" id="note-finished-promise-mark-as-handled">
       The web developer doesn't necessarily care about |finishedPromise| being rejected:
@@ -641,7 +641,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |ongoingNavigation| be a [=navigation API method navigation=] whose [=navigation API method navigation/navigation object=] is |navigation|, [=navigation API method navigation/key=] is null, [=navigation API method navigation/info=] is |info|, [=navigation API method navigation/serialized state=] is |serializedState|, [=navigation API method navigation/committed-to entry=] is null, [=navigation API method navigation/committed promise=] is |committedPromise|, and [=navigation API method navigation/finished promise=] is |finishedPromise|.
 
-  1. Assert: |navigation|'s [=Navigation/upcoming non-traverse navigation=] is null.
+  1. [=Assert=]: |navigation|'s [=Navigation/upcoming non-traverse navigation=] is null.
 
   1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to |ongoingNavigation|.
 
@@ -653,7 +653,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant Realm=].
 
-  1. Mark as handled |finishedPromise|. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
+  1. [=Mark as handled=] |finishedPromise|.
 
      <p class="note">See <a href="#note-finished-promise-mark-as-handled">the previous discussion</a> as to why this is done.</p>
 
@@ -667,11 +667,11 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 <div algorithm>
   To <dfn for="Navigation">promote the upcoming navigation to ongoing</dfn> given a {{Navigation}} |navigation| and a string-or-null |destinationKey|:
 
-  1. Assert: |navigation|'s [=Navigation/ongoing navigation=] is null.
+  1. [=Assert=]: |navigation|'s [=Navigation/ongoing navigation=] is null.
 
   1. If |destinationKey| is not null, then:
 
-    1. Assert: |navigation|'s [=Navigation/upcoming non-traverse navigation=] is null.
+    1. [=Assert=]: |navigation|'s [=Navigation/upcoming non-traverse navigation=] is null.
 
     1. If |navigation|'s [=Navigation/upcoming traverse navigations=][|destinationKey|] [=map/exists=], then:
 
@@ -695,9 +695,9 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Otherwise,
 
-    1. Assert: |navigation|'s [=navigation API method navigation/key=] is not null.
+    1. [=Assert=]: |navigation|'s [=navigation API method navigation/key=] is not null.
 
-    1. Assert: |navigation|'s [=Navigation/upcoming traverse navigations=][|navigation|'s [=navigation API method navigation/key=]] [=map/exists=].
+    1. [=Assert=]: |navigation|'s [=Navigation/upcoming traverse navigations=][|navigation|'s [=navigation API method navigation/key=]] [=map/exists=].
 
     1. [=map/Remove=] |navigation|'s [=Navigation/upcoming traverse navigations=][|navigation|'s [=navigation API method navigation/key=]].
 </div>
@@ -825,7 +825,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. [=Assert=]: |browsingContext| is not null.
 
-  1. Assert: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
+  1. [=Assert=]: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
 
   1. Let |ongoingNavigation| be the result of [=Navigation/setting the upcoming non-traverse navigation=] for |navigation| given |info| and |serializedState|.
 
@@ -1230,7 +1230,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |destination|'s [=NavigationDestination/state=] to null.
   1. Set |destination|'s [=NavigationDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |navigation|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
   1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, and null.
-  1. Assert: |result| is true (traversals are never cancelable).
+  1. [=Assert=]: |result| is true (traversals are never cancelable).
 </div>
 
 <div algorithm="fire a non-traversal navigate event">
@@ -1292,9 +1292,9 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |endResultIsSameDocument| be true if |hadTransitionWhile| is true or |destination|'s [=NavigationDestination/is same document=] is true.
   1. If |hadTransitionWhile| is true:
     1. Let |fromEntry| be the [=Navigation/current entry=] for |navigation|.
-    1. Assert: |fromEntry| is not null.
+    1. [=Assert=]: |fromEntry| is not null.
     1. Set |navigation|'s [=Navigation/transition=] to a [=new=] {{NavigationTransition}} created in |navigation|'s [=relevant Realm=], whose [=NavigationTransition/navigation type=] is |navigationType|, [=NavigationTransition/from entry=] is |fromEntry|, and whose [=NavigationTransition/finished promise=] is [=a new promise=] created in |navigation|'s [=relevant Realm=].
-    1. Mark as handled |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=]. <!-- TODO: link once https://github.com/whatwg/webidl/pull/1090 is merged -->
+    1. [=Mark as handled=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=].
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
   1. If |endResultIsSameDocument| is true:
     1. Let |tweakedPromisesList| be |event|'s  [=NavigateEvent/navigation action promises list=].
