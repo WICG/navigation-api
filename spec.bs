@@ -785,10 +785,6 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
      <p class="note">It is important to perform this step early, since serialization can invoke web developer code, which in turn might change the state checked in later steps.</p>
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
   1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{NavigationNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
@@ -813,10 +809,6 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
     1. If |current| is not null, then set |serializedState| to |current|'s [=session history entry/navigation API state=].
 
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If [=this=]'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
   1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and "<a for="history handling behavior">`reload`</a>".
@@ -824,6 +816,10 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
 <div algorithm>
   To <dfn>perform a non-traverse navigation API navigation</dfn> given a {{Navigation}} object |navigation|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
+
+  1. If |navigation|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If |navigation|'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
 
