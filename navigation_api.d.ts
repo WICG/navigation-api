@@ -118,6 +118,7 @@ declare class NavigateEvent extends Event {
   readonly destination: NavigationDestination;
   readonly signal: AbortSignal;
   readonly formData: FormData|null;
+  readonly requestDownlaod: string|null;
   readonly info: unknown;
 
   transitionWhile(newNavigationAction: Promise<any>, options?: NavigationTransitionWhileOptions): void;
@@ -131,6 +132,7 @@ interface NavigateEventInit extends EventInit {
   destination: NavigationDestination;
   signal: AbortSignal;
   formData?: FormData|null;
+  requestDownload?: string|null;
   info?: unknown;
 }
 

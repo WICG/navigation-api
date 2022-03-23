@@ -26,7 +26,7 @@ An application or framework's centralized router can use the `navigate` event to
 
 ```js
 navigation.addEventListener("navigate", e => {
-  if (!e.canTransition || e.hashChange) {
+  if (!e.canTransition || e.hashChange || e.requestDownload !== null) {
     return;
   }
 
@@ -323,6 +323,8 @@ The event object has several useful properties:
 
 - `formData`: a [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData) object containing form submission data, or `null` if the navigation is not a form submission.
 
+- `requestDownload`: a string or null, indicating whether this navigation was initiated by a `<a href="..." download>` link. If it was, then this will contain the value of the attribute (which could be the empty string).
+
 - `info`: any value passed by `navigation.navigate(url, { state, info })`, `navigation.back({ info })`, or similar, if the navigation was initiated by one of those methods and the `info` option was supplied. Otherwise, undefined. See [the example below](#example-using-info) for more.
 
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
@@ -358,8 +360,8 @@ navigation.addEventListener("navigate", e => {
     return;
   }
 
-  // Don't intercept fragment navigations.
-  if (e.hashChange) {
+  // Don't intercept fragment navigations or downloads.
+  if (e.hashChange || e.requestDownload !== null) {
     return;
   }
 
@@ -405,7 +407,7 @@ Sometimes it's desirable to handle back/forward navigations specially, e.g. reus
 ```js
 navigation.addEventListener("navigate", e => {
   // As before.
-  if (!e.canTransition || e.hashChange) {
+  if (!e.canTransition || e.hashChange || e.requestDownload !== null) {
     return;
   }
 
