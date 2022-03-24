@@ -132,7 +132,7 @@ interface NavigateEventInit extends EventInit {
   destination: NavigationDestination;
   signal: AbortSignal;
   formData?: FormData|null;
-  requestDownload?: string|null;
+  downloadRequest?: string|null;
   info?: unknown;
 }
 

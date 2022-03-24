@@ -1034,7 +1034,7 @@ interface NavigateEvent : Event {
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
-  readonly attribute DOMString? requestDownload;
+  readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
   undefined transitionWhile(Promise<undefined> newNavigationAction);
@@ -1048,7 +1048,7 @@ dictionary NavigateEventInit : EventInit {
   boolean hashChange = false;
   required AbortSignal signal;
   FormData? formData = null;
-  DOMString? requestDownload = null;
+  DOMString? downloadRequest = null;
   any info;
 };
 
@@ -1102,7 +1102,7 @@ enum NavigationNavigationType {
     <p>(Notably, this will be null even for "{{NavigationNavigationType/reload}}" and "{{NavigationNavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
   </dd>
 
-  <dt><code><var ignore>event</var>.{{NavigateEvent/requestDownload}}</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/downloadRequest}}</code>
   <dd>
     <p>Represents whether or not this navigation was requested to be a download, by using an <{a}> or <{area}> element's <{a/download}> attribute:
 
@@ -1131,7 +1131,7 @@ enum NavigationNavigationType {
   </dd>
 </dl>
 
-The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, <dfn attribute for="NavigateEvent">requestDownload</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
+The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, <dfn attribute for="NavigateEvent">downloadRequest</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
 A {{NavigateEvent}} has the following associated values which are only conditionally used:
 
@@ -1306,7 +1306,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
   1. Initialize |event|'s {{NavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{NavigateEvent/destination}} to |destination|.
-  1. Initialize |event|'s {{NavigateEvent/requestDownload}} to |downloadRequestFilename|.
+  1. Initialize |event|'s {{NavigateEvent/downloadRequest}} to |downloadRequestFilename|.
   1. If |ongoingNavigation| is not null, then initialize |event|'s {{NavigateEvent/info}} to |ongoingNavigation|'s [=navigation API method navigation/info=]. Otherwise, initialize it to undefined.
      <p class="note">At this point |ongoingNavigation|'s [=navigation API method navigation/info=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=navigation API method navigation=].
   1. Initialize |event|'s {{NavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |navigation|'s [=relevant Realm=].
@@ -1728,7 +1728,7 @@ Expand the section of the navigation/traversal response handling which deals wit
 
 The current specification for <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> has several known issues, most notably <a href="https://github.com/whatwg/html/issues/5548">whatwg/html#5548</a> which indicates that the specification should probably be merged into the general <a spec="HTML" lt="navigate">navigation</a> algorithm.
 
-For the purposes of the navigation API, we need to fire the appropriate {{Navigation/navigate}} event, with {{NavigateEvent/requestDownload}} set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.
+For the purposes of the navigation API, we need to fire the appropriate {{Navigation/navigate}} event, with {{NavigateEvent/downloadRequest}} set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.
 
 <div algorithm="download the hyperlink">
 <ul>
