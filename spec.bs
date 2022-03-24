@@ -1113,7 +1113,7 @@ enum NavigationNavigationType {
 
     <p>Similarly, a navigation might end up being a download even if it was not requested to be one, due to the destination server responding with a `Content-Disposition: attachment` header.
 
-    <p>Finally, note that the {{Navigation/navigate}} event will not fire for at all for downloads initiated using browser UI affordances, e.g. those created by right-clicking and choosing to save the target of the link.
+    <p>Finally, note that the {{Navigation/navigate}} event will not fire at all for downloads initiated using browser UI affordances, e.g., those created by right-clicking and choosing to save the target of the link.
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/info}}</code>
