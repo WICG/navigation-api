@@ -181,7 +181,7 @@ dictionary NavigationOptions {
 
 dictionary NavigationNavigateOptions : NavigationOptions {
   any state;
-  boolean replace = false;
+  NavigationHistoryBehavior history = "auto";
 };
 
 dictionary NavigationReloadOptions : NavigationOptions {
@@ -191,6 +191,12 @@ dictionary NavigationReloadOptions : NavigationOptions {
 dictionary NavigationResult {
   Promise<NavigationHistoryEntry> committed;
   Promise<NavigationHistoryEntry> finished;
+};
+
+enum NavigationHistoryBehavior {
+  "auto",
+  "push",
+  "replace"
 };
 </xmp>
 
@@ -742,7 +748,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
   <dd>
     <p>Navigates the current page to the given <var ignore>url</var>. <var ignore>options</var> can contain the following values:
 
-    * {{NavigationNavigateOptions/replace}} can be set to true to replace the current session history entry, instead of pushing a new one.
+    * {{NavigationNavigateOptions/history}} can be set to "{{NavigationHistoryBehavior/replace}}" to replace the current session history entry, instead of pushing a new one.
     * {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
     * {{NavigationNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{NavigationHistoryEntry/getState()|navigation.currentEntry.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
@@ -779,6 +785,23 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=an early error result=] for a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
+  1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated document=].
+
+  1. If |options|["{{NavigationNavigateOptions/history}}"] is "{{NavigationHistoryBehavior/push}}", and any of the following are true:
+
+     * |document|'s <a spec="HTML">is initial about:blank</a> is true;
+     * |document| is not <a spec="HTML">completely loaded</a>;
+     * |url| equals |document|'s [=Document/URL=]; or
+     * |url|'s [=url/scheme=] is "`javascript`"
+
+     then return [=an early error result=] for a "{{NotSupportedError}}" {{DOMException}}.
+
+     <div class="note">
+      <p>These are the conditions under which a push navigation will be converted into a replace navigation by the <a spec="HTML">navigate</a> algorithm or by the below step. If the developer explicitly requested a push, we fail to let them know it won't happen.
+
+      <p>In the future, we could consider loosening some of these conditions, e.g., allowing explicitly-requested push navigations to the current URL or before the document is completely loaded.
+     </div>
+
   1. Let |serializedState| be null.
 
   1. If |options|["{{NavigationNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{NavigationNavigateOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
@@ -787,7 +810,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
-  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{NavigationNavigateOptions/replace}}"] is true; otherwise, "<a for="history handling behavior">`default`</a>".
+  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{NavigationNavigateOptions/history}}"] is "{{NavigationHistoryBehavior/replace}}" or if |document| is not <a spec="HTML">completely loaded</a>; otherwise, "<a for="history handling behavior">`default`</a>".
 
   1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and |historyHandling|.
 </div>
