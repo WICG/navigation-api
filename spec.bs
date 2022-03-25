@@ -21,6 +21,7 @@ Assume Explicit For: yes
 
 <pre class="link-defaults">
 spec: html; type: element; text: a
+spec: html; type: element-attr; for: a; text: download
 </pre>
 <pre class="anchors">
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
@@ -130,6 +131,13 @@ table {
   position: absolute;
   top: -0.8em;
   left: -0.8em;
+}
+
+/* .XXX from https://resources.whatwg.org/standard.css */
+.XXX {
+  color: #D50606;
+  background: white;
+  border: solid #D50606;
 }
 </style>
 
@@ -1026,6 +1034,7 @@ interface NavigateEvent : Event {
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
+  readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
   undefined transitionWhile(Promise<undefined> newNavigationAction);
@@ -1039,6 +1048,7 @@ dictionary NavigateEventInit : EventInit {
   boolean hashChange = false;
   required AbortSignal signal;
   FormData? formData = null;
+  DOMString? downloadRequest = null;
   any info;
 };
 
@@ -1092,6 +1102,20 @@ enum NavigationNavigationType {
     <p>(Notably, this will be null even for "{{NavigationNavigationType/reload}}" and "{{NavigationNavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
   </dd>
 
+  <dt><code><var ignore>event</var>.{{NavigateEvent/downloadRequest}}</code>
+  <dd>
+    <p>Represents whether or not this navigation was requested to be a download, by using an <{a}> or <{area}> element's <{a/download}> attribute:
+
+    * If a download was not requested, then this property is null.
+    * If a download was requested, returns the filename that was supplied, via `<a download="filename" href="...">`. (This could be the empty string, as in the case of `<a download href="...">`.)
+
+    <p>Note that a download being requested does not always mean that a download will happen: for example, the download might be blocked by browser security policies, or end up being treated as a push navigation for <a href="https://github.com/whatwg/html/issues/7718" class="XXX">unspecified reasons</a>.
+
+    <p>Similarly, a navigation might end up being a download even if it was not requested to be one, due to the destination server responding with a `Content-Disposition: attachment` header.
+
+    <p>Finally, note that the {{Navigation/navigate}} event will not fire at all for downloads initiated using browser UI affordances, e.g., those created by right-clicking and choosing to save the target of the link.
+  </dd>
+
   <dt><code><var ignore>event</var>.{{NavigateEvent/info}}</code>
   <dd>
     <p>An arbitrary JavaScript value passed via {{Window/navigation}} APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-{{Window/navigation}} API.
@@ -1107,7 +1131,7 @@ enum NavigationNavigationType {
   </dd>
 </dl>
 
-The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
+The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, <dfn attribute for="NavigateEvent">downloadRequest</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
 A {{NavigateEvent}} has the following associated values which are only conditionally used:
 
@@ -1216,6 +1240,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   To <dfn>fire a traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a [=session history entry=] <dfn for="fire a traversal navigate event">|destinationEntry|</dfn>, and an optional [=user navigation involvement=] <dfn for="fire a traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"):
 
   1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to null.
   1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
   1. Set |destination|'s [=NavigationDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
   1. If |destinationEntry|'s [=session history entry/origin=] is [=same origin=] with |navigation|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
@@ -1229,7 +1254,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
     1. Set |destination|'s [=NavigationDestination/state=] to null.
   1. Set |destination|'s [=NavigationDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |navigation|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
-  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, and null.
+  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, null, and null.
   1. [=Assert=]: |result| is true (traversals are never cancelable).
 </div>
 
@@ -1245,11 +1270,26 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
   1. Set |destination|'s [=NavigationDestination/state=] to |state|.
   1. Set |destination|'s [=NavigationDestination/is same document=] to |isSameDocument|.
-  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, |navigationType|, |event|, |destination|, |userInvolvement|, and |formDataEntryList|.
+  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, |navigationType|, |event|, |destination|, |userInvolvement|, |formDataEntryList|, and null.
+</div>
+
+<div algorithm="fire a download-requested navigate event">
+  To <dfn>fire a download-requested `navigate` event</dfn> at a {{Navigation}} |navigation| given a [=URL=] <dfn for="fire a download-requested navigate event">|destinationURL|</dfn>, a [=user navigation involvement=] <dfn for="fire a download-requested navigate event">|userInvolvement|</dfn>, and a string <dfn for="fire a download-requested navigate event">|filename|</dfn>:
+
+  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to null.
+  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
+  1. Set |destination|'s [=NavigationDestination/URL=] to |destinationURL|.
+  1. Set |destination|'s [=NavigationDestination/key=] to null.
+  1. Set |destination|'s [=NavigationDestination/id=] to null.
+  1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
+  1. Set |destination|'s [=NavigationDestination/state=] to null.
+  1. Set |destination|'s [=NavigationDestination/is same document=] to false.
+  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/push}}", |event|, |destination|, |userInvolvement|, null, and |filename|.
 </div>
 
 <div algorithm>
-  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, a {{NavigationNavigationType}} |navigationType|, a {{NavigateEvent}} |event|, a {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, and an [=entry list=] or null |formDataEntryList|:
+  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, a {{NavigationNavigationType}} |navigationType|, a {{NavigateEvent}} |event|, a {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, an [=entry list=] or null |formDataEntryList|, and a string or null |downloadRequestFilename|:
 
   1. [=Navigation/Promote the upcoming navigation to ongoing=] given |navigation| and |destination|'s [=NavigationDestination/key=].
   1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
@@ -1266,6 +1306,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
   1. Initialize |event|'s {{NavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{NavigateEvent/destination}} to |destination|.
+  1. Initialize |event|'s {{NavigateEvent/downloadRequest}} to |downloadRequestFilename|.
   1. If |ongoingNavigation| is not null, then initialize |event|'s {{NavigateEvent/info}} to |ongoingNavigation|'s [=navigation API method navigation/info=]. Otherwise, initialize it to undefined.
      <p class="note">At this point |ongoingNavigation|'s [=navigation API method navigation/info=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=navigation API method navigation=].
   1. Initialize |event|'s {{NavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |navigation|'s [=relevant Realm=].
@@ -1681,6 +1722,33 @@ Expand the section of the navigation/traversal response handling which deals wit
   Modify the <a spec="HTML">apply the history step</a> algorithm as follows. Inside the loop over each <var ignore>navigable</var> of <var ignore>toTraverse</var>, inside the task that is posted, after the check if |targetEntry|'s document is |previousDocument| that might abort the algorithm, add the following steps:
 
   1. [=Fire a traversal navigate event=] at |previousDocument|'s [=relevant global object=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
+</div>
+
+<h3 id="navigate-event-download-patches">Download a hyperlink updates</h3>
+
+The current specification for <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> has several known issues, most notably <a href="https://github.com/whatwg/html/issues/5548">whatwg/html#5548</a> which indicates that the specification should probably be merged into the general <a spec="HTML" lt="navigate">navigation</a> algorithm.
+
+For the purposes of the navigation API, we need to fire the appropriate {{Navigation/navigate}} event, with {{NavigateEvent/downloadRequest}} set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.
+
+<div algorithm="download the hyperlink">
+<ul>
+  <li><p>Ensure that the algorithm gets an appropriate [=user navigation involvement=] value, |userInvolvement|, passed to it. This is similar to the modifications for the <a spec="HTML">follow the hyperlink</a> algorithm described in [[#user-initiated-patches]]. One key difference is that, for the case where the user indicates a preference for downloading, |userInvolvement| must be "<code>[=user navigation involvement/browser UI=]</code>", even if it is triggered as part of [=EventTarget/activation behavior=].
+
+  <li><p>Separate out the sandboxing checks in <a spec="HTML">allowed to download</a> from the user-safeguarding checks. If the sandboxing checks fail, then the user agent must not fire a {{Navigation/navigate}} event. Whereas, the user-safeguarding checks generally happen later, probably [=in parallel=].
+
+  <li>
+    <p>Before we reach the point at which it's time to actually go in parallel and fetch content from the server, and after the <a spec="HTML">cannot navigate</a> check, the synchronously-possible part of the <a spec="HTML">allowed to download</a> check, the URL parsing step, and the hyperlink suffix appending step, run the equivalent of the following:
+
+    1. If |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
+      1. Let |navigation| be |subject|'s [=relevant global object=]'s [=Window/navigation API=].
+      1. Let |filename| be the value of |subject|'s <{a/download}> attribute.
+      1. Let |continue| be the result of [=firing a download-requested navigate event=] at |navigation| with <i>[=fire a download-requested navigate event/destinationURL=]</i> set to |URL|, <i>[=fire a download-requested navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a download-requested navigate event/filename=]</i> set to |filename|.
+      1. If |continue| is false, then return.
+
+    <p>Here the variables |subject| and |URL| refer to the same things they currently do in the <a spec="HTML">download the hyperlink</a> algorithm, i.e. the <{a}> or <{area}> element in question, and the parsed [=URL=].
+
+    <p>If we end up triggering the <a spec="HTML">navigate</a> algorithm from the <a spec="HTML">download the hyperlink</a> algorithm, then these steps won't be directly incorporated into the <a spec="HTML">download the hyperlink</a> algorithm. Instead, the modifications in [[#navigate-algorithm-patches]] will get a bit more complicated, so as to use [=fire a download-requested navigate event=] with the above arguments, instead of [=fire a non-traversal navigate event=], for downloads.
+</ul>
 </div>
 
 <h2 id="session-history-patches">Patches to session history</h2>
