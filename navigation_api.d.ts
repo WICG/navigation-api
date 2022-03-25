@@ -89,7 +89,7 @@ interface NavigationOptions {
 
 interface NavigationNavigateOptions extends NavigationOptions {
   state?: unknown;
-  replace?: boolean;
+  history?: "auto"|"push"|"replace";
 }
 
 interface NavigationReloadOptions extends NavigationOptions {
