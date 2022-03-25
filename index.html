@@ -67,6 +67,13 @@ table {
   top: -0.8em;
   left: -0.8em;
 }
+
+/* .XXX from https://resources.whatwg.org/standard.css */
+.XXX {
+  color: #D50606;
+  background: white;
+  border: solid #D50606;
+}
 </style>
 <style>/* style-autolinks */
 
@@ -649,7 +656,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Navigation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-23">23 March 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-03-25">25 March 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -711,6 +718,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
       <li><a href="#user-initiated-patches"><span class="secno">4.2</span> <span class="content">Browser UI/user-initiated patches</span></a>
       <li><a href="#navigate-algorithm-patches"><span class="secno">4.3</span> <span class="content">Navigation algorithm updates</span></a>
       <li><a href="#navigate-event-traversal-patches"><span class="secno">4.4</span> <span class="content">History traversal updates</span></a>
+      <li><a href="#navigate-event-download-patches"><span class="secno">4.5</span> <span class="content">Download a hyperlink updates</span></a>
      </ol>
     <li>
      <a href="#session-history-patches"><span class="secno">5</span> <span class="content">Patches to session history</span></a>
@@ -1613,6 +1621,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean⑤"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-navigateevent-hashchange" id="ref-for-dom-navigateevent-hashchange"><c- g>hashChange</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal①"><c- n>AbortSignal</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="AbortSignal" href="#dom-navigateevent-signal" id="ref-for-dom-navigateevent-signal②"><c- g>signal</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata"><c- n>FormData</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="FormData?" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata"><c- g>formData</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString③"><c- b>DOMString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString?" href="#dom-navigateevent-downloadrequest" id="ref-for-dom-navigateevent-downloadrequest"><c- g>downloadRequest</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-any" id="ref-for-idl-any④"><c- b>any</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="any" href="#dom-navigateevent-info" id="ref-for-dom-navigateevent-info⑤"><c- g>info</c-></a>;
 
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined②"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-navigateevent-transitionwhile" id="ref-for-dom-navigateevent-transitionwhile①②"><c- g>transitionWhile</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise⑨"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined③"><c- b>undefined</c-></a>> <dfn class="idl-code" data-dfn-for="NavigateEvent/transitionWhile(newNavigationAction)" data-dfn-type="argument" data-export id="dom-navigateevent-transitionwhile-newnavigationaction-newnavigationaction"><code><c- g>newNavigationAction</c-></code><a class="self-link" href="#dom-navigateevent-transitionwhile-newnavigationaction-newnavigationaction"></a></dfn>);
@@ -1626,6 +1635,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean⑧"><c- b>boolean</c-></a> <dfn class="idl-code" data-default="false" data-dfn-for="NavigateEventInit" data-dfn-type="dict-member" data-export data-type="boolean " id="dom-navigateeventinit-hashchange"><code><c- g>hashChange</c-></code><a class="self-link" href="#dom-navigateeventinit-hashchange"></a></dfn> = <c- b>false</c->;
   <c- b>required</c-> <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal②"><c- n>AbortSignal</c-></a> <dfn class="idl-code" data-dfn-for="NavigateEventInit" data-dfn-type="dict-member" data-export data-type="AbortSignal " id="dom-navigateeventinit-signal"><code><c- g>signal</c-></code><a class="self-link" href="#dom-navigateeventinit-signal"></a></dfn>;
   <a data-link-type="idl-name" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata①"><c- n>FormData</c-></a>? <dfn class="idl-code" data-default="null" data-dfn-for="NavigateEventInit" data-dfn-type="dict-member" data-export data-type="FormData? " id="dom-navigateeventinit-formdata"><code><c- g>formData</c-></code><a class="self-link" href="#dom-navigateeventinit-formdata"></a></dfn> = <c- b>null</c->;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString④"><c- b>DOMString</c-></a>? <dfn class="idl-code" data-default="null" data-dfn-for="NavigateEventInit" data-dfn-type="dict-member" data-export data-type="DOMString? " id="dom-navigateeventinit-downloadrequest"><code><c- g>downloadRequest</c-></code><a class="self-link" href="#dom-navigateeventinit-downloadrequest"></a></dfn> = <c- b>null</c->;
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-any" id="ref-for-idl-any⑤"><c- b>any</c-></a> <dfn class="idl-code" data-dfn-for="NavigateEventInit" data-dfn-type="dict-member" data-export data-type="any " id="dom-navigateeventinit-info"><code><c- g>info</c-></code><a class="self-link" href="#dom-navigateeventinit-info"></a></dfn>;
 };
 
@@ -1662,6 +1672,18 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     <dd>
      <p>The <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata②">FormData</a></code> representing the submitted form entries for this navigation, if this navigation is a "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push③">push</a></code>" or "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-replace" id="ref-for-dom-navigationnavigationtype-replace③">replace</a></code>" navigation representing a POST <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit">form submission</a>; null otherwise. </p>
      <p>(Notably, this will be null even for "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-reload" id="ref-for-dom-navigationnavigationtype-reload③">reload</a></code>" and "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-traverse" id="ref-for-dom-navigationnavigationtype-traverse⑤">traverse</a></code>" navigations that are revisiting a session history entry that was originally created from a form submission.) </p>
+    <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-navigateevent-downloadrequest" id="ref-for-dom-navigateevent-downloadrequest①">downloadRequest</a></code></code> 
+    <dd>
+     <p>Represents whether or not this navigation was requested to be a download, by using an <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element①">a</a></code> or <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element" id="ref-for-the-area-element">area</a></code> element’s <code><a data-link-type="element-sub" href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download" id="ref-for-attr-hyperlink-download">download</a></code> attribute: </p>
+     <ul>
+      <li data-md>
+       <p>If a download was not requested, then this property is null.</p>
+      <li data-md>
+       <p>If a download was requested, returns the filename that was supplied, via <code>&lt;a download="filename" href="..."></code>. (This could be the empty string, as in the case of <code>&lt;a download href="..."></code>.)</p>
+     </ul>
+     <p>Note that a download being requested does not always mean that a download will happen: for example, the download might be blocked by browser security policies, or end up being treated as a push navigation for <a class="XXX" href="https://github.com/whatwg/html/issues/7718">unspecified reasons</a>. </p>
+     <p>Similarly, a navigation might end up being a download even if it was not requested to be one, due to the destination server responding with a <code>Content-Disposition: attachment</code> header. </p>
+     <p>Finally, note that the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑥">navigate</a></code> event will not fire at all for downloads initiated using browser UI affordances, e.g., those created by right-clicking and choosing to save the target of the link. </p>
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-navigateevent-info" id="ref-for-dom-navigateevent-info⑥">info</a></code></code> 
     <dd>
      <p>An arbitrary JavaScript value passed via <code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation②②">navigation</a></code> APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-<code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation②③">navigation</a></code> API. </p>
@@ -1671,7 +1693,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <p>The given <var>newNavigationAction</var> promise is used to signal the duration, and success or failure, of the navigation. After it settles, the browser signals to the user (e.g. via a loading spinner UI, or assistive technology) that the navigation is finished. Additionally, it fires <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigatesuccess" id="ref-for-eventdef-navigation-navigatesuccess③">navigatesuccess</a></code> or <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigateerror" id="ref-for-eventdef-navigation-navigateerror⑤">navigateerror</a></code> events as appropriate, which other parts of the web application can respond to. </p>
      <p>This method will throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#securityerror" id="ref-for-securityerror①">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> if <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-cantransition" id="ref-for-dom-navigateevent-cantransition②">canTransition</a></code> is false, or if <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted">isTrusted</a></code> is false. It will throw an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①②">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑧">DOMException</a></code> if not called synchronously, during event dispatch. </p>
    </dl>
-   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-navigationtype"><code>navigationType</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-destination"><code>destination</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-cantransition"><code>canTransition</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-userinitiated"><code>userInitiated</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-hashchange"><code>hashChange</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-signal"><code>signal</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-formdata"><code>formData</code></dfn>, and <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-info"><code>info</code></dfn> getter steps are to return the value that the corresponding attribute was initialized to.</p>
+   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-navigationtype"><code>navigationType</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-destination"><code>destination</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-cantransition"><code>canTransition</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-userinitiated"><code>userInitiated</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-hashchange"><code>hashChange</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-signal"><code>signal</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-formdata"><code>formData</code></dfn>, <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-downloadrequest"><code>downloadRequest</code></dfn>, and <dfn class="dfn-paneled idl-code" data-dfn-for="NavigateEvent" data-dfn-type="attribute" data-export id="dom-navigateevent-info"><code>info</code></dfn> getter steps are to return the value that the corresponding attribute was initialized to.</p>
    <p>A <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent③">NavigateEvent</a></code> has the following associated values which are only conditionally used:</p>
    <ul>
     <li data-md>
@@ -1700,8 +1722,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed④"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="navigationdestination"><code><c- g>NavigationDestination</c-></code></dfn> {
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-USVString" id="ref-for-idl-USVString①"><c- b>USVString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="USVString" href="#dom-navigationdestination-url" id="ref-for-dom-navigationdestination-url"><c- g>url</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString③"><c- b>DOMString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString?" href="#dom-navigationdestination-key" id="ref-for-dom-navigationdestination-key"><c- g>key</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString④"><c- b>DOMString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString?" href="#dom-navigationdestination-id" id="ref-for-dom-navigationdestination-id"><c- g>id</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑤"><c- b>DOMString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString?" href="#dom-navigationdestination-key" id="ref-for-dom-navigationdestination-key"><c- g>key</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑥"><c- b>DOMString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString?" href="#dom-navigationdestination-id" id="ref-for-dom-navigationdestination-id"><c- g>id</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long-long" id="ref-for-idl-long-long"><c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long long" href="#dom-navigationdestination-index" id="ref-for-dom-navigationdestination-index"><c- g>index</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean⑨"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-navigationdestination-samedocument" id="ref-for-dom-navigationdestination-samedocument"><c- g>sameDocument</c-></a>;
 
@@ -1758,6 +1780,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑤">NavigateEvent</a></code>, in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm④">relevant Realm</a>.</p>
      <li data-md>
+      <p>Set <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-classic-history-api-serialized-data" id="ref-for-navigateevent-classic-history-api-serialized-data">classic history API serialized data</a> to null.</p>
+     <li data-md>
       <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new②">new</a> <code class="idl"><a data-link-type="idl" href="#navigationdestination" id="ref-for-navigationdestination①⓪">NavigationDestination</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑤">relevant Realm</a>.</p>
      <li data-md>
       <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url①">URL</a> to <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url①">URL</a>.</p>
@@ -1788,7 +1812,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document①">is same document</a> to true if <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document①">document</a> is equal to <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑤">associated Document</a>; otherwise false.</p>
      <li data-md>
-      <p>Let <var>result</var> be the result of performing the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm①">inner navigate event firing algorithm</a> given <var>navigation</var>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-traverse" id="ref-for-dom-navigationnavigationtype-traverse①⓪">traverse</a></code>", <var>event</var>, <var>destination</var>, <var>userInvolvement</var>, and null.</p>
+      <p>Let <var>result</var> be the result of performing the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm①">inner navigate event firing algorithm</a> given <var>navigation</var>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-traverse" id="ref-for-dom-navigationnavigationtype-traverse①⓪">traverse</a></code>", <var>event</var>, <var>destination</var>, <var>userInvolvement</var>, null, and null.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①②">Assert</a>: <var>result</var> is true (traversals are never cancelable).</p>
     </ol>
@@ -1799,7 +1823,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create①">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑥">NavigateEvent</a></code>, in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑥">relevant Realm</a>.</p>
      <li data-md>
-      <p>Set <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-classic-history-api-serialized-data" id="ref-for-navigateevent-classic-history-api-serialized-data">classic history API serialized data</a> to <var>classicHistoryAPISerializedData</var>.</p>
+      <p>Set <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-classic-history-api-serialized-data" id="ref-for-navigateevent-classic-history-api-serialized-data①">classic history API serialized data</a> to <var>classicHistoryAPISerializedData</var>.</p>
      <li data-md>
       <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new③">new</a> <code class="idl"><a data-link-type="idl" href="#navigationdestination" id="ref-for-navigationdestination①①">NavigationDestination</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑦">relevant Realm</a>.</p>
      <li data-md>
@@ -1815,14 +1839,39 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document②">is same document</a> to <var>isSameDocument</var>.</p>
      <li data-md>
-      <p>Return the result of performing the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm②">inner navigate event firing algorithm</a> given <var>navigation</var>, <var>navigationType</var>, <var>event</var>, <var>destination</var>, <var>userInvolvement</var>, and <var>formDataEntryList</var>.</p>
+      <p>Return the result of performing the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm②">inner navigate event firing algorithm</a> given <var>navigation</var>, <var>navigationType</var>, <var>event</var>, <var>destination</var>, <var>userInvolvement</var>, <var>formDataEntryList</var>, and null.</p>
+    </ol>
+   </div>
+   <div class="algorithm" data-algorithm="fire a download-requested navigate event">
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-download-requested-navigate-event">fire a download-requested <code>navigate</code> event</dfn> at a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑥">Navigation</a></code> <var>navigation</var> given a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url③">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a download-requested navigate event" data-dfn-type="dfn" data-noexport id="fire-a-download-requested-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement②">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a download-requested navigate event" data-dfn-type="dfn" data-noexport id="fire-a-download-requested-navigate-event-userinvolvement"><var>userInvolvement</var></dfn>, and a string <dfn class="dfn-paneled" data-dfn-for="fire a download-requested navigate event" data-dfn-type="dfn" data-noexport id="fire-a-download-requested-navigate-event-filename"><var>filename</var></dfn>: 
+    <ol>
+     <li data-md>
+      <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create②">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑦">NavigateEvent</a></code>, in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑧">relevant Realm</a>.</p>
+     <li data-md>
+      <p>Set <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-classic-history-api-serialized-data" id="ref-for-navigateevent-classic-history-api-serialized-data②">classic history API serialized data</a> to null.</p>
+     <li data-md>
+      <p>Let <var>destination</var> be a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new④">new</a> <code class="idl"><a data-link-type="idl" href="#navigationdestination" id="ref-for-navigationdestination①②">NavigationDestination</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑨">relevant Realm</a>.</p>
+     <li data-md>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url③">URL</a> to <var>destinationURL</var>.</p>
+     <li data-md>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-key" id="ref-for-navigationdestination-key④">key</a> to null.</p>
+     <li data-md>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-id" id="ref-for-navigationdestination-id④">id</a> to null.</p>
+     <li data-md>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-index" id="ref-for-navigationdestination-index④">index</a> to −1.</p>
+     <li data-md>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-state" id="ref-for-navigationdestination-state⑤">state</a> to null.</p>
+     <li data-md>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document③">is same document</a> to false.</p>
+     <li data-md>
+      <p>Return the result of performing the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm③">inner navigate event firing algorithm</a> given <var>navigation</var>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑥">push</a></code>", <var>event</var>, <var>destination</var>, <var>userInvolvement</var>, null, and <var>filename</var>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="inner navigate event firing algorithm">
-     The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inner-navigate-event-firing-algorithm">inner <code>navigate</code> event firing algorithm</dfn> is the following steps, given a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑥">Navigation</a></code> <var>navigation</var>, a <code class="idl"><a data-link-type="idl" href="#enumdef-navigationnavigationtype" id="ref-for-enumdef-navigationnavigationtype⑦">NavigationNavigationType</a></code> <var>navigationType</var>, a <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑦">NavigateEvent</a></code> <var>event</var>, a <code class="idl"><a data-link-type="idl" href="#navigationdestination" id="ref-for-navigationdestination①②">NavigationDestination</a></code> <var>destination</var>, a <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement②">user navigation involvement</a> <var>userInvolvement</var>, and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list①">entry list</a> or null <var>formDataEntryList</var>: 
+     The <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="inner-navigate-event-firing-algorithm">inner <code>navigate</code> event firing algorithm</dfn> is the following steps, given a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑦">Navigation</a></code> <var>navigation</var>, a <code class="idl"><a data-link-type="idl" href="#enumdef-navigationnavigationtype" id="ref-for-enumdef-navigationnavigationtype⑦">NavigationNavigationType</a></code> <var>navigationType</var>, a <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑧">NavigateEvent</a></code> <var>event</var>, a <code class="idl"><a data-link-type="idl" href="#navigationdestination" id="ref-for-navigationdestination①③">NavigationDestination</a></code> <var>destination</var>, a <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement③">user navigation involvement</a> <var>userInvolvement</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list①">entry list</a> or null <var>formDataEntryList</var>, and a string or null <var>downloadRequestFilename</var>: 
     <ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#navigation-promote-the-upcoming-navigation-to-ongoing" id="ref-for-navigation-promote-the-upcoming-navigation-to-ongoing①">Promote the upcoming navigation to ongoing</a> given <var>navigation</var> and <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-key" id="ref-for-navigationdestination-key④">key</a>.</p>
+      <p><a data-link-type="dfn" href="#navigation-promote-the-upcoming-navigation-to-ongoing" id="ref-for-navigation-promote-the-upcoming-navigation-to-ongoing①">Promote the upcoming navigation to ongoing</a> given <var>navigation</var> and <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-key" id="ref-for-navigationdestination-key⑤">key</a>.</p>
      <li data-md>
       <p>Let <var>ongoingNavigation</var> be <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-ongoing-navigation" id="ref-for-navigation-ongoing-navigation⑧">ongoing navigation</a>.</p>
      <li data-md>
@@ -1843,37 +1892,39 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>document</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑥">associated document</a>.</p>
      <li data-md>
-      <p>If <var>document</var> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten①">can have its URL rewritten</a> to <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url③">URL</a>, and either <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document③">is same document</a> is true or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-traverse" id="ref-for-dom-navigationnavigationtype-traverse①①">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-cantransition" id="ref-for-dom-navigateevent-cantransition④">canTransition</a></code> to true. Otherwise, initialize it to false.</p>
+      <p>If <var>document</var> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten①">can have its URL rewritten</a> to <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url④">URL</a>, and either <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document④">is same document</a> is true or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-traverse" id="ref-for-dom-navigationnavigationtype-traverse①①">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-cantransition" id="ref-for-dom-navigateevent-cantransition④">canTransition</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
       <p>If <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-traverse" id="ref-for-dom-navigationnavigationtype-traverse①②">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable">cancelable</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
-      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-type" id="ref-for-dom-event-type">type</a></code> to "<code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑥">navigate</a></code>".</p>
+      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-type" id="ref-for-dom-event-type">type</a></code> to "<code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑦">navigate</a></code>".</p>
      <li data-md>
       <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-navigationtype" id="ref-for-dom-navigateevent-navigationtype③">navigationType</a></code> to <var>navigationType</var>.</p>
      <li data-md>
       <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-destination" id="ref-for-dom-navigateevent-destination⑧">destination</a></code> to <var>destination</var>.</p>
      <li data-md>
+      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-downloadrequest" id="ref-for-dom-navigateevent-downloadrequest②">downloadRequest</a></code> to <var>downloadRequestFilename</var>.</p>
+     <li data-md>
       <p>If <var>ongoingNavigation</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-info" id="ref-for-dom-navigateevent-info⑦">info</a></code> to <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#navigation-api-method-navigation-info" id="ref-for-navigation-api-method-navigation-info②">info</a>. Otherwise, initialize it to undefined.</p>
       <p class="note" role="note">At this point <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#navigation-api-method-navigation-info" id="ref-for-navigation-api-method-navigation-info③">info</a> is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the <a data-link-type="dfn" href="#navigation-api-method-navigation" id="ref-for-navigation-api-method-navigation①②">navigation API method navigation</a>. </p>
      <li data-md>
-      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-signal" id="ref-for-dom-navigateevent-signal④">signal</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new④">new</a> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal④">AbortSignal</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑧">relevant Realm</a>.</p>
+      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-signal" id="ref-for-dom-navigateevent-signal④">signal</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑤">new</a> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#abortsignal" id="ref-for-abortsignal④">AbortSignal</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①⓪">relevant Realm</a>.</p>
      <li data-md>
       <p>Let <var>currentURL</var> be <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-url" id="ref-for-concept-document-url①">URL</a>.</p>
      <li data-md>
       <p>If all of the following are true:</p>
       <ul>
        <li data-md>
-        <p><var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document④">is same document</a> is true;</p>
+        <p><var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document⑤">is same document</a> is true;</p>
        <li data-md>
-        <p><var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url④">URL</a> <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-equals" id="ref-for-concept-url-equals">equals</a> <var>currentURL</var> with <i><a data-link-type="dfn" href="https://url.spec.whatwg.org/#url-equals-exclude-fragments" id="ref-for-url-equals-exclude-fragments">exclude fragments</a></i> set to true; and</p>
+        <p><var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url⑤">URL</a> <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-equals" id="ref-for-concept-url-equals">equals</a> <var>currentURL</var> with <i><a data-link-type="dfn" href="https://url.spec.whatwg.org/#url-equals-exclude-fragments" id="ref-for-url-equals-exclude-fragments">exclude fragments</a></i> set to true; and</p>
        <li data-md>
-        <p><var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url⑤">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment">fragment</a> is not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-is" id="ref-for-string-is">identical to</a> <var>currentURL</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment①">fragment</a></p>
+        <p><var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url⑥">URL</a>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment">fragment</a> is not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-is" id="ref-for-string-is">identical to</a> <var>currentURL</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-fragment" id="ref-for-concept-url-fragment①">fragment</a></p>
       </ul>
       <p>then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-hashchange" id="ref-for-dom-navigateevent-hashchange②">hashChange</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
       <p>If <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none③">none</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-userinitiated" id="ref-for-dom-navigateevent-userinitiated②">userInitiated</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
-      <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑤">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata③">FormData</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑨">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
+      <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑥">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata③">FormData</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①①">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①③">Assert</a>: <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-ongoing-navigate-event" id="ref-for-navigation-ongoing-navigate-event">ongoing navigate event</a> is null.</p>
      <li data-md>
@@ -1898,7 +1949,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>Let <var>hadTransitionWhile</var> be true if <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-navigation-action-promises-list" id="ref-for-navigateevent-navigation-action-promises-list①">navigation action promises list</a> is not empty; otherwise false.</p>
      <li data-md>
-      <p>Let <var>endResultIsSameDocument</var> be true if <var>hadTransitionWhile</var> is true or <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document⑤">is same document</a> is true.</p>
+      <p>Let <var>endResultIsSameDocument</var> be true if <var>hadTransitionWhile</var> is true or <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document⑥">is same document</a> is true.</p>
      <li data-md>
       <p>If <var>hadTransitionWhile</var> is true:</p>
       <ol>
@@ -1907,7 +1958,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①⑤">Assert</a>: <var>fromEntry</var> is not null.</p>
        <li data-md>
-        <p>Set <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-transition" id="ref-for-navigation-transition①">transition</a> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑥">new</a> <code class="idl"><a data-link-type="idl" href="#navigationtransition" id="ref-for-navigationtransition⑧">NavigationTransition</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①⓪">relevant Realm</a>, whose <a data-link-type="dfn" href="#navigationtransition-navigation-type" id="ref-for-navigationtransition-navigation-type①">navigation type</a> is <var>navigationType</var>, <a data-link-type="dfn" href="#navigationtransition-from-entry" id="ref-for-navigationtransition-from-entry①">from entry</a> is <var>fromEntry</var>, and whose <a data-link-type="dfn" href="#navigationtransition-finished-promise" id="ref-for-navigationtransition-finished-promise①">finished promise</a> is <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise②">a new promise</a> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①①">relevant Realm</a>.</p>
+        <p>Set <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-transition" id="ref-for-navigation-transition①">transition</a> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑦">new</a> <code class="idl"><a data-link-type="idl" href="#navigationtransition" id="ref-for-navigationtransition⑧">NavigationTransition</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①②">relevant Realm</a>, whose <a data-link-type="dfn" href="#navigationtransition-navigation-type" id="ref-for-navigationtransition-navigation-type①">navigation type</a> is <var>navigationType</var>, <a data-link-type="dfn" href="#navigationtransition-from-entry" id="ref-for-navigationtransition-from-entry①">from entry</a> is <var>fromEntry</var>, and whose <a data-link-type="dfn" href="#navigationtransition-finished-promise" id="ref-for-navigationtransition-finished-promise①">finished promise</a> is <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-new-promise" id="ref-for-a-new-promise②">a new promise</a> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①③">relevant Realm</a>.</p>
        <li data-md>
         <p><a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#mark-a-promise-as-handled" id="ref-for-mark-a-promise-as-handled②">Mark as handled</a> <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-transition" id="ref-for-navigation-transition②">transition</a>'s <a data-link-type="dfn" href="#navigationtransition-finished-promise" id="ref-for-navigationtransition-finished-promise②">finished promise</a>.</p>
         <p class="note" role="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
@@ -1964,9 +2015,9 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>If <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-reload" id="ref-for-dom-navigationnavigationtype-reload⑤">reload</a></code>", then:</p>
         <ol>
          <li data-md>
-          <p>Let <var>isPush</var> be true if <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑥">push</a></code>"; otherwise, false.</p>
+          <p>Let <var>isPush</var> be true if <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑦">push</a></code>"; otherwise, false.</p>
          <li data-md>
-          <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps">URL and history update steps</a> given <var>document</var> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-destination" id="ref-for-dom-navigateevent-destination⑨">destination</a></code>'s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url⑥">URL</a>, with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-serializeddata" id="ref-for-uhus-serializeddata">serializedData</a></i> set to <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-classic-history-api-serialized-data" id="ref-for-navigateevent-classic-history-api-serialized-data①">classic history API serialized data</a> and <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-ispush" id="ref-for-uhus-ispush">isPush</a></i> set to <var>isPush</var>.</p>
+          <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps">URL and history update steps</a> given <var>document</var> and <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-destination" id="ref-for-dom-navigateevent-destination⑨">destination</a></code>'s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url⑦">URL</a>, with <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-serializeddata" id="ref-for-uhus-serializeddata">serializedData</a></i> set to <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-classic-history-api-serialized-data" id="ref-for-navigateevent-classic-history-api-serialized-data③">classic history API serialized data</a> and <i><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#uhus-ispush" id="ref-for-uhus-ispush">isPush</a></i> set to <var>isPush</var>.</p>
         </ol>
         <p class="note" role="note">If <var>navigationType</var> is "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-reload" id="ref-for-dom-navigationnavigationtype-reload⑥">reload</a></code>", then we are converting a reload into a "same-document reload", for which the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps①">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry④">current entry</a>'s <a data-link-type="dfn" href="#session-history-entry-navigation-api-state" id="ref-for-session-history-entry-navigation-api-state⑧">navigation API state</a> if this was caused by a call to <code class="idl"><a data-link-type="idl" href="#dom-navigation-reload" id="ref-for-dom-navigation-reload⑥">navigation.reload()</a></code>, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-transitionwhile" id="ref-for-dom-navigateevent-transitionwhile①⑥">transitionWhile()</a></code>. </p>
        <li data-md>
@@ -1977,10 +2028,10 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     </ol>
    </div>
    <div class="algorithm" data-algorithm="finalize with an aborted navigation error">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</dfn> given a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑦">Navigation</a></code> <var>navigation</var>, a <a data-link-type="dfn" href="#navigation-api-method-navigation" id="ref-for-navigation-api-method-navigation①③">navigation API method navigation</a> or null <var>ongoingNavigation</var>, and an optional <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②④">DOMException</a></code> <var>error</var>: 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</dfn> given a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑧">Navigation</a></code> <var>navigation</var>, a <a data-link-type="dfn" href="#navigation-api-method-navigation" id="ref-for-navigation-api-method-navigation①③">navigation API method navigation</a> or null <var>ongoingNavigation</var>, and an optional <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②④">DOMException</a></code> <var>error</var>: 
     <ol>
      <li data-md>
-      <p>If <var>error</var> was not given, then set <var>error</var> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑦">new</a> "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror③">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>, created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①②">relevant Realm</a>.</p>
+      <p>If <var>error</var> was not given, then set <var>error</var> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑧">new</a> "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#aborterror" id="ref-for-aborterror③">AbortError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②⑤">DOMException</a></code>, created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①④">relevant Realm</a>.</p>
      <li data-md>
       <p>If <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-ongoing-navigate-event" id="ref-for-navigation-ongoing-navigate-event③">ongoing navigate event</a> is non-null, then:</p>
       <ol>
@@ -2047,8 +2098,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed⑤"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="navigationhistoryentry"><code><c- g>NavigationHistoryEntry</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#eventtarget" id="ref-for-eventtarget①"><c- n>EventTarget</c-></a> {
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-USVString" id="ref-for-idl-USVString②"><c- b>USVString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="USVString?" href="#dom-navigationhistoryentry-url" id="ref-for-dom-navigationhistoryentry-url①"><c- g>url</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑤"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-navigationhistoryentry-key" id="ref-for-dom-navigationhistoryentry-key①"><c- g>key</c-></a>;
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑥"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-navigationhistoryentry-id" id="ref-for-dom-navigationhistoryentry-id①"><c- g>id</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑦"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-navigationhistoryentry-key" id="ref-for-dom-navigationhistoryentry-key①"><c- g>key</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString⑧"><c- b>DOMString</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString" href="#dom-navigationhistoryentry-id" id="ref-for-dom-navigationhistoryentry-id①"><c- g>id</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long-long" id="ref-for-idl-long-long①"><c- b>long</c-> <c- b>long</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="long long" href="#dom-navigationhistoryentry-index" id="ref-for-dom-navigationhistoryentry-index①"><c- g>index</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean①⓪"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-navigationhistoryentry-samedocument" id="ref-for-dom-navigationhistoryentry-samedocument"><c- g>sameDocument</c-></a>;
 
@@ -2170,10 +2221,10 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <td><dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="event" data-export id="eventdef-navigationhistoryentry-dispose"><code>dispose</code></dfn> 
    </table>
    <p>TODO: actually fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigationhistoryentry-finish" id="ref-for-eventdef-navigationhistoryentry-finish">finish</a></code>, <code class="idl"><a data-link-type="idl" href="#eventdef-navigationhistoryentry-navigateto" id="ref-for-eventdef-navigationhistoryentry-navigateto">navigateto</a></code>, and <code class="idl"><a data-link-type="idl" href="#eventdef-navigationhistoryentry-navigatefrom" id="ref-for-eventdef-navigationhistoryentry-navigatefrom">navigatefrom</a></code>.</p>
-   <h2 class="heading settled" data-level="4" id="navigate-patches"><span class="secno">4. </span><span class="content">Patches to fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑦">navigate</a></code> event</span><a class="self-link" href="#navigate-patches"></a></h2>
-   <p>The following section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> that cause the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑧">navigate</a></code> event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, <a href="#navigate-algorithm-patches">§ 4.3 Navigation algorithm updates</a> contains the actual firing of the event.</p>
+   <h2 class="heading settled" data-level="4" id="navigate-patches"><span class="secno">4. </span><span class="content">Patches to fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑧">navigate</a></code> event</span><a class="self-link" href="#navigate-patches"></a></h2>
+   <p>The following section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> that cause the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑨">navigate</a></code> event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, <a href="#navigate-algorithm-patches">§ 4.3 Navigation algorithm updates</a> contains the actual firing of the event.</p>
    <h3 class="heading settled" data-level="4.1" id="form-patches"><span class="secno">4.1. </span><span class="content">Form submission patches</span><a class="self-link" href="#form-patches"></a></h3>
-   <p>To properly thread the form entry list from its creation through to <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑧">NavigateEvent</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata③">formData</a></code> property, we need the following modifications:</p>
+   <p>To properly thread the form entry list from its creation through to <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑨">NavigateEvent</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata③">formData</a></code> property, we need the following modifications:</p>
    <div class="algorithm" data-algorithm="form navigate">
      Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate②">navigate</a> algorithm to take an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list②">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="navigate" data-dfn-type="dfn" data-noexport id="navigate-entrylist"><var>entryList</var></dfn> (default null), replacing its <var>navigationType</var> parameter. Then insert a step somewhere early in the algorithm to convert this back into the <var>navigationType</var> variable used by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in parallel</a> section that is ultimately passed to <a data-link-type="biblio" href="#biblio-csp">[CSP]</a>: 
     <ol>
@@ -2195,7 +2246,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    </div>
    <div class="algorithm" data-algorithm="submit as entity body"> Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#submit-body" id="ref-for-submit-body">submit as entity body</a> algorithm to pass <var>entry list</var> along to <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate" id="ref-for-plan-to-navigate①">plan to navigate</a> as a second argument. </div>
    <h3 class="heading settled" data-level="4.2" id="user-initiated-patches"><span class="secno">4.2. </span><span class="content">Browser UI/user-initiated patches</span><a class="self-link" href="#user-initiated-patches"></a></h3>
-   <p>To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element①">a</a></code>, <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element" id="ref-for-the-area-element">area</a></code>, and <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/forms.html#the-form-element" id="ref-for-the-form-element①">form</a></code> elements, both for the purposes of the <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑨">NavigateEvent</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-userinitiated" id="ref-for-dom-navigateevent-userinitiated③">userInitiated</a></code> property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:</p>
+   <p>To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element②">a</a></code>, <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element" id="ref-for-the-area-element①">area</a></code>, and <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/forms.html#the-form-element" id="ref-for-the-form-element①">form</a></code> elements, both for the purposes of the <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent①⓪">NavigateEvent</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-userinitiated" id="ref-for-dom-navigateevent-userinitiated③">userInitiated</a></code> property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:</p>
    <p>Introduce (right before the definition of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑤">navigate</a> algorithm) the concept of a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="user-navigation-involvement">user navigation involvement</dfn>, which is one of the following:</p>
    <dl>
     <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="user navigation involvement" data-dfn-type="dfn" data-noexport id="user-navigation-involvement-browser-ui"><code>browser UI</code></dfn>"
@@ -2228,14 +2279,14 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <hr>
    <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2">follow the hyperlink</a> algorithm to take a new <var>userInvolvement</var> argument. Then, update the call to it from <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑨">navigate</a> to set <i><a data-link-type="dfn" href="#navigate-userinvolvement" id="ref-for-navigate-userinvolvement②">userInvolvement</a></i> to this <var>userInvolvement</var> value.</p>
    <div class="algorithm" data-algorithm="area activation behavior">
-     Modify the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior①">activation behavior</a> of <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element" id="ref-for-the-area-element①">area</a></code> elements by introducing the <var>event</var> argument and replacing the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2①">follow the hyperlink</a> step with the following: 
+     Modify the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior①">activation behavior</a> of <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element" id="ref-for-the-area-element②">area</a></code> elements by introducing the <var>event</var> argument and replacing the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2①">follow the hyperlink</a> step with the following: 
     <ol>
      <li data-md>
       <p>Otherwise, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2②">follow the hyperlink</a> created by <var>element</var> with the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement">user navigation involvement</a> for <var>event</var>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="a activation behavior">
-     Modify the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior②">activation behavior</a> of <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element②">a</a></code> elements by replacing its <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2③">follow the hyperlink</a> step with the following: 
+     Modify the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior②">activation behavior</a> of <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element③">a</a></code> elements by replacing its <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2③">follow the hyperlink</a> step with the following: 
     <ol>
      <li data-md>
       <p>Otherwise, <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2④">follow the hyperlink</a> created by <var>element</var> with the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement①">user navigation involvement</a> for <var>event</var>.</p>
@@ -2255,14 +2306,14 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <p>Modify the no-<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/forms.html#concept-submit-button" id="ref-for-concept-submit-button">submit button</a> case for <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission">implicit form submission</a> to pass along "<code><a data-link-type="dfn" href="#user-navigation-involvement-activation" id="ref-for-user-navigation-involvement-activation①">activation</a></code>" as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit⑥">submit</a>.</p>
    <p class="note" role="note">The case of implicit submission when a submit button is present is automatically taken care of because it fires a (trusted) click event at the submit button.</p>
    <h3 class="heading settled" data-level="4.3" id="navigate-algorithm-patches"><span class="secno">4.3. </span><span class="content">Navigation algorithm updates</span><a class="self-link" href="#navigate-algorithm-patches"></a></h3>
-   <p>With the above infrastructure in place, we can actually fire and handle the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑨">navigate</a></code> event in the following locations:</p>
+   <p>With the above infrastructure in place, we can actually fire and handle the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⓪">navigate</a></code> event in the following locations:</p>
    <div class="algorithm" data-algorithm="shared history push/replace steps">
      Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#shared-history-push/replace-state-steps" id="ref-for-shared-history-push/replace-state-steps">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps②">URL and history update steps</a>. 
     <ol>
      <li data-md>
       <p>Let <var>navigation</var> be <var>history</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②②">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api③">navigation API</a>.</p>
      <li data-md>
-      <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑦">push</a></code>" if <var>isPush</var> is true, and "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-replace" id="ref-for-dom-navigationnavigationtype-replace⑥">replace</a></code>" otherwise.</p>
+      <p>Let <var>navigationType</var> be "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑧">push</a></code>" if <var>isPush</var> is true, and "<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-replace" id="ref-for-dom-navigationnavigationtype-replace⑥">replace</a></code>" otherwise.</p>
      <li data-md>
       <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event" id="ref-for-fire-a-non-traversal-navigate-event">firing a non-traversal navigate event</a> at <var>navigation</var> with <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-navigationtype" id="ref-for-fire-a-non-traversal-navigate-event-navigationtype">navigationType</a></i> set to <var>navigationType</var>, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-issamedocument" id="ref-for-fire-a-non-traversal-navigate-event-issamedocument">isSameDocument</a></i> set to true, <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-destinationurl" id="ref-for-fire-a-non-traversal-navigate-event-destinationurl">destinationURL</a></i> set to <var>newURL</var>, and <i><a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event-classichistoryapiserializeddata" id="ref-for-fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">classicHistoryAPISerializedData</a></i> set to <var>serializedData</var>.</p>
      <li data-md>
@@ -2310,8 +2361,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p>If <var>continue</var> is false, return.</p>
       </ol>
-      <p class="note" role="note">"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update①"><code>entry update</code></a>" is excluded since <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⓪">navigate</a></code> would have fired earlier as part of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta②">traversing the history by a delta</a>. </p>
-      <p class="note" role="note">"<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui④">browser UI</a></code>" or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain②">cross origin-domain</a> navigations that cause <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid④">fragment navigations</a> <em>do</em> fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②①">navigate</a></code> event; those are handled as part of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑤">navigate to a fragment</a> algorithm called earlier in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①②">navigate</a>, which is not guarded by this condition. </p>
+      <p class="note" role="note">"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update①"><code>entry update</code></a>" is excluded since <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②①">navigate</a></code> would have fired earlier as part of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta②">traversing the history by a delta</a>. </p>
+      <p class="note" role="note">"<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui④">browser UI</a></code>" or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain②">cross origin-domain</a> navigations that cause <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid④">fragment navigations</a> <em>do</em> fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②②">navigate</a></code> event; those are handled as part of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑤">navigate to a fragment</a> algorithm called earlier in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①②">navigate</a>, which is not guarded by this condition. </p>
     </ol>
    </div>
    <p>Expand the section of the navigation/traversal response handling which deals with 204s, 205s, and <code>Content-Disposition: attachment</code> responses with the following note:</p>
@@ -2335,7 +2386,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>"<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-replace" id="ref-for-dom-navigationnavigationtype-replace⑦">replace</a></code>"</p>
        <dt data-md>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default②"><code>default</code></a>"
        <dd data-md>
-        <p>"<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑧">push</a></code>"</p>
+        <p>"<code class="idl"><a data-link-type="idl" href="#dom-navigationnavigationtype-push" id="ref-for-dom-navigationnavigationtype-push⑨">push</a></code>"</p>
       </dl>
     </ol>
    </div>
@@ -2370,8 +2421,37 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <p><a data-link-type="dfn" href="#fire-a-traversal-navigate-event" id="ref-for-fire-a-traversal-navigate-event">Fire a traversal navigate event</a> at <var>previousDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②④">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑥">navigation API</a> with <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-destinationentry" id="ref-for-fire-a-traversal-navigate-event-destinationentry">destinationEntry</a></i> set to <var>targetEntry</var> and <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-userinvolvement" id="ref-for-fire-a-traversal-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>.</p>
     </ol>
    </div>
+   <h3 class="heading settled" data-level="4.5" id="navigate-event-download-patches"><span class="secno">4.5. </span><span class="content">Download a hyperlink updates</span><a class="self-link" href="#navigate-event-download-patches"></a></h3>
+   <p>The current specification for <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks">downloading a hyperlink</a> has several known issues, most notably <a href="https://github.com/whatwg/html/issues/5548">whatwg/html#5548</a> which indicates that the specification should probably be merged into the general <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①③">navigation</a> algorithm.</p>
+   <p>For the purposes of the navigation API, we need to fire the appropriate <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②③">navigate</a></code> event, with <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-downloadrequest" id="ref-for-dom-navigateevent-downloadrequest③">downloadRequest</a></code> set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks①">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.</p>
+   <div class="algorithm" data-algorithm="download the hyperlink">
+    <ul>
+     <li>
+      <p>Ensure that the algorithm gets an appropriate <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement④">user navigation involvement</a> value, <var>userInvolvement</var>, passed to it. This is similar to the modifications for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2⑥">follow the hyperlink</a> algorithm described in <a href="#user-initiated-patches">§ 4.2 Browser UI/user-initiated patches</a>. One key difference is that, for the case where the user indicates a preference for downloading, <var>userInvolvement</var> must be "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui⑤">browser UI</a></code>", even if it is triggered as part of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior⑤">activation behavior</a>. </p>
+     <li>
+      <p>Separate out the sandboxing checks in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#allowed-to-download" id="ref-for-allowed-to-download">allowed to download</a> from the user-safeguarding checks. If the sandboxing checks fail, then the user agent must not fire a <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②④">navigate</a></code> event. Whereas, the user-safeguarding checks generally happen later, probably <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel②">in parallel</a>. </p>
+     <li>
+      <p>Before we reach the point at which it’s time to actually go in parallel and fetch content from the server, and after the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#cannot-navigate" id="ref-for-cannot-navigate">cannot navigate</a> check, the synchronously-possible part of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#allowed-to-download" id="ref-for-allowed-to-download①">allowed to download</a> check, the URL parsing step, and the hyperlink suffix appending step, run the equivalent of the following: </p>
+      <ol>
+       <li data-md>
+        <p>If <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui⑥">browser UI</a></code>", then:</p>
+        <ol>
+         <li data-md>
+          <p>Let <var>navigation</var> be <var>subject</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑤">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑦">navigation API</a>.</p>
+         <li data-md>
+          <p>Let <var>filename</var> be the value of <var>subject</var>’s <code><a data-link-type="element-sub" href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download" id="ref-for-attr-hyperlink-download①">download</a></code> attribute.</p>
+         <li data-md>
+          <p>Let <var>continue</var> be the result of <a data-link-type="dfn" href="#fire-a-download-requested-navigate-event" id="ref-for-fire-a-download-requested-navigate-event">firing a download-requested navigate event</a> at <var>navigation</var> with <i><a data-link-type="dfn" href="#fire-a-download-requested-navigate-event-destinationurl" id="ref-for-fire-a-download-requested-navigate-event-destinationurl">destinationURL</a></i> set to <var>URL</var>, <i><a data-link-type="dfn" href="#fire-a-download-requested-navigate-event-userinvolvement" id="ref-for-fire-a-download-requested-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>, and <i><a data-link-type="dfn" href="#fire-a-download-requested-navigate-event-filename" id="ref-for-fire-a-download-requested-navigate-event-filename">filename</a></i> set to <var>filename</var>.</p>
+         <li data-md>
+          <p>If <var>continue</var> is false, then return.</p>
+        </ol>
+      </ol>
+      <p>Here the variables <var>subject</var> and <var>URL</var> refer to the same things they currently do in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks②">download the hyperlink</a> algorithm, i.e. the <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element" id="ref-for-the-a-element④">a</a></code> or <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element" id="ref-for-the-area-element③">area</a></code> element in question, and the parsed <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url④">URL</a>. </p>
+      <p>If we end up triggering the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①④">navigate</a> algorithm from the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks③">download the hyperlink</a> algorithm, then these steps won’t be directly incorporated into the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks④">download the hyperlink</a> algorithm. Instead, the modifications in <a href="#navigate-algorithm-patches">§ 4.3 Navigation algorithm updates</a> will get a bit more complicated, so as to use <a data-link-type="dfn" href="#fire-a-download-requested-navigate-event" id="ref-for-fire-a-download-requested-navigate-event①">fire a download-requested navigate event</a> with the above arguments, instead of <a data-link-type="dfn" href="#fire-a-non-traversal-navigate-event" id="ref-for-fire-a-non-traversal-navigate-event③">fire a non-traversal navigate event</a>, for downloads. </p>
+    </ul>
+   </div>
    <h2 class="heading settled" data-level="5" id="session-history-patches"><span class="secno">5. </span><span class="content">Patches to session history</span><a class="self-link" href="#session-history-patches"></a></h2>
-   <p>This section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> to track appropriate data for associating a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑧">Navigation</a></code> with a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑤">session history entry</a>.</p>
+   <p>This section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> to track appropriate data for associating a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑨">Navigation</a></code> with a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑤">session history entry</a>.</p>
    <h3 class="heading settled" data-level="5.1" id="session-history-new-she-fields"><span class="secno">5.1. </span><span class="content">New <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑥">session history entry</a> items</span><a class="self-link" href="#session-history-new-she-fields"></a></h3>
    <p>Each <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑦">session history entry</a> gains the following new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct-item" id="ref-for-struct-item①">items</a>:</p>
    <ul>
@@ -2402,19 +2482,19 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <h3 class="heading settled" data-level="5.5" id="session-history-patches-policy-container"><span class="secno">5.5. </span><span class="content">Tracking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container①">policy container</a> member more often</span><a class="self-link" href="#session-history-patches-policy-container"></a></h3>
    <p>The <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container②">policy container</a> field of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①⓪">session history entry</a> is null, except when we <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history">require storing the policy container in history</a>. The specification for <code class="idl"><a data-link-type="idl" href="#dom-navigationhistoryentry-url" id="ref-for-dom-navigationhistoryentry-url③">NavigationHistoryEntry.url</a></code> requires the relevant <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy" id="ref-for-referrer-policy①">referrer policy</a> to be accessible for all entries, not just some.</p>
    <p>So, update the HTML Standard to always store the policy container on the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①①">session history entry</a>, and then only use it in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#determining-navigation-params-policy-container" id="ref-for-determining-navigation-params-policy-container">determine navigation params policy container</a> algorithm in the cases currently covered by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history①">require storing the policy container in history</a> algorithm.</p>
-   <h3 class="heading settled" data-level="5.6" id="session-history-patches-update"><span class="secno">5.6. </span><span class="content">Updating the <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑨">Navigation</a></code> object</span><a class="self-link" href="#session-history-patches-update"></a></h3>
+   <h3 class="heading settled" data-level="5.6" id="session-history-patches-update"><span class="secno">5.6. </span><span class="content">Updating the <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation③⓪">Navigation</a></code> object</span><a class="self-link" href="#session-history-patches-update"></a></h3>
    <div class="algorithm" data-algorithm="traverse the history update patch">
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history①">traverse the history</a> algorithm by adding the following step before the final step which fires various events: 
     <ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#navigation-update-the-entries" id="ref-for-navigation-update-the-entries">Update the entries</a> of <var>newDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑤">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑦">navigation API</a>.</p>
+      <p><a data-link-type="dfn" href="#navigation-update-the-entries" id="ref-for-navigation-update-the-entries">Update the entries</a> of <var>newDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑥">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑧">navigation API</a>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="URL and history update steps update patch">
      Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps④">URL and history update steps</a> by appending the following final step: 
     <ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#navigation-update-the-entries" id="ref-for-navigation-update-the-entries①">Update the entries</a> of <var>document</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑥">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑧">navigation API</a>.</p>
+      <p><a data-link-type="dfn" href="#navigation-update-the-entries" id="ref-for-navigation-update-the-entries①">Update the entries</a> of <var>document</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑦">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑨">navigation API</a>.</p>
     </ol>
    </div>
    <p class="note" role="note">We do not <a data-link-type="dfn" href="#navigation-update-the-entries" id="ref-for-navigation-update-the-entries②">update the entries</a> when initially <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context">creating a new browsing context</a>, as we intentionally don’t want to include the initial <code>about:blank</code> <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document⑦">Document</a></code> in any navigation history entry list. </p>
@@ -2424,7 +2504,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <p>Specifically, the spec uses a few phrases:</p>
    <ul>
     <li data-md>
-     <p>"Cancel any existing but not-yet-mature attempts to navigate a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context③">browsing context</a>", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①③">navigate</a> algorithm and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta④">traverse the history by a delta</a> algorithm. This cancels any ongoing navigations, including history traversal navigations which have made their way back into the main event loop to perform an "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update③"><code>entry update</code></a>" navigation.</p>
+     <p>"Cancel any existing but not-yet-mature attempts to navigate a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context③">browsing context</a>", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①⑤">navigate</a> algorithm and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta④">traverse the history by a delta</a> algorithm. This cancels any ongoing navigations, including history traversal navigations which have made their way back into the main event loop to perform an "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update③"><code>entry update</code></a>" navigation.</p>
     <li data-md>
      <p>"Cancel that navigation", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#stop-document-loading" id="ref-for-stop-document-loading">stop document loading</a> algorithm. This is likely supposed to work the same as the above?</p>
     <li data-md>
@@ -2443,7 +2523,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
 
 setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- mf>500</c-><c- p>);</c->
 </pre>
-   <p>Without the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②②">navigate</a></code> event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop②">stop()</a></code> call does nothing. But because we have used the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②③">navigate</a></code> handler to indicate that the navigation is still ongoing, we want the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop③">stop()</a></code> call to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑦">finalize that navigation with an aborted navigation error</a>, in particular causing <code>p</code> to reject and the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#eventdef-abortsignal-abort" id="ref-for-eventdef-abortsignal-abort①">abort</a></code> event to fire on <code>e.signal</code>.</p>
+   <p>Without the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑤">navigate</a></code> event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop②">stop()</a></code> call does nothing. But because we have used the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑥">navigate</a></code> handler to indicate that the navigation is still ongoing, we want the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop③">stop()</a></code> call to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑦">finalize that navigation with an aborted navigation error</a>, in particular causing <code>p</code> to reject and the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#eventdef-abortsignal-abort" id="ref-for-eventdef-abortsignal-abort①">abort</a></code> event to fire on <code>e.signal</code>.</p>
    <hr>
    <p>The integration is then as follows:</p>
    <ul>
@@ -2464,24 +2544,24 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
       <p>The browser-generated UUIDs stored as <a data-link-type="dfn" href="#session-history-entry-navigation-api-id" id="ref-for-session-history-entry-navigation-api-id②">navigation API ID</a> and <a data-link-type="dfn" href="#session-history-entry-navigation-api-key" id="ref-for-session-history-entry-navigation-api-key⑨">navigation API key</a> live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.</p>
     </ul>
     <h3 class="heading settled" data-level="7.2" id="sp-navigation-monitoring-interception"><span class="secno">7.2. </span><span class="content">Navigation monitoring and interception</span><a class="self-link" href="#sp-navigation-monitoring-interception"></a></h3>
-    <p>Through the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②④">navigate</a></code> event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.</p>
+    <p>Through the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑦">navigate</a></code> event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.</p>
     <p>Care has been taken to avoid this being dangerous, or giving insight into user behavior that would not otherwise be available to the site. In particular:</p>
     <ul>
      <li data-md>
       <p>It is not possible to prevent a back/forward navigation, as this could lead to trapping the user on the page. (We would like to make this possible in the future by adding additional security mitigations; see <a href="https://github.com/WICG/navigation-api/issues/32">#32</a>.)</p>
      <li data-md>
-      <p>Navigations initiated from cross-origin-domain frames do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑤">navigate</a></code> events. An example would be such a frame calling <code>window.open(url, name)</code> with <code>name</code> targeting the current frame.</p>
+      <p>Navigations initiated from cross-origin-domain frames do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑧">navigate</a></code> events. An example would be such a frame calling <code>window.open(url, name)</code> with <code>name</code> targeting the current frame.</p>
      <li data-md>
-      <p>Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑥">navigate</a></code> events. An example would be the user directly editing the URL bar.</p>
+      <p>Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑨">navigate</a></code> events. An example would be the user directly editing the URL bar.</p>
     </ul>
     <p>We also have a few more restrictions worth noting, which don’t directly address any attack, but reduce the surface area and complexity of the navigation interception feature, which can have indirect security benefits:</p>
     <ul>
      <li data-md>
-      <p>Navigations initiated toward non-<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetch-scheme" id="ref-for-fetch-scheme①">fetch scheme</a> URLs, such as <code>javascript:</code> URLs, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑦">navigate</a></code> events.</p>
+      <p>Navigations initiated toward non-<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetch-scheme" id="ref-for-fetch-scheme①">fetch scheme</a> URLs, such as <code>javascript:</code> URLs, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③⓪">navigate</a></code> events.</p>
      <li data-md>
-      <p>Navigations initiated on the initial <code>about:blank</code> document do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑧">navigate</a></code> events.</p>
+      <p>Navigations initiated on the initial <code>about:blank</code> document do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③①">navigate</a></code> events.</p>
      <li data-md>
-      <p>Navigations initiated by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open" id="ref-for-dom-document-open">document.open()</a></code> do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑨">navigate</a></code> events.</p>
+      <p>Navigations initiated by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open" id="ref-for-dom-document-open">document.open()</a></code> do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③②">navigate</a></code> events.</p>
      <li data-md>
       <p>Cross-document traversals cannot be intercepted and converted into same-document traversals.</p>
     </ul>
@@ -2536,11 +2616,23 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#dom-navigationcurrententrychangeeventinit-destination">dict-member for NavigationCurrentEntryChangeEventInit</a><span>, in § 1.2</span>
     </ul>
    <li><a href="#fire-a-traversal-navigate-event-destinationentry">destinationEntry</a><span>, in § 2.3</span>
-   <li><a href="#fire-a-non-traversal-navigate-event-destinationurl">destinationURL</a><span>, in § 2.3</span>
+   <li>
+    destinationURL
+    <ul>
+     <li><a href="#fire-a-download-requested-navigate-event-destinationurl">dfn for fire a download-requested navigate event</a><span>, in § 2.3</span>
+     <li><a href="#fire-a-non-traversal-navigate-event-destinationurl">dfn for fire a non-traversal navigate event</a><span>, in § 2.3</span>
+    </ul>
    <li><a href="#eventdef-navigationhistoryentry-dispose">dispose</a><span>, in § 3</span>
+   <li>
+    downloadRequest
+    <ul>
+     <li><a href="#dom-navigateevent-downloadrequest">attribute for NavigateEvent</a><span>, in § 2.1</span>
+     <li><a href="#dom-navigateeventinit-downloadrequest">dict-member for NavigateEventInit</a><span>, in § 2.1</span>
+    </ul>
    <li><a href="#dom-navigation-entries">entries()</a><span>, in § 1.1</span>
    <li><a href="#navigation-entry-list">entry list</a><span>, in § 1</span>
    <li><a href="#navigate-entrylist">entryList</a><span>, in § 4.1</span>
+   <li><a href="#fire-a-download-requested-navigate-event-filename">filename</a><span>, in § 2.3</span>
    <li><a href="#finalize-with-an-aborted-navigation-error">finalize with an aborted navigation error</a><span>, in § 2.3</span>
    <li><a href="#eventdef-navigationhistoryentry-finish">finish</a><span>, in § 3</span>
    <li>
@@ -2555,6 +2647,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><a href="#navigationtransition-finished-promise">dfn for NavigationTransition</a><span>, in § 1.3</span>
      <li><a href="#navigation-api-method-navigation-finished-promise">dfn for navigation API method navigation</a><span>, in § 1.3</span>
     </ul>
+   <li><a href="#fire-a-download-requested-navigate-event">fire a download-requested navigate event</a><span>, in § 2.3</span>
    <li><a href="#fire-a-non-traversal-navigate-event">fire a non-traversal navigate event</a><span>, in § 2.3</span>
    <li><a href="#fire-a-traversal-navigate-event">fire a traversal navigate event</a><span>, in § 2.3</span>
    <li>
@@ -2748,6 +2841,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <li>
     userInvolvement
     <ul>
+     <li><a href="#fire-a-download-requested-navigate-event-userinvolvement">dfn for fire a download-requested navigate event</a><span>, in § 2.3</span>
      <li><a href="#fire-a-non-traversal-navigate-event-userinvolvement">dfn for fire a non-traversal navigate event</a><span>, in § 2.3</span>
      <li><a href="#fire-a-traversal-navigate-event-userinvolvement">dfn for fire a traversal navigate event</a><span>, in § 2.3</span>
      <li><a href="#navigate-userinvolvement">dfn for navigate</a><span>, in § 4.2</span>
@@ -2823,6 +2917,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior">https://dom.spec.whatwg.org/#eventtarget-activation-behavior</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-eventtarget-activation-behavior">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-eventtarget-activation-behavior①">(2)</a> <a href="#ref-for-eventtarget-activation-behavior②">(3)</a> <a href="#ref-for-eventtarget-activation-behavior③">(4)</a> <a href="#ref-for-eventtarget-activation-behavior④">(5)</a>
+    <li><a href="#ref-for-eventtarget-activation-behavior⑤">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-event-cancelable">
@@ -2842,7 +2937,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-concept-event-create">
    <a href="https://dom.spec.whatwg.org/#concept-event-create">https://dom.spec.whatwg.org/#concept-event-create</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-event-create">2.3. Firing the event</a> <a href="#ref-for-concept-event-create①">(2)</a>
+    <li><a href="#ref-for-concept-event-create">2.3. Firing the event</a> <a href="#ref-for-concept-event-create①">(2)</a> <a href="#ref-for-concept-event-create②">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-event-dispatch">
@@ -2970,8 +3065,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-the-a-element">
    <a href="https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element">https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-the-a-element">2.1. The NavigateEvent class</a>
-    <li><a href="#ref-for-the-a-element①">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-the-a-element②">(2)</a>
+    <li><a href="#ref-for-the-a-element">2.1. The NavigateEvent class</a> <a href="#ref-for-the-a-element①">(2)</a>
+    <li><a href="#ref-for-the-a-element②">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-the-a-element③">(2)</a>
+    <li><a href="#ref-for-the-a-element④">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-active-document">
@@ -2996,6 +3092,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-active-window②">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-allowed-to-download">
+   <a href="https://html.spec.whatwg.org/multipage/links.html#allowed-to-download">https://html.spec.whatwg.org/multipage/links.html#allowed-to-download</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-allowed-to-download">4.5. Download a hyperlink updates</a> <a href="#ref-for-allowed-to-download①">(2)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-allowed-to-navigate">
    <a href="https://html.spec.whatwg.org/multipage/browsers.html#allowed-to-navigate">https://html.spec.whatwg.org/multipage/browsers.html#allowed-to-navigate</a><b>Referenced in:</b>
    <ul>
@@ -3012,7 +3114,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-the-area-element">
    <a href="https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element">https://html.spec.whatwg.org/multipage/image-maps.html#the-area-element</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-the-area-element">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-the-area-element①">(2)</a>
+    <li><a href="#ref-for-the-area-element">2.1. The NavigateEvent class</a>
+    <li><a href="#ref-for-the-area-element①">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-the-area-element②">(2)</a>
+    <li><a href="#ref-for-the-area-element③">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-location-assign">
@@ -3063,6 +3167,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-can-have-its-url-rewritten">2.1. The NavigateEvent class</a>
     <li><a href="#ref-for-can-have-its-url-rewritten①">2.3. Firing the event</a>
     <li><a href="#ref-for-can-have-its-url-rewritten②">7.3. URL updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-cannot-navigate">
+   <a href="https://html.spec.whatwg.org/multipage/links.html#cannot-navigate">https://html.spec.whatwg.org/multipage/links.html#cannot-navigate</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-cannot-navigate">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-colno">
@@ -3139,6 +3249,19 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-she-document⑤">5.4. Tracking the origin member</a> <a href="#ref-for-she-document⑥">(2)</a> <a href="#ref-for-she-document⑦">(3)</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-attr-hyperlink-download">
+   <a href="https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download">https://html.spec.whatwg.org/multipage/links.html#attr-hyperlink-download</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-attr-hyperlink-download">2.1. The NavigateEvent class</a>
+    <li><a href="#ref-for-attr-hyperlink-download①">4.5. Download a hyperlink updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-downloading-hyperlinks">
+   <a href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks">https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-downloading-hyperlinks">4.5. Download a hyperlink updates</a> <a href="#ref-for-downloading-hyperlinks①">(2)</a> <a href="#ref-for-downloading-hyperlinks②">(3)</a> <a href="#ref-for-downloading-hyperlinks③">(4)</a> <a href="#ref-for-downloading-hyperlinks④">(5)</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-enqueue-the-following-steps">
    <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps">https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps</a><b>Referenced in:</b>
    <ul>
@@ -3210,6 +3333,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2">https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-following-hyperlinks-2">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-following-hyperlinks-2①">(2)</a> <a href="#ref-for-following-hyperlinks-2②">(3)</a> <a href="#ref-for-following-hyperlinks-2③">(4)</a> <a href="#ref-for-following-hyperlinks-2④">(5)</a> <a href="#ref-for-following-hyperlinks-2⑤">(6)</a>
+    <li><a href="#ref-for-following-hyperlinks-2⑥">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-the-form-element">
@@ -3267,6 +3391,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-in-parallel">4.1. Form submission patches</a>
     <li><a href="#ref-for-in-parallel①">4.3. Navigation algorithm updates</a>
+    <li><a href="#ref-for-in-parallel②">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-the-input-element">
@@ -3318,7 +3443,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-navigate②">4.1. Form submission patches</a> <a href="#ref-for-navigate③">(2)</a> <a href="#ref-for-navigate④">(3)</a>
     <li><a href="#ref-for-navigate⑤">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-navigate⑥">(2)</a> <a href="#ref-for-navigate⑦">(3)</a> <a href="#ref-for-navigate⑧">(4)</a> <a href="#ref-for-navigate⑨">(5)</a> <a href="#ref-for-navigate①⓪">(6)</a>
     <li><a href="#ref-for-navigate①①">4.3. Navigation algorithm updates</a> <a href="#ref-for-navigate①②">(2)</a>
-    <li><a href="#ref-for-navigate①③">6.1. Canceling navigation and traversals</a>
+    <li><a href="#ref-for-navigate①③">4.5. Download a hyperlink updates</a> <a href="#ref-for-navigate①④">(2)</a>
+    <li><a href="#ref-for-navigate①⑤">6.1. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-navigate-fragid">
@@ -3401,7 +3527,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-relevant-global①④">3. Navigation API history entries</a> <a href="#ref-for-concept-relevant-global①⑤">(2)</a> <a href="#ref-for-concept-relevant-global①⑥">(3)</a> <a href="#ref-for-concept-relevant-global①⑦">(4)</a> <a href="#ref-for-concept-relevant-global①⑧">(5)</a> <a href="#ref-for-concept-relevant-global①⑨">(6)</a> <a href="#ref-for-concept-relevant-global②⓪">(7)</a> <a href="#ref-for-concept-relevant-global②①">(8)</a>
     <li><a href="#ref-for-concept-relevant-global②②">4.3. Navigation algorithm updates</a> <a href="#ref-for-concept-relevant-global②③">(2)</a>
     <li><a href="#ref-for-concept-relevant-global②④">4.4. History traversal updates</a>
-    <li><a href="#ref-for-concept-relevant-global②⑤">5.6. Updating the Navigation object</a> <a href="#ref-for-concept-relevant-global②⑥">(2)</a>
+    <li><a href="#ref-for-concept-relevant-global②⑤">4.5. Download a hyperlink updates</a>
+    <li><a href="#ref-for-concept-relevant-global②⑥">5.6. Updating the Navigation object</a> <a href="#ref-for-concept-relevant-global②⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-relevant-realm">
@@ -3410,7 +3537,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-relevant-realm">1. The Navigation class</a>
     <li><a href="#ref-for-concept-relevant-realm①">1.3. Ongoing navigation tracking</a> <a href="#ref-for-concept-relevant-realm②">(2)</a>
     <li><a href="#ref-for-concept-relevant-realm③">1.5. Traversing</a>
-    <li><a href="#ref-for-concept-relevant-realm④">2.3. Firing the event</a> <a href="#ref-for-concept-relevant-realm⑤">(2)</a> <a href="#ref-for-concept-relevant-realm⑥">(3)</a> <a href="#ref-for-concept-relevant-realm⑦">(4)</a> <a href="#ref-for-concept-relevant-realm⑧">(5)</a> <a href="#ref-for-concept-relevant-realm⑨">(6)</a> <a href="#ref-for-concept-relevant-realm①⓪">(7)</a> <a href="#ref-for-concept-relevant-realm①①">(8)</a> <a href="#ref-for-concept-relevant-realm①②">(9)</a>
+    <li><a href="#ref-for-concept-relevant-realm④">2.3. Firing the event</a> <a href="#ref-for-concept-relevant-realm⑤">(2)</a> <a href="#ref-for-concept-relevant-realm⑥">(3)</a> <a href="#ref-for-concept-relevant-realm⑦">(4)</a> <a href="#ref-for-concept-relevant-realm⑧">(5)</a> <a href="#ref-for-concept-relevant-realm⑨">(6)</a> <a href="#ref-for-concept-relevant-realm①⓪">(7)</a> <a href="#ref-for-concept-relevant-realm①①">(8)</a> <a href="#ref-for-concept-relevant-realm①②">(9)</a> <a href="#ref-for-concept-relevant-realm①③">(10)</a> <a href="#ref-for-concept-relevant-realm①④">(11)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-relevant-settings-object">
@@ -3834,7 +3961,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-concept-url">1.4. Navigating</a>
     <li><a href="#ref-for-concept-url①">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-concept-url②">2.3. Firing the event</a>
+    <li><a href="#ref-for-concept-url②">2.3. Firing the event</a> <a href="#ref-for-concept-url③">(2)</a>
+    <li><a href="#ref-for-concept-url④">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-url-serializer">
@@ -3885,9 +4013,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-idl-DOMString">1. The Navigation class</a>
     <li><a href="#ref-for-idl-DOMString①">1.2. The current entry</a>
-    <li><a href="#ref-for-idl-DOMString②">2.1. The NavigateEvent class</a>
-    <li><a href="#ref-for-idl-DOMString③">2.2. The NavigationDestination class</a> <a href="#ref-for-idl-DOMString④">(2)</a>
-    <li><a href="#ref-for-idl-DOMString⑤">3. Navigation API history entries</a> <a href="#ref-for-idl-DOMString⑥">(2)</a>
+    <li><a href="#ref-for-idl-DOMString②">2.1. The NavigateEvent class</a> <a href="#ref-for-idl-DOMString③">(2)</a> <a href="#ref-for-idl-DOMString④">(3)</a>
+    <li><a href="#ref-for-idl-DOMString⑤">2.2. The NavigationDestination class</a> <a href="#ref-for-idl-DOMString⑥">(2)</a>
+    <li><a href="#ref-for-idl-DOMString⑦">3. Navigation API history entries</a> <a href="#ref-for-idl-DOMString⑧">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-Exposed">
@@ -4003,7 +4131,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-new">1. The Navigation class</a>
     <li><a href="#ref-for-new①">1.5. Traversing</a>
-    <li><a href="#ref-for-new②">2.3. Firing the event</a> <a href="#ref-for-new③">(2)</a> <a href="#ref-for-new④">(3)</a> <a href="#ref-for-new⑤">(4)</a> <a href="#ref-for-new⑥">(5)</a> <a href="#ref-for-new⑦">(6)</a>
+    <li><a href="#ref-for-new②">2.3. Firing the event</a> <a href="#ref-for-new③">(2)</a> <a href="#ref-for-new④">(3)</a> <a href="#ref-for-new⑤">(4)</a> <a href="#ref-for-new⑥">(5)</a> <a href="#ref-for-new⑦">(6)</a> <a href="#ref-for-new⑧">(7)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-reject">
@@ -4119,6 +4247,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-active-document">active document</span>
      <li><span class="dfn-paneled" id="term-for-nav-active-history-entry">active session history entry</span>
      <li><span class="dfn-paneled" id="term-for-active-window">active window</span>
+     <li><span class="dfn-paneled" id="term-for-allowed-to-download">allowed to download</span>
      <li><span class="dfn-paneled" id="term-for-allowed-to-navigate">allowed to navigate</span>
      <li><span class="dfn-paneled" id="term-for-apply-the-history-step">apply the history step</span>
      <li><span class="dfn-paneled" id="term-for-the-area-element">area</span>
@@ -4129,6 +4258,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-browsing-session">browsing session</span>
      <li><span class="dfn-paneled" id="term-for-the-button-element">button</span>
      <li><span class="dfn-paneled" id="term-for-can-have-its-url-rewritten">can have its url rewritten</span>
+     <li><span class="dfn-paneled" id="term-for-cannot-navigate">cannot navigate</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-colno">colno</span>
      <li><span class="dfn-paneled" id="term-for-bc-navigable">containing navigable</span>
      <li><span class="dfn-paneled" id="term-for-creating-a-new-browsing-context">create a new browsing context</span>
@@ -4139,6 +4269,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-determining-navigation-params-policy-container">determine navigation params policy container</span>
      <li><span class="dfn-paneled" id="term-for-a-browsing-context-is-discarded">discard</span>
      <li><span class="dfn-paneled" id="term-for-she-document">document <small>(for session history entry)</small></span>
+     <li><span class="dfn-paneled" id="term-for-attr-hyperlink-download">download</span>
+     <li><span class="dfn-paneled" id="term-for-downloading-hyperlinks">download the hyperlink</span>
      <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps">enqueue steps</span>
      <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps①">enqueue the following steps</span>
      <li><span class="dfn-paneled" id="term-for-entry-list">entry list</span>
@@ -4410,6 +4542,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean"><c- b>boolean</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="boolean" href="#dom-navigateevent-hashchange"><c- g>hashChange</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal"><c- n>AbortSignal</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="AbortSignal" href="#dom-navigateevent-signal"><c- g>signal</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="https://xhr.spec.whatwg.org/#formdata"><c- n>FormData</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="FormData?" href="#dom-navigateevent-formdata"><c- g>formData</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="DOMString?" href="#dom-navigateevent-downloadrequest"><c- g>downloadRequest</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-any"><c- b>any</c-></a> <a class="idl-code" data-link-type="attribute" data-readonly data-type="any" href="#dom-navigateevent-info"><c- g>info</c-></a>;
 
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-navigateevent-transitionwhile"><c- g>transitionWhile</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined"><c- b>undefined</c-></a>> <a href="#dom-navigateevent-transitionwhile-newnavigationaction-newnavigationaction"><code><c- g>newNavigationAction</c-></code></a>);
@@ -4423,6 +4556,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean"><c- b>boolean</c-></a> <a data-default="false" data-type="boolean " href="#dom-navigateeventinit-hashchange"><code><c- g>hashChange</c-></code></a> = <c- b>false</c->;
   <c- b>required</c-> <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#abortsignal"><c- n>AbortSignal</c-></a> <a data-type="AbortSignal " href="#dom-navigateeventinit-signal"><code><c- g>signal</c-></code></a>;
   <a data-link-type="idl-name" href="https://xhr.spec.whatwg.org/#formdata"><c- n>FormData</c-></a>? <a data-default="null" data-type="FormData? " href="#dom-navigateeventinit-formdata"><code><c- g>formData</c-></code></a> = <c- b>null</c->;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a>? <a data-default="null" data-type="DOMString? " href="#dom-navigateeventinit-downloadrequest"><code><c- g>downloadRequest</c-></code></a> = <c- b>null</c->;
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-any"><c- b>any</c-></a> <a data-type="any " href="#dom-navigateeventinit-info"><code><c- g>info</c-></code></a>;
 };
 
@@ -4469,7 +4603,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-window-navigation-api①">2.3. Firing the event</a> <a href="#ref-for-window-navigation-api②">(2)</a>
     <li><a href="#ref-for-window-navigation-api③">4.3. Navigation algorithm updates</a> <a href="#ref-for-window-navigation-api④">(2)</a> <a href="#ref-for-window-navigation-api⑤">(3)</a>
     <li><a href="#ref-for-window-navigation-api⑥">4.4. History traversal updates</a>
-    <li><a href="#ref-for-window-navigation-api⑦">5.6. Updating the Navigation object</a> <a href="#ref-for-window-navigation-api⑧">(2)</a>
+    <li><a href="#ref-for-window-navigation-api⑦">4.5. Download a hyperlink updates</a>
+    <li><a href="#ref-for-window-navigation-api⑧">5.6. Updating the Navigation object</a> <a href="#ref-for-window-navigation-api⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-window-navigation">
@@ -4493,9 +4628,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-navigation②⓪">1.4. Navigating</a> <a href="#ref-for-navigation②①">(2)</a>
     <li><a href="#ref-for-navigation②②">1.5. Traversing</a>
     <li><a href="#ref-for-navigation②③">1.6. Event handlers</a>
-    <li><a href="#ref-for-navigation②④">2.3. Firing the event</a> <a href="#ref-for-navigation②⑤">(2)</a> <a href="#ref-for-navigation②⑥">(3)</a> <a href="#ref-for-navigation②⑦">(4)</a>
-    <li><a href="#ref-for-navigation②⑧">5. Patches to session history</a>
-    <li><a href="#ref-for-navigation②⑨">5.6. Updating the Navigation object</a>
+    <li><a href="#ref-for-navigation②④">2.3. Firing the event</a> <a href="#ref-for-navigation②⑤">(2)</a> <a href="#ref-for-navigation②⑥">(3)</a> <a href="#ref-for-navigation②⑦">(4)</a> <a href="#ref-for-navigation②⑧">(5)</a>
+    <li><a href="#ref-for-navigation②⑨">5. Patches to session history</a>
+    <li><a href="#ref-for-navigation③⓪">5.6. Updating the Navigation object</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-navigationupdatecurrententryoptions">
@@ -4984,11 +5119,13 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-eventdef-navigation-navigate④">1.4. Navigating</a> <a href="#ref-for-eventdef-navigation-navigate⑤">(2)</a> <a href="#ref-for-eventdef-navigation-navigate⑥">(3)</a> <a href="#ref-for-eventdef-navigation-navigate⑦">(4)</a> <a href="#ref-for-eventdef-navigation-navigate⑧">(5)</a> <a href="#ref-for-eventdef-navigation-navigate⑨">(6)</a>
     <li><a href="#ref-for-eventdef-navigation-navigate①⓪">1.5. Traversing</a> <a href="#ref-for-eventdef-navigation-navigate①①">(2)</a> <a href="#ref-for-eventdef-navigation-navigate①②">(3)</a> <a href="#ref-for-eventdef-navigation-navigate①③">(4)</a> <a href="#ref-for-eventdef-navigation-navigate①④">(5)</a>
     <li><a href="#ref-for-eventdef-navigation-navigate①⑤">2. The navigate event</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑥">2.3. Firing the event</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑦">4. Patches to fire the navigate event</a> <a href="#ref-for-eventdef-navigation-navigate①⑧">(2)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑨">4.3. Navigation algorithm updates</a> <a href="#ref-for-eventdef-navigation-navigate②⓪">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②①">(3)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate②②">6.1. Canceling navigation and traversals</a> <a href="#ref-for-eventdef-navigation-navigate②③">(2)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate②④">7.2. Navigation monitoring and interception</a> <a href="#ref-for-eventdef-navigation-navigate②⑤">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②⑥">(3)</a> <a href="#ref-for-eventdef-navigation-navigate②⑦">(4)</a> <a href="#ref-for-eventdef-navigation-navigate②⑧">(5)</a> <a href="#ref-for-eventdef-navigation-navigate②⑨">(6)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑥">2.1. The NavigateEvent class</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑦">2.3. Firing the event</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑧">4. Patches to fire the navigate event</a> <a href="#ref-for-eventdef-navigation-navigate①⑨">(2)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②⓪">4.3. Navigation algorithm updates</a> <a href="#ref-for-eventdef-navigation-navigate②①">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②②">(3)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②③">4.5. Download a hyperlink updates</a> <a href="#ref-for-eventdef-navigation-navigate②④">(2)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②⑤">6.1. Canceling navigation and traversals</a> <a href="#ref-for-eventdef-navigation-navigate②⑥">(2)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②⑦">7.2. Navigation monitoring and interception</a> <a href="#ref-for-eventdef-navigation-navigate②⑧">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②⑨">(3)</a> <a href="#ref-for-eventdef-navigation-navigate③⓪">(4)</a> <a href="#ref-for-eventdef-navigation-navigate③①">(5)</a> <a href="#ref-for-eventdef-navigation-navigate③②">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-navigation-onnavigatesuccess">
@@ -5039,9 +5176,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-navigateevent">1.3. Ongoing navigation tracking</a> <a href="#ref-for-navigateevent①">(2)</a>
     <li><a href="#ref-for-navigateevent②">2.1. The NavigateEvent class</a> <a href="#ref-for-navigateevent③">(2)</a> <a href="#ref-for-navigateevent④">(3)</a>
-    <li><a href="#ref-for-navigateevent⑤">2.3. Firing the event</a> <a href="#ref-for-navigateevent⑥">(2)</a> <a href="#ref-for-navigateevent⑦">(3)</a>
-    <li><a href="#ref-for-navigateevent⑧">4.1. Form submission patches</a>
-    <li><a href="#ref-for-navigateevent⑨">4.2. Browser UI/user-initiated patches</a>
+    <li><a href="#ref-for-navigateevent⑤">2.3. Firing the event</a> <a href="#ref-for-navigateevent⑥">(2)</a> <a href="#ref-for-navigateevent⑦">(3)</a> <a href="#ref-for-navigateevent⑧">(4)</a>
+    <li><a href="#ref-for-navigateevent⑨">4.1. Form submission patches</a>
+    <li><a href="#ref-for-navigateevent①⓪">4.2. Browser UI/user-initiated patches</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-navigateeventinit">
@@ -5075,8 +5212,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-dom-navigationnavigationtype-push">1.3. Ongoing navigation tracking</a> <a href="#ref-for-dom-navigationnavigationtype-push①">(2)</a>
     <li><a href="#ref-for-dom-navigationnavigationtype-push②">2.1. The NavigateEvent class</a> <a href="#ref-for-dom-navigationnavigationtype-push③">(2)</a> <a href="#ref-for-dom-navigationnavigationtype-push④">(3)</a>
     <li><a href="#ref-for-dom-navigationnavigationtype-push⑤">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-dom-navigationnavigationtype-push⑥">2.3. Firing the event</a>
-    <li><a href="#ref-for-dom-navigationnavigationtype-push⑦">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-navigationnavigationtype-push⑧">(2)</a>
+    <li><a href="#ref-for-dom-navigationnavigationtype-push⑥">2.3. Firing the event</a> <a href="#ref-for-dom-navigationnavigationtype-push⑦">(2)</a>
+    <li><a href="#ref-for-dom-navigationnavigationtype-push⑧">4.3. Navigation algorithm updates</a> <a href="#ref-for-dom-navigationnavigationtype-push⑨">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-navigationnavigationtype-replace">
@@ -5150,6 +5287,14 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-dom-navigateevent-formdata③">4.1. Form submission patches</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-navigateevent-downloadrequest">
+   <b><a href="#dom-navigateevent-downloadrequest">#dom-navigateevent-downloadrequest</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-navigateevent-downloadrequest">2.1. The NavigateEvent class</a> <a href="#ref-for-dom-navigateevent-downloadrequest①">(2)</a>
+    <li><a href="#ref-for-dom-navigateevent-downloadrequest②">2.3. Firing the event</a>
+    <li><a href="#ref-for-dom-navigateevent-downloadrequest③">4.5. Download a hyperlink updates</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-navigateevent-info">
    <b><a href="#dom-navigateevent-info">#dom-navigateevent-info</a></b><b>Referenced in:</b>
    <ul>
@@ -5163,7 +5308,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="navigateevent-classic-history-api-serialized-data">
    <b><a href="#navigateevent-classic-history-api-serialized-data">#navigateevent-classic-history-api-serialized-data</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-navigateevent-classic-history-api-serialized-data">2.3. Firing the event</a> <a href="#ref-for-navigateevent-classic-history-api-serialized-data①">(2)</a>
+    <li><a href="#ref-for-navigateevent-classic-history-api-serialized-data">2.3. Firing the event</a> <a href="#ref-for-navigateevent-classic-history-api-serialized-data①">(2)</a> <a href="#ref-for-navigateevent-classic-history-api-serialized-data②">(3)</a> <a href="#ref-for-navigateevent-classic-history-api-serialized-data③">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigateevent-navigation-action-promises-list">
@@ -5189,49 +5334,49 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-navigationdestination">2.1. The NavigateEvent class</a> <a href="#ref-for-navigationdestination①">(2)</a> <a href="#ref-for-navigationdestination②">(3)</a>
     <li><a href="#ref-for-navigationdestination③">2.2. The NavigationDestination class</a> <a href="#ref-for-navigationdestination④">(2)</a> <a href="#ref-for-navigationdestination⑤">(3)</a> <a href="#ref-for-navigationdestination⑥">(4)</a> <a href="#ref-for-navigationdestination⑦">(5)</a> <a href="#ref-for-navigationdestination⑧">(6)</a> <a href="#ref-for-navigationdestination⑨">(7)</a>
-    <li><a href="#ref-for-navigationdestination①⓪">2.3. Firing the event</a> <a href="#ref-for-navigationdestination①①">(2)</a> <a href="#ref-for-navigationdestination①②">(3)</a>
+    <li><a href="#ref-for-navigationdestination①⓪">2.3. Firing the event</a> <a href="#ref-for-navigationdestination①①">(2)</a> <a href="#ref-for-navigationdestination①②">(3)</a> <a href="#ref-for-navigationdestination①③">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigationdestination-url">
    <b><a href="#navigationdestination-url">#navigationdestination-url</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigationdestination-url">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-navigationdestination-url①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-url②">(2)</a> <a href="#ref-for-navigationdestination-url③">(3)</a> <a href="#ref-for-navigationdestination-url④">(4)</a> <a href="#ref-for-navigationdestination-url⑤">(5)</a> <a href="#ref-for-navigationdestination-url⑥">(6)</a>
+    <li><a href="#ref-for-navigationdestination-url①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-url②">(2)</a> <a href="#ref-for-navigationdestination-url③">(3)</a> <a href="#ref-for-navigationdestination-url④">(4)</a> <a href="#ref-for-navigationdestination-url⑤">(5)</a> <a href="#ref-for-navigationdestination-url⑥">(6)</a> <a href="#ref-for-navigationdestination-url⑦">(7)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigationdestination-key">
    <b><a href="#navigationdestination-key">#navigationdestination-key</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigationdestination-key">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-navigationdestination-key①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-key②">(2)</a> <a href="#ref-for-navigationdestination-key③">(3)</a> <a href="#ref-for-navigationdestination-key④">(4)</a>
+    <li><a href="#ref-for-navigationdestination-key①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-key②">(2)</a> <a href="#ref-for-navigationdestination-key③">(3)</a> <a href="#ref-for-navigationdestination-key④">(4)</a> <a href="#ref-for-navigationdestination-key⑤">(5)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigationdestination-id">
    <b><a href="#navigationdestination-id">#navigationdestination-id</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigationdestination-id">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-navigationdestination-id①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-id②">(2)</a> <a href="#ref-for-navigationdestination-id③">(3)</a>
+    <li><a href="#ref-for-navigationdestination-id①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-id②">(2)</a> <a href="#ref-for-navigationdestination-id③">(3)</a> <a href="#ref-for-navigationdestination-id④">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigationdestination-index">
    <b><a href="#navigationdestination-index">#navigationdestination-index</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigationdestination-index">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-navigationdestination-index①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-index②">(2)</a> <a href="#ref-for-navigationdestination-index③">(3)</a>
+    <li><a href="#ref-for-navigationdestination-index①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-index②">(2)</a> <a href="#ref-for-navigationdestination-index③">(3)</a> <a href="#ref-for-navigationdestination-index④">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigationdestination-state">
    <b><a href="#navigationdestination-state">#navigationdestination-state</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigationdestination-state">2.2. The NavigationDestination class</a> <a href="#ref-for-navigationdestination-state①">(2)</a>
-    <li><a href="#ref-for-navigationdestination-state②">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-state③">(2)</a> <a href="#ref-for-navigationdestination-state④">(3)</a>
+    <li><a href="#ref-for-navigationdestination-state②">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-state③">(2)</a> <a href="#ref-for-navigationdestination-state④">(3)</a> <a href="#ref-for-navigationdestination-state⑤">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="navigationdestination-is-same-document">
    <b><a href="#navigationdestination-is-same-document">#navigationdestination-is-same-document</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigationdestination-is-same-document">2.2. The NavigationDestination class</a>
-    <li><a href="#ref-for-navigationdestination-is-same-document①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-is-same-document②">(2)</a> <a href="#ref-for-navigationdestination-is-same-document③">(3)</a> <a href="#ref-for-navigationdestination-is-same-document④">(4)</a> <a href="#ref-for-navigationdestination-is-same-document⑤">(5)</a>
+    <li><a href="#ref-for-navigationdestination-is-same-document①">2.3. Firing the event</a> <a href="#ref-for-navigationdestination-is-same-document②">(2)</a> <a href="#ref-for-navigationdestination-is-same-document③">(3)</a> <a href="#ref-for-navigationdestination-is-same-document④">(4)</a> <a href="#ref-for-navigationdestination-is-same-document⑤">(5)</a> <a href="#ref-for-navigationdestination-is-same-document⑥">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-navigationdestination-url">
@@ -5292,6 +5437,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <b><a href="#fire-a-non-traversal-navigate-event">#fire-a-non-traversal-navigate-event</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-fire-a-non-traversal-navigate-event">4.3. Navigation algorithm updates</a> <a href="#ref-for-fire-a-non-traversal-navigate-event①">(2)</a> <a href="#ref-for-fire-a-non-traversal-navigate-event②">(3)</a>
+    <li><a href="#ref-for-fire-a-non-traversal-navigate-event③">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="fire-a-non-traversal-navigate-event-navigationtype">
@@ -5336,11 +5482,35 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-fire-a-non-traversal-navigate-event-classichistoryapiserializeddata">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="fire-a-download-requested-navigate-event">
+   <b><a href="#fire-a-download-requested-navigate-event">#fire-a-download-requested-navigate-event</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fire-a-download-requested-navigate-event">4.5. Download a hyperlink updates</a> <a href="#ref-for-fire-a-download-requested-navigate-event①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="fire-a-download-requested-navigate-event-destinationurl">
+   <b><a href="#fire-a-download-requested-navigate-event-destinationurl">#fire-a-download-requested-navigate-event-destinationurl</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fire-a-download-requested-navigate-event-destinationurl">4.5. Download a hyperlink updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="fire-a-download-requested-navigate-event-userinvolvement">
+   <b><a href="#fire-a-download-requested-navigate-event-userinvolvement">#fire-a-download-requested-navigate-event-userinvolvement</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fire-a-download-requested-navigate-event-userinvolvement">4.5. Download a hyperlink updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="fire-a-download-requested-navigate-event-filename">
+   <b><a href="#fire-a-download-requested-navigate-event-filename">#fire-a-download-requested-navigate-event-filename</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fire-a-download-requested-navigate-event-filename">4.5. Download a hyperlink updates</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="inner-navigate-event-firing-algorithm">
    <b><a href="#inner-navigate-event-firing-algorithm">#inner-navigate-event-firing-algorithm</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-inner-navigate-event-firing-algorithm">1.4. Navigating</a>
-    <li><a href="#ref-for-inner-navigate-event-firing-algorithm①">2.3. Firing the event</a> <a href="#ref-for-inner-navigate-event-firing-algorithm②">(2)</a>
+    <li><a href="#ref-for-inner-navigate-event-firing-algorithm①">2.3. Firing the event</a> <a href="#ref-for-inner-navigate-event-firing-algorithm②">(2)</a> <a href="#ref-for-inner-navigate-event-firing-algorithm③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="finalize-with-an-aborted-navigation-error">
@@ -5495,7 +5665,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="user-navigation-involvement">
    <b><a href="#user-navigation-involvement">#user-navigation-involvement</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-user-navigation-involvement">2.3. Firing the event</a> <a href="#ref-for-user-navigation-involvement①">(2)</a> <a href="#ref-for-user-navigation-involvement②">(3)</a>
+    <li><a href="#ref-for-user-navigation-involvement">2.3. Firing the event</a> <a href="#ref-for-user-navigation-involvement①">(2)</a> <a href="#ref-for-user-navigation-involvement②">(3)</a> <a href="#ref-for-user-navigation-involvement③">(4)</a>
+    <li><a href="#ref-for-user-navigation-involvement④">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="user-navigation-involvement-browser-ui">
@@ -5503,6 +5674,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-user-navigation-involvement-browser-ui">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-user-navigation-involvement-browser-ui①">(2)</a> <a href="#ref-for-user-navigation-involvement-browser-ui②">(3)</a>
     <li><a href="#ref-for-user-navigation-involvement-browser-ui③">4.3. Navigation algorithm updates</a> <a href="#ref-for-user-navigation-involvement-browser-ui④">(2)</a>
+    <li><a href="#ref-for-user-navigation-involvement-browser-ui⑤">4.5. Download a hyperlink updates</a> <a href="#ref-for-user-navigation-involvement-browser-ui⑥">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="user-navigation-involvement-activation">
