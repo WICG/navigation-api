@@ -29,9 +29,6 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
     text: serialized state; url: history.html#serialized-state
     text: session history; url: history.html#session-history
     text: session history entry; url: history.html#session-history-entry
-    for: URL and history update steps
-      text: serializedData; url: history.html#uhus-serializeddata
-      text: isPush; url: history.html#uhus-ispush
     for: session history
       text: current entry; url: history.html#current-entry
     for: session history entry
@@ -55,18 +52,29 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
     text: Cross-Origin-Opener-Policy; url: multipage/iana.html#cross-origin-opener-policy-2
 spec: html; urlPrefix: https://whatpr.org/html/6315/
   type: dfn
-    text: traversable navigable; for: navigable; url: history.html#nav-traversable
-    text: current session history entry; for: navigable; url: history.html#nav-current-history-entry
-    text: active session history entry; for: navigable; url: history.html#nav-active-history-entry
-    text: get the session history entries; for: navigable; url: history.html#getting-session-history-entries
     text: session history traversal queue; for: traversable navigable; url: history.html#tn-session-history-traversal-queue
     text: current session history step; for: traversable navigable; url: history.html#tn-current-session-history-step
     text: get all history steps; for: traversable navigable; url: history.html#getting-all-history-steps
     text: step; for: session history entry; url: history.html#she-step
     text: apply the history step; url: history.html#apply-the-history-step
     text: containing navigable; for: browsing context; url: browsers.html#bc-navigable
-    text: active document; for: navigable; url: history.html#nav-document
     text: navigable; url: history.html#navigable
+    text: URL and history update steps; url: browsers.html#url-and-history-update-steps
+    text: shared history push/replace state steps; url: browsers.html#shared-history-push/replace-state-steps
+    text: update document for history step application; url: history.html#update-document-for-history-step-application
+    text: reactivate; url: history.html#reactivate-a-document
+    text: navigate to a fragment; url: history.html#navigate-fragid
+    text: navigation and traversal task source; url: webappapis.html#navigation-and-traversal-task-source
+    for: URL and history update steps
+      text: serializedData; url: history.html#uhus-serializeddata
+      text: historyHandling; url: history.html#uhus-historyhandling
+    for: navigable
+      text: active window; url: browsers.html#nav-window
+      text: active document; url: history.html#nav-document
+      text: traversable navigable; url: history.html#nav-traversable
+      text: current session history entry; url: history.html#nav-current-history-entry
+      text: active session history entry; url: history.html#nav-active-history-entry
+      text: get the session history entries; url: history.html#getting-session-history-entries
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
   text: generate a random UUID; url: #dfn-generate-a-random-uuid
 </pre>
@@ -227,7 +235,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 </div>
 
 <div algorithm>
-  To <dfn for="Navigation">update the entries</dfn> for a {{Navigation}} instance |navigation|:
+  To <dfn for="Navigation">update the entries</dfn> for a {{Navigation}} instance |navigation| given a {{NavigationNavigationType}}-or-null |navigationTypeForCurrententrychange| and a boolean |deferNotification| (default false):
 
   1. If |navigation| [=Navigation/has entries and events disabled=], then:
 
@@ -245,7 +253,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. Let |navigationAPISHEs| be a new empty list.
 
-  1. Let |oldCurrentAHE| be the [=Navigation/current entry=] of |navigation|.
+  1. Let |oldCurrentNHE| be the [=Navigation/current entry=] of |navigation|.
 
   1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
 
@@ -279,21 +287,21 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. Let |newEntryList| be an empty list.
 
-  1. [=list/For each=] |oldAHE| of |navigation|'s [=Navigation/entry list=]:
+  1. [=list/For each=] |oldNHE| of |navigation|'s [=Navigation/entry list=]:
 
-    1. Set |oldAHE|'s [=NavigationHistoryEntry/index=] to &minus;1.
+    1. Set |oldNHE|'s [=NavigationHistoryEntry/index=] to &minus;1.
 
   1. Let |index| be 0.
 
-  1. Let |disposedAHEs| be a [=list/clone=] of |navigation|'s [=Navigation/entry list=].
+  1. Let |disposedNHEs| be a [=list/clone=] of |navigation|'s [=Navigation/entry list=].
 
   1. [=list/For each=] |she| of |navigationAPISHEs|:
 
-    1. If |navigation|'s [=Navigation/entry list=] [=list/contains=] a {{NavigationHistoryEntry}} |existingAHE| whose [=NavigationHistoryEntry/session history entry=] is |she|, then:
+    1. If |navigation|'s [=Navigation/entry list=] [=list/contains=] a {{NavigationHistoryEntry}} |existingNHE| whose [=NavigationHistoryEntry/session history entry=] is |she|, then:
 
-      1. [=list/Append=] |existingAHE| to |newEntryList|.
+      1. [=list/Append=] |existingNHE| to |newEntryList|.
 
-      1. [=list/Remove=] |existingAHE| from |disposedAHEs|.
+      1. [=list/Remove=] |existingNHE| from |disposedNHEs|.
 
     1. Otherwise:
 
@@ -311,13 +319,21 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
   1. Set |navigation|'s [=Navigation/current entry index=] to |newCurrentIndex|.
 
+  1. If |deferNotification| is true, then [=queue a global task=] on the [=navigation and traversal task source=] given |navigation|'s [=relevant global object=] to run the following steps. Otherwise, proceed onward to run these steps within the current task.
+
   1. If |navigation|'s [=Navigation/ongoing navigation=] is non-null, then [=navigation API method navigation/notify about the committed-to entry=] given |navigation|'s [=Navigation/ongoing navigation=] and the [=Navigation/current entry=] of |navigation|.
 
      <p class="note">It is important to do this before firing the {{NavigationHistoryEntry/dispose}} or {{Navigation/currententrychange}} events, since event handlers could start another navigation, or otherwise change the value of |navigation|'s [=Navigation/ongoing navigation=].
 
-  1. If |oldCurrentAHE| is not null, then [=fire an event=] named {{Navigation/currententrychange}} at |navigation| using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to TODO and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |oldCurrentAHE|.
+  1. If |oldCurrentNHE| is not null, and |oldCurrentNHE| does not equal |navigation|'s [=Navigation/current entry=], then:
 
-  1. [=list/For each=] |disposedAHE| of |disposedAHEs|:
+    1. Assert: |navigationTypeForCurrententrychange| is not null.
+
+    1. [=Fire an event=] named {{Navigation/currententrychange}} at |navigation| using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to |navigationTypeForCurrententrychange| and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |oldCurrentNHE|.
+
+    <p class="note">|oldCurrentNHE| is null the first time [=Navigation/update the entries=] is run for a {{Navigation}} object, i.e. on new {{Document}} creation. |oldCurrentNHE| and |navigation|'s [=Navigation/current entry=] are equal if we are [=reactivating=] a page in the back/forward cache. In both cases, {{Navigation/currententrychange}} does not fire.
+
+  1. [=list/For each=] |disposedAHE| of |disposedNHEs|:
 
     1. [=Fire an event=] named {{NavigationHistoryEntry/dispose}} at |disposedAHE|.
 </div>
@@ -766,7 +782,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
     * For navigations that get aborted, both promises will reject with an "{{AbortError}}" {{DOMException}}.
     * For same-document navigations created by using the {{Navigation/navigate}} event's {{NavigateEvent/transitionWhile()}} method, {{NavigationResult/committed}} will fulfill immediately, and {{NavigationResult/finished}} will fulfill or reject according to the promises passed to {{NavigateEvent/transitionWhile()}}.
-    * For other same-document navigations (e.g., non-intercepted <a spec="HTML" lt="navigate to a fragment">fragment navigations</a>), both promises will fulfill immediately.
+    * For other same-document navigations (e.g., non-intercepted [=navigate to a fragment|fragment navigations=], both promises will fulfill immediately.
     * For cross-document navigations, or navigations that result in 204/205 [=response/statuses=] or `Content-Disposition: attachment` header fields from the server (and thus do not actually navigate), both promises will never settle.
 
     <p>In all cases, when the returned promises fulfill, it will be with the {{NavigationHistoryEntry}} that was navigated to.
@@ -1108,7 +1124,7 @@ enum NavigationNavigationType {
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/hashChange}}</code>
   <dd>
-    <p>True if this navigation is a <a spec="HTML" lt="navigate to a fragment">fragment navigation</a>; false otherwise.
+    <p>True if this navigation is a [=navigate to a fragment|fragment navigation=]; false otherwise.
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/signal}}</code>
@@ -1381,11 +1397,9 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
        <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for cross-document navigations.
     1. [=navigation API method navigation/Clean up=] |ongoingNavigation|.
   1. If |hadTransitionWhile| is true and |navigationType| is not "{{NavigationNavigationType/traverse}}":
-    1. If |navigationType| is not "{{NavigationNavigationType/reload}}", then:
-      1. Let |isPush| be true if |navigationType| is "{{NavigationNavigationType/push}}"; otherwise, false.
-      1. Run the <a spec="HTML">URL and history update steps</a> given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/isPush=]</i> set to |isPush|.
+    1. If |navigationType| is not "{{NavigationNavigationType/reload}}", then run the [=URL and history update steps=] given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/historyHandling=]</i> set to |navigationType|.
 
-      <p class="note">If |navigationType| is "{{NavigationNavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{NavigateEvent/transitionWhile()}}.
+       <p class="note">If |navigationType| is "{{NavigationNavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{NavigateEvent/transitionWhile()}}.
     1. Return false.
   1. Return true.
 </div>
@@ -1613,7 +1627,7 @@ Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argum
 
 <p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Site</code></a>\` spec at the same time.</p>
 
-Modify the <a spec="HTML">navigate to a fragment</a> algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
+Modify the [=navigate to a fragment=] algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
 Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about user-initiated navigation as follows:
 
@@ -1664,20 +1678,18 @@ Modify the no-<a spec="HTML">submit button</a> case for <a href="https://html.sp
 With the above infrastructure in place, we can actually fire and handle the {{Navigation/navigate}} event in the following locations:
 
 <div algorithm="shared history push/replace steps">
-  Modify the <a spec="HTML">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a spec="HTML">URL and history update steps</a>.
+  Modify the <a>shared history push/replace state steps</a> by inserting the following steps right before the step that runs the [=URL and history update steps=].
 
   1. Let |navigation| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/navigation API=].
-  1. Let |navigationType| be "{{NavigationNavigationType/push}}" if <var ignore>isPush</var> is true, and "{{NavigationNavigationType/replace}}" otherwise.
-  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
-  1. If |continue| is false, return.
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
+  1. If |continue| is false, then return.
 </div>
 
 <div algorithm="navigate to a fragment">
-  Modify the <a spec="HTML">navigate to a fragment</a> algorithm by prepending the following steps. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
+  Modify the [=navigate to a fragment=] algorithm by prepending the following steps. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
 
-  1. Let |navigation| be the [=session history/current entry=]'s <a spec="HTML" for="session history entry">document</a>'s [=relevant global object=]'s [=Window/navigation API=].
-  1. Let |navigationType| be the result of [=converting a history handling behavior to a navigation type=] given <var ignore>historyHandling</var>.
-  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
+  1. Let |navigation| be <var ignore>navigable</var>'s [=navigable/active window=]'s [=Window/navigation API=].
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
   1. If |continue| is false, return.
 </div>
 
@@ -1700,7 +1712,7 @@ With the above infrastructure in place, we can actually fire and handle the {{Na
 
     <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{Navigation/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
 
-    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause <a spec="HTML" lt="navigate to a fragment">fragment navigations</a> <em>do</em> fire the {{Navigation/navigate}} event; those are handled as part of the <a spec="HTML">navigate to a fragment</a> algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
+    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause [=navigate to a fragment|fragment navigations=] <em>do</em> fire the {{Navigation/navigate}} event; those are handled as part of the [=navigate to a fragment=] algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
 </div>
 
 Expand the section of the navigation/traversal response handling which deals with 204s, 205s, and `Content-Disposition: attachment` responses with the following note:
@@ -1801,7 +1813,7 @@ Each [=session history entry=] gains the following new [=struct/items=]:
 <h3 id="session-history-patches-state">Carrying over the navigation API state</h3>
 
 <div algorithm="navigate to a fragment state patch">
-  Update the <a spec="HTML">navigate to a fragment</a> algorithm by updating the step which creates and appends a new session history entry to carry over the [=session history entry/navigation API state=] from the [=session history/current entry=] as well.
+  Update the [=navigate to a fragment=] algorithm by updating the step which creates a new [=session history entry=] to carry over the [=session history entry/navigation API state=] from the [=navigable/active session history entry=] as well.
 </div>
 
 <h3 id="session-history-patches-origin">Tracking the [=session history entry/origin=] member</h3>
@@ -1822,19 +1834,45 @@ So, update the HTML Standard to always store the policy container on the [=sessi
 
 <h3 id="session-history-patches-update">Updating the {{Navigation}} object</h3>
 
-<div algorithm="traverse the history update patch">
-  Update the <a spec="HTML">traverse the history</a> algorithm by adding the following step before the final step which fires various events:
+<div algorithm="update document for history step application patch">
+  Update the [=update document for history step application=] algorithm by adding the following step nested inside the <var ignore>documentsEntryChanged</var> check, after restoring the history object state but before firing {{Window/popstate}}:
 
-  1. [=Navigation/Update the entries=] of <var ignore>newDocument</var>'s [=relevant global object=]'s [=Window/navigation API=].
+  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given "{{NavigationNavigationType/traverse}}".
+
+     <p class="note">We can always pass "{{NavigationNavigationType/traverse}}" here because this call will result in {{Navigation/currententrychange}} firing only for traversals; new document creation will not fire {{Navigation/currententrychange}}, and same-document non-traversal navigations will have already updated {{Navigation/currentEntry|navigation.currentEntry}}.
+
+     <p class="note">This means any {{Navigation/currententrychange}} event and {{NavigationHistoryEntry/dispose}} events will fire before the {{Window/popstate}} and {{Window/hashchange}} events.
 </div>
+
+<hr>
+
+<div algorithm="reactivate patch">
+  Update the [=reactivate=] algorithm by adding the following step before the final one which checks the current document readiness:
+
+  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given null and true.
+
+     <p class="note">Passing true means that any {{NavigationHistoryEntry/dispose}} events will fire after the {{Window/pageshow}} event, but this step being before the one below means that during the {{Window/pageshow}} event {{Navigation/entries()|navigation.entries()}} and {{Navigation/currentEntry|navigation.currentEntry}} will have correctly-updated values. This split is motivated by a desire to have {{Window/pageshow}} be the first event a page receives upon reactivation.
+</div>
+
+<hr>
 
 <div algorithm="URL and history update steps update patch">
-  Update the <a spec="HTML">URL and history update steps</a> by appending the following final step:
+  Update the [=URL and history update steps=] by appending the following step right after setting the [=navigable/active session history entry=]:
 
-  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=].
+  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given <var ignore>historyHandling</var>.
 </div>
 
-<p class="note">We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
+<hr>
+
+<div algorithm="navigate to a fragment update the entries patch">
+  Update [=navigate to a fragment=] by appending the following step right after setting the [=navigable/active session history entry=]:
+
+  1. [=Navigation/Update the entries=] of <var ignore>navigable</var>'s [=navigable/active window=]'s [=Window/navigation API=] given <var ignore>historyHandling</var>.
+</div>
+
+<hr>
+
+We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
 
 <h2 id="other-patches">Other patches</h2>
 
