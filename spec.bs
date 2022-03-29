@@ -1847,11 +1847,11 @@ So, update the HTML Standard to always store the policy container on the [=sessi
 <hr>
 
 <div algorithm="reactivate patch">
-  Update the [=reactivate=] algorithm by adding the following final step:
+  Update the [=reactivate=] algorithm by adding the following step before the final one which checks the current document readiness:
 
   1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given null and true.
 
-  <p class="note">This means any {{NavigationHistoryEntry/dispose}} events will fire after the {{Window/pageshow}} event.
+     <p class="note">Passing true means that any {{NavigationHistoryEntry/dispose}} events will fire after the {{Window/pageshow}} event, but this step being before the one below means that during the {{Window/pageshow}} event {{Navigation/entries()|navigation.entries()}} and {{Navigation/currentEntry|navigation.currentEntry}} will have correctly-updated values. This split is motivated by a desire to have {{Window/pageshow}} be the first event a page receives upon reactivation.
 </div>
 
 <hr>
