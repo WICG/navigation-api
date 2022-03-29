@@ -65,6 +65,16 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: reactivate; url: history.html#reactivate-a-document
     text: navigate to a fragment; url: history.html#navigate-fragid
     text: navigation and traversal task source; url: webappapis.html#navigation-and-traversal-task-source
+    text: node navigable; url: browsers.html#node-navigable
+    text: append the following session history traversal steps; url: history.html#tn-append-session-history-traversal-steps
+    text: snapshot source snapshot params; url: history.html#snapshotting-target-snapshot-params
+    text: traverse the history by a delta; url: browsers.html#traverse-the-history-by-a-delta
+    text: top-level traversable; url: history.html#top-level-traversable
+    for: apply the history step
+      text: checkForUserCancellation; url: history.html#apply-history-step-check
+      text: unsafeNavigationStartTime; url: history.html#apply-history-step-start-time
+      text: sourceSnapshotParams; url: history.html#apply-history-step-source-snapshot
+      text: initiatorToCheck; url: history.html#apply-history-step-initiator
     for: URL and history update steps
       text: serializedData; url: history.html#uhus-serializeddata
       text: historyHandling; url: history.html#uhus-historyhandling
@@ -973,9 +983,11 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   To <dfn>perform a navigation API traversal</dfn> given a {{Navigation}} object |navigation|, a string |key|, and a {{NavigationOptions}} |options|:
 
-  1. If |navigation|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. Let |sourceDocument| be |navigation|'s [=relevant global object=]'s [=associated Document=].
 
-  1. If |navigation|'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+  1. If |sourceDocument| is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If |sourceDocument|'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
   1. If |navigation|'s [=Navigation/current entry=]'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=] equals |key|, then return «[ "{{NavigationResult/committed}}" → [=a promise resolved with=] |navigation|'s [=Navigation/current entry=], "{{NavigationResult/finished}}" → [=a promise resolved with=] |navigation|'s [=Navigation/current entry=] ]»
 
@@ -985,23 +997,25 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
     1. Return «[ "{{NavigationResult/committed}}" → |navigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |navigation|'s [=navigation API method navigation/finished promise=] ]».
 
-  1. Let |navigable| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=]'s [=browsing context/containing navigable=].
-
-  1. Let |traversable| be |navigable|'s [=navigable/traversable navigable=].
-
-  1. Let |initiatorBC| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
-
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it [=map/exists=], or undefined otherwise.
 
   1. Let |ongoingNavigation| be the result of [=Navigation/setting an upcoming traverse navigation=] for |navigation| given |key| and |info|.
 
-  1. [=parallel queue/Enqueue the following steps=] on |traversable|'s [=traversable navigable/session history traversal queue=]:
+  1. Let |navigable| be |sourceDocument|'s [=node navigable=].
+
+  1. Let |traversable| be |navigable|'s [=navigable/traversable navigable=].
+
+  1. Let |unsafeNavigationStartTime| be the [=unsafe shared current time=].
+
+  1. Let |sourceSnapshotParams| be the result of [=snapshotting source snapshot params=] given |sourceDocument|.
+
+  1. [=Append the following session history traversal steps=] to |traversable|:
 
     1. Let |navigableEntries| be the result of [=navigable/getting the session history entries=] given |navigable|.
 
     1. Let |targetEntry| be the [=session history entry=] in |navigableEntries| whose [=session history entry/navigation API key=] equals |key|. If no such entry exists, then:
 
-      1. [=navigation API method navigation/Reject the finished promise=] for |ongoingNavigation| with an "{{InvalidStateError}}" {{DOMException}}.
+      1. [=Queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=navigation API method navigation/reject the finished promise=] for |ongoingNavigation| with an "{{InvalidStateError}}" {{DOMException}}.
 
       1. Abort these steps.
 
@@ -1011,25 +1025,13 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
        <p class="note">This can occur if a previously-queued-up traversal already took us to this session history entry. In that case that previous traversal will have dealt with |ongoingNavigation| already.
 
-    1. Let |targetStep| be null.
+    1. [=Apply the history step=] given by |targetEntry|'s [=session history entry/step=] to |traversable|, with <i>[=apply the history step/checkForUserCancellation=]</i> set to true, <i>[=apply the history step/unsafeNavigationStartTime=]</i> set to |unsafeNavigationStartTime|, <i>[=apply the history step/sourceSnapshotParams=]</i> set to |sourceSnapshotParams|, and <i>[=apply the history step/initiatorToCheck=]</i> set to |navigable|.
 
-    1. If |targetEntry|'s [=session history entry/step=] is greater than |traversable|'s [=traversable navigable/current session history step=], then set |targetStep| to |targetEntry|'s [=session history entry/step=].
+      - If this aborts due to user-canceled unloading <!-- or, in the future if we allow it to be cancelable, due to the {{Navigation/navigate}} event being canceled, --> then [=queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
 
-    1. Otherwise:
+      - If this aborts due to the initiator allowed-to-navigate check, then [=queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=finalize with an aborted navigation error=] given |navigation|, |ongoingNavigation|, and a [=new=] "{{SecurityError}}" {{DOMException}} created in |navigation|'s [=relevant Realm=].
 
-      1. Let |afterTarget| be the [=session history entry=] after |targetEntry| in |navigableEntries|.
-
-      1. Let |allSteps| be the result of [=traversable navigable/getting all history steps=] that are part of the target session TODO.
-
-      1. Set |targetStep| to the greatest number in |allSteps| that is less than |afterTarget|'s [=session history entry/step=].
-
-    1. [=Apply the history step=] |targetStep| to |traversable|, with true, |initiatorBC|, and "<code>[=user navigation involvement/none=]</code>".
-
-      - If this aborts due to user-canceled unloading or due to the {{Navigation/navigate}} event being canceled, then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
-
-      - If this aborts due to the initiator allowed-to-navigate check, then [=finalize with an aborted navigation error=] given |navigation|, |ongoingNavigation|, and a [=new=] "{{SecurityError}}" {{DOMException}} created in |navigation|'s [=relevant Realm=].
-
-      <p class="advisement">Eventually [=apply the history step=] will have well-specified hooks for communicating these conditions back to its caller.</p>
+      <p class="advisement">As part of merging this spec into HTML, we would modify [=apply the history step=] to have well-specified hooks for communicating these conditions back to its caller.</p>
 
   1. Return «[ "{{NavigationResult/committed}}" → |ongoingNavigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |ongoingNavigation|'s [=navigation API method navigation/finished promise=] ]».
 </div>
@@ -1629,10 +1631,10 @@ Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argum
 
 Modify the [=navigate to a fragment=] algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
-Modify the <a spec="HTML">traverse the history by a delta</a> argument to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about user-initiated navigation as follows:
+Modify the [=traverse the history by a delta=] algorithm to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Pass it along when calling [=apply the history step=], which also needs to be modified to take such a argument. Then, update the paragraph talking about user-initiated navigation as follows:
 
 <blockquote>
-  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with a delta equivalent to the action specified by the user<del> and</del><ins>,</ins> the browsing context being operated on<ins>, and <i>[=traverse the history by a delta/userInvolvement=]</i> set to "<code>[=user navigation involvement/browser UI=]</code>"</ins>.
+  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with the [=top-level traversable=] being operated on, a delta equivalent to the action specified by the user<ins>, and <i>[=traverse the history by a delta/userInvolvement=]</i> set to "<code>[=user navigation involvement/browser UI=]</code>"</ins>.
 </blockquote>
 
 <hr>
@@ -1740,23 +1742,12 @@ Expand the section of the navigation/traversal response handling which deals wit
 
 <h3 id="navigate-event-traversal-patches">History traversal updates</h3>
 
-<div algorithm="traverse the history by a delta">
-  The <a spec="HTML">traverse the history by a delta</a> algorithm will be totally re-written as part of <a href="https://github.com/whatwg/html/pull/6315">the session history rewrite</a>. Here we reproduce the final version of the algorithm, after both that rewrite and with appropriate navigation API updates. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument, so the arguments are now |delta|, |source browsing context|, and |userInvolvement|.
-
-  1. Let |traversable| be |source browsing context|'s [=browsing context/containing navigable=]'s [=navigable/traversable navigable=].
-  1. Let |initiatorOrigin| be |source browsing context|'s [=active document=]'s [=Document/origin=].
-  1. [=parallel queue/enqueue steps|Enqueue the following steps=] to |traversable|'s [=traversable navigable/session history traversal queue=]:
-    1. Let |allSteps| be the result of [=traversable navigable/getting all history steps=] for |traversable|.
-    1. Let |currentStepIndex| be the index of the [=traversable navigable/current session history step=] within |allSteps|.
-    1. Let |targetStepIndex| be |currentStepIndex| plus |delta|.
-    1. If |allSteps|[|targetStepIndex|] does not [=set/exist=], then return.
-    1. [=Apply the history step=] |allSteps|[|targetStepIndex|] to |traversable| with true, <var ignore>step</var>, |initiatorOrigin|, and |userInvolvement|.
-</div>
-
 <div algorithm="apply the history step">
-  Modify the <a spec="HTML">apply the history step</a> algorithm as follows. Inside the loop over each <var ignore>navigable</var> of <var ignore>toTraverse</var>, inside the task that is posted, after the check if |targetEntry|'s document is |previousDocument| that might abort the algorithm, add the following steps:
+  Modify the [=apply the history step=] algorithm as follows. Near the end of the algorithm, inside the queued task over each global (currently step 14.10), before potentially unloading or activating the history entry, add the following step:
 
-  1. [=Fire a traversal navigate event=] at |previousDocument|'s [=relevant global object=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
+  1. [=Fire a traversal navigate event=] at <var ignore>displayedDocument</var>'s [=relevant global object=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to <var ignore>targetEntry</var> and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
+
+(Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
 </div>
 
 <h3 id="navigate-event-download-patches">Download a hyperlink updates</h3>
