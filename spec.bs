@@ -238,7 +238,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 </div>
 
 <div algorithm>
-  To <dfn for="Navigation">update the entries</dfn> for a {{Navigation}} instance |navigation| given a {{NavigationNavigationType}}-or-null |navigationTypeForCurrententrychange| and a boolean |deferNotification| (default false):
+  To <dfn for="Navigation">update the entries</dfn> for a {{Navigation}} instance |navigation| given a {{NavigationType}}-or-null |navigationTypeForCurrententrychange| and a boolean |deferNotification| (default false):
 
   1. If |navigation| [=Navigation/has entries and events disabled=], then:
 
@@ -413,12 +413,12 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 interface NavigationCurrentEntryChangeEvent : Event {
   constructor(DOMString type, NavigationCurrentEntryChangeEventInit eventInit);
 
-  readonly attribute NavigationNavigationType? navigationType;
+  readonly attribute NavigationType? navigationType;
   readonly attribute NavigationHistoryEntry from;
 };
 
 dictionary NavigationCurrentEntryChangeEventInit : EventInit {
-  NavigationNavigationType? navigationType = null;
+  NavigationType? navigationType = null;
   required NavigationHistoryEntry destination;
 };
 </xmp>
@@ -470,7 +470,7 @@ dictionary NavigationCurrentEntryChangeEventInit : EventInit {
 <xmp class="idl">
 [Exposed=Window]
 interface NavigationTransition {
-  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;
   readonly attribute Promise<undefined> finished;
 
@@ -488,7 +488,7 @@ interface NavigationTransition {
 
   <dt><code>{{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/navigationType}}</code></dt>
   <dd>
-    <p>One of "{{NavigationNavigationType/reload}}", "{{NavigationNavigationType/push}}", "{{NavigationNavigationType/replace}}", or "{{NavigationNavigationType/traverse}}", indicating what type of navigation this transition is for.
+    <p>One of "{{NavigationType/reload}}", "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/traverse}}", indicating what type of navigation this transition is for.
   </dd>
 
   <dt><code>{{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/from}}</code></dt>
@@ -506,13 +506,13 @@ interface NavigationTransition {
   <dd>
     <p>Aborts the ongoing navigation, and immediately performs another navigation which is the logical opposite of the one represented by this transition:
 
-    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/reload}}", it will perform a replace navigation that resets the navigation API state to that found in the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}.
+    * If {{NavigationTransition/navigationType}} is "{{NavigationType/reload}}", it will perform a replace navigation that resets the navigation API state to that found in the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}.
 
-    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/push}}", it will traverse to the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}, and then delete the previously-current {{NavigationHistoryEntry}} from the navigation history entry list, so that it cannot be reached with {{Navigation/forward()|navigation.forward()}} or the forward button.
+    * If {{NavigationTransition/navigationType}} is "{{NavigationType/push}}", it will traverse to the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}, and then delete the previously-current {{NavigationHistoryEntry}} from the navigation history entry list, so that it cannot be reached with {{Navigation/forward()|navigation.forward()}} or the forward button.
 
-    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/replace}}", it will perform another replace navigation that resets the URL and navigation API state to those found in the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}.
+    * If {{NavigationTransition/navigationType}} is "{{NavigationType/replace}}", it will perform another replace navigation that resets the URL and navigation API state to those found in the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}.
 
-    * If {{NavigationTransition/navigationType}} is "{{NavigationNavigationType/traverse}}", it will traverse to the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}. (This could involve going either forward or backward in the navigation history entry list.)
+    * If {{NavigationTransition/navigationType}} is "{{NavigationType/traverse}}", it will traverse to the {{NavigationHistoryEntry}} stored in {{NavigationTransition/from}}. (This could involve going either forward or backward in the navigation history entry list.)
 
     <p>Aborting the ongoing navigation will cause {{Navigation/navigateerror}} to fire, any {{NavigateEvent/signal|navigateEvent.signal}} instances to fire {{AbortSignal/abort}}, and any relevant promises to reject. This includes {{NavigationTransition/finished|navigation.transition.finished}}.
 
@@ -528,7 +528,7 @@ The <dfn attribute for="Navigation">transition</dfn> getter steps are to return 
 
 <hr>
 
-A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">navigation type</dfn>, which is a {{NavigationNavigationType}}.
+A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">navigation type</dfn>, which is a {{NavigationType}}.
 
 A {{NavigationTransition}} has an associated <dfn for="NavigationTransition">from entry</dfn>, which is a {{NavigationHistoryEntry}}.
 
@@ -581,7 +581,7 @@ During any given navigation, the {{Navigation}} object needs to keep track of th
 </table>
 
 <table class="data">
-  <caption>For non-"{{NavigationNavigationType/traverse}}" navigations
+  <caption>For non-"{{NavigationType/traverse}}" navigations
   <thead>
     <tr>
       <th>State
@@ -595,7 +595,7 @@ During any given navigation, the {{Navigation}} object needs to keep track of th
 </table>
 
 <table class="data">
-  <caption>For "{{NavigationNavigationType/traverse}}" navigations
+  <caption>For "{{NavigationType/traverse}}" navigations
   <thead>
     <tr>
       <th>State
@@ -1081,7 +1081,7 @@ The following are the [=event handlers=] (and their corresponding [=event handle
 interface NavigateEvent : Event {
   constructor(DOMString type, NavigateEventInit eventInit);
 
-  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationType navigationType;
   readonly attribute NavigationDestination destination;
   readonly attribute boolean canTransition;
   readonly attribute boolean userInitiated;
@@ -1097,7 +1097,7 @@ interface NavigateEvent : Event {
 };
 
 dictionary NavigateEventInit : EventInit {
-  NavigationNavigationType navigationType = "push";
+  NavigationType navigationType = "push";
   required NavigationDestination destination;
   boolean canTransition = false;
   boolean userInitiated = false;
@@ -1123,8 +1123,7 @@ enum NavigationScrollRestoration {
   "manual"
 };
 
-// TODO: rename to NavigationType after https://github.com/w3c/navigation-timing/pull/172 lands.
-enum NavigationNavigationType {
+enum NavigationType {
   "reload",
   "push",
   "replace",
@@ -1135,7 +1134,7 @@ enum NavigationNavigationType {
 <dl class="domintro non-normative">
   <dt><code><var ignore>event</var>.{{NavigateEvent/navigationType}}</code>
   <dd>
-    <p>One of "{{NavigationNavigationType/reload}}", "{{NavigationNavigationType/push}}", "{{NavigationNavigationType/replace}}", or "{{NavigationNavigationType/traverse}}", indicating what type of navigation this is.
+    <p>One of "{{NavigationType/reload}}", "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/traverse}}", indicating what type of navigation this is.
   </dd>
   <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}</code>
   <dd>
@@ -1168,9 +1167,9 @@ enum NavigationNavigationType {
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/formData}}</code>
   <dd>
-    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation is a "{{NavigationNavigationType/push}}" or "{{NavigationNavigationType/replace}}" navigation representing a POST <a spec="HTML" lt="submit">form submission</a>; null otherwise.
+    <p>The {{FormData}} representing the submitted form entries for this navigation, if this navigation is a "{{NavigationType/push}}" or "{{NavigationType/replace}}" navigation representing a POST <a spec="HTML" lt="submit">form submission</a>; null otherwise.
 
-    <p>(Notably, this will be null even for "{{NavigationNavigationType/reload}}" and "{{NavigationNavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
+    <p>(Notably, this will be null even for "{{NavigationType/reload}}" and "{{NavigationType/traverse}}" navigations that are revisiting a session history entry that was originally created from a form submission.)
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/downloadRequest}}</code>
@@ -1202,7 +1201,7 @@ enum NavigationNavigationType {
 
     <p>By default, using this method will cause focus to reset when the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. Focus will be reset to the first element with the <{html-global/autofocus}> attribute set, or the <{body}> element if the attribute isn't present. The {{NavigationTransitionWhileOptions/focusReset}} option can be set to "{{NavigationFocusReset/manual}}" to avoid this behavior.
 
-    <p>By default, using this method for "{{NavigationNavigationType/traverse}}" navigations will cause the browser's scroll restoration logic to be delayed until the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. The {{NavigationTransitionWhileOptions/scrollRestoration}} option can be set to "{{NavigationScrollRestoration/manual}}" to turn off scroll restoration entirely for this navigation.
+    <p>By default, using this method for "{{NavigationType/traverse}}" navigations will cause the browser's scroll restoration logic to be delayed until the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. The {{NavigationTransitionWhileOptions/scrollRestoration}} option can be set to "{{NavigationScrollRestoration/manual}}" to turn off scroll restoration entirely for this navigation.
 
     <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{NavigateEvent/canTransition}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
   </dd>
@@ -1210,7 +1209,7 @@ enum NavigationNavigationType {
 
 The <dfn attribute for="NavigateEvent">navigationType</dfn>, <dfn attribute for="NavigateEvent">destination</dfn>, <dfn attribute for="NavigateEvent">canTransition</dfn>, <dfn attribute for="NavigateEvent">userInitiated</dfn>, <dfn attribute for="NavigateEvent">hashChange</dfn>, <dfn attribute for="NavigateEvent">signal</dfn>, <dfn attribute for="NavigateEvent">formData</dfn>, <dfn attribute for="NavigateEvent">downloadRequest</dfn>, and <dfn attribute for="NavigateEvent">info</dfn> getter steps are to return the value that the corresponding attribute was initialized to.
 
-A {{NavigateEvent}} has a <dfn for="NavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null. It is only used in some cases where the event's {{NavigateEvent/navigationType}} is "{{NavigationNavigationType/push}}" or "{{NavigationNavigationType/replace}}", and is set appropriately when the event is [[#navigate-event-firing|fired]].
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">classic history API serialized data</dfn>, a [=serialized state=]-or-null. It is only used in some cases where the event's {{NavigateEvent/navigationType}} is "{{NavigationType/push}}" or "{{NavigationType/replace}}", and is set appropriately when the event is [[#navigate-event-firing|fired]].
 
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">focus reset behavior</dfn>, a {{NavigationFocusReset}}-or-null, initially null.
 
@@ -1232,7 +1231,7 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation action promises li
   1. If |options|["{{NavigationTransitionWhileOptions/focusReset}}"] [=map/exists=], then:
     1. If [=this=]'s [=NavigateEvent/focus reset behavior=] is not null, and it is not equal to |options|["{{NavigationTransitionWhileOptions/focusReset}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationTransitionWhileOptions/focusReset}} option for a previous call to {{NavigateEvent/transitionWhile()}} was overridden by this new value, and the previous value will be ignored.
     1. Set [=this=]'s [=NavigateEvent/focus reset behavior=] to |options|["{{NavigationTransitionWhileOptions/focusReset}}"].
-  1. If |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"] [=map/exists=], and [=this=]'s {{NavigateEvent/navigationType}} attribute was initialized to "{{NavigationNavigationType/traverse}}", then:
+  1. If |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"] [=map/exists=], and [=this=]'s {{NavigateEvent/navigationType}} attribute was initialized to "{{NavigationType/traverse}}", then:
     1. If [=this=]'s [=NavigateEvent/scroll restoration behavior=] is not null, and it is not equal to |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationTransitionWhileOptions/scrollRestoration}} option for a previous call to {{NavigateEvent/transitionWhile()}} was overridden by this new value, and the previous value will be ignored.
     1. Set [=this=]'s [=NavigateEvent/scroll restoration behavior=] to |options|["{{NavigationTransitionWhileOptions/scrollRestoration}}"].
 </div>
@@ -1240,7 +1239,7 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation action promises li
 <div algorithm>
   The <dfn method for="NavigateEvent">restoreScroll()</dfn> method steps are:
 
-  1. If [=this=]'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationNavigationType/traverse}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationType/traverse}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=NavigateEvent/scroll restoration behavior=] is not "{{NavigationScrollRestoration/manual}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=NavigateEvent/did process scroll restoration=] is true, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. [=Restore scroll position data=] given [=this=]'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
@@ -1269,17 +1268,17 @@ interface NavigationDestination {
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/key}}</code>
   <dd>
-    <p>The value of the {{NavigationHistoryEntry/key}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationNavigationType/traverse}}" navigation, or null otherwise.
+    <p>The value of the {{NavigationHistoryEntry/key}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationType/traverse}}" navigation, or null otherwise.
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/id}}</code>
   <dd>
-    <p>The value of the {{NavigationHistoryEntry/id}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationNavigationType/traverse}}" navigation, or null otherwise.
+    <p>The value of the {{NavigationHistoryEntry/id}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationType/traverse}}" navigation, or null otherwise.
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/index}}</code>
   <dd>
-    <p>The value of the {{NavigationHistoryEntry/index}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationNavigationType/traverse}}" navigation, or &minus;1 otherwise.
+    <p>The value of the {{NavigationHistoryEntry/index}} property of the destination {{NavigationHistoryEntry}}, if this is a "{{NavigationType/traverse}}" navigation, or &minus;1 otherwise.
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/sameDocument}}</code>
@@ -1291,11 +1290,11 @@ interface NavigationDestination {
 
   <dt><code><var ignore>state</var> = <var ignore>event</var>.{{NavigateEvent/destination}}.{{NavigationDestination/getState()}}</code>
   <dd>
-    <p>For "{{NavigationNavigationType/traverse}}" navigations, returns the deserialization of the state stored in the destination session history entry.
+    <p>For "{{NavigationType/traverse}}" navigations, returns the deserialization of the state stored in the destination session history entry.
 
-    <p>For "{{NavigationNavigationType/push}}" and "{{NavigationNavigationType/replace}}" navigations, returns the deserialization of the state passed to {{Navigation/navigate()|navigation.navigate()}}, if the navigation was initiated in that way, or undefined if it wasn't.
+    <p>For "{{NavigationType/push}}" and "{{NavigationType/replace}}" navigations, returns the deserialization of the state passed to {{Navigation/navigate()|navigation.navigate()}}, if the navigation was initiated in that way, or undefined if it wasn't.
 
-    <p>For "{{NavigationNavigationType/reload}}" navigations, returns the deserialization of the state passed to {{Navigation/reload()|navigation.reload()}}, if the reload was initiated in that way, or undefined if it wasn't.
+    <p>For "{{NavigationType/reload}}" navigations, returns the deserialization of the state passed to {{Navigation/reload()|navigation.reload()}}, if the reload was initiated in that way, or undefined if it wasn't.
   </dd>
 </dl>
 
@@ -1348,12 +1347,12 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
     1. Set |destination|'s [=NavigationDestination/state=] to null.
   1. Set |destination|'s [=NavigationDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |navigation|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
-  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/traverse}}", |event|, |destination|, |userInvolvement|, null, and null.
+  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationType/traverse}}", |event|, |destination|, |userInvolvement|, null, and null.
   1. [=Assert=]: |result| is true (traversals are never cancelable).
 </div>
 
 <div algorithm="fire a non-traversal navigate event">
-  To <dfn>fire a non-traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a {{NavigationNavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
+  To <dfn>fire a non-traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a {{NavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
 
   1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
   1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
@@ -1379,11 +1378,11 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
   1. Set |destination|'s [=NavigationDestination/state=] to null.
   1. Set |destination|'s [=NavigationDestination/is same document=] to false.
-  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationNavigationType/push}}", |event|, |destination|, |userInvolvement|, null, and |filename|.
+  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationType/push}}", |event|, |destination|, |userInvolvement|, null, and |filename|.
 </div>
 
 <div algorithm>
-  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, a {{NavigationNavigationType}} |navigationType|, a {{NavigateEvent}} |event|, a {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, an [=entry list=] or null |formDataEntryList|, and a string or null |downloadRequestFilename|:
+  The <dfn>inner `navigate` event firing algorithm</dfn> is the following steps, given a {{Navigation}} |navigation|, a {{NavigationType}} |navigationType|, a {{NavigateEvent}} |event|, a {{NavigationDestination}} |destination|, a [=user navigation involvement=] |userInvolvement|, an [=entry list=] or null |formDataEntryList|, and a string or null |downloadRequestFilename|:
 
   1. [=Navigation/Promote the upcoming navigation to ongoing=] given |navigation| and |destination|'s [=NavigationDestination/key=].
   1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
@@ -1395,8 +1394,8 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
       <p class="note">In this case the [=navigation API method navigation/committed promise=] and [=navigation API method navigation/finished promise=] will never fulfill, since we never create {{NavigationHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with. We also need to prevent any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm from overwriting the [=session history entry/navigation API state=] of the [=session history/current entry=].
     1. Return true.
   1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
-  1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationNavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
-  1. If |navigationType| is not "{{NavigationNavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
+  1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
+  1. If |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
   1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
   1. Initialize |event|'s {{NavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{NavigateEvent/destination}} to |destination|.
@@ -1422,8 +1421,8 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |dispatchResult| be the result of [=dispatching=] |event| at |navigation|.
   1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
   1. If |dispatchResult| is false:
-    1. If |navigationType| is not "{{NavigationNavigationType/traverse}}" and |event|'s {{NavigateEvent/signal}} is not [=AbortSignal/aborted=], then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
-       <p class="note">If |navigationType| is "{{NavigationNavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform a navigation API traversal=].
+    1. If |navigationType| is not "{{NavigationType/traverse}}" and |event|'s {{NavigateEvent/signal}} is not [=AbortSignal/aborted=], then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
+       <p class="note">If |navigationType| is "{{NavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform a navigation API traversal=].
     1. Return false.
   1. Let |hadTransitionWhile| be true if |event|'s [=NavigateEvent/navigation action promises list=] is not empty; otherwise false.
   1. Let |endResultIsSameDocument| be true if |hadTransitionWhile| is true or |destination|'s [=NavigationDestination/is same document=] is true.
@@ -1433,7 +1432,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |navigation|'s [=Navigation/transition=] to a [=new=] {{NavigationTransition}} created in |navigation|'s [=relevant Realm=], whose [=NavigationTransition/navigation type=] is |navigationType|, [=NavigationTransition/from entry=] is |fromEntry|, and whose [=NavigationTransition/finished promise=] is [=a new promise=] created in |navigation|'s [=relevant Realm=].
     1. [=Mark as handled=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=].
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
-    1. If |navigationType| is "{{NavigationNavigationType/traverse}}", then set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to true.
+    1. If |navigationType| is "{{NavigationType/traverse}}", then set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to true.
        <p class="note">If |event|'s [=NavigateEvent/scroll restoration behavior=] was set to "{{NavigationScrollRestoration/after-transition}}", then we will [=potentially perform scroll restoration=] below. Otherwise, there will be no scroll restoration. That is, no navigation which is intercepted by {{NavigateEvent/transitionWhile()}} goes through the normal scroll restoration process; scroll restoration for such navigations is either done manually, by the web developer, or is done after the transition.
   1. If |endResultIsSameDocument| is true:
     1. Let |tweakedPromisesList| be |event|'s  [=NavigateEvent/navigation action promises list=].
@@ -1459,10 +1458,10 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
        <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for cross-document navigations.
     1. [=navigation API method navigation/Clean up=] |ongoingNavigation|.
-  1. If |hadTransitionWhile| is true and |navigationType| is not "{{NavigationNavigationType/traverse}}":
-    1. If |navigationType| is not "{{NavigationNavigationType/reload}}", then run the [=URL and history update steps=] given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/historyHandling=]</i> set to |navigationType|.
+  1. If |hadTransitionWhile| is true and |navigationType| is not "{{NavigationType/traverse}}":
+    1. If |navigationType| is not "{{NavigationType/reload}}", then run the [=URL and history update steps=] given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/historyHandling=]</i> set to |navigationType|.
 
-       <p class="note">If |navigationType| is "{{NavigationNavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{NavigateEvent/transitionWhile()}}.
+       <p class="note">If |navigationType| is "{{NavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a> in response to the promise passed to {{NavigateEvent/transitionWhile()}}.
     1. Return false.
   1. Return true.
 </div>
@@ -1528,7 +1527,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   To <dfn>potentially perform scroll restoration</dfn> given a {{Navigation}} object |navigation| and an {{NavigateEvent}} |event|:
 
   1. If |event|'s [=NavigateEvent/navigation action promises list=]'s [=list/size=] is 0, then return.
-  1. If |event|'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationNavigationType/traverse}}", then return.
+  1. If |event|'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationType/traverse}}", then return.
   1. If |event|'s [=NavigateEvent/scroll restoration behavior=] is "{{NavigationScrollRestoration/manual}}", then return.
      <p class="note">If it was left as null, then we treat that as "{{NavigationScrollRestoration/after-transition}}", and continue onward.
   1. If |event|'s [=NavigateEvent/did process scroll restoration=] is true, then return.
@@ -1825,11 +1824,11 @@ Expand the section of the navigation/traversal response handling which deals wit
 
     <dl class="switch">
     : "<a spec="HTML" for="history handling behavior">`reload`</a>"
-    :: "{{NavigationNavigationType/reload}}"
+    :: "{{NavigationType/reload}}"
     : "<a spec="HTML" for="history handling behavior">`replace`</a>"
-    :: "{{NavigationNavigationType/replace}}"
+    :: "{{NavigationType/replace}}"
     : "<a spec="HTML" for="history handling behavior">`default`</a>"
-    :: "{{NavigationNavigationType/push}}"
+    :: "{{NavigationType/push}}"
 </div>
 
 <h3 id="navigate-event-traversal-patches">History traversal updates</h3>
@@ -1931,9 +1930,9 @@ So, update the HTML Standard to always store the policy container on the [=sessi
 <div algorithm="update document for history step application patch">
   Update the [=update document for history step application=] algorithm by adding the following step nested inside the <var ignore>documentsEntryChanged</var> check, after restoring the history object state but before firing {{Window/popstate}}:
 
-  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given "{{NavigationNavigationType/traverse}}".
+  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given "{{NavigationType/traverse}}".
 
-     <p class="note">We can always pass "{{NavigationNavigationType/traverse}}" here because this call will result in {{Navigation/currententrychange}} firing only for traversals; new document creation will not fire {{Navigation/currententrychange}}, and same-document non-traversal navigations will have already updated {{Navigation/currentEntry|navigation.currentEntry}}.
+     <p class="note">We can always pass "{{NavigationType/traverse}}" here because this call will result in {{Navigation/currententrychange}} firing only for traversals; new document creation will not fire {{Navigation/currententrychange}}, and same-document non-traversal navigations will have already updated {{Navigation/currentEntry|navigation.currentEntry}}.
 
      <p class="note">This means any {{Navigation/currententrychange}} event and {{NavigationHistoryEntry/dispose}} events will fire before the {{Window/popstate}} and {{Window/hashchange}} events.
 </div>
