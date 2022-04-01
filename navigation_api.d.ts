@@ -42,7 +42,7 @@ declare class Navigation extends EventTarget {
 }
 
 declare class NavigationTransition {
-  readonly navigationType: NavigationNavigationType;
+  readonly navigationType: NavigationType;
   readonly from: NavigationHistoryEntry;
   readonly finished: Promise<void>;
 
@@ -76,8 +76,7 @@ declare class NavigationHistoryEntry extends EventTarget {
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
-// TODO: use just `NavigationType` if https://github.com/w3c/navigation-timing/pull/172 goes through.
-type NavigationNavigationType = 'reload'|'push'|'replace'|'traverse';
+type NavigationType = 'reload'|'push'|'replace'|'traverse';
 
 interface NavigationUpdateCurrentEntryOptions {
   state: unknown;
@@ -99,19 +98,19 @@ interface NavigationReloadOptions extends NavigationOptions {
 declare class NavigationCurrentEntryChangeEvent extends Event {
   constructor(type: string, eventInit?: NavigationCurrentEntryChangeEventInit);
 
-  readonly navigationType: NavigationNavigationType|null;
+  readonly navigationType: NavigationType|null;
   readonly from: NavigationHistoryEntry;
 }
 
 interface NavigationCurrentEntryChangeEventInit extends EventInit {
-  navigationType?: NavigationNavigationType|null;
+  navigationType?: NavigationType|null;
   from: NavigationHistoryEntry;
 }
 
 declare class NavigateEvent extends Event {
   constructor(type: string, eventInit?: NavigateEventInit);
 
-  readonly navigationType: NavigationNavigationType;
+  readonly navigationType: NavigationType;
   readonly canTransition: boolean;
   readonly userInitiated: boolean;
   readonly hashChange: boolean;
@@ -125,7 +124,7 @@ declare class NavigateEvent extends Event {
 }
 
 interface NavigateEventInit extends EventInit {
-  navigationType?: NavigationNavigationType;
+  navigationType?: NavigationType;
   canTransition?: boolean;
   userInitiated?: boolean;
   hashChange?: boolean;
