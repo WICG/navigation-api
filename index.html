@@ -656,7 +656,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Navigation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-04-01">1 April 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-04-11">11 April 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -1565,9 +1565,11 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="perform-a-navigation-api-traversal">perform a navigation API traversal</dfn> given a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑤">Navigation</a></code> object <var>navigation</var>, a string <var>key</var>, and a <code class="idl"><a data-link-type="idl" href="#dictdef-navigationoptions" id="ref-for-dictdef-navigationoptions⑥">NavigationOptions</a></code> <var>options</var>:</p>
     <ol>
      <li data-md>
-      <p>If <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window④">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active①">fully active</a>, then return <a data-link-type="dfn" href="#an-early-error-result" id="ref-for-an-early-error-result①①">an early error result</a> for an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror⑨">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①④">DOMException</a></code>.</p>
+      <p>Let <var>sourceDocument</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window④">associated Document</a>.</p>
      <li data-md>
-      <p>If <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⓪">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑤">associated Document</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#unload-counter" id="ref-for-unload-counter①">unload counter</a> is greater than 0, then return <a data-link-type="dfn" href="#an-early-error-result" id="ref-for-an-early-error-result①②">an early error result</a> for an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①⓪">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>.</p>
+      <p>If <var>sourceDocument</var> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active①">fully active</a>, then return <a data-link-type="dfn" href="#an-early-error-result" id="ref-for-an-early-error-result①①">an early error result</a> for an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror⑨">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①④">DOMException</a></code>.</p>
+     <li data-md>
+      <p>If <var>sourceDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#unload-counter" id="ref-for-unload-counter①">unload counter</a> is greater than 0, then return <a data-link-type="dfn" href="#an-early-error-result" id="ref-for-an-early-error-result①②">an early error result</a> for an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①⓪">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑤">DOMException</a></code>.</p>
      <li data-md>
       <p>If <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-current-entry" id="ref-for-navigation-current-entry⑦">current entry</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry⑦">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-navigation-api-key" id="ref-for-session-history-entry-navigation-api-key③">navigation API key</a> equals <var>key</var>, then return «[ "<code class="idl"><a data-link-type="idl" href="#dom-navigationresult-committed" id="ref-for-dom-navigationresult-committed①⑧">committed</a></code>" → <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-resolved-with" id="ref-for-a-promise-resolved-with">a promise resolved with</a> <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-current-entry" id="ref-for-navigation-current-entry⑧">current entry</a>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationresult-finished" id="ref-for-dom-navigationresult-finished①⑧">finished</a></code>" → <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#a-promise-resolved-with" id="ref-for-a-promise-resolved-with①">a promise resolved with</a> <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-current-entry" id="ref-for-navigation-current-entry⑨">current entry</a> ]»</p>
      <li data-md>
@@ -1579,17 +1581,19 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>Return «[ "<code class="idl"><a data-link-type="idl" href="#dom-navigationresult-committed" id="ref-for-dom-navigationresult-committed①⑨">committed</a></code>" → <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-api-method-navigation-committed-promise" id="ref-for-navigation-api-method-navigation-committed-promise⑦">committed promise</a>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationresult-finished" id="ref-for-dom-navigationresult-finished①⑨">finished</a></code>" → <var>navigation</var>’s <a data-link-type="dfn" href="#navigation-api-method-navigation-finished-promise" id="ref-for-navigation-api-method-navigation-finished-promise⑦">finished promise</a> ]».</p>
       </ol>
      <li data-md>
-      <p>Let <var>navigable</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc③">browsing context</a>'s <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#bc-navigable" id="ref-for-bc-navigable">containing navigable</a>.</p>
-     <li data-md>
-      <p>Let <var>traversable</var> be <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-traversable" id="ref-for-nav-traversable">traversable navigable</a>.</p>
-     <li data-md>
-      <p>Let <var>initiatorBC</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#window-bc" id="ref-for-window-bc④">browsing context</a>.</p>
-     <li data-md>
       <p>Let <var>info</var> be <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-navigationoptions-info" id="ref-for-dom-navigationoptions-info①⑦">info</a></code>"] if it <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑤">exists</a>, or undefined otherwise.</p>
      <li data-md>
       <p>Let <var>ongoingNavigation</var> be the result of <a data-link-type="dfn" href="#navigation-set-an-upcoming-traverse-navigation" id="ref-for-navigation-set-an-upcoming-traverse-navigation">setting an upcoming traverse navigation</a> for <var>navigation</var> given <var>key</var> and <var>info</var>.</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps">Enqueue the following steps</a> on <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue①">session history traversal queue</a>:</p>
+      <p>Let <var>navigable</var> be <var>sourceDocument</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#node-navigable" id="ref-for-node-navigable">node navigable</a>.</p>
+     <li data-md>
+      <p>Let <var>traversable</var> be <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-traversable" id="ref-for-nav-traversable">traversable navigable</a>.</p>
+     <li data-md>
+      <p>Let <var>unsafeNavigationStartTime</var> be the <a data-link-type="dfn" href="https://www.w3.org/TR/hr-time-3/#dfn-unsafe-shared-current-time" id="ref-for-dfn-unsafe-shared-current-time">unsafe shared current time</a>.</p>
+     <li data-md>
+      <p>Let <var>sourceSnapshotParams</var> be the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#snapshotting-target-snapshot-params" id="ref-for-snapshotting-target-snapshot-params">snapshotting source snapshot params</a> given <var>sourceDocument</var>.</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-append-session-history-traversal-steps" id="ref-for-tn-append-session-history-traversal-steps">Append the following session history traversal steps</a> to <var>traversable</var>:</p>
       <ol>
        <li data-md>
         <p>Let <var>navigableEntries</var> be the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#getting-session-history-entries" id="ref-for-getting-session-history-entries">getting the session history entries</a> given <var>navigable</var>.</p>
@@ -1597,7 +1601,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>Let <var>targetEntry</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①">session history entry</a> in <var>navigableEntries</var> whose <a data-link-type="dfn" href="#session-history-entry-navigation-api-key" id="ref-for-session-history-entry-navigation-api-key④">navigation API key</a> equals <var>key</var>. If no such entry exists, then:</p>
         <ol>
          <li data-md>
-          <p><a data-link-type="dfn" href="#navigation-api-method-navigation-reject-the-finished-promise" id="ref-for-navigation-api-method-navigation-reject-the-finished-promise">Reject the finished promise</a> for <var>ongoingNavigation</var> with an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①①">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑥">DOMException</a></code>.</p>
+          <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task" id="ref-for-queue-a-global-task①">Queue a global task</a> on the <a data-link-type="dfn" href="https://whatpr.org/html/6315/webappapis.html#navigation-and-traversal-task-source" id="ref-for-navigation-and-traversal-task-source①">navigation and traversal task source</a> given <var>sourceDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⓪">relevant global object</a> to <a data-link-type="dfn" href="#navigation-api-method-navigation-reject-the-finished-promise" id="ref-for-navigation-api-method-navigation-reject-the-finished-promise">reject the finished promise</a> for <var>ongoingNavigation</var> with an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidstateerror" id="ref-for-invalidstateerror①①">InvalidStateError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑥">DOMException</a></code>.</p>
          <li data-md>
           <p>Abort these steps.</p>
         </ol>
@@ -1606,28 +1610,14 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>If <var>targetEntry</var> is <var>navigable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-active-history-entry" id="ref-for-nav-active-history-entry">active session history entry</a>, then abort these steps.</p>
         <p class="note" role="note">This can occur if a previously-queued-up traversal already took us to this session history entry. In that case that previous traversal will have dealt with <var>ongoingNavigation</var> already. </p>
        <li data-md>
-        <p>Let <var>targetStep</var> be null.</p>
-       <li data-md>
-        <p>If <var>targetEntry</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#she-step" id="ref-for-she-step">step</a> is greater than <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-current-session-history-step" id="ref-for-tn-current-session-history-step">current session history step</a>, then set <var>targetStep</var> to <var>targetEntry</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#she-step" id="ref-for-she-step①">step</a>.</p>
-       <li data-md>
-        <p>Otherwise:</p>
-        <ol>
-         <li data-md>
-          <p>Let <var>afterTarget</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry②">session history entry</a> after <var>targetEntry</var> in <var>navigableEntries</var>.</p>
-         <li data-md>
-          <p>Let <var>allSteps</var> be the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#getting-all-history-steps" id="ref-for-getting-all-history-steps">getting all history steps</a> that are part of the target session TODO.</p>
-         <li data-md>
-          <p>Set <var>targetStep</var> to the greatest number in <var>allSteps</var> that is less than <var>afterTarget</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#she-step" id="ref-for-she-step②">step</a>.</p>
-        </ol>
-       <li data-md>
-        <p><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step">Apply the history step</a> <var>targetStep</var> to <var>traversable</var>, with true, <var>initiatorBC</var>, and "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none">none</a></code>".</p>
+        <p><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step">Apply the history step</a> given by <var>targetEntry</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#she-step" id="ref-for-she-step">step</a> to <var>traversable</var>, with <i><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-history-step-check" id="ref-for-apply-history-step-check">checkForUserCancellation</a></i> set to true, <i><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-history-step-start-time" id="ref-for-apply-history-step-start-time">unsafeNavigationStartTime</a></i> set to <var>unsafeNavigationStartTime</var>, <i><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-history-step-source-snapshot" id="ref-for-apply-history-step-source-snapshot">sourceSnapshotParams</a></i> set to <var>sourceSnapshotParams</var>, and <i><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-history-step-initiator" id="ref-for-apply-history-step-initiator">initiatorToCheck</a></i> set to <var>navigable</var>.</p>
         <ul>
          <li data-md>
-          <p>If this aborts due to user-canceled unloading or due to the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①④">navigate</a></code> event being canceled, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error①">finalize with an aborted navigation error</a> given <var>navigation</var> and <var>ongoingNavigation</var>.</p>
+          <p>If this aborts due to user-canceled unloading  then <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task" id="ref-for-queue-a-global-task②">queue a global task</a> on the <a data-link-type="dfn" href="https://whatpr.org/html/6315/webappapis.html#navigation-and-traversal-task-source" id="ref-for-navigation-and-traversal-task-source②">navigation and traversal task source</a> given <var>sourceDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①①">relevant global object</a> to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error①">finalize with an aborted navigation error</a> given <var>navigation</var> and <var>ongoingNavigation</var>.</p>
          <li data-md>
-          <p>If this aborts due to the initiator allowed-to-navigate check, then <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error②">finalize with an aborted navigation error</a> given <var>navigation</var>, <var>ongoingNavigation</var>, and a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new①">new</a> "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#securityerror" id="ref-for-securityerror">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm③">relevant Realm</a>.</p>
+          <p>If this aborts due to the initiator allowed-to-navigate check, then <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task" id="ref-for-queue-a-global-task③">queue a global task</a> on the <a data-link-type="dfn" href="https://whatpr.org/html/6315/webappapis.html#navigation-and-traversal-task-source" id="ref-for-navigation-and-traversal-task-source③">navigation and traversal task source</a> given <var>sourceDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①②">relevant global object</a> to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error②">finalize with an aborted navigation error</a> given <var>navigation</var>, <var>ongoingNavigation</var>, and a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new①">new</a> "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#securityerror" id="ref-for-securityerror">SecurityError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm③">relevant Realm</a>.</p>
         </ul>
-        <p class="advisement">Eventually <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step①">apply the history step</a> will have well-specified hooks for communicating these conditions back to its caller.</p>
+        <p class="advisement">As part of merging this spec into HTML, we would modify <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step①">apply the history step</a> to have well-specified hooks for communicating these conditions back to its caller.</p>
       </ol>
      <li data-md>
       <p>Return «[ "<code class="idl"><a data-link-type="idl" href="#dom-navigationresult-committed" id="ref-for-dom-navigationresult-committed②⓪">committed</a></code>" → <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#navigation-api-method-navigation-committed-promise" id="ref-for-navigation-api-method-navigation-committed-promise⑧">committed promise</a>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationresult-finished" id="ref-for-dom-navigationresult-finished②⓪">finished</a></code>" → <var>ongoingNavigation</var>’s <a data-link-type="dfn" href="#navigation-api-method-navigation-finished-promise" id="ref-for-navigation-api-method-navigation-finished-promise⑧">finished promise</a> ]».</p>
@@ -1654,7 +1644,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <td><dfn class="dfn-paneled idl-code" data-dfn-for="Navigation" data-dfn-type="attribute" data-export id="dom-navigation-oncurrententrychange"><code>oncurrententrychange</code></dfn> 
       <td><dfn class="dfn-paneled idl-code" data-dfn-for="Navigation" data-dfn-type="event" data-export id="eventdef-navigation-currententrychange"><code>currententrychange</code></dfn> 
    </table>
-   <h2 class="heading settled" data-level="2" id="navigate-event"><span class="secno">2. </span><span class="content">The <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑤">navigate</a></code> event</span><a class="self-link" href="#navigate-event"></a></h2>
+   <h2 class="heading settled" data-level="2" id="navigate-event"><span class="secno">2. </span><span class="content">The <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①④">navigate</a></code> event</span><a class="self-link" href="#navigate-event"></a></h2>
    <h3 class="heading settled" data-level="2.1" id="navigate-event-class"><span class="secno">2.1. </span><span class="content">The <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent②">NavigateEvent</a></code> class</span><a class="self-link" href="#navigate-event-class"></a></h3>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed③"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="navigateevent"><code><c- g>NavigateEvent</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#event" id="ref-for-event①"><c- n>Event</c-></a> {
@@ -1745,7 +1735,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      </ul>
      <p>Note that a download being requested does not always mean that a download will happen: for example, the download might be blocked by browser security policies, or end up being treated as a push navigation for <a class="XXX" href="https://github.com/whatwg/html/issues/7718">unspecified reasons</a>. </p>
      <p>Similarly, a navigation might end up being a download even if it was not requested to be one, due to the destination server responding with a <code>Content-Disposition: attachment</code> header. </p>
-     <p>Finally, note that the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑥">navigate</a></code> event will not fire at all for downloads initiated using browser UI affordances, e.g., those created by right-clicking and choosing to save the target of the link. </p>
+     <p>Finally, note that the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑤">navigate</a></code> event will not fire at all for downloads initiated using browser UI affordances, e.g., those created by right-clicking and choosing to save the target of the link. </p>
     <dt><code><var>event</var>.<code class="idl"><a data-link-type="idl" href="#dom-navigateevent-info" id="ref-for-dom-navigateevent-info⑥">info</a></code></code> 
     <dd>
      <p>An arbitrary JavaScript value passed via <code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation②②">navigation</a></code> APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-<code class="idl"><a data-link-type="idl" href="#dom-window-navigation" id="ref-for-dom-window-navigation②③">navigation</a></code> API. </p>
@@ -1868,7 +1858,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    </div>
    <h3 class="heading settled" data-level="2.3" id="navigate-event-firing"><span class="secno">2.3. </span><span class="content">Firing the event</span><a class="self-link" href="#navigate-event-firing"></a></h3>
    <div class="algorithm" data-algorithm="fire a traversal navigate event">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event">fire a traversal <code>navigate</code> event</dfn> at a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑦">Navigation</a></code> <var>navigation</var> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry③">session history entry</a> <dfn class="dfn-paneled" data-dfn-for="fire a traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event-destinationentry"><var>destinationEntry</var></dfn>, and an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none①">none</a></code>"): 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event">fire a traversal <code>navigate</code> event</dfn> at a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑦">Navigation</a></code> <var>navigation</var> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry②">session history entry</a> <dfn class="dfn-paneled" data-dfn-for="fire a traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event-destinationentry"><var>destinationEntry</var></dfn>, and an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-traversal-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none">none</a></code>"): 
     <ol>
      <li data-md>
       <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑧">NavigateEvent</a></code>, in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm④">relevant Realm</a>.</p>
@@ -1903,7 +1893,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-state" id="ref-for-navigationdestination-state③">state</a> to null.</p>
       </ol>
      <li data-md>
-      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document①">is same document</a> to true if <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document①">document</a> is equal to <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑥">associated Document</a>; otherwise false.</p>
+      <p>Set <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document①">is same document</a> to true if <var>destinationEntry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document①">document</a> is equal to <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑤">associated Document</a>; otherwise false.</p>
      <li data-md>
       <p>Let <var>result</var> be the result of performing the <a data-link-type="dfn" href="#inner-navigate-event-firing-algorithm" id="ref-for-inner-navigate-event-firing-algorithm①">inner navigate event firing algorithm</a> given <var>navigation</var>, "<code class="idl"><a data-link-type="idl" href="#dom-navigationtype-traverse" id="ref-for-dom-navigationtype-traverse①③">traverse</a></code>", <var>event</var>, <var>destination</var>, <var>userInvolvement</var>, null, and null.</p>
      <li data-md>
@@ -1911,7 +1901,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     </ol>
    </div>
    <div class="algorithm" data-algorithm="fire a non-traversal navigate event">
-     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event">fire a non-traversal <code>navigate</code> event</dfn> at a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑧">Navigation</a></code> <var>navigation</var> given a <code class="idl"><a data-link-type="idl" href="#enumdef-navigationtype" id="ref-for-enumdef-navigationtype⑦">NavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑥">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
+     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event">fire a non-traversal <code>navigate</code> event</dfn> at a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation②⑧">Navigation</a></code> <var>navigation</var> given a <code class="idl"><a data-link-type="idl" href="#enumdef-navigationtype" id="ref-for-enumdef-navigationtype⑦">NavigationType</a></code> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-navigationtype"><var>navigationType</var></dfn>, a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-destinationurl"><var>destinationURL</var></dfn>, a boolean <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-issamedocument"><var>isSameDocument</var></dfn>, an optional <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement①">user navigation involvement</a> <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none①">none</a></code>"), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑤">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-state"><var>state</var></dfn> (default null), an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#entry-list" id="ref-for-entry-list">entry list</a> or null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-formdataentrylist"><var>formDataEntryList</var></dfn> (default null), and an optional <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#serialized-state" id="ref-for-serialized-state⑥">serialized state</a>-or-null <dfn class="dfn-paneled" data-dfn-for="fire a non-traversal navigate event" data-dfn-type="dfn" data-noexport id="fire-a-non-traversal-navigate-event-classichistoryapiserializeddata"><var>classicHistoryAPISerializedData</var></dfn> (default null): 
     <ol>
      <li data-md>
       <p>Let <var>event</var> be the result of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-create" id="ref-for-concept-event-create①">creating an event</a> given <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent⑨">NavigateEvent</a></code>, in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm⑥">relevant Realm</a>.</p>
@@ -1983,13 +1973,13 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
         <p>Return true.</p>
       </ol>
      <li data-md>
-      <p>Let <var>document</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑥">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑦">associated document</a>.</p>
+      <p>Let <var>document</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑥">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑥">associated document</a>.</p>
      <li data-md>
       <p>If <var>document</var> <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#can-have-its-url-rewritten" id="ref-for-can-have-its-url-rewritten①">can have its URL rewritten</a> to <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-url" id="ref-for-navigationdestination-url④">URL</a>, and either <var>destination</var>’s <a data-link-type="dfn" href="#navigationdestination-is-same-document" id="ref-for-navigationdestination-is-same-document④">is same document</a> is true or <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-navigationtype-traverse" id="ref-for-dom-navigationtype-traverse①④">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-cantransition" id="ref-for-dom-navigateevent-cantransition④">canTransition</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
       <p>If <var>navigationType</var> is not "<code class="idl"><a data-link-type="idl" href="#dom-navigationtype-traverse" id="ref-for-dom-navigationtype-traverse①⑤">traverse</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable">cancelable</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
-      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-type" id="ref-for-dom-event-type">type</a></code> to "<code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑦">navigate</a></code>".</p>
+      <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-type" id="ref-for-dom-event-type">type</a></code> to "<code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑥">navigate</a></code>".</p>
      <li data-md>
       <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-navigationtype" id="ref-for-dom-navigateevent-navigationtype⑤">navigationType</a></code> to <var>navigationType</var>.</p>
      <li data-md>
@@ -2015,7 +2005,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       </ul>
       <p>then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-hashchange" id="ref-for-dom-navigateevent-hashchange②">hashChange</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
-      <p>If <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none③">none</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-userinitiated" id="ref-for-dom-navigateevent-userinitiated②">userInitiated</a></code> to true. Otherwise, initialize it to false.</p>
+      <p>If <var>userInvolvement</var> is not "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none②">none</a></code>", then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-userinitiated" id="ref-for-dom-navigateevent-userinitiated②">userInitiated</a></code> to true. Otherwise, initialize it to false.</p>
      <li data-md>
       <p>If <var>formDataEntryList</var> is not null, then initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata②">formData</a></code> to a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#new" id="ref-for-new⑥">new</a> <code class="idl"><a data-link-type="idl" href="https://xhr.spec.whatwg.org/#formdata" id="ref-for-formdata③">FormData</a></code> created in <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-realm" id="ref-for-concept-relevant-realm①①">relevant Realm</a>, associated to <var>formDataEntryList</var>. Otherwise, initialize it to null.</p>
      <li data-md>
@@ -2214,7 +2204,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <p>If <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-focus-reset-behavior" id="ref-for-navigateevent-focus-reset-behavior②">focus reset behavior</a> is "<code class="idl"><a data-link-type="idl" href="#dom-navigationfocusreset-manual" id="ref-for-dom-navigationfocusreset-manual②">manual</a></code>", then return.</p>
       <p class="note" role="note">If it was left as null, then we treat that as "<code class="idl"><a data-link-type="idl" href="#dom-navigationfocusreset-after-transition" id="ref-for-dom-navigationfocusreset-after-transition">after-transition</a></code>", and continue onward. </p>
      <li data-md>
-      <p>Let <var>document</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑦">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑧">associated Document</a>.</p>
+      <p>Let <var>document</var> be <var>navigation</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑦">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑦">associated Document</a>.</p>
      <li data-md>
       <p>Let <var>focusTarget</var> be the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/interaction.html#autofocus-delegate" id="ref-for-autofocus-delegate">autofocus delegate</a> for <var>document</var>.</p>
      <li data-md>
@@ -2287,13 +2277,13 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <p>Note that in general, unless the state value is a primitive, <code>entry.getState() !== entry.getState()</code>, since a fresh copy is returned each time. </p>
      <p>This state is unrelated to the classic history API’s <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/history.html#dom-history-state" id="ref-for-dom-history-state">history.state</a></code>. </p>
    </dl>
-   <p>Each <code class="idl"><a data-link-type="idl" href="#navigationhistoryentry" id="ref-for-navigationhistoryentry③⑥">NavigationHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="NavigationHistoryEntry" data-dfn-type="dfn" data-noexport id="navigationhistoryentry-session-history-entry">session history entry</dfn>, which is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry④">session history entry</a>.</p>
+   <p>Each <code class="idl"><a data-link-type="idl" href="#navigationhistoryentry" id="ref-for-navigationhistoryentry③⑥">NavigationHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="NavigationHistoryEntry" data-dfn-type="dfn" data-noexport id="navigationhistoryentry-session-history-entry">session history entry</dfn>, which is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry③">session history entry</a>.</p>
    <p>Each <code class="idl"><a data-link-type="idl" href="#navigationhistoryentry" id="ref-for-navigationhistoryentry③⑦">NavigationHistoryEntry</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="NavigationHistoryEntry" data-dfn-type="dfn" data-noexport id="navigationhistoryentry-index">index</dfn>, which is an integer.</p>
    <div class="algorithm" data-algorithm="key" data-algorithm-for="NavigationHistoryEntry">
      The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="attribute" data-export id="dom-navigationhistoryentry-key"><code>key</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑦">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑧">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑨">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active③">fully active</a>, then return the empty string.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑦">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑧">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑧">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active③">fully active</a>, then return the empty string.</p>
      <li data-md>
       <p>Return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑧">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-navigation-api-key" id="ref-for-session-history-entry-navigation-api-key⑥">navigation API key</a>.</p>
     </ol>
@@ -2302,7 +2292,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="attribute" data-export id="dom-navigationhistoryentry-id"><code>id</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⓪">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active④">fully active</a>, then return the empty string.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global①⑨">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window⑨">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active④">fully active</a>, then return the empty string.</p>
      <li data-md>
       <p>Return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⓪">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry①⓪">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-navigation-api-id" id="ref-for-session-history-entry-navigation-api-id①">navigation API ID</a>.</p>
     </ol>
@@ -2311,11 +2301,11 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="attribute" data-export id="dom-navigationhistoryentry-url"><code>url</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥①">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⓪">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①①">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑤">fully active</a>, then return null.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥①">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⓪">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⓪">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑤">fully active</a>, then return null.</p>
      <li data-md>
       <p>Let <var>she</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥②">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry①①">session history entry</a>.</p>
      <li data-md>
-      <p>If <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document②">document</a> does not equal <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥③">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①②">associated Document</a>, and <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container">policy container</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#policy-container-referrer-policy" id="ref-for-policy-container-referrer-policy①">referrer policy</a> is <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer②">"<code>no-referrer</code>"</a> or <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin" id="ref-for-referrer-policy-origin②">"<code>origin</code>"</a>, then return null.</p>
+      <p>If <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document②">document</a> does not equal <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥③">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②①">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①①">associated Document</a>, and <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container">policy container</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#policy-container-referrer-policy" id="ref-for-policy-container-referrer-policy①">referrer policy</a> is <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-no-referrer" id="ref-for-referrer-policy-no-referrer②">"<code>no-referrer</code>"</a> or <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin" id="ref-for-referrer-policy-origin②">"<code>origin</code>"</a>, then return null.</p>
      <li data-md>
       <p>Return <var>she</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-url" id="ref-for-she-url②">URL</a>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-serializer" id="ref-for-concept-url-serializer①">serialized</a>.</p>
     </ol>
@@ -2324,7 +2314,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="attribute" data-export id="dom-navigationhistoryentry-index"><code>index</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥④">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①③">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑥">fully active</a>, then return −1.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥④">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②②">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①②">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑥">fully active</a>, then return −1.</p>
      <li data-md>
       <p>Return <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑤">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-index" id="ref-for-navigationhistoryentry-index②">index</a>.</p>
     </ol>
@@ -2333,16 +2323,16 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="attribute" data-export id="dom-navigationhistoryentry-samedocument"><code>sameDocument</code></dfn> getter steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑥">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①④">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑦">fully active</a>, then return false.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑥">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②③">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①③">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑦">fully active</a>, then return false.</p>
      <li data-md>
-      <p>Return true if <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑦">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry①②">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> equals <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑧">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②④">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑤">associated Document</a>, and false otherwise.</p>
+      <p>Return true if <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑦">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry①②">session history entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document③">document</a> equals <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑧">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②④">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①④">associated Document</a>, and false otherwise.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="getState()" data-algorithm-for="NavigationHistoryEntry">
      The <dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="method" data-export id="dom-navigationhistoryentry-getstate"><code>getState()</code></dfn> method steps are: 
     <ol>
      <li data-md>
-      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑥">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑧">fully active</a>, then return undefined.</p>
+      <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥⑨">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑤">relevant global object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/window-object.html#concept-document-window" id="ref-for-concept-document-window①⑤">associated Document</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#fully-active" id="ref-for-fully-active⑧">fully active</a>, then return undefined.</p>
      <li data-md>
       <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑦⓪">this</a>'s <a data-link-type="dfn" href="#navigationhistoryentry-session-history-entry" id="ref-for-navigationhistoryentry-session-history-entry①③">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-navigation-api-state" id="ref-for-session-history-entry-navigation-api-state①⓪">navigation API state</a> is null, then return undefined.</p>
      <li data-md>
@@ -2372,8 +2362,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <td><dfn class="dfn-paneled idl-code" data-dfn-for="NavigationHistoryEntry" data-dfn-type="event" data-export id="eventdef-navigationhistoryentry-dispose"><code>dispose</code></dfn> 
    </table>
    <p>TODO: actually fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigationhistoryentry-finish" id="ref-for-eventdef-navigationhistoryentry-finish">finish</a></code>, <code class="idl"><a data-link-type="idl" href="#eventdef-navigationhistoryentry-navigateto" id="ref-for-eventdef-navigationhistoryentry-navigateto">navigateto</a></code>, and <code class="idl"><a data-link-type="idl" href="#eventdef-navigationhistoryentry-navigatefrom" id="ref-for-eventdef-navigationhistoryentry-navigatefrom">navigatefrom</a></code>.</p>
-   <h2 class="heading settled" data-level="4" id="navigate-patches"><span class="secno">4. </span><span class="content">Patches to fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑧">navigate</a></code> event</span><a class="self-link" href="#navigate-patches"></a></h2>
-   <p>The following section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> that cause the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑨">navigate</a></code> event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, <a href="#navigate-algorithm-patches">§ 4.3 Navigation algorithm updates</a> contains the actual firing of the event.</p>
+   <h2 class="heading settled" data-level="4" id="navigate-patches"><span class="secno">4. </span><span class="content">Patches to fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑦">navigate</a></code> event</span><a class="self-link" href="#navigate-patches"></a></h2>
+   <p>The following section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> that cause the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑧">navigate</a></code> event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, <a href="#navigate-algorithm-patches">§ 4.3 Navigation algorithm updates</a> contains the actual firing of the event.</p>
    <h3 class="heading settled" data-level="4.1" id="form-patches"><span class="secno">4.1. </span><span class="content">Form submission patches</span><a class="self-link" href="#form-patches"></a></h3>
    <p>To properly thread the form entry list from its creation through to <code class="idl"><a data-link-type="idl" href="#navigateevent" id="ref-for-navigateevent①④">NavigateEvent</a></code>'s <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-formdata" id="ref-for-dom-navigateevent-formdata③">formData</a></code> property, we need the following modifications:</p>
    <div class="algorithm" data-algorithm="form navigate">
@@ -2410,20 +2400,17 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     <dd data-md>
      <p>The navigation was not initiated by the user</p>
    </dl>
-   <p>Define the <dfn class="dfn-paneled" data-dfn-for="Event" data-dfn-type="dfn" data-noexport id="event-user-navigation-involvement">user navigation involvement</dfn> for an <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#event" id="ref-for-event②">Event</a></code> <var>event</var> as "<code><a data-link-type="dfn" href="#user-navigation-involvement-activation" id="ref-for-user-navigation-involvement-activation">activation</a></code>" if <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted②">isTrusted</a></code> attribute is initialized to true, and "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none④">none</a></code>" otherwise.</p>
-   <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑦">navigate</a> algorithm to take an optional named argument <dfn class="dfn-paneled" data-dfn-for="navigate" data-dfn-type="dfn" data-noexport id="navigate-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none⑤">none</a></code>"). Then, update the paragraph talking about browser-UI initiated navigation as follows:</p>
+   <p>Define the <dfn class="dfn-paneled" data-dfn-for="Event" data-dfn-type="dfn" data-noexport id="event-user-navigation-involvement">user navigation involvement</dfn> for an <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#event" id="ref-for-event②">Event</a></code> <var>event</var> as "<code><a data-link-type="dfn" href="#user-navigation-involvement-activation" id="ref-for-user-navigation-involvement-activation">activation</a></code>" if <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-istrusted" id="ref-for-dom-event-istrusted②">isTrusted</a></code> attribute is initialized to true, and "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none③">none</a></code>" otherwise.</p>
+   <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑦">navigate</a> algorithm to take an optional named argument <dfn class="dfn-paneled" data-dfn-for="navigate" data-dfn-type="dfn" data-noexport id="navigate-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none④">none</a></code>"). Then, update the paragraph talking about browser-UI initiated navigation as follows:</p>
    <blockquote>
      A user agent may provide various ways for the user to explicitly cause a browsing context to <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑧">navigate</a>, in addition to those defined in this specification.
     <ins> Such cases must set the <i><a data-link-type="dfn" href="#navigate-userinvolvement" id="ref-for-navigate-userinvolvement">userInvolvement</a></i> argument to "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui">browser UI</a></code>".</ins>
    </blockquote>
    <p class="note" role="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it’d be ideal to update the `<a data-link-type="http-header" href="https://w3c.github.io/webappsec-fetch-metadata/#http-headerdef-sec-fetch-site" id="ref-for-http-headerdef-sec-fetch-site"><code>Sec-Fetch-Site</code></a>` spec at the same time.</p>
    <p>Modify the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid②">navigate to a fragment</a> algorithm to take a new <var>userInvolvement</var> argument. Then, update the call to it from <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate⑨">navigate</a> to set <i><a data-link-type="dfn" href="#navigate-userinvolvement" id="ref-for-navigate-userinvolvement①">userInvolvement</a></i> to this <var>userInvolvement</var> value.</p>
-   <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta">traverse the history by a delta</a> argument to take an optional named argument <dfn class="dfn-paneled" data-dfn-for="traverse the history by a delta" data-dfn-type="dfn" data-noexport id="traverse-the-history-by-a-delta-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none⑥">none</a></code>"). Then, update the paragraph talking about user-initiated navigation as follows:</p>
+   <p>Modify the <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta">traverse the history by a delta</a> algorithm to take an optional named argument <dfn class="dfn-paneled" data-dfn-for="traverse the history by a delta" data-dfn-type="dfn" data-noexport id="traverse-the-history-by-a-delta-userinvolvement"><var>userInvolvement</var></dfn> (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none⑤">none</a></code>"). Pass it along when calling <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step②">apply the history step</a>, which also needs to be modified to take such a argument. Then, update the paragraph talking about user-initiated navigation as follows:</p>
    <blockquote>
-     When the user navigates through a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context②">browsing context</a>, e.g. using a browser’s back and forward buttons, the user agent must <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta①">traverse the history by a delta</a> with a delta equivalent to the action specified by the user
-    <del> and</del>
-    <ins>,</ins>
-     the browsing context being operated on
+     When the user navigates through a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context②">browsing context</a>, e.g. using a browser’s back and forward buttons, the user agent must <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta①">traverse the history by a delta</a> with the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#top-level-traversable" id="ref-for-top-level-traversable">top-level traversable</a> being operated on, a delta equivalent to the action specified by the user
     <ins>, and <i><a data-link-type="dfn" href="#traverse-the-history-by-a-delta-userinvolvement" id="ref-for-traverse-the-history-by-a-delta-userinvolvement">userInvolvement</a></i> set to "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui①">browser UI</a></code>"</ins>
     . 
    </blockquote>
@@ -2449,7 +2436,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    </blockquote>
    <hr>
    <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate" id="ref-for-plan-to-navigate②">plan to navigate</a> algorithm to take a <var>userInvolvement</var> argument. Then, update the call to it from <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①①">navigate</a> to set <i><a data-link-type="dfn" href="#navigate-userinvolvement" id="ref-for-navigate-userinvolvement④">userInvolvement</a></i> to this <var>userInvolvement</var> value.</p>
-   <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit①">submit</a> algorithm to take an optional <var>userInvolvement</var> argument (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none⑦">none</a></code>").  Have the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit②">submit</a> algorithm pass along its value to all invocations of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate" id="ref-for-plan-to-navigate③">plan to navigate</a>.</p>
+   <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit①">submit</a> algorithm to take an optional <var>userInvolvement</var> argument (default "<code><a data-link-type="dfn" href="#user-navigation-involvement-none" id="ref-for-user-navigation-involvement-none⑥">none</a></code>").  Have the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit②">submit</a> algorithm pass along its value to all invocations of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#plan-to-navigate" id="ref-for-plan-to-navigate③">plan to navigate</a>.</p>
    <p>Modify the definition of the <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior③">activation behavior</a> for <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/input.html#the-input-element" id="ref-for-the-input-element">input</a></code> elements to take an <var>event</var> argument. Then, pass along this argument to the invocation of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/input.html#input-activation-behavior" id="ref-for-input-activation-behavior">input activation behavior</a>.</p>
    <p>Modify the Submit Button state’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/input.html#input-activation-behavior" id="ref-for-input-activation-behavior①">input activation behavior</a> by having it take an <var>event<var> argument and pass along the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement②">user navigation involvement</a> for <var>event</var> as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit③">submit</a>.</var></var></p>
    <p>Modify the Image Button state’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/input.html#input-activation-behavior" id="ref-for-input-activation-behavior②">input activation behavior</a> by having it take an <var>event<var> argument and pass along the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement③">user navigation involvement</a> for <var>event</var> as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit④">submit</a>.</var></var></p>
@@ -2457,7 +2444,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <p>Modify the no-<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/forms.html#concept-submit-button" id="ref-for-concept-submit-button">submit button</a> case for <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission">implicit form submission</a> to pass along "<code><a data-link-type="dfn" href="#user-navigation-involvement-activation" id="ref-for-user-navigation-involvement-activation①">activation</a></code>" as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit⑥">submit</a>.</p>
    <p class="note" role="note">The case of implicit submission when a submit button is present is automatically taken care of because it fires a (trusted) click event at the submit button.</p>
    <h3 class="heading settled" data-level="4.3" id="navigate-algorithm-patches"><span class="secno">4.3. </span><span class="content">Navigation algorithm updates</span><a class="self-link" href="#navigate-algorithm-patches"></a></h3>
-   <p>With the above infrastructure in place, we can actually fire and handle the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⓪">navigate</a></code> event in the following locations:</p>
+   <p>With the above infrastructure in place, we can actually fire and handle the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate①⑨">navigate</a></code> event in the following locations:</p>
    <div class="algorithm" data-algorithm="shared history push/replace steps">
      Modify the <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#shared-history-push/replace-state-steps" id="ref-for-shared-history-push/replace-state-steps">shared history push/replace state steps</a> by inserting the following steps right before the step that runs the <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps②">URL and history update steps</a>. 
     <ol>
@@ -2508,8 +2495,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
        <li data-md>
         <p>If <var>continue</var> is false, return.</p>
       </ol>
-      <p class="note" role="note">"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update①"><code>entry update</code></a>" is excluded since <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②①">navigate</a></code> would have fired earlier as part of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta②">traversing the history by a delta</a>. </p>
-      <p class="note" role="note">"<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui④">browser UI</a></code>" or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain②">cross origin-domain</a> navigations that cause <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid④">fragment navigations</a> <em>do</em> fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②②">navigate</a></code> event; those are handled as part of the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid⑤">navigate to a fragment</a> algorithm called earlier in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①③">navigate</a>, which is not guarded by this condition. </p>
+      <p class="note" role="note">"<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update①"><code>entry update</code></a>" is excluded since <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⓪">navigate</a></code> would have fired earlier as part of <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta②">traversing the history by a delta</a>. </p>
+      <p class="note" role="note">"<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui④">browser UI</a></code>" or <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain" id="ref-for-same-origin-domain②">cross origin-domain</a> navigations that cause <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid④">fragment navigations</a> <em>do</em> fire the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②①">navigate</a></code> event; those are handled as part of the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid⑤">navigate to a fragment</a> algorithm called earlier in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①③">navigate</a>, which is not guarded by this condition. </p>
     </ol>
    </div>
    <p>Expand the section of the navigation/traversal response handling which deals with 204s, 205s, and <code>Content-Disposition: attachment</code> responses with the following note:</p>
@@ -2538,45 +2525,23 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     </ol>
    </div>
    <h3 class="heading settled" data-level="4.4" id="navigate-event-traversal-patches"><span class="secno">4.4. </span><span class="content">History traversal updates</span><a class="self-link" href="#navigate-event-traversal-patches"></a></h3>
-   <div class="algorithm" data-algorithm="traverse the history by a delta">
-     The <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta③">traverse the history by a delta</a> algorithm will be totally re-written as part of <a href="https://github.com/whatwg/html/pull/6315">the session history rewrite</a>. Here we reproduce the final version of the algorithm, after both that rewrite and with appropriate navigation API updates. Recall that per <a href="#user-initiated-patches">§ 4.2 Browser UI/user-initiated patches</a> we have introduced a <var>userInvolvement</var> argument, so the arguments are now <var>delta</var>, <var>source browsing context</var>, and <var>userInvolvement</var>. 
-    <ol>
-     <li data-md>
-      <p>Let <var>traversable</var> be <var>source browsing context</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#bc-navigable" id="ref-for-bc-navigable①">containing navigable</a>'s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-traversable" id="ref-for-nav-traversable①">traversable navigable</a>.</p>
-     <li data-md>
-      <p>Let <var>initiatorOrigin</var> be <var>source browsing context</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#active-document" id="ref-for-active-document④">active document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a>.</p>
-     <li data-md>
-      <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps" id="ref-for-enqueue-the-following-steps①">Enqueue the following steps</a> to <var>traversable</var>’s <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue" id="ref-for-tn-session-history-traversal-queue②">session history traversal queue</a>:</p>
-      <ol>
-       <li data-md>
-        <p>Let <var>allSteps</var> be the result of <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#getting-all-history-steps" id="ref-for-getting-all-history-steps①">getting all history steps</a> for <var>traversable</var>.</p>
-       <li data-md>
-        <p>Let <var>currentStepIndex</var> be the index of the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#tn-current-session-history-step" id="ref-for-tn-current-session-history-step①">current session history step</a> within <var>allSteps</var>.</p>
-       <li data-md>
-        <p>Let <var>targetStepIndex</var> be <var>currentStepIndex</var> plus <var>delta</var>.</p>
-       <li data-md>
-        <p>If <var>allSteps</var>[<var>targetStepIndex</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-contain" id="ref-for-list-contain①">exist</a>, then return.</p>
-       <li data-md>
-        <p><a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step②">Apply the history step</a> <var>allSteps</var>[<var>targetStepIndex</var>] to <var>traversable</var> with true, <var>step</var>, <var>initiatorOrigin</var>, and <var>userInvolvement</var>.</p>
-      </ol>
-    </ol>
-   </div>
    <div class="algorithm" data-algorithm="apply the history step">
-     Modify the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step③">apply the history step</a> algorithm as follows. Inside the loop over each <var>navigable</var> of <var>toTraverse</var>, inside the task that is posted, after the check if <var>targetEntry</var>’s document is <var>previousDocument</var> that might abort the algorithm, add the following steps: 
+     Modify the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#apply-the-history-step" id="ref-for-apply-the-history-step③">apply the history step</a> algorithm as follows. Near the end of the algorithm, inside the queued task over each global (currently step 14.10), before potentially unloading or activating the history entry, add the following step: 
     <ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="#fire-a-traversal-navigate-event" id="ref-for-fire-a-traversal-navigate-event">Fire a traversal navigate event</a> at <var>previousDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑦">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑥">navigation API</a> with <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-destinationentry" id="ref-for-fire-a-traversal-navigate-event-destinationentry">destinationEntry</a></i> set to <var>targetEntry</var> and <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-userinvolvement" id="ref-for-fire-a-traversal-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>.</p>
+      <p><a data-link-type="dfn" href="#fire-a-traversal-navigate-event" id="ref-for-fire-a-traversal-navigate-event">Fire a traversal navigate event</a> at <var>displayedDocument</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global②⑦">relevant global object</a>'s <a data-link-type="dfn" href="#window-navigation-api" id="ref-for-window-navigation-api⑥">navigation API</a> with <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-destinationentry" id="ref-for-fire-a-traversal-navigate-event-destinationentry">destinationEntry</a></i> set to <var>targetEntry</var> and <i><a data-link-type="dfn" href="#fire-a-traversal-navigate-event-userinvolvement" id="ref-for-fire-a-traversal-navigate-event-userinvolvement">userInvolvement</a></i> set to <var>userInvolvement</var>.</p>
     </ol>
+    <p>(Recall that we introduced the <var>userInvolvement</var> parameter as part of <a href="#user-initiated-patches">§ 4.2 Browser UI/user-initiated patches</a>.)</p>
    </div>
    <h3 class="heading settled" data-level="4.5" id="navigate-event-download-patches"><span class="secno">4.5. </span><span class="content">Download a hyperlink updates</span><a class="self-link" href="#navigate-event-download-patches"></a></h3>
    <p>The current specification for <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks">downloading a hyperlink</a> has several known issues, most notably <a href="https://github.com/whatwg/html/issues/5548">whatwg/html#5548</a> which indicates that the specification should probably be merged into the general <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①④">navigation</a> algorithm.</p>
-   <p>For the purposes of the navigation API, we need to fire the appropriate <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②③">navigate</a></code> event, with <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-downloadrequest" id="ref-for-dom-navigateevent-downloadrequest③">downloadRequest</a></code> set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks①">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.</p>
+   <p>For the purposes of the navigation API, we need to fire the appropriate <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②②">navigate</a></code> event, with <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-downloadrequest" id="ref-for-dom-navigateevent-downloadrequest③">downloadRequest</a></code> set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks" id="ref-for-downloading-hyperlinks①">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.</p>
    <div class="algorithm" data-algorithm="download the hyperlink">
     <ul>
      <li>
       <p>Ensure that the algorithm gets an appropriate <a data-link-type="dfn" href="#user-navigation-involvement" id="ref-for-user-navigation-involvement④">user navigation involvement</a> value, <var>userInvolvement</var>, passed to it. This is similar to the modifications for the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#following-hyperlinks-2" id="ref-for-following-hyperlinks-2⑥">follow the hyperlink</a> algorithm described in <a href="#user-initiated-patches">§ 4.2 Browser UI/user-initiated patches</a>. One key difference is that, for the case where the user indicates a preference for downloading, <var>userInvolvement</var> must be "<code><a data-link-type="dfn" href="#user-navigation-involvement-browser-ui" id="ref-for-user-navigation-involvement-browser-ui⑤">browser UI</a></code>", even if it is triggered as part of <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior⑤">activation behavior</a>. </p>
      <li>
-      <p>Separate out the sandboxing checks in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#allowed-to-download" id="ref-for-allowed-to-download">allowed to download</a> from the user-safeguarding checks. If the sandboxing checks fail, then the user agent must not fire a <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②④">navigate</a></code> event. Whereas, the user-safeguarding checks generally happen later, probably <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel②">in parallel</a>. </p>
+      <p>Separate out the sandboxing checks in <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#allowed-to-download" id="ref-for-allowed-to-download">allowed to download</a> from the user-safeguarding checks. If the sandboxing checks fail, then the user agent must not fire a <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②③">navigate</a></code> event. Whereas, the user-safeguarding checks generally happen later, probably <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel②">in parallel</a>. </p>
      <li>
       <p>Before we reach the point at which it’s time to actually go in parallel and fetch content from the server, and after the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#cannot-navigate" id="ref-for-cannot-navigate">cannot navigate</a> check, the synchronously-possible part of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/links.html#allowed-to-download" id="ref-for-allowed-to-download①">allowed to download</a> check, the URL parsing step, and the hyperlink suffix appending step, run the equivalent of the following: </p>
       <ol>
@@ -2598,9 +2563,9 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     </ul>
    </div>
    <h2 class="heading settled" data-level="5" id="session-history-patches"><span class="secno">5. </span><span class="content">Patches to session history</span><a class="self-link" href="#session-history-patches"></a></h2>
-   <p>This section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> to track appropriate data for associating a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation③④">Navigation</a></code> with a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑤">session history entry</a>.</p>
-   <h3 class="heading settled" data-level="5.1" id="session-history-new-she-fields"><span class="secno">5.1. </span><span class="content">New <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑥">session history entry</a> items</span><a class="self-link" href="#session-history-new-she-fields"></a></h3>
-   <p>Each <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑦">session history entry</a> gains the following new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct-item" id="ref-for-struct-item①">items</a>:</p>
+   <p>This section details monkeypatches to <a data-link-type="biblio" href="#biblio-html">[HTML]</a> to track appropriate data for associating a <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation③④">Navigation</a></code> with a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry④">session history entry</a>.</p>
+   <h3 class="heading settled" data-level="5.1" id="session-history-new-she-fields"><span class="secno">5.1. </span><span class="content">New <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑤">session history entry</a> items</span><a class="self-link" href="#session-history-new-she-fields"></a></h3>
+   <p>Each <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑥">session history entry</a> gains the following new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct-item" id="ref-for-struct-item①">items</a>:</p>
    <ul>
     <li data-md>
      <p><dfn class="dfn-paneled" data-dfn-for="session history entry" data-dfn-type="dfn" data-noexport id="session-history-entry-origin">origin</dfn>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#concept-origin" id="ref-for-concept-origin">origin</a></p>
@@ -2620,15 +2585,15 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
     </ol>
    </div>
    <h3 class="heading settled" data-level="5.3" id="session-history-patches-state"><span class="secno">5.3. </span><span class="content">Carrying over the navigation API state</span><a class="self-link" href="#session-history-patches-state"></a></h3>
-   <div class="algorithm" data-algorithm="navigate to a fragment state patch"> Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid⑥">navigate to a fragment</a> algorithm by updating the step which creates a new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑧">session history entry</a> to carry over the <a data-link-type="dfn" href="#session-history-entry-navigation-api-state" id="ref-for-session-history-entry-navigation-api-state①②">navigation API state</a> from the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-active-history-entry" id="ref-for-nav-active-history-entry②">active session history entry</a> as well. </div>
+   <div class="algorithm" data-algorithm="navigate to a fragment state patch"> Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid⑥">navigate to a fragment</a> algorithm by updating the step which creates a new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑦">session history entry</a> to carry over the <a data-link-type="dfn" href="#session-history-entry-navigation-api-state" id="ref-for-session-history-entry-navigation-api-state①②">navigation API state</a> from the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#nav-active-history-entry" id="ref-for-nav-active-history-entry②">active session history entry</a> as well. </div>
    <h3 class="heading settled" data-level="5.4" id="session-history-patches-origin"><span class="secno">5.4. </span><span class="content">Tracking the <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑦">origin</a> member</span><a class="self-link" href="#session-history-patches-origin"></a></h3>
-   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page①">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace④"><code>replace</code></a>" and "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default③"><code>default</code></a>" cases to set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑧">origin</a> to <var>newDocument</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin④">origin</a> as part of its creation.</p>
-   <p>Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid⑦">navigate to a fragment</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑨">origin</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑧">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document④">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑤">origin</a>.</p>
-   <p>Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps③">URL and history update steps</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①⓪">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①⓪">origin</a> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑥">origin</a>.</p>
-   <p>Potentially update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">traverse the history</a> algorithm to consult the new <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①①">origin</a> field, instead of checking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑤">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑦">origin</a>, since the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑥">document</a> can disappear?? Needs further investigation.</p>
+   <p>Update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#update-the-session-history-with-the-new-page" id="ref-for-update-the-session-history-with-the-new-page①">update the session history with the new page</a> algorithm’s "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-replace" id="ref-for-hh-replace④"><code>replace</code></a>" and "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-default" id="ref-for-hh-default③"><code>default</code></a>" cases to set <var>newEntry</var>’s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑧">origin</a> to <var>newDocument</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin③">origin</a> as part of its creation.</p>
+   <p>Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#navigate-fragid" id="ref-for-navigate-fragid⑦">navigate to a fragment</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑧">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin⑨">origin</a> to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#current-entry" id="ref-for-current-entry⑧">current entry</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document④">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin④">origin</a>.</p>
+   <p>Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps③">URL and history update steps</a> algorithm to set the new <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry⑨">session history entry</a>'s <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①⓪">origin</a> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑤">origin</a>.</p>
+   <p>Potentially update the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#traverse-the-history" id="ref-for-traverse-the-history">traverse the history</a> algorithm to consult the new <a data-link-type="dfn" href="#session-history-entry-origin" id="ref-for-session-history-entry-origin①①">origin</a> field, instead of checking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑤">document</a>'s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document-origin" id="ref-for-concept-document-origin⑥">origin</a>, since the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑥">document</a> can disappear?? Needs further investigation.</p>
    <h3 class="heading settled" data-level="5.5" id="session-history-patches-policy-container"><span class="secno">5.5. </span><span class="content">Tracking the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container①">policy container</a> member more often</span><a class="self-link" href="#session-history-patches-policy-container"></a></h3>
-   <p>The <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container②">policy container</a> field of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①①">session history entry</a> is null, except when we <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history">require storing the policy container in history</a>. The specification for <code class="idl"><a data-link-type="idl" href="#dom-navigationhistoryentry-url" id="ref-for-dom-navigationhistoryentry-url③">NavigationHistoryEntry.url</a></code> requires the relevant <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy" id="ref-for-referrer-policy①">referrer policy</a> to be accessible for all entries, not just some.</p>
-   <p>So, update the HTML Standard to always store the policy container on the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①②">session history entry</a>, and then only use it in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#determining-navigation-params-policy-container" id="ref-for-determining-navigation-params-policy-container">determine navigation params policy container</a> algorithm in the cases currently covered by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history①">require storing the policy container in history</a> algorithm.</p>
+   <p>The <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-policy-container" id="ref-for-she-policy-container②">policy container</a> field of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①⓪">session history entry</a> is null, except when we <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history">require storing the policy container in history</a>. The specification for <code class="idl"><a data-link-type="idl" href="#dom-navigationhistoryentry-url" id="ref-for-dom-navigationhistoryentry-url③">NavigationHistoryEntry.url</a></code> requires the relevant <a data-link-type="dfn" href="https://w3c.github.io/webappsec-referrer-policy/#referrer-policy" id="ref-for-referrer-policy①">referrer policy</a> to be accessible for all entries, not just some.</p>
+   <p>So, update the HTML Standard to always store the policy container on the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①①">session history entry</a>, and then only use it in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#determining-navigation-params-policy-container" id="ref-for-determining-navigation-params-policy-container">determine navigation params policy container</a> algorithm in the cases currently covered by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/origin.html#requires-storing-the-policy-container-in-history" id="ref-for-requires-storing-the-policy-container-in-history①">require storing the policy container in history</a> algorithm.</p>
    <h3 class="heading settled" data-level="5.6" id="session-history-patches-update"><span class="secno">5.6. </span><span class="content">Updating the <code class="idl"><a data-link-type="idl" href="#navigation" id="ref-for-navigation③⑤">Navigation</a></code> object</span><a class="self-link" href="#session-history-patches-update"></a></h3>
    <div class="algorithm" data-algorithm="update document for history step application patch">
      Update the <a data-link-type="dfn" href="https://whatpr.org/html/6315/history.html#update-document-for-history-step-application" id="ref-for-update-document-for-history-step-application">update document for history step application</a> algorithm by adding the following step nested inside the <var>documentsEntryChanged</var> check, after restoring the history object state but before firing <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/indices.html#event-popstate" id="ref-for-event-popstate">popstate</a></code>: 
@@ -2676,7 +2641,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <p>To support the <code class="idl"><a data-link-type="idl" href="#dom-navigationtransitionwhileoptions-scrollrestoration" id="ref-for-dom-navigationtransitionwhileoptions-scrollrestoration⑦">scrollRestoration</a></code> option, as well as to fix <a href="https://github.com/whatwg/html/issues/7517">whatwg/html#7517</a>, the following patches need to be made:</p>
    <p>Add a boolean, <dfn class="dfn-paneled" data-dfn-for="Document" data-dfn-type="dfn" data-noexport id="document-has-been-scrolled-by-the-user">has been scrolled by the user</dfn>, initially false, to <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#document" id="ref-for-document①①">Document</a></code> objects. State that if the user scrolls the document, the user agent must set that document’s <a data-link-type="dfn" href="#document-has-been-scrolled-by-the-user" id="ref-for-document-has-been-scrolled-by-the-user">has been scrolled by the user</a> to true. Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#unload-a-document" id="ref-for-unload-a-document">unload a document</a> algorithm to set this back to false.</p>
    <div class="algorithm" data-algorithm="restoring scroll position data">
-     Define the process of <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="restoring-scroll-position-data">restoring scroll position data</dfn> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①③">session history entry</a> <var>entry</var> as follows: 
+     Define the process of <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="restoring-scroll-position-data">restoring scroll position data</dfn> given a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry" id="ref-for-session-history-entry①②">session history entry</a> <var>entry</var> as follows: 
     <ol>
      <li data-md>
       <p>Let <var>document</var> be <var>entry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#she-document" id="ref-for-she-document⑦">document</a>.</p>
@@ -2702,7 +2667,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
    <p>Specifically, the spec uses a few phrases:</p>
    <ul>
     <li data-md>
-     <p>"Cancel any existing but not-yet-mature attempts to navigate a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context③">browsing context</a>", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①⑥">navigate</a> algorithm and the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta④">traverse the history by a delta</a> algorithm. This cancels any ongoing navigations, including history traversal navigations which have made their way back into the main event loop to perform an "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update③"><code>entry update</code></a>" navigation.</p>
+     <p>"Cancel any existing but not-yet-mature attempts to navigate a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context" id="ref-for-browsing-context③">browsing context</a>", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①⑥">navigate</a> algorithm and the <a data-link-type="dfn" href="https://whatpr.org/html/6315/browsers.html#traverse-the-history-by-a-delta" id="ref-for-traverse-the-history-by-a-delta③">traverse the history by a delta</a> algorithm. This cancels any ongoing navigations, including history traversal navigations which have made their way back into the main event loop to perform an "<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#hh-entry-update" id="ref-for-hh-entry-update③"><code>entry update</code></a>" navigation.</p>
     <li data-md>
      <p>"Cancel that navigation", in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#stop-document-loading" id="ref-for-stop-document-loading">stop document loading</a> algorithm. This is likely supposed to work the same as the above?</p>
     <li data-md>
@@ -2721,7 +2686,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
 
 setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- mf>500</c-><c- p>);</c->
 </pre>
-   <p>Without the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑤">navigate</a></code> event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop②">stop()</a></code> call does nothing. But because we have used the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑥">navigate</a></code> handler to indicate that the navigation is still ongoing, we want the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop③">stop()</a></code> call to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑦">finalize that navigation with an aborted navigation error</a>, in particular causing <code>p</code> to reject and the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#eventdef-abortsignal-abort" id="ref-for-eventdef-abortsignal-abort①">abort</a></code> event to fire on <code>e.signal</code>.</p>
+   <p>Without the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②④">navigate</a></code> event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop②">stop()</a></code> call does nothing. But because we have used the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑤">navigate</a></code> handler to indicate that the navigation is still ongoing, we want the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/window-object.html#dom-window-stop" id="ref-for-dom-window-stop③">stop()</a></code> call to <a data-link-type="dfn" href="#finalize-with-an-aborted-navigation-error" id="ref-for-finalize-with-an-aborted-navigation-error⑦">finalize that navigation with an aborted navigation error</a>, in particular causing <code>p</code> to reject and the <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#eventdef-abortsignal-abort" id="ref-for-eventdef-abortsignal-abort①">abort</a></code> event to fire on <code>e.signal</code>.</p>
    <hr>
    <p>The integration is then as follows:</p>
    <ul>
@@ -2742,24 +2707,24 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
       <p>The browser-generated UUIDs stored as <a data-link-type="dfn" href="#session-history-entry-navigation-api-id" id="ref-for-session-history-entry-navigation-api-id②">navigation API ID</a> and <a data-link-type="dfn" href="#session-history-entry-navigation-api-key" id="ref-for-session-history-entry-navigation-api-key⑨">navigation API key</a> live only for the lifetime of a browsing session; they are not stable user-specific identifiers, and in particular are not the same across different frames.</p>
     </ul>
     <h3 class="heading settled" data-level="7.2" id="sp-navigation-monitoring-interception"><span class="secno">7.2. </span><span class="content">Navigation monitoring and interception</span><a class="self-link" href="#sp-navigation-monitoring-interception"></a></h3>
-    <p>Through the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑦">navigate</a></code> event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.</p>
+    <p>Through the <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑥">navigate</a></code> event, this API allows web developers to monitor navigations, and in some cases replace cross-document navigations with same-document ones, or prevent the navigation from going through.</p>
     <p>Care has been taken to avoid this being dangerous, or giving insight into user behavior that would not otherwise be available to the site. In particular:</p>
     <ul>
      <li data-md>
       <p>It is not possible to prevent a back/forward navigation, as this could lead to trapping the user on the page. (We would like to make this possible in the future by adding additional security mitigations; see <a href="https://github.com/WICG/navigation-api/issues/32">#32</a>.)</p>
      <li data-md>
-      <p>Navigations initiated from cross-origin-domain frames do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑧">navigate</a></code> events. An example would be such a frame calling <code>window.open(url, name)</code> with <code>name</code> targeting the current frame.</p>
+      <p>Navigations initiated from cross-origin-domain frames do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑦">navigate</a></code> events. An example would be such a frame calling <code>window.open(url, name)</code> with <code>name</code> targeting the current frame.</p>
      <li data-md>
-      <p>Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑨">navigate</a></code> events. An example would be the user directly editing the URL bar.</p>
+      <p>Navigations initiated using browser UI, apart from back/forward navigations or fragment-only navigations, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑧">navigate</a></code> events. An example would be the user directly editing the URL bar.</p>
     </ul>
     <p>We also have a few more restrictions worth noting, which don’t directly address any attack, but reduce the surface area and complexity of the navigation interception feature, which can have indirect security benefits:</p>
     <ul>
      <li data-md>
-      <p>Navigations initiated toward non-<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetch-scheme" id="ref-for-fetch-scheme①">fetch scheme</a> URLs, such as <code>javascript:</code> URLs, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③⓪">navigate</a></code> events.</p>
+      <p>Navigations initiated toward non-<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#fetch-scheme" id="ref-for-fetch-scheme①">fetch scheme</a> URLs, such as <code>javascript:</code> URLs, do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate②⑨">navigate</a></code> events.</p>
      <li data-md>
-      <p>Navigations initiated on the initial <code>about:blank</code> document do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③①">navigate</a></code> events.</p>
+      <p>Navigations initiated on the initial <code>about:blank</code> document do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③⓪">navigate</a></code> events.</p>
      <li data-md>
-      <p>Navigations initiated by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open" id="ref-for-dom-document-open">document.open()</a></code> do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③②">navigate</a></code> events.</p>
+      <p>Navigations initiated by <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/multipage/dynamic-markup-insertion.html#dom-document-open" id="ref-for-dom-document-open">document.open()</a></code> do not fire <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-navigate" id="ref-for-eventdef-navigation-navigate③①">navigate</a></code> events.</p>
      <li data-md>
       <p>Cross-document traversals cannot be intercepted and converted into same-document traversals.</p>
     </ul>
@@ -3226,8 +3191,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-concept-document-origin">1. The Navigation class</a>
     <li><a href="#ref-for-concept-document-origin①">4.3. Navigation algorithm updates</a> <a href="#ref-for-concept-document-origin②">(2)</a>
-    <li><a href="#ref-for-concept-document-origin③">4.4. History traversal updates</a>
-    <li><a href="#ref-for-concept-document-origin④">5.4. Tracking the origin member</a> <a href="#ref-for-concept-document-origin⑤">(2)</a> <a href="#ref-for-concept-document-origin⑥">(3)</a> <a href="#ref-for-concept-document-origin⑦">(4)</a>
+    <li><a href="#ref-for-concept-document-origin③">5.4. Tracking the origin member</a> <a href="#ref-for-concept-document-origin④">(2)</a> <a href="#ref-for-concept-document-origin⑤">(3)</a> <a href="#ref-for-concept-document-origin⑥">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-abortsignal-signal-abort">
@@ -3282,6 +3246,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-request-url">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-dfn-unsafe-shared-current-time">
+   <a href="https://www.w3.org/TR/hr-time-3/#dfn-unsafe-shared-current-time">https://www.w3.org/TR/hr-time-3/#dfn-unsafe-shared-current-time</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dfn-unsafe-shared-current-time">1.5. Traversing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-errorevent">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#errorevent">https://html.spec.whatwg.org/multipage/webappapis.html#errorevent</a><b>Referenced in:</b>
    <ul>
@@ -3330,7 +3300,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-active-document">1.4. Navigating</a>
     <li><a href="#ref-for-active-document①">2.1. The NavigateEvent class</a>
     <li><a href="#ref-for-active-document②">4.3. Navigation algorithm updates</a> <a href="#ref-for-active-document③">(2)</a>
-    <li><a href="#ref-for-active-document④">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-nav-active-history-entry">
@@ -3361,11 +3330,18 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-allowed-to-navigate">1.4. Navigating</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-tn-append-session-history-traversal-steps">
+   <a href="https://whatpr.org/html/6315/history.html#tn-append-session-history-traversal-steps">https://whatpr.org/html/6315/history.html#tn-append-session-history-traversal-steps</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-tn-append-session-history-traversal-steps">1.5. Traversing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-apply-the-history-step">
    <a href="https://whatpr.org/html/6315/history.html#apply-the-history-step">https://whatpr.org/html/6315/history.html#apply-the-history-step</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-apply-the-history-step">1.5. Traversing</a> <a href="#ref-for-apply-the-history-step①">(2)</a>
-    <li><a href="#ref-for-apply-the-history-step②">4.4. History traversal updates</a> <a href="#ref-for-apply-the-history-step③">(2)</a>
+    <li><a href="#ref-for-apply-the-history-step②">4.2. Browser UI/user-initiated patches</a>
+    <li><a href="#ref-for-apply-the-history-step③">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-the-area-element">
@@ -3387,9 +3363,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-concept-document-window">1. The Navigation class</a>
     <li><a href="#ref-for-concept-document-window①">1.4. Navigating</a> <a href="#ref-for-concept-document-window②">(2)</a> <a href="#ref-for-concept-document-window③">(3)</a>
-    <li><a href="#ref-for-concept-document-window④">1.5. Traversing</a> <a href="#ref-for-concept-document-window⑤">(2)</a>
-    <li><a href="#ref-for-concept-document-window⑥">2.3. Firing the event</a> <a href="#ref-for-concept-document-window⑦">(2)</a> <a href="#ref-for-concept-document-window⑧">(3)</a>
-    <li><a href="#ref-for-concept-document-window⑨">3. Navigation API history entries</a> <a href="#ref-for-concept-document-window①⓪">(2)</a> <a href="#ref-for-concept-document-window①①">(3)</a> <a href="#ref-for-concept-document-window①②">(4)</a> <a href="#ref-for-concept-document-window①③">(5)</a> <a href="#ref-for-concept-document-window①④">(6)</a> <a href="#ref-for-concept-document-window①⑤">(7)</a> <a href="#ref-for-concept-document-window①⑥">(8)</a>
+    <li><a href="#ref-for-concept-document-window④">1.5. Traversing</a>
+    <li><a href="#ref-for-concept-document-window⑤">2.3. Firing the event</a> <a href="#ref-for-concept-document-window⑥">(2)</a> <a href="#ref-for-concept-document-window⑦">(3)</a>
+    <li><a href="#ref-for-concept-document-window⑧">3. Navigation API history entries</a> <a href="#ref-for-concept-document-window⑨">(2)</a> <a href="#ref-for-concept-document-window①⓪">(3)</a> <a href="#ref-for-concept-document-window①①">(4)</a> <a href="#ref-for-concept-document-window①②">(5)</a> <a href="#ref-for-concept-document-window①③">(6)</a> <a href="#ref-for-concept-document-window①④">(7)</a> <a href="#ref-for-concept-document-window①⑤">(8)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-scrollrestoration-auto">
@@ -3421,7 +3397,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-window-bc">1. The Navigation class</a> <a href="#ref-for-window-bc①">(2)</a>
     <li><a href="#ref-for-window-bc②">1.4. Navigating</a>
-    <li><a href="#ref-for-window-bc③">1.5. Traversing</a> <a href="#ref-for-window-bc④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-browsing-context-group">
@@ -3456,6 +3431,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-cannot-navigate">4.5. Download a hyperlink updates</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-apply-history-step-check">
+   <a href="https://whatpr.org/html/6315/history.html#apply-history-step-check">https://whatpr.org/html/6315/history.html#apply-history-step-check</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-apply-history-step-check">1.5. Traversing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-colno">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno">https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-colno</a><b>Referenced in:</b>
    <ul>
@@ -3466,13 +3447,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#completely-loaded">https://html.spec.whatwg.org/multipage/browsing-the-web.html#completely-loaded</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-completely-loaded">1.4. Navigating</a> <a href="#ref-for-completely-loaded①">(2)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-bc-navigable">
-   <a href="https://whatpr.org/html/6315/browsers.html#bc-navigable">https://whatpr.org/html/6315/browsers.html#bc-navigable</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-bc-navigable">1.5. Traversing</a>
-    <li><a href="#ref-for-bc-navigable①">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-creating-a-new-browsing-context">
@@ -3495,13 +3469,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-current-entry②">2.3. Firing the event</a> <a href="#ref-for-current-entry③">(2)</a> <a href="#ref-for-current-entry④">(3)</a> <a href="#ref-for-current-entry⑤">(4)</a>
     <li><a href="#ref-for-current-entry⑥">5.2. Carrying over the navigation API key</a> <a href="#ref-for-current-entry⑦">(2)</a>
     <li><a href="#ref-for-current-entry⑧">5.4. Tracking the origin member</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-tn-current-session-history-step">
-   <a href="https://whatpr.org/html/6315/history.html#tn-current-session-history-step">https://whatpr.org/html/6315/history.html#tn-current-session-history-step</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-tn-current-session-history-step">1.5. Traversing</a>
-    <li><a href="#ref-for-tn-current-session-history-step①">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-hh-default">
@@ -3545,20 +3512,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks">https://html.spec.whatwg.org/multipage/links.html#downloading-hyperlinks</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-downloading-hyperlinks">4.5. Download a hyperlink updates</a> <a href="#ref-for-downloading-hyperlinks①">(2)</a> <a href="#ref-for-downloading-hyperlinks②">(3)</a> <a href="#ref-for-downloading-hyperlinks③">(4)</a> <a href="#ref-for-downloading-hyperlinks④">(5)</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-enqueue-the-following-steps">
-   <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps">https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-enqueue-the-following-steps">1.5. Traversing</a>
-    <li><a href="#ref-for-enqueue-the-following-steps①">4.4. History traversal updates</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-enqueue-the-following-steps">
-   <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps">https://html.spec.whatwg.org/multipage/infrastructure.html#enqueue-the-following-steps</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-enqueue-the-following-steps">1.5. Traversing</a>
-    <li><a href="#ref-for-enqueue-the-following-steps①">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-entry-list">
@@ -3657,13 +3610,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-fully-active③">3. Navigation API history entries</a> <a href="#ref-for-fully-active④">(2)</a> <a href="#ref-for-fully-active⑤">(3)</a> <a href="#ref-for-fully-active⑥">(4)</a> <a href="#ref-for-fully-active⑦">(5)</a> <a href="#ref-for-fully-active⑧">(6)</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-getting-all-history-steps">
-   <a href="https://whatpr.org/html/6315/history.html#getting-all-history-steps">https://whatpr.org/html/6315/history.html#getting-all-history-steps</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-getting-all-history-steps">1.5. Traversing</a>
-    <li><a href="#ref-for-getting-all-history-steps①">4.4. History traversal updates</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-getting-session-history-entries">
    <a href="https://whatpr.org/html/6315/history.html#getting-session-history-entries">https://whatpr.org/html/6315/history.html#getting-session-history-entries</a><b>Referenced in:</b>
    <ul>
@@ -3703,6 +3649,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-in-parallel">4.1. Form submission patches</a>
     <li><a href="#ref-for-in-parallel①">4.3. Navigation algorithm updates</a>
     <li><a href="#ref-for-in-parallel②">4.5. Download a hyperlink updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-apply-history-step-initiator">
+   <a href="https://whatpr.org/html/6315/history.html#apply-history-step-initiator">https://whatpr.org/html/6315/history.html#apply-history-step-initiator</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-apply-history-step-initiator">1.5. Traversing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-the-input-element">
@@ -3781,12 +3733,19 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://whatpr.org/html/6315/webappapis.html#navigation-and-traversal-task-source">https://whatpr.org/html/6315/webappapis.html#navigation-and-traversal-task-source</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigation-and-traversal-task-source">1. The Navigation class</a>
+    <li><a href="#ref-for-navigation-and-traversal-task-source①">1.5. Traversing</a> <a href="#ref-for-navigation-and-traversal-task-source②">(2)</a> <a href="#ref-for-navigation-and-traversal-task-source③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-navigation-navigationtype">
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigation-navigationtype">https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigation-navigationtype</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-navigation-navigationtype">4.1. Form submission patches</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-node-navigable">
+   <a href="https://whatpr.org/html/6315/browsers.html#node-navigable">https://whatpr.org/html/6315/browsers.html#node-navigable</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-node-navigable">1.5. Traversing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-origin-opaque">
@@ -3850,6 +3809,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task">https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-global-task</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-queue-a-global-task">1. The Navigation class</a>
+    <li><a href="#ref-for-queue-a-global-task①">1.5. Traversing</a> <a href="#ref-for-queue-a-global-task②">(2)</a> <a href="#ref-for-queue-a-global-task③">(3)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-reactivate-a-document">
@@ -4019,23 +3979,21 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://html.spec.whatwg.org/multipage/history.html#session-history-entry">https://html.spec.whatwg.org/multipage/history.html#session-history-entry</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-session-history-entry">1. The Navigation class</a>
-    <li><a href="#ref-for-session-history-entry①">1.5. Traversing</a> <a href="#ref-for-session-history-entry②">(2)</a>
-    <li><a href="#ref-for-session-history-entry③">2.3. Firing the event</a>
-    <li><a href="#ref-for-session-history-entry④">3. Navigation API history entries</a>
-    <li><a href="#ref-for-session-history-entry⑤">5. Patches to session history</a>
-    <li><a href="#ref-for-session-history-entry⑥">5.1. New session history entry items</a> <a href="#ref-for-session-history-entry⑦">(2)</a>
-    <li><a href="#ref-for-session-history-entry⑧">5.3. Carrying over the navigation API state</a>
-    <li><a href="#ref-for-session-history-entry⑨">5.4. Tracking the origin member</a> <a href="#ref-for-session-history-entry①⓪">(2)</a>
-    <li><a href="#ref-for-session-history-entry①①">5.5. Tracking the policy container member more often</a> <a href="#ref-for-session-history-entry①②">(2)</a>
-    <li><a href="#ref-for-session-history-entry①③">6.2. Scroll restoration</a>
+    <li><a href="#ref-for-session-history-entry①">1.5. Traversing</a>
+    <li><a href="#ref-for-session-history-entry②">2.3. Firing the event</a>
+    <li><a href="#ref-for-session-history-entry③">3. Navigation API history entries</a>
+    <li><a href="#ref-for-session-history-entry④">5. Patches to session history</a>
+    <li><a href="#ref-for-session-history-entry⑤">5.1. New session history entry items</a> <a href="#ref-for-session-history-entry⑥">(2)</a>
+    <li><a href="#ref-for-session-history-entry⑦">5.3. Carrying over the navigation API state</a>
+    <li><a href="#ref-for-session-history-entry⑧">5.4. Tracking the origin member</a> <a href="#ref-for-session-history-entry⑨">(2)</a>
+    <li><a href="#ref-for-session-history-entry①⓪">5.5. Tracking the policy container member more often</a> <a href="#ref-for-session-history-entry①①">(2)</a>
+    <li><a href="#ref-for-session-history-entry①②">6.2. Scroll restoration</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-tn-session-history-traversal-queue">
    <a href="https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue">https://whatpr.org/html/6315/history.html#tn-session-history-traversal-queue</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-tn-session-history-traversal-queue">1.3. Ongoing navigation tracking</a>
-    <li><a href="#ref-for-tn-session-history-traversal-queue①">1.5. Traversing</a>
-    <li><a href="#ref-for-tn-session-history-traversal-queue②">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-sessionstorage">
@@ -4050,11 +4008,23 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-shared-history-push/replace-state-steps">4.3. Navigation algorithm updates</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-snapshotting-target-snapshot-params">
+   <a href="https://whatpr.org/html/6315/history.html#snapshotting-target-snapshot-params">https://whatpr.org/html/6315/history.html#snapshotting-target-snapshot-params</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-snapshotting-target-snapshot-params">1.5. Traversing</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-source-browsing-context">
    <a href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context">https://html.spec.whatwg.org/multipage/browsing-the-web.html#source-browsing-context</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-source-browsing-context">1.4. Navigating</a> <a href="#ref-for-source-browsing-context①">(2)</a>
     <li><a href="#ref-for-source-browsing-context②">4.3. Navigation algorithm updates</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-apply-history-step-source-snapshot">
+   <a href="https://whatpr.org/html/6315/history.html#apply-history-step-source-snapshot">https://whatpr.org/html/6315/history.html#apply-history-step-source-snapshot</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-apply-history-step-source-snapshot">1.5. Traversing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-dom-history-state">
@@ -4066,7 +4036,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="term-for-she-step">
    <a href="https://whatpr.org/html/6315/history.html#she-step">https://whatpr.org/html/6315/history.html#she-step</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-she-step">1.5. Traversing</a> <a href="#ref-for-she-step①">(2)</a> <a href="#ref-for-she-step②">(3)</a>
+    <li><a href="#ref-for-she-step">1.5. Traversing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-still-on-its-initial-about:blank-document">
@@ -4114,11 +4084,16 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-the-body-element-2">2.3. Firing the event</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-top-level-traversable">
+   <a href="https://whatpr.org/html/6315/history.html#top-level-traversable">https://whatpr.org/html/6315/history.html#top-level-traversable</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-top-level-traversable">4.2. Browser UI/user-initiated patches</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-nav-traversable">
    <a href="https://whatpr.org/html/6315/history.html#nav-traversable">https://whatpr.org/html/6315/history.html#nav-traversable</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-nav-traversable">1.5. Traversing</a>
-    <li><a href="#ref-for-nav-traversable①">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-traverse-the-history">
@@ -4129,12 +4104,11 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-traverse-the-history-by-a-delta">
-   <a href="https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta">https://html.spec.whatwg.org/multipage/history.html#traverse-the-history-by-a-delta</a><b>Referenced in:</b>
+   <a href="https://whatpr.org/html/6315/browsers.html#traverse-the-history-by-a-delta">https://whatpr.org/html/6315/browsers.html#traverse-the-history-by-a-delta</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-traverse-the-history-by-a-delta">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-traverse-the-history-by-a-delta①">(2)</a>
     <li><a href="#ref-for-traverse-the-history-by-a-delta②">4.3. Navigation algorithm updates</a>
-    <li><a href="#ref-for-traverse-the-history-by-a-delta③">4.4. History traversal updates</a>
-    <li><a href="#ref-for-traverse-the-history-by-a-delta④">6.3. Canceling navigation and traversals</a>
+    <li><a href="#ref-for-traverse-the-history-by-a-delta③">6.3. Canceling navigation and traversals</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-event-unhandledrejection">
@@ -4154,6 +4128,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-unload-counter">1.4. Navigating</a>
     <li><a href="#ref-for-unload-counter①">1.5. Traversing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-apply-history-step-start-time">
+   <a href="https://whatpr.org/html/6315/history.html#apply-history-step-start-time">https://whatpr.org/html/6315/history.html#apply-history-step-start-time</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-apply-history-step-start-time">1.5. Traversing</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-update-document-for-history-step-application">
@@ -4223,7 +4203,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <a href="https://infra.spec.whatwg.org/#list-contain">https://infra.spec.whatwg.org/#list-contain</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-list-contain">1. The Navigation class</a>
-    <li><a href="#ref-for-list-contain①">4.4. History traversal updates</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-map-exists">
@@ -4650,6 +4629,11 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-concept-request-url">url</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[hr-time-3]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-dfn-unsafe-shared-current-time">unsafe shared current time</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-errorevent">ErrorEvent</span>
@@ -4663,6 +4647,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-nav-window">active window <small>(for navigable)</small></span>
      <li><span class="dfn-paneled" id="term-for-allowed-to-download">allowed to download</span>
      <li><span class="dfn-paneled" id="term-for-allowed-to-navigate">allowed to navigate</span>
+     <li><span class="dfn-paneled" id="term-for-tn-append-session-history-traversal-steps">append the following session history traversal steps</span>
      <li><span class="dfn-paneled" id="term-for-apply-the-history-step">apply the history step</span>
      <li><span class="dfn-paneled" id="term-for-the-area-element">area</span>
      <li><span class="dfn-paneled" id="term-for-dom-location-assign">assign(url)</span>
@@ -4677,21 +4662,18 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-the-button-element">button</span>
      <li><span class="dfn-paneled" id="term-for-can-have-its-url-rewritten">can have its url rewritten</span>
      <li><span class="dfn-paneled" id="term-for-cannot-navigate">cannot navigate</span>
+     <li><span class="dfn-paneled" id="term-for-apply-history-step-check">checkforusercancellation</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-colno">colno</span>
      <li><span class="dfn-paneled" id="term-for-completely-loaded">completely loaded</span>
-     <li><span class="dfn-paneled" id="term-for-bc-navigable">containing navigable</span>
      <li><span class="dfn-paneled" id="term-for-creating-a-new-browsing-context">create a new browsing context</span>
      <li><span class="dfn-paneled" id="term-for-cross-origin-opener-policy-2">cross-origin-opener-policy</span>
      <li><span class="dfn-paneled" id="term-for-current-entry">current entry</span>
-     <li><span class="dfn-paneled" id="term-for-tn-current-session-history-step">current session history step</span>
      <li><span class="dfn-paneled" id="term-for-hh-default">default</span>
      <li><span class="dfn-paneled" id="term-for-determining-navigation-params-policy-container">determine navigation params policy container</span>
      <li><span class="dfn-paneled" id="term-for-a-browsing-context-is-discarded">discard</span>
      <li><span class="dfn-paneled" id="term-for-she-document">document <small>(for session history entry)</small></span>
      <li><span class="dfn-paneled" id="term-for-attr-hyperlink-download">download</span>
      <li><span class="dfn-paneled" id="term-for-downloading-hyperlinks">download the hyperlink</span>
-     <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps">enqueue steps</span>
-     <li><span class="dfn-paneled" id="term-for-enqueue-the-following-steps①">enqueue the following steps</span>
      <li><span class="dfn-paneled" id="term-for-entry-list">entry list</span>
      <li><span class="dfn-paneled" id="term-for-hh-entry-update">entry update</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-error">error</span>
@@ -4706,13 +4688,13 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-following-hyperlinks-2">follow the hyperlink</span>
      <li><span class="dfn-paneled" id="term-for-the-form-element">form</span>
      <li><span class="dfn-paneled" id="term-for-fully-active">fully active</span>
-     <li><span class="dfn-paneled" id="term-for-getting-all-history-steps">get all history steps</span>
      <li><span class="dfn-paneled" id="term-for-getting-session-history-entries">get the session history entries</span>
      <li><span class="dfn-paneled" id="term-for-event-hashchange">hashchange</span>
      <li><span class="dfn-paneled" id="term-for-history-handling-behavior">history handling behavior</span>
      <li><span class="dfn-paneled" id="term-for-navigation-hh">historyhandling <small>(for navigate)</small></span>
      <li><span class="dfn-paneled" id="term-for-dom-location-href">href</span>
      <li><span class="dfn-paneled" id="term-for-in-parallel">in parallel</span>
+     <li><span class="dfn-paneled" id="term-for-apply-history-step-initiator">initiatortocheck</span>
      <li><span class="dfn-paneled" id="term-for-the-input-element">input</span>
      <li><span class="dfn-paneled" id="term-for-input-activation-behavior">input activation behavior</span>
      <li><span class="dfn-paneled" id="term-for-is-initial-about:blank">is initial about:blank</span>
@@ -4725,6 +4707,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-navigate-fragid">navigate to a fragment</span>
      <li><span class="dfn-paneled" id="term-for-navigation-and-traversal-task-source">navigation and traversal task source</span>
      <li><span class="dfn-paneled" id="term-for-navigation-navigationtype">navigationtype</span>
+     <li><span class="dfn-paneled" id="term-for-node-navigable">node navigable</span>
      <li><span class="dfn-paneled" id="term-for-concept-origin-opaque">opaque origin</span>
      <li><span class="dfn-paneled" id="term-for-dom-document-open">open(unused1, unused2)</span>
      <li><span class="dfn-paneled" id="term-for-concept-settings-object-origin">origin <small>(for environment settings object)</small></span>
@@ -4761,7 +4744,9 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-tn-session-history-traversal-queue">session history traversal queue</span>
      <li><span class="dfn-paneled" id="term-for-dom-sessionstorage">sessionStorage</span>
      <li><span class="dfn-paneled" id="term-for-shared-history-push/replace-state-steps">shared history push/replace state steps</span>
+     <li><span class="dfn-paneled" id="term-for-snapshotting-target-snapshot-params">snapshot source snapshot params</span>
      <li><span class="dfn-paneled" id="term-for-source-browsing-context">source browsing context</span>
+     <li><span class="dfn-paneled" id="term-for-apply-history-step-source-snapshot">sourcesnapshotparams</span>
      <li><span class="dfn-paneled" id="term-for-dom-history-state">state</span>
      <li><span class="dfn-paneled" id="term-for-she-step">step</span>
      <li><span class="dfn-paneled" id="term-for-still-on-its-initial-about:blank-document">still on its initial about:blank document</span>
@@ -4771,12 +4756,14 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-concept-submit-button">submit buttons</span>
      <li><span class="dfn-paneled" id="term-for-concept-form-submit">submitted</span>
      <li><span class="dfn-paneled" id="term-for-the-body-element-2">the body element</span>
+     <li><span class="dfn-paneled" id="term-for-top-level-traversable">top-level traversable</span>
      <li><span class="dfn-paneled" id="term-for-nav-traversable">traversable navigable</span>
      <li><span class="dfn-paneled" id="term-for-traverse-the-history">traverse the history</span>
      <li><span class="dfn-paneled" id="term-for-traverse-the-history-by-a-delta">traverse the history by a delta</span>
      <li><span class="dfn-paneled" id="term-for-event-unhandledrejection">unhandledrejection</span>
      <li><span class="dfn-paneled" id="term-for-unload-a-document">unload a document</span>
      <li><span class="dfn-paneled" id="term-for-unload-counter">unload counter</span>
+     <li><span class="dfn-paneled" id="term-for-apply-history-step-start-time">unsafenavigationstarttime</span>
      <li><span class="dfn-paneled" id="term-for-update-document-for-history-step-application">update document for history step application</span>
      <li><span class="dfn-paneled" id="term-for-update-the-session-history-with-the-new-page">update the session history with the new page</span>
      <li><span class="dfn-paneled" id="term-for-she-url">url</span>
@@ -4790,7 +4777,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-iteration-break">break</span>
      <li><span class="dfn-paneled" id="term-for-list-clone">clone</span>
      <li><span class="dfn-paneled" id="term-for-list-contain">contain</span>
-     <li><span class="dfn-paneled" id="term-for-map-exists">exist <small>(for map)</small></span>
+     <li><span class="dfn-paneled" id="term-for-map-exists">exist</span>
      <li><span class="dfn-paneled" id="term-for-list-iterate">for each</span>
      <li><span class="dfn-paneled" id="term-for-string-is">is</span>
      <li><span class="dfn-paneled" id="term-for-list-is-empty">is empty</span>
@@ -4879,6 +4866,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/"><cite>DOM Standard</cite></a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-fetch">[FETCH]
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/"><cite>Fetch Standard</cite></a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
+   <dt id="biblio-hr-time-3">[HR-TIME-3]
+   <dd>Yoav Weiss. <a href="https://w3c.github.io/hr-time/"><cite>High Resolution Time</cite></a>. URL: <a href="https://w3c.github.io/hr-time/">https://w3c.github.io/hr-time/</a>
    <dt id="biblio-html">[HTML]
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
@@ -5621,15 +5610,15 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-eventdef-navigation-navigate">1.3. Ongoing navigation tracking</a> <a href="#ref-for-eventdef-navigation-navigate①">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②">(3)</a> <a href="#ref-for-eventdef-navigation-navigate③">(4)</a>
     <li><a href="#ref-for-eventdef-navigation-navigate④">1.4. Navigating</a> <a href="#ref-for-eventdef-navigation-navigate⑤">(2)</a> <a href="#ref-for-eventdef-navigation-navigate⑥">(3)</a> <a href="#ref-for-eventdef-navigation-navigate⑦">(4)</a> <a href="#ref-for-eventdef-navigation-navigate⑧">(5)</a> <a href="#ref-for-eventdef-navigation-navigate⑨">(6)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⓪">1.5. Traversing</a> <a href="#ref-for-eventdef-navigation-navigate①①">(2)</a> <a href="#ref-for-eventdef-navigation-navigate①②">(3)</a> <a href="#ref-for-eventdef-navigation-navigate①③">(4)</a> <a href="#ref-for-eventdef-navigation-navigate①④">(5)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑤">2. The navigate event</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑥">2.1. The NavigateEvent class</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑦">2.3. Firing the event</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate①⑧">4. Patches to fire the navigate event</a> <a href="#ref-for-eventdef-navigation-navigate①⑨">(2)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate②⓪">4.3. Navigation algorithm updates</a> <a href="#ref-for-eventdef-navigation-navigate②①">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②②">(3)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate②③">4.5. Download a hyperlink updates</a> <a href="#ref-for-eventdef-navigation-navigate②④">(2)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate②⑤">6.3. Canceling navigation and traversals</a> <a href="#ref-for-eventdef-navigation-navigate②⑥">(2)</a>
-    <li><a href="#ref-for-eventdef-navigation-navigate②⑦">7.2. Navigation monitoring and interception</a> <a href="#ref-for-eventdef-navigation-navigate②⑧">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②⑨">(3)</a> <a href="#ref-for-eventdef-navigation-navigate③⓪">(4)</a> <a href="#ref-for-eventdef-navigation-navigate③①">(5)</a> <a href="#ref-for-eventdef-navigation-navigate③②">(6)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⓪">1.5. Traversing</a> <a href="#ref-for-eventdef-navigation-navigate①①">(2)</a> <a href="#ref-for-eventdef-navigation-navigate①②">(3)</a> <a href="#ref-for-eventdef-navigation-navigate①③">(4)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①④">2. The navigate event</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑤">2.1. The NavigateEvent class</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑥">2.3. Firing the event</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑦">4. Patches to fire the navigate event</a> <a href="#ref-for-eventdef-navigation-navigate①⑧">(2)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate①⑨">4.3. Navigation algorithm updates</a> <a href="#ref-for-eventdef-navigation-navigate②⓪">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②①">(3)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②②">4.5. Download a hyperlink updates</a> <a href="#ref-for-eventdef-navigation-navigate②③">(2)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②④">6.3. Canceling navigation and traversals</a> <a href="#ref-for-eventdef-navigation-navigate②⑤">(2)</a>
+    <li><a href="#ref-for-eventdef-navigation-navigate②⑥">7.2. Navigation monitoring and interception</a> <a href="#ref-for-eventdef-navigation-navigate②⑦">(2)</a> <a href="#ref-for-eventdef-navigation-navigate②⑧">(3)</a> <a href="#ref-for-eventdef-navigation-navigate②⑨">(4)</a> <a href="#ref-for-eventdef-navigation-navigate③⓪">(5)</a> <a href="#ref-for-eventdef-navigation-navigate③①">(6)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-navigation-onnavigatesuccess">
@@ -6297,9 +6286,8 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <aside class="dfn-panel" data-for="user-navigation-involvement-none">
    <b><a href="#user-navigation-involvement-none">#user-navigation-involvement-none</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-user-navigation-involvement-none">1.5. Traversing</a>
-    <li><a href="#ref-for-user-navigation-involvement-none①">2.3. Firing the event</a> <a href="#ref-for-user-navigation-involvement-none②">(2)</a> <a href="#ref-for-user-navigation-involvement-none③">(3)</a>
-    <li><a href="#ref-for-user-navigation-involvement-none④">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-user-navigation-involvement-none⑤">(2)</a> <a href="#ref-for-user-navigation-involvement-none⑥">(3)</a> <a href="#ref-for-user-navigation-involvement-none⑦">(4)</a>
+    <li><a href="#ref-for-user-navigation-involvement-none">2.3. Firing the event</a> <a href="#ref-for-user-navigation-involvement-none①">(2)</a> <a href="#ref-for-user-navigation-involvement-none②">(3)</a>
+    <li><a href="#ref-for-user-navigation-involvement-none③">4.2. Browser UI/user-initiated patches</a> <a href="#ref-for-user-navigation-involvement-none④">(2)</a> <a href="#ref-for-user-navigation-involvement-none⑤">(3)</a> <a href="#ref-for-user-navigation-involvement-none⑥">(4)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="event-user-navigation-involvement">
