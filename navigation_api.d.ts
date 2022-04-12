@@ -45,14 +45,9 @@ declare class NavigationTransition {
   readonly navigationType: NavigationType;
   readonly from: NavigationHistoryEntry;
   readonly finished: Promise<void>;
-
-  rollback(options?: NavigationOptions): NavigationResult;
 }
 
 interface NavigationHistoryEntryEventMap {
-  "navigateto": Event;
-  "navigatefrom": Event;
-  "finish": Event;
   "dispose": Event;
 }
 
@@ -65,9 +60,6 @@ declare class NavigationHistoryEntry extends EventTarget {
 
   getState(): unknown;
 
-  onnavigateto: ((this: NavigationHistoryEntry, ev: Event) => any)|null;
-  onnavigatefrom: ((this: NavigationHistoryEntry, ev: Event) => any)|null;
-  onfinish: ((this: NavigationHistoryEntry, ev: Event) => any)|null;
   ondispose: ((this: NavigationHistoryEntry, ev: Event) => any)|null;
 
   addEventListener<K extends keyof NavigationHistoryEntryEventMap>(type: K, listener: (this: NavigationHistoryEntry, ev: NavigationHistoryEntryEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;

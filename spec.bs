@@ -483,8 +483,6 @@ interface NavigationTransition {
   readonly attribute NavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;
   readonly attribute Promise<undefined> finished;
-
-  NavigationResult rollback(optional NavigationOptions options = {});
 };
 </xmp>
 
@@ -511,6 +509,7 @@ interface NavigationTransition {
     <p>A promise which fulfills at the same time the {{Navigation/navigatesuccess}} event fires, or rejects at the same time the {{Navigation/navigateerror}} fires.
   </dd>
 
+<!--
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/rollback(options)|rollback}}()</code></dt>
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } = {{Window/navigation}}.{{Navigation/transition}}.{{NavigationTransition/rollback(options)|rollback}}({ {{NavigationOptions/info}} })</code></dt>
   <dd>
@@ -530,6 +529,7 @@ interface NavigationTransition {
 
     <p>This method can only be called while the transition is still ongoing, i.e. while {{Navigation/transition|navigation.transition}} equals this {{NavigationTransition}} object. Calling it afterward will cause both returned promises rejected with an "{{InvalidStateError}}" {{DOMException}}.
   </dd>
+-->
 </dl>
 
 A {{Navigation}} has a <dfn for="Navigation">transition</dfn>, which is a {{NavigationTransition}} or null.
@@ -549,12 +549,6 @@ The <dfn attribute for="NavigationTransition">navigationType</dfn> getter steps 
 The <dfn attribute for="NavigationTransition">from</dfn> getter steps are to return [=this=]'s [=NavigationTransition/from entry=].
 
 The <dfn attribute for="NavigationTransition">finished</dfn> getter steps are to return [=this=]'s [=NavigationTransition/finished promise=].
-
-<div algorithm>
-  The <dfn method for="NavigationTransition">rollback(|options|)</dfn> method steps are:
-
-  1. TODO use |options|.
-</div>
 
 <hr>
 
@@ -1550,9 +1544,6 @@ interface NavigationHistoryEntry : EventTarget {
 
   any getState();
 
-  attribute EventHandler onnavigateto;
-  attribute EventHandler onnavigatefrom;
-  attribute EventHandler onfinish;
   attribute EventHandler ondispose;
 };
 </xmp>
@@ -1660,20 +1651,9 @@ The following are the [=event handlers=] (and their corresponding [=event handle
     <th>[=Event handler event type=]
   <tbody>
     <tr>
-      <td><dfn attribute for="NavigationHistoryEntry">onnavigateto</dfn>
-      <td><dfn event for="NavigationHistoryEntry">navigateto</dfn>
-    <tr>
-      <td><dfn attribute for="NavigationHistoryEntry">onnavigatefrom</dfn>
-      <td><dfn event for="NavigationHistoryEntry">navigatefrom</dfn>
-    <tr>
-      <td><dfn attribute for="NavigationHistoryEntry">onfinish</dfn>
-      <td><dfn event for="NavigationHistoryEntry">finish</dfn>
-    <tr>
       <td><dfn attribute for="NavigationHistoryEntry">ondispose</dfn>
       <td><dfn event for="NavigationHistoryEntry">dispose</dfn>
 </table>
-
-TODO: actually fire {{NavigationHistoryEntry/finish}}, {{NavigationHistoryEntry/navigateto}}, and {{NavigationHistoryEntry/navigatefrom}}.
 
 <h2 id="navigate-patches">Patches to fire the {{Navigation/navigate}} event</h2>
 

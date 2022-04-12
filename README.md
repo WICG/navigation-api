@@ -50,14 +50,6 @@ backButtonEl.addEventListener("click", () => {
 });
 ```
 
-A new extension to the [performance timeline API](https://developer.mozilla.org/en-US/docs/Web/API/Performance_Timeline) allows you to calculate the duration of single-page navigations, including any asynchronous work performed by the `navigate` handler:
-
-```js
-for (const entry of performance.getEntriesByType("same-document-navigation")) {
-  console.log(`It took ${entry.duration} ms to navigate to the URL ${entry.name}`);
-}
-```
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
@@ -83,14 +75,12 @@ for (const entry of performance.getEntriesByType("same-document-navigation")) {
     - [Scroll position restoration](#scroll-position-restoration)
   - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
     - [Example: handling failed navigations](#example-handling-failed-navigations)
-    - [Example: single-page app redirects and guards](#example-single-page-app-redirects-and-guards)
   - [The `navigate()` and `reload()` methods](#the-navigate-and-reload-methods)
     - [Example: using `info`](#example-using-info)
     - [Example: next/previous buttons](#example-nextprevious-buttons)
   - [Setting the current entry's state without navigating](#setting-the-current-entrys-state-without-navigating)
-  - [Per-entry events](#per-entry-events)
+  - [Notifications on entry disposal](#notifications-on-entry-disposal)
   - [Current entry change monitoring](#current-entry-change-monitoring)
-  - [Performance timeline API integration](#performance-timeline-api-integration)
   - [Complete event sequence](#complete-event-sequence)
 - [Guide for migrating from the existing history API](#guide-for-migrating-from-the-existing-history-api)
   - [Performing navigations](#performing-navigations)
@@ -105,6 +95,11 @@ for (const entry of performance.getEntriesByType("same-document-navigation")) {
   - [Integration with navigation](#integration-with-navigation)
 - [Impact on the back button and user agent UI](#impact-on-the-back-button-and-user-agent-ui)
 - [Security and privacy considerations](#security-and-privacy-considerations)
+- [Future extensions](#future-extensions)
+  - [More per-entry events](#more-per-entry-events)
+  - [Performance timeline API integration](#performance-timeline-api-integration)
+  - [Navigation transition rollbacks and redirects](#navigation-transition-rollbacks-and-redirects)
+  - [More](#more)
 - [Stakeholder feedback](#stakeholder-feedback)
 - [Acknowledgments](#acknowledgments)
 - [Appendix: types of navigations](#appendix-types-of-navigations)
@@ -337,7 +332,7 @@ The event object has a special method `event.transitionWhile(promise)`. This wor
 - Immediately update the URL bar, `location.href`, and `navigation.currentEntry`.
 - Create the [`navigation.transition`](#transitional-time-after-navigation-interception) object.
 - Wait for the promise to settle. Once it does:
-  - Fire `finish` on `navigation.current`.
+  - Fulfill or reject `navigation.transition.finished` accordingly.
   - If it rejects, fire `navigateerror` on `navigation` and reject `navigation.transition.finished`.
   - If it fulfills, fire `navigatesuccess` on `navigation` and fulfill `navigation.transition.finished`.
   - Set `navigation.transition` to null.
@@ -661,11 +656,6 @@ Although calling `event.transitionWhile()` to [intercept a navigation](#navigati
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `NavigationHistoryEntry` that was the current one before the transition
 - `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `navigation`, or rejects with the corresponding error when the `navigateerror` event fires on `navigation`
-- `rollback()`: a promise-returning method which allows easy rollback to the `from` entry
-
-Note that `navigation.transition.rollback()` is not the same as `navigation.back()`: for example, if the user navigates two steps back, then `navigation.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and navigation API state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
-
-Also note that `navigation.transition.rollback()` will itself trigger a `navigate` event. This means you can continue to centralize your response to navigations in the `navigate` event handler, i.e. rollback-initiated pushes/replaces/traversals go down the same application code path as other pushes/replaces/traversals.
 
 #### Example: handling failed navigations
 
@@ -679,42 +669,6 @@ navigation.addEventListener("navigateerror", e => {
 ```
 
 This would give your users an experience most like a multi-page application, where server errors or broken links take them to a dedicated, server-generated error page.
-
-To perform a rollback to where the user was previously, with a toast notification, you could do something like:
-
-```js
-navigation.addEventListener("navigateerror", async e => {
-  const attemptedURL = location.href;
-
-  await navigation.transition.rollback().committed;
-  showErrorToast(`Could not load ${attemptedURL}: ${e.message}`);
-});
-```
-
-#### Example: single-page app redirects and guards
-
-A common scenario in web applications with a client-side router is to perform a "redirect" to a login page if you try to access login-guarded information. Similarly, there's often a desire for some routes to be off-limits. The following is an example of how one could implement these scenarios using the `navigate` event, including determining asynchronously which action is needed:
-
-```js
-navigation.addEventListener("navigate", e => {
-  e.transitionWhile((async () => {
-    const result = await determineAction(e.destination);
-
-    if (result.type === "redirect") {
-      await navigation.transition.rollback().finished;
-      await navigation.navigate(result.destinationURL, { state: result.destinationState }).finished;
-    } else if (result.type === "disallow") {
-      throw new Error(result.disallowReason);
-    } else {
-      // ...
-    }
-  })());
-});
-```
-
-In practice, this might be hidden behind a full router framework, e.g. the Angular framework has a notion of [route guards](https://angular.io/guide/router#preventing-unauthorized-access). Then, the framework would be the one listening to the `navigate` event, looping through its list of registered route guards to figure out the appropriate reaction.
-
-Note how this kind of setup composes well with `navigateerror` handlers from the previous section. For example, consider a situation where the page starts at `/a`, tries to navigate to `/b`, which the `navigate` handler redirects to `/c`, but then when that redirection reaches the `navigate` handler, it says that `/c` is disallowed. In this scenario, a display-an-error `navigateerror` handler would show an error while the URL bar reads `/c`. And a rollback-and-show-toast error handler would roll back from `/c` to `/a` (since the redirect process itself already removed `/b` from consideration).
 
 ### The `navigate()` and `reload()` methods
 
@@ -832,7 +786,7 @@ navigation.addEventListener("navigate", e => {
 });
 ```
 
-Note that in addition to `navigation.navigate()` and `navigation.reload()`, the previously-discussed `navigation.back()`, `navigation.forward()`, `navigation.traverseTo()`, and `navigation.transition.rollback()` methods can also take a `info` option.
+Note that in addition to `navigation.navigate()` and `navigation.reload()`, the previously-discussed `navigation.back()`, `navigation.forward()`, and `navigation.traverseTo()` methods can also take a `info` option.
 
 #### Example: next/previous buttons
 
@@ -935,43 +889,9 @@ detailsEl.addEventListener("toggle", () => {
 
 Another example of this sort of situation is shown in the following section.
 
-### Per-entry events
+### Notifications on entry disposal
 
-Each `NavigationHistoryEntry` has a series of events which the application can react to. **We expect these to mostly be used by decentralized parts of the application's codebase, such as components, to synchronize their state with the history list.** Unlike the `navigate` event, these events are not cancelable. They are used only for reacting to changes, not intercepting or preventing navigations.
-
-The application can use the `navigateto` and `navigatefrom` events to update the UI in response to a given entry becoming the current history entry. For example, consider a photo gallery application. One way of implementing this would be to store metadata about the photo in the corresponding `NavigationHistoryEntry`'s state. This might look something like this:
-
-```js
-async function showPhoto(photoId) {
-  // In our app, the `navigate` handler will take care of actually showing the photo and updating the content area.
-  const entry = await navigation.navigate(`/photos/${photoId}`, { state: {
-    dateTaken: null,
-    caption: null
-  } }).committed;
-
-  // When we navigate away from this photo, save any changes the user made.
-  entry.addEventListener("navigatefrom", e => {
-    navigation.updateCurrentEntry({
-      state: {
-        dateTaken: document.querySelector("#photo-container > .date-taken").value,
-        caption: document.querySelector("#photo-container > .caption").value
-      }
-    });
-  });
-
-  // If we ever navigate back to this photo, e.g. using the browser back button or
-  // navigation.traverseTo(), restore the input values.
-  entry.addEventListener("navigateto", e => {
-    const { dateTaken, caption } = entry.getState();
-    document.querySelector("#photo-container > .date-taken").value = dateTaken;
-    document.querySelector("#photo-container > .caption").value = caption;
-  });
-}
-```
-
-Note how we use the fulfillment value of the `committed` promise to get a handle to the entry. This is more robust than assuming `navigation.currentEntry` is correct, in edge cases where one navigation can interrupt another.
-
-Finally, there's a `dispose` event, which occurs when a history entry is permanently evicted and unreachable: for example, in the following scenario.
+Each `NavigationHistoryEntry` has a `dispose` event, which occurs when that history entry is permanently evicted and unreachable. The most common scenario where this occurs is when doing a push navigation that prunes the forward history, like so:
 
 ```js
 const startingKey = navigation.currentEntry.key;
@@ -991,7 +911,7 @@ await navigation.navigate("/1-b").finished;
 // Logs 1, 2, 3 as that branch of the tree gets pruned.
 ```
 
-This can be useful for cleaning up any information in secondary stores, such as `sessionStorage` or caches, when we're guaranteed to never reach those particular history entries again.
+This event can be useful for cleaning up any information in secondary stores, such as `sessionStorage` or caches, when we're guaranteed to never reach those particular history entries again.
 
 ### Current entry change monitoring
 
@@ -1017,75 +937,38 @@ The event comes with a property, `from`, which is the previous value of `navigat
 
 - During traversals, i.e. when `event.navigationType` is `"traverse"`, you can get the delta by using `navigation.currentEntry.index - event.from.index`. (Note that this can return `NaN` in `"replace"` cases where `event.from.index` is `null`.)
 
-### Performance timeline API integration
-
-The [performance timeline API](https://w3c.github.io/performance-timeline/) provides a generic framework for the browser to signal about interesting events, their durations, and their associated data via `PerformanceEntry` objects. For example, cross-document navigations are done with the [navigation timing API](https://w3c.github.io/navigation-timing/), which uses a subclass of `PerformanceEntry` called `PerformanceNavigationTiming`.
-
-Until now, it has not been possible to measure such data for same-document navigations. This is somewhat understandable, as such navigations have always been "zero duration": they occur instantaneously when the application calls `history.pushState()` or `history.replaceState()`. So measuring them isn't that interesting. But with the new navigation API, [browsers know about the start time, end time, and duration of the navigation](#measuring-standardized-single-page-navigations), so we can give useful performance entries.
-
-The `PerformanceEntry` instances for such same-document navigations are instances of a new subclass, `SameDocumentNavigationEntry`, with the following properties:
-
-- `name`: the URL being navigated to. (The use of `name` instead of `url` is strange, but matches all the other `PerformanceEntry`s on the platform.)
-
-- `entryType`: always `"same-document-navigation"`.
-
-- `startTime`: the time at which the navigation was initiated, i.e. when the corresponding API was called (like `location.href` or `navigation.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`.
-
-- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promise passed to `event.transitionWhile()` to settle, for navigations intercepted by a `navigate` event handler.
-
-- `success`: `false` if the promise passed to `event.transitionWhile()` rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
-
-To record single-page navigations using [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), web developers could then use code such as the following:
-
-```js
-const observer = new PerformanceObserver(list => {
-  for (const entry of list.getEntries()) {
-    analyticsPackage.send("same-document-navigation", entry.toJSON());
-  }
-});
-observer.observe({ type: "same-document-navigation" });
-```
-
 ### Complete event sequence
 
-Between the per-`NavigationHistoryEntry` events, the `window.navigation` events, and various promises, there's a lot of events floating around. Here's how they all come together:
+Between the `dispose` events, the `window.navigation` events, and various promises, there's a lot of events floating around. Here's how they all come together:
 
 1. `navigate` fires on `window.navigation`.
 1. If the event is canceled using `event.preventDefault()`, then:
     1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with an `"AbortError"` `DOMException`.
 1. Otherwise:
-    1. `navigation.currentEntry` fires `navigatefrom`.
     1. `location.href` updates.
     1. `navigation.currentEntry` updates. `navigation.transition` is created.
     1. `currententrychange` is fired on `navigation`.
-    1. `navigation.currentEntry` fires `navigateto`.
     1. Any now-unreachable `NavigationHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
     1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.transitionWhile()`.
     1. After all the promises passed to `event.transitionWhile()` fulfill, or after one microtask if `event.transitionWhile()` was not called:
-        1. `navigation.currentEntry` fires `finish`.
         1. `navigatesuccess` is fired on `navigation`.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets fulfilled.
         1. `navigation.transition.finished` fulfills with undefined.
         1. `navigation.transition` becomes null.
-        1. Queue a new `SameDocumentNavigationEntry` indicating success.
     1. Alternately, if any promise passed to `event.transitionWhile()` rejects:
-        1. `navigation.currentEntry` fires `finish`.
         1. `navigateerror` fires on `window.navigation` with the rejection reason as its `error` property.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with the same rejection reason.
         1. `navigation.transition.finished` rejects with the same rejection reason.
         1. `navigation.transition` becomes null.
-        1. Queue a new `SameDocumentNavigationEntry` indicating failure.
     1. Alternately, if the navigation gets [aborted](#aborted-navigations) before either of those two things occur:
-        1. (`navigation.currentEntry` never fires the `finish` event.)
         1. `navigateerror` fires on `window.navigation` with an `"AbortError"` `DOMException` as its `error` property.
         1. Any loading spinner UI stops. (But potentially restarts, or maybe doesn't stop at all, if the navigation was aborted due to a second navigation starting.)
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with the same `"AbortError"` `DOMException`.
         1. `navigation.transition.finished` rejects with the same `"AbortError"` `DOMException`.
         1. `navigation.transition` becomes null.
-        1. Queue a new `SameDocumentNavigationEntry` indicating failure.
     1. One task after firing `currententrychange`, `hashchange` and/or `popstate` fire on `window`, if applicable. (Note: this can happen _before_ steps (ix)–(xi) if `event.transitionWhile()` is called with promises that take longer than a single task to settle.)
 
 ## Guide for migrating from the existing history API
@@ -1246,7 +1129,7 @@ The new navigation API provides several replacements that subsume these events:
 
 - To react to navigations that have committed (but not necessarily yet finished), use the [`currententrychange` event](#current-entry-change-monitoring) on `navigation`. This is the most direct counterpart to `popstate` and `hashchange`, so might be easiest to use as part of an initial migration while your app is adapting to a `navigate` event-centric paradigm.
 
-- To watch a particular entry to see when it's navigated to, navigated from, or becomes unreachable, use that `NavigationHistoryEntry`'s `navigateto`, `navigatefrom`, and `dispose` events. See the [Per-entry events](#per-entry-events) section for more details.
+- To watch a particular entry to see when it becomes unreachable, use that `NavigationHistoryEntry`'s [`dispose` event](#notifications-on-entry-disposal).
 
 ## Integration with the existing history API and spec
 
@@ -1371,6 +1254,116 @@ Security-wise, this feature has been carefully designed to give no new abilities
 In particular, note that navigation interception can only update the URL bar to perform single-page app navigations to the same extent as `history.pushState()` does: the destination URL must only differ from the page's current URL in path, query, or fragment components. Thus, the `navigate` event does not allow URL spoofing by updating the URL bar to a cross-origin destination while providing your own origin's content.
 
 See also the [W3C TAG security and privacy questionnaire answers](./security-privacy-questionnaire.md). We also have a [corresponding specification section](https://wicg.github.io/navigation-api/#security-privacy), which largely restates the points here but with links to specification concepts instead of explainer sections.
+
+## Future extensions
+
+### More per-entry events
+
+We've heard some use cases for additional events on `NavigationHistoryEntry` objects, in addition to the [`dispose` event](#notifications-on-entry-disposal). Currently we're thinking of adding `navigateto` and `navigatefrom` events.
+
+We expect these would mostly be used by decentralized parts of the application's codebase, such as components, to synchronize their state with the history list. Unlike the `navigate` event, these events are not cancelable. They are used only for reacting to changes, not intercepting or preventing navigations.
+
+For example, consider a photo gallery application. One way of implementing this would be to store metadata about the photo in the corresponding `NavigationHistoryEntry`'s state. This might look something like this:
+
+```js
+async function showPhoto(photoId) {
+  // In our app, the `navigate` handler will take care of actually showing the photo and updating the content area.
+  const entry = await navigation.navigate(`/photos/${photoId}`, { state: {
+    dateTaken: null,
+    caption: null
+  } }).committed;
+
+  // When we navigate away from this photo, save any changes the user made.
+  entry.addEventListener("navigatefrom", e => {
+    navigation.updateCurrentEntry({
+      state: {
+        dateTaken: document.querySelector("#photo-container > .date-taken").value,
+        caption: document.querySelector("#photo-container > .caption").value
+      }
+    });
+  });
+
+  // If we ever navigate back to this photo, e.g. using the browser back button or
+  // navigation.traverseTo(), restore the input values.
+  entry.addEventListener("navigateto", e => {
+    const { dateTaken, caption } = entry.getState();
+    document.querySelector("#photo-container > .date-taken").value = dateTaken;
+    document.querySelector("#photo-container > .caption").value = caption;
+  });
+}
+```
+
+Note how we use the fulfillment value of the `committed` promise to get a handle to the entry. This is more robust than assuming `navigation.currentEntry` is correct, in edge cases where one navigation can interrupt another.
+
+### Performance timeline API integration
+
+The [performance timeline API](https://w3c.github.io/performance-timeline/) provides a generic framework for the browser to signal about interesting events, their durations, and their associated data via `PerformanceEntry` objects. For example, cross-document navigations are done with the [navigation timing API](https://w3c.github.io/navigation-timing/), which uses a subclass of `PerformanceEntry` called `PerformanceNavigationTiming`.
+
+It is not currently possible to measure such data for same-document navigations. This is somewhat understandable, as such navigations have always been "zero duration": they occur instantaneously when the application calls `history.pushState()` or `history.replaceState()`. So measuring them isn't that interesting. But with the new navigation API, [browsers know about the start time, end time, and duration of the navigation](#measuring-standardized-single-page-navigations), so we can give useful performance entries.
+
+We propose adding new `PerformanceEntry` instances for such same-document navigations. They would be instances of a new subclass, `SameDocumentNavigationEntry`, with the following properties:
+
+- `name`: the URL being navigated to. (The use of `name` instead of `url` is strange, but matches all the other `PerformanceEntry`s on the platform.)
+
+- `entryType`: always `"same-document-navigation"`.
+
+- `startTime`: the time at which the navigation was initiated, i.e. when the corresponding API was called (like `location.href` or `navigation.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`.
+
+- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promise passed to `event.transitionWhile()` to settle, for navigations intercepted by a `navigate` event handler.
+
+- `success`: `false` if the promise passed to `event.transitionWhile()` rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
+
+To record single-page navigations using [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), web developers could then use code such as the following:
+
+```js
+const observer = new PerformanceObserver(list => {
+  for (const entry of list.getEntries()) {
+    analyticsPackage.send("same-document-navigation", entry.toJSON());
+  }
+});
+observer.observe({ type: "same-document-navigation" });
+```
+
+### Navigation transition rollbacks and redirects
+
+During the [transitional time after navigation interception](#transitional-time-after-navigation-interception), there are several higher-level operations that we believe would be useful for developers:
+
+- `navigation.transition.rollback()`: a method which allows easy rollback to the `navigation.transition.from` entry.
+- `navigation.transition.redirect()`: a method which allows changing the destination of the current transition to a new URL.
+
+Note that `navigation.transition.rollback()` is not the same as `navigation.back()`: for example, if the user navigates two steps back, then `navigation.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and navigation API state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
+
+Here is an example of how you could use `navigation.transition.rollback()` to give a different sort of experience for [handling failed navigations](#example-handling-failed-navigations):
+
+```js
+navigation.addEventListener("navigateerror", async e => {
+  const attemptedURL = location.href;
+
+  await navigation.transition.rollback().committed;
+  showErrorToast(`Could not load ${attemptedURL}: ${e.message}`);
+});
+```
+
+And here is an example of how you could use `navigation.transition.redirect()` to implement a "redirect" to a login page:
+
+```js
+navigation.addEventListener("navigate", e => {
+  e.transitionWhile((async () => {
+    if (await isLoginGuarded(e.destination)) {
+      await navigation.transition.redirect("/login").finished;
+      return;
+    }
+
+    // Render e.destination as normal
+  })());
+});
+```
+
+In more detail, such a "redirect" would consist of either doing a replacement navigation (if we're past navigation commit time), or canceling the current not-yet-committed navigation and starting a new one. In both cases, the main value add is to avoid extra intermediate events such as `navigateerror` or `navigatesuccess`; it would seem to the rest of the code as if the navigation just took longer to finish.
+
+### More
+
+Check out the [addition](https://github.com/WICG/navigation-api/issues?q=is%3Aissue+is%3Aopen+label%3Aaddition) label on our issue tracker to see more proposals we've thought about!
 
 ## Stakeholder feedback
 
