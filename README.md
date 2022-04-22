@@ -142,7 +142,7 @@ From an API perspective, our primary goals are as follows:
 
 - Provide events for notifying the application about navigations and traversals, which they can use to synchronize application or UI state.
 
-- Allow analytics (first- or third-party) to watch for navigations, including gathering timing information about how long they took, without interfering with the rest of the application.
+- Allow metrics code to watch for navigations, including gathering timing information about how long they took, without interfering with the rest of the application.
 
 - Provide a way for an application to reliably navigate through its own history list.
 
