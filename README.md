@@ -239,7 +239,7 @@ In addition to the current entry, the entire list of history entries can be insp
 
 This solves the problem of allowing applications to reliably store state in a `NavigationHistoryEntry`'s state: because they can inspect the values stored in previous entries at any time, it can be used as real application state storage, without needing to keep a side table like one has to do when using `history.state`.
 
-Note that we have a method, `navigation.entries()`, instead of a static array, `History.entries`, to emphasize that retrieving the entries gives you a snapshot at a given point in time. That is, the current set of history entries could change at any point due to manipulations of the history list, including by the user.
+Note that we have a method, `navigation.entries()`, instead of a static array, `navigation.entries`, to emphasize that retrieving the entries gives you a snapshot at a given point in time. That is, the current set of history entries could change at any point due to manipulations of the history list, including by the user.
 
 In combination with the following section, the `entries()` API also allows applications to display a UI allowing navigation through the entry list.
 
