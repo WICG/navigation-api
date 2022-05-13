@@ -270,7 +270,7 @@ All of these methods return `{ committed, finished }` pairs, where both values a
 
 - A `navigate` event handler calls `event.preventDefault()`, in which case both promises reject with an `"AbortError"` `DOMException`, and `location.href` and `navigation.currentEntry` stay on their original value.
 
-- It's not possible to navigate to the given entry, e.g. `navigation.traverseTo(key)` was given a non-existant `key`, or `navigation.back()` was called when there's no previous entries in the list of accessible history entrues. In this case, both promises reject with an `"InvalidStateError"` `DOMException`, and `location.href` and `navigation.currentEntry` stay on their original value.
+- It's not possible to navigate to the given entry, e.g. `navigation.traverseTo(key)` was given a non-existant `key`, or `navigation.back()` was called when there's no previous entries in the list of accessible history entries. In this case, both promises reject with an `"InvalidStateError"` `DOMException`, and `location.href` and `navigation.currentEntry` stay on their original value.
 
 - The `navigate` event responds to the navigation using `event.transitionWhile()`. In this case the `committed` promise immediately fulfills, while the `finished` promise fulfills or rejects according to the promise(s) passed to `transitionWhile()`. (However, even if the `finished` promise rejects, `location.href` and `navigation.currentEntry` will change.)
 
