@@ -1197,9 +1197,16 @@ enum NavigationType {
 
     <p>By default, using this method will cause focus to reset when the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. Focus will be reset to the first element with the <{html-global/autofocus}> attribute set, or the <{body}> element if the attribute isn't present. The {{NavigationTransitionWhileOptions/focusReset}} option can be set to "{{NavigationFocusReset/manual}}" to avoid this behavior.
 
-    <p>By default, using this method for "{{NavigationType/traverse}}" navigations will cause the browser's scroll restoration logic to be delayed until the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. The {{NavigationTransitionWhileOptions/scrollRestoration}} option can be set to "{{NavigationScrollRestoration/manual}}" to turn off scroll restoration entirely for this navigation.
+    <p>By default, using this method for "{{NavigationType/traverse}}" navigations will cause the browser's scroll restoration logic to be delayed until the |newNavigationAction| promise (and any other promises passed in other calls to {{NavigateEvent/transitionWhile()}}) settle. The {{NavigationTransitionWhileOptions/scrollRestoration}} option can be set to "{{NavigationScrollRestoration/manual}}" to turn off scroll restoration entirely for this navigation, or control the timing of it by later calling {{NavigateEvent/restoreScroll()}}.
 
     <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{NavigateEvent/canTransition}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
+  </dd>
+
+  <dt><code><var ignore>event</var>.{{NavigateEvent/restoreScroll()|restoreScroll}}()</code>
+  <dd>
+    <p>For "{{NavigationType/traverse}}" navigations which have set <code>{{NavigationTransitionWhileOptions/scrollRestoration}}: "{{NavigationScrollRestoration/manual}}"</code> as part of their {{NavigateEvent/transitionWhile()}} call, restores the scroll position using the browser's usual scroll restoration logic.
+
+    <p>If used on a non-"{{NavigationType/traverse}}" navigation, or on one which has not had {{NavigationTransitionWhileOptions/scrollRestoration}} set appropriately, or if called more than once, this method will throw an "{{InvalidStateError}}" {{DOMException}}.
   </dd>
 </dl>
 
