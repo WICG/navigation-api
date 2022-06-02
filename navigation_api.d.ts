@@ -103,7 +103,7 @@ declare class NavigateEvent extends Event {
   constructor(type: string, eventInit?: NavigateEventInit);
 
   readonly navigationType: NavigationType;
-  readonly canTransition: boolean;
+  readonly canIntercept: boolean;
   readonly userInitiated: boolean;
   readonly hashChange: boolean;
   readonly destination: NavigationDestination;
@@ -112,12 +112,12 @@ declare class NavigateEvent extends Event {
   readonly downloadRequest: string|null;
   readonly info: unknown;
 
-  transitionWhile(newNavigationAction: Promise<any>, options?: NavigationTransitionWhileOptions): void;
+  intercept(options?: NavigationInterceptOptions): void;
 }
 
 interface NavigateEventInit extends EventInit {
   navigationType?: NavigationType;
-  canTransition?: boolean;
+  canIntercept?: boolean;
   userInitiated?: boolean;
   hashChange?: boolean;
   destination: NavigationDestination;
@@ -127,7 +127,8 @@ interface NavigateEventInit extends EventInit {
   info?: unknown;
 }
 
-interface NavigationTransitionWhileOptions {
+interface NavigationInterceptOptions {
+  handler?: () => Promise<undefined>,
   focusReset?: "after-transition"|"manual",
   scrollRestoration?: "after-transition"|"manual"
 }
