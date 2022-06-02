@@ -26,13 +26,13 @@ An application or framework's centralized router can use the `navigate` event to
 
 ```js
 navigation.addEventListener("navigate", e => {
-  if (!e.canTransition || e.hashChange || e.downloadRequest !== null) {
+  if (!e.canIntercept || e.hashChange || e.downloadRequest !== null) {
     return;
   }
 
   if (routesTable.has(e.destination.url)) {
     const routeHandler = routesTable.get(e.destination.url);
-    e.transitionWhile(routeHandler());
+    e.intercept({ handler: routeHandler });
   }
 });
 ```
@@ -272,9 +272,9 @@ All of these methods return `{ committed, finished }` pairs, where both values a
 
 - It's not possible to navigate to the given entry, e.g. `navigation.traverseTo(key)` was given a non-existant `key`, or `navigation.back()` was called when there's no previous entries in the list of accessible history entries. In this case, both promises reject with an `"InvalidStateError"` `DOMException`, and `location.href` and `navigation.currentEntry` stay on their original value.
 
-- The `navigate` event responds to the navigation using `event.transitionWhile()`. In this case the `committed` promise immediately fulfills, while the `finished` promise fulfills or rejects according to the promise(s) passed to `transitionWhile()`. (However, even if the `finished` promise rejects, `location.href` and `navigation.currentEntry` will change.)
+- The `navigate` event responds to the navigation using `event.intercept()`. In this case the `committed` promise immediately fulfills, while the `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. (However, even if the `finished` promise rejects, `location.href` and `navigation.currentEntry` will change.)
 
-- The navigation succeeds, and was a same-document navigation (but not intercepted using `event.transitionWhile()`). Then both promises immediately fulfill,  and `location.href` and `navigation.currentEntry` will have been set to their new value.
+- The navigation succeeds, and was a same-document navigation (but not intercepted using `event.intercept()`). Then both promises immediately fulfill,  and `location.href` and `navigation.currentEntry` will have been set to their new value.
 
 - The navigation succeeds, and it was a different-document navigation. Then the promise will never settle, because the entire document and all its promises will disappear.
 
@@ -306,7 +306,7 @@ The event object has several useful properties:
 
 - `cancelable` (inherited from `Event`): indicates whether `preventDefault()` is allowed to cancel this navigation.
 
-- `canTransition`: indicates whether `transitionWhile()`, discussed below, is allowed for this navigation.
+- `canIntercept`: indicates whether `intercept()`, discussed below, is allowed for this navigation.
 
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"`.
 
@@ -326,23 +326,22 @@ The event object has several useful properties:
 
 Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing history entry (i.e. is a back/forward navigation) via `event.navigationType`.
 
-The event object has a special method `event.transitionWhile(promise)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
+The event object has a special method `event.intercept(options)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
 - Cancel any fragment navigation or cross-document navigation.
 - Immediately update the URL bar, `location.href`, and `navigation.currentEntry`.
 - Create the [`navigation.transition`](#transitional-time-after-navigation-interception) object.
-- Wait for the promise to settle. Once it does:
-  - Fulfill or reject `navigation.transition.finished` accordingly.
-  - If it rejects, fire `navigateerror` on `navigation` and reject `navigation.transition.finished`.
-  - If it fulfills, fire `navigatesuccess` on `navigation` and fulfill `navigation.transition.finished`.
+- If `options.handler` is given, it can be a function that returns a promise. That function will be then be called, and the browser will wait for the returned promise to settle. Once it does, the browser will:
+  - If the promise rejects, fire `navigateerror` on `navigation` and reject `navigation.transition.finished`.
+  - If the promise fulfills, fire `navigatesuccess` on `navigation` and fulfill `navigation.transition.finished`.
   - Set `navigation.transition` to null.
-- For the duration of the promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
+- For the duration of any such promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
-Note that the browser does not wait for the promise to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `navigation.currentEntry`.
+Note that the browser does not wait for any returned promises to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `navigation.currentEntry`.
 
-If `transitionWhile()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the given promises will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
+If `intercept()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the promises returned by any handlers will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
 
-_In [#66](https://github.com/WICG/navigation-api/issues/66), we are discussing adding the capability to delay URL/current entry updates until after the promise settles, as a future extension._
+_In [#66](https://github.com/WICG/navigation-api/issues/66), we are discussing adding the capability to delay URL/current entry updates to not happen immediately, as a future extension._
 
 #### Example: replacing navigations with single-page app navigations
 
@@ -351,7 +350,7 @@ The following is the kind of code you might see in an application or framework's
 ```js
 navigation.addEventListener("navigate", e => {
   // Some navigations, e.g. cross-origin navigations, we cannot intercept. Let the browser handle those normally.
-  if (!e.canTransition) {
+  if (!e.canIntercept) {
     return;
   }
 
@@ -360,11 +359,15 @@ navigation.addEventListener("navigate", e => {
     return;
   }
 
-  if (e.formData) {
-    e.transitionWhile(processFormDataAndUpdateUI(e.formData, e.signal));
-  } else {
-    e.transitionWhile(doSinglePageAppNav(e.destination, e.signal));
-  }
+  e.intercept({
+    handler() {
+      if (e.formData) {
+        processFormDataAndUpdateUI(e.formData, e.signal);
+      } else {
+        doSinglePageAppNav(e.destination, e.signal);
+      }
+    }
+  });
 });
 ```
 
@@ -402,11 +405,11 @@ Sometimes it's desirable to handle back/forward navigations specially, e.g. reus
 ```js
 navigation.addEventListener("navigate", e => {
   // As before.
-  if (!e.canTransition || e.hashChange || e.downloadRequest !== null) {
+  if (!e.canIntercept || e.hashChange || e.downloadRequest !== null) {
     return;
   }
 
-  e.transitionWhile((async () => {
+  e.intercept({ async handler() {
     if (myFramework.currentPage) {
       await myFramework.currentPage.transitionOut();
     }
@@ -419,7 +422,7 @@ navigation.addEventListener("navigate", e => {
       // This will probably result in myFramework storing the rendered page in myFramework.previousPages.
       await myFramework.renderPage(e.destination);
     }
-  })());
+  } });
 });
 ```
 
@@ -435,19 +438,19 @@ navigation.addEventListener("navigate", e => {
 
   switch (url.pathname) {
     case "/form-submit": {
-      e.transitionWhile((async () => {
+      e.intercept({ async handler() {
         // Do not navigate to form-submit; instead send the data to that endpoint using fetch().
         await fetch("/form-submit", { body: e.formData });
 
         // Perform a client-side "redirect" to /destination.
         await navigation.navigate("/destination", { history: "replace" }).finished;
-      }()));
+      } });
       break;
     }
     case "/destination": {
-      e.transitionWhile((async () => {
+      e.intercept({ async handler() {
         document.body.innerHTML = "Form submission complete!";
-      }()));
+      } });
       break;
     }
   }
@@ -489,7 +492,7 @@ We would like to make these cancelable in the future. However, we need to take c
 
 See discussion in [#32](https://github.com/WICG/navigation-api/issues/32) about how we can make user-initiated traversals cancelable in a safe way, and [#178](https://github.com/WICG/navigation-api/issues/178) for the general discussion of loosening the cancelability restrictions over time.
 
-Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.transitionWhile()`, and as such will have `event.canTransition` equal to false:
+Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.intercept()`, and as such will have `event.canIntercept` equal to false:
 
 - Any navigation to a URL which differs in scheme, username, password, host, or port. (I.e., you can only intercept URLs which differ in path, query, or fragment.)
 - Any [cross-document](#appendix-types-of-navigations) back/forward navigations. Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
@@ -498,7 +501,7 @@ We'll note that these restrictions still allow canceling cross-origin non-back/f
 
 #### Measuring standardized single-page navigations
 
-Continuing with the theme of `transitionWhile()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
+Continuing with the theme of `intercept()` giving ecosystem benefits beyond just web developer convenience, telling the browser about the start time, duration, end time, and success/failure if a single-page app navigation has benefits for metrics gathering.
 
 In particular, analytics frameworks would be able to consume this information from the browser in a way that works across all applications using the navigation API. See the discussion on [performance timeline API integration](#performance-timeline-api-integration) for what we are proposing there.
 
@@ -506,7 +509,7 @@ This standardized notion of single-page navigations also gives a hook for other 
 
 This isn't a complete panacea: in particular, such metrics are gameable by bad actors. Such bad actors could try to drive down average measured "load time" by generating excessive `navigate` events that don't actually do anything. So in scenarios where the web application is less interested in measuring itself, and more interested in driving down specific metrics, those creating the metrics will need to take into account such misuse of the API. Some potential countermeasures against such gaming could include:
 
-- Only using the start time of the navigation in creating such metrics, and not using the promise-settling time. This avoids gaming via code such as `event.transitionWhile(Promise.resolve()); await doActualNavigation()` which makes the navigation appear instant to the browser.
+- Only using the start time of the navigation in creating such metrics, and not using the promise-settling time. This avoids gaming via code such as `event.intercept(/* no handler */); await doActualNavigation();` which makes the navigation appear instant to the browser.
 
 - Filtering to only count navigations where `event.userInitiated` is true.
 
@@ -516,21 +519,21 @@ This isn't a complete panacea: in particular, such metrics are gameable by bad a
 
 #### Aborted navigations
 
-As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event comes with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before the promise passed to `transitionWhile()` settles:
+As shown in [the example above](#example-replacing-navigations-with-single-page-app-navigations), the `navigate` event comes with an `event.signal` property that is an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). This signal will transition to the aborted state if any of the following occur before any promises returned by handlers passed to `intercept()` settle:
 
 - The user presses their browser's stop button (or similar UI, such as the <kbd>Esc</kbd> key).
 - Another navigation is started, either by the user or programmatically. This includes back/forward navigations, e.g. the user pressing their browser's back button.
 
-The signal will not transition to the aborted state if `transitionWhile()` is not called. This means it cannot be used to observe the interruption of a [cross-document](#appendix-types-of-navigations) navigation, if that cross-document navigation was left alone and not converted into a same-document navigation by using `transitionWhile()`. Similarly, `window.stop()` will not impact `transitionWhile()`-derived same-document navigations.
+The signal will not transition to the aborted state if `intercept()` is not called. This means it cannot be used to observe the interruption of a [cross-document](#appendix-types-of-navigations) navigation, if that cross-document navigation was left alone and not converted into a same-document navigation by using `intercept()`.
 
-Whether and how the application responds to this abort is up to the web developer. In many cases, such as in [the example above](#example-replacing-navigations-with-single-page-app-navigations), this will automatically work: by passing the `event.signal` through to any `AbortSignal`-consuming APIs like `fetch()`, those APIs will get aborted, and the resulting `"AbortError"` `DOMException` propagated to be the rejection reason for the promise passed to `transitionWhile()`. But it's possible to ignore it completely, as in the following example:
+Whether and how the application responds to this abort is up to the web developer. In many cases, such as in [the example above](#example-replacing-navigations-with-single-page-app-navigations), this will automatically work: by passing the `event.signal` through to any `AbortSignal`-consuming APIs like `fetch()`, those APIs will get aborted, and the resulting `"AbortError"` `DOMException` propagated from the handler passed to `intercept()`. But it's possible to ignore it completely, as in the following example:
 
 ```js
 navigation.addEventListener("navigate", event => {
-  event.transitionWhile((async () => {
+  event.intercept({ async handler(){
     await new Promise(r => setTimeout(r, 10_000));
     document.body.innerHTML = `Navigated to ${event.destination.url}`;
-  }());
+  } });
 });
 ```
 
@@ -545,11 +548,11 @@ In this case:
 
 With [cross-document](#appendix-types-of-navigations) navigations, accessibility technology will announce the start of the navigation, and its completion. But traditionally, same-document navigations (i.e. single-page app navigations) have not been communicated in the same way to accessibility technology. This is in part because it is not clear to the browser when a user interaction causes a single-page navigation, because of the app-specific JavaScript that intermediates between such interactions and the eventual call to `history.pushState()`/`history.replaceState()`. In particular, it's unclear exactly when the navigation begins and ends: trying to use the URL change as a signal doesn't work, since when applications call `history.pushState()` during the content loading process varies.
 
-Any navigation that is intercepted and converted into a single-page navigation using `navigateEvent.transitionWhile()` will be communicated to accessibility technology in the same way as a cross-document one. Using `transitionWhile()` serves as a opt-in to this new behavior, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds.
+Any navigation that is intercepted and converted into a single-page navigation using `navigateEvent.intercept()` will be communicated to accessibility technology in the same way as a cross-document one. Using `intercept()` serves as a opt-in to this new behavior, and the provided promise allows the browser to know how long the navigation takes, and whether or not it succeeds.
 
 #### Loading spinners and stop buttons
 
-It is a long-requested feature (see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330)) to give pages control over the browser's loading indicator, i.e. the one they show while cross-document navigations are ongoing. This proposal gives the browsers the tools to do this: they can display the loading indicator while any promise passed to `navigateEvent.transitionWhile()` is settling.
+It is a long-requested feature (see [whatwg/fetch#19](https://github.com/whatwg/fetch/issues/19) and [whatwg/html#330](https://github.com/whatwg/html/issues/330)) to give pages control over the browser's loading indicator, i.e. the one they show while cross-document navigations are ongoing. This proposal gives the browsers the tools to do this: they can display the loading indicator while any promises returned by handlers passed to `navigateEvent.intercept()` are settling.
 
 Additionally, in modern browsers, the reload button is replaced with a stop button while such loading is taking place. This can be done for navigation API-intercepted navigations as well, with the result communicated to the developer using `navigateEvent.signal`.
 
@@ -565,12 +568,12 @@ Like [accessibility technology announcements](#accessibility-technology-announce
 
 The navigation API's navigation interception again gives us the tool to fix this.
 
-By default, any navigation that is intercepted and converted into a single-page navigation using `navigateEvent.transitionWhile()` will cause focus to reset to the `<body>` element, or to the first element with the `autofocus=""` attribute set (if there is one). This focus reset will happen after the promise passed to `transitionWhile()` settles. However, this focus reset will not take place if the user or developer has manually changed focus while the promise was settling, and that element is still visible and focusable.
+By default, any navigation that is intercepted and converted into a single-page navigation using `navigateEvent.intercept()` will cause focus to reset to the `<body>` element, or to the first element with the `autofocus=""` attribute set (if there is one). This focus reset will happen after any promises returned by handlers passed to `intercept()` settle. However, this focus reset will not take place if the user or developer has manually changed focus while the promise was settling, and that element is still visible and focusable.
 
-This behavior can be customized using the second options argument to `transitionWhile()`:
+This behavior can be customized using `intercept()`'s `focusReset` option:
 
-- `e.transitionWhile(promise, { focusReset: "after-transition" })`: the default behavior, described above.
-- `e.transitionWhile(promise, { focusReset: "manual" })`: does not reset the focus, and leaves it where it is. (Although, it might get [reset anyway](https://html.spec.whatwg.org/#focus-fixup-rule) if the element is removed from the DOM or similar.) The application will manually manage focus changes.
+- `e.intercept({ handler, focusReset: "after-transition" })`: the default behavior, described above.
+- `e.intercept({ handler, focusReset: "manual" })`: does not reset the focus, and leaves it where it is. (Although, it might get [reset anyway](https://html.spec.whatwg.org/#focus-fixup-rule) if the element is removed from the DOM or similar.) The application will manually manage focus changes.
 
 In general, the default behavior is a best-effort attempt at cross-document navigation parity. But if developers invest some extra work, they can do even better:
 
@@ -583,11 +586,10 @@ navigation.addEventListener("navigate", e => {
   const focusedIdentifier = computeIdentifierFor(document.activeElement);
   navigation.updateCurrentEntry({ ...navigation.currentEntry.getState(), focusedIdentifier });
 
-  if (e.canTransition) {
+  if (e.canIntercept) {
+    const handler = figureOutHandler(e);
     const focusReset = e.navigationType === "traverse" ? "manual" : "after-transition";
-    e.transitionWhile((async () => {
-      // Your logic here...
-    })(), { focusReset });
+    e.intercept({ handler, focusReset });
   }
 });
 
@@ -606,8 +608,8 @@ An additional API that would be helpful, both for cases like these and more gene
 
 We can also extend the `focusReset` option with other behaviors in the future. Here are a couple which have been proposed, but we are not planning to include in the initial version unless we get strong developer feedback that they would be helpful:
 
-- `e.transitionWhile(promise, { focusReset: "immediate" })`: immediately resets the focus to the `<body>` element, without waiting for the promise to settle.
-- `e.transitionWhile(promise, { focusReset: "two-stage" })`: immediately resets the focus to the `<body>` element, and then has the same behavior as `"after-transition"`.
+- `focusReset: "immediate"`: immediately resets the focus to the `<body>` element, without waiting for the promise to settle.
+- `focusReset: "two-stage"`: immediately resets the focus to the `<body>` element, and then has the same behavior as `"after-transition"`.
 
 #### Scroll position restoration
 
@@ -617,19 +619,22 @@ A common pain point for web developers is scroll restoration during traversal (b
 - The browser tries to restore the user's scroll position, but the page's contents have changed and scroll restoration doesn't work that well. (For example, going back to a listing of files in a shared folder, after a different user deleted a bunch of the files.)
 - The application needs to perform some measurements in order to do a proper transition, but the browser does scroll restoration during the transition, which messes up those measurements. ([Demo of this problem](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html): notice how when going back to the grid view, the transition sends the square to the wrong location.)
 
-Currently the browser provides two options: performing scroll restoration automatically, or disabling it entirely with `history.scrollRestoration = "manual"`. The new navigation API gives us an opportunity to provide some intermediate options to developers, at least for the case of same-document transitions. We do this via another option to `transitionWhile()`:
+Currently the browser provides two options: performing scroll restoration automatically, or disabling it entirely with `history.scrollRestoration = "manual"`. The new navigation API gives us an opportunity to provide some intermediate options to developers, at least for the case of same-document transitions. We do this via another option to `intercept()`:
 
-- `e.transitionWhile(promise, { scrollRestoration: "after-transition" })`: the default behavior. The browser delays its scroll restoration logic until `promise` fulfills; it will perform no scroll restoration if the promise rejects. If the user has scrolled during the transition then no scroll restoration will be performed ([like for multi-page navs](https://neat-equal-cent.glitch.me/)).
-- `e.transitionWhile(promise, { scrollRestoration: "manual" })`: The browser will perform no automatic scroll restoration. However, the developer can use the below API to get semi-automatic scroll restoration, or can use [`window.scrollTo()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo) or similar APIs to take full control.
+- `e.intercept({ handler, scrollRestoration: "after-transition" })`: the default behavior. The browser delays its scroll restoration logic until `promise` fulfills; it will perform no scroll restoration if the promise rejects. If the user has scrolled during the transition then no scroll restoration will be performed ([like for multi-page navs](https://neat-equal-cent.glitch.me/)).
+- `e.intercept({ handler, scrollRestoration: "manual" })`: The browser will perform no automatic scroll restoration. However, the developer can use the below API to get semi-automatic scroll restoration, or can use [`window.scrollTo()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo) or similar APIs to take full control.
 
 When using `scrollRestoration: "manual"`, the `e.restoreScroll()` API is available. This will perform the browser's scroll restoration logic at the specified time. This allows cases that require precise control over scroll restoration timing, such as a non-broken version of the [demo referenced above](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html), to be written like so:
 
 ```js
-navigateEvent.transitionWhile((async () => {
-  await fetchDataAndSetUpDOM();
-  navigateEvent.restoreScroll();
-  await measureLayoutAndDoTransition();
-})(), { scrollRestoration: "manual" });
+navigateEvent.intercept({
+  async handler() {
+    await fetchDataAndSetUpDOM();
+    navigateEvent.restoreScroll();
+    await measureLayoutAndDoTransition();
+  },
+  scrollRestoration: "manual"
+});
 ```
 
 Some details:
@@ -640,18 +645,18 @@ Some details:
 
 - `restoreScroll()` doesn't actually perform a single update of the scroll position. Rather, it puts the page in scroll-position-restoring mode. The scroll position could update several times as more elements load and [scroll anchoring](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor/Guide_to_scroll_anchoring) kicks in.
 
-- By default, any navigations which are intercepted with `e.transitionWhile()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `transitionWhile()` to control individual same-document navigations.
+- By default, any navigations which are intercepted with `e.intercept()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `intercept()` to control individual same-document navigations.
 
 We could also add the following APIs in the future, but we are currently not planning on including them until we hear developer feedback that they'd be helpful:
 
-- `e.transitionWhile(promise, { scrollRestoration: "immediate" })`: the browser performs its usual scroll restoration logic, but does so immediately instead of waiting for `promise`.
-- `e.transitionWhile(promise, { scrollRestoration: "auto" })`: the browser performs its usual scroll restoration logic, at its usual indeterminate time.
+- `scrollRestoration: "immediate"`: the browser performs its usual scroll restoration logic, but does so immediately instead of waiting for `promise`.
+- `scrollRestoration: "auto"`: the browser performs its usual scroll restoration logic, at its usual indeterminate time.
 - `const { x, y } = e.scrollDestination()` giving the current position the browser would restore to, if `e.restoreScroll()` was called.
 - `e.restoreScroll({ onlyOnce: true })` to avoid scroll anchoring.
 
 ### Transitional time after navigation interception
 
-Although calling `event.transitionWhile()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `navigation.currentEntry`, and the URL bar, the promise passed to `transitionWhile()` might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `navigation.transition`. It has the following properties:
+Although calling `event.intercept()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `navigation.currentEntry`, and the URL bar, the handlers passed to `intercept()` can return promises that might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `navigation.transition`. It has the following properties:
 
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `NavigationHistoryEntry` that was the current one before the transition
@@ -659,7 +664,7 @@ Although calling `event.transitionWhile()` to [intercept a navigation](#navigati
 
 #### Example: handling failed navigations
 
-To handle failed single-page navigations, i.e. navigations where the promise passed to `event.transitionWhile()` eventually rejects, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
+To handle failed single-page navigations, i.e. navigations where a promise returned by a handler passed to `event.intercept()` eventually rejects, you can listen to the `navigateerror` event and perform application-specific interactions. This event will be an [`ErrorEvent`](https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent) so you can retrieve the promise's rejection reason. For example, to display an error, you could do something like:
 
 ```js
 navigation.addEventListener("navigateerror", e => {
@@ -696,7 +701,7 @@ navigation.navigate(url, { state });
 navigation.navigate(url, { state, info });
 ```
 
-Note how unlike `history.pushState()`, `navigation.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.transitionWhile()`.
+Note how unlike `history.pushState()`, `navigation.navigate()` will by default perform a full navigation, e.g. scrolling to a fragment or navigating across documents. Single-page apps will usually intercept these using the `navigate` event, and convert them into same-document navigations by using `event.intercept()`.
 
 Regardless of whether the navigation gets converted or not, calling `navigation.navigate()` in this form will clear any future entries in the joint session history. (This includes entries coming from frame navigations, or cross-origin entries: so, it can have an impact beyond just the `navigation.entries()` list.)
 
@@ -732,7 +737,7 @@ navigation.reload({ info });
 navigation.reload({ state, info });
 ```
 
-Note that all of these methods return `{ committed, finished }` promise pairs, [as described above](#navigation-through-the-history-entry-list) for the traversal methods. That is, in the event that the navigations get converted into same-document navigations via `event.transitionWhile(promise)` in a `navigate` handler, `committed` will fulfill immediately, and `finished` will settle in the same way that `promise` does. This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, then `finished` will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promises, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
+Note that all of these methods return `{ committed, finished }` promise pairs, [as described above](#navigation-through-the-history-entry-list) for the traversal methods. That is, in the event that the navigations get converted into same-document navigations via `event.intercept()` in a `navigate` handler, `committed` will fulfill immediately, and `finished` will settle based on the promise returned by the handler (if there is one). This gives your navigation call site an indication of the navigation's success or failure. (If they are non-intercepted fragment navigations, or intercepted navigations with no handler, then `finished` will fulfill immediately. And if they are non-intercepted cross-document navigations, then the returned promises, along with the entire JavaScript global environment, will disappear as the current document gets unloaded.)
 
 #### Example: using `info`
 
@@ -764,7 +769,7 @@ photoGallery.addEventListener("click", e => {
 
 navigation.addEventListener("navigate", e => {
   if (isPhotoNavigation(e)) {
-    e.transitionWhile((async () => {
+    e.intercept({ async handler() {
       switch (e.info.?via) {
         case "go-left": {
           await animateLeft();
@@ -781,7 +786,7 @@ navigation.addEventListener("navigate", e => {
       }
 
       // TODO: actually load the photo.
-    })());
+    } });
   }
 });
 ```
@@ -829,8 +834,8 @@ previous.onclick = () => {
 navigation.addEventListener("navigate", event => {
   const photoNumber = photoNumberFromURL(e.destination.url);
 
-  if (photoNumber && e.canTransition) {
-    e.transitionWhile((async () => {
+  if (photoNumber && e.canIntercept) {
+    e.intercept({ async handler() {
       // Synchronously update app state and next/previous/permalink UI:
       appState.currentPhoto = photoNumber;
       previous.disabled = appState.currentPhoto === 0;
@@ -842,7 +847,7 @@ navigation.addEventListener("navigate", event => {
       const blob = await (await fetch(`/raw-photos/${photoNumber}.jpg`, { signal: e.signal })).blob();
       const url = URL.createObjectURL(blob);
       document.querySelector("#current-photo").src = url;
-    }());
+    } });
   }
 });
 
@@ -875,7 +880,7 @@ However, there is one type of case where the navigation-centric model doesn't wo
 
 For example, consider a page with expandable/collapsable `<details>` elements. You want to store the expanded/collapsed state of these `<details>` elements in your navigation API state, so that when the user traverses back and forward through history, or restarts their browser, your app can read the restored navigation API state and expand the `<details>` elements appropriately, showing the user what they saw previously.
 
-Creating this experience with `navigation.navigate()` and the `navigate` event is awkward. You would need to listen for the `<details>` element's `toggle` event, and then do `navigation.reload({ state: newState })`. And then you would need to have your `navigate` handler do `e.transitionWhile(Promise.resolve())`, _and not actually do anything_, because the `<details>` element is already open. This can be made to work, but is not pretty.
+Creating this experience with `navigation.navigate()` and the `navigate` event is awkward. You would need to listen for the `<details>` element's `toggle` event, and then do `navigation.reload({ state: newState })`. And then you would need to have your `navigate` handler do `e.intercept()`, _and not actually do anything_, because the `<details>` element is already open. This can be made to work, but is not pretty.
 
 For cases like this, where the current history entry's state needs to be updated to capture something that has already happened, we have `navigation.updateCurrentEntry({ state: newState })`. We would write our above example like so:
 
@@ -950,14 +955,14 @@ Between the `dispose` events, the `window.navigation` events, and various promis
     1. `currententrychange` is fired on `navigation`.
     1. Any now-unreachable `NavigationHistoryEntry` instances fire `dispose`.
     1. The URL bar updates.
-    1. Any loading spinner UI starts, if a promise was passed to the `navigate` handler's `event.transitionWhile()`.
-    1. After all the promises passed to `event.transitionWhile()` fulfill, or after one microtask if `event.transitionWhile()` was not called:
+    1. Any loading spinner UI starts, if `event.intercept()` was called.
+    1. After all the promises returned by handlers passed to `event.intercept()` fulfill, or after one microtask if `event.intercept()` was not called:
         1. `navigatesuccess` is fired on `navigation`.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets fulfilled.
         1. `navigation.transition.finished` fulfills with undefined.
         1. `navigation.transition` becomes null.
-    1. Alternately, if any promise passed to `event.transitionWhile()` rejects:
+    1. Alternately, if any of these promises reject:
         1. `navigateerror` fires on `window.navigation` with the rejection reason as its `error` property.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with the same rejection reason.
@@ -969,7 +974,7 @@ Between the `dispose` events, the `window.navigation` events, and various promis
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with the same `"AbortError"` `DOMException`.
         1. `navigation.transition.finished` rejects with the same `"AbortError"` `DOMException`.
         1. `navigation.transition` becomes null.
-    1. One task after firing `currententrychange`, `hashchange` and/or `popstate` fire on `window`, if applicable. (Note: this can happen _before_ steps (ix)–(xi) if `event.transitionWhile()` is called with promises that take longer than a single task to settle.)
+    1. One task after firing `currententrychange`, `hashchange` and/or `popstate` fire on `window`, if applicable. (Note: this can happen _before_ steps (ix)–(xi) if the promises take longer than a single task to settle.)
 
 ## Guide for migrating from the existing history API
 
@@ -1043,7 +1048,7 @@ In the longer term, we think the best fix for this would be to introduce [a mode
 
 ### Using `navigate` handlers
 
-Many cases which use `history.pushState()` today can just be deleted when using `navigation`. This is because if you have a listener for the `navigate` event on `navigation`, that listener can use `event.transitionWhile()` to transform navigations that would normally be new-document navigations into same-document navigations. So for example, instead of
+Many cases which use `history.pushState()` today can just be deleted when using `navigation`. This is because if you have a listener for the `navigate` event on `navigation`, that listener can use `event.intercept()` to transform navigations that would normally be new-document navigations into same-document navigations. So for example, instead of
 
 ```html
 <a href="/about">About us</a>
@@ -1080,9 +1085,9 @@ window.doStuff = async () => {
 
 navigation.addEventListener("navigate", e => {
   if (shouldBeSinglePageNav(e.destination.url)) {
-    e.transitionWhile((async () => {
+    e.intercept({ async handler() {
       document.querySelector("main").innerHTML = await loadContentFor(e.destination.url);
-    })());
+    } });
   }
 });
 </script>
@@ -1125,7 +1130,7 @@ The new navigation API provides several replacements that subsume these events:
 
 - To react to and potentially intercept navigations before they complete, use the `navigate` event on `navigation`. See the [Navigation monitoring and interception](#navigation-monitoring-and-interception) section for more details, including how the event object provides useful information that can be used to distinguish different types of navigations.
 
-- To react to navigations that have finished, including any asynchronous work, use the `navigatesuccess` or `navigateerror` events on `navigation`. Note that these will only be fired after any promises passed to the `navigate` event's `event.transitionWhile()` method have settled.
+- To react to navigations that have finished, including any asynchronous work, use the `navigatesuccess` or `navigateerror` events on `navigation`. Note that these will only be fired after any promises returned by handlers passed to the `navigate` event's `event.intercept()` method have settled.
 
 - To react to navigations that have committed (but not necessarily yet finished), use the [`currententrychange` event](#current-entry-change-monitoring) on `navigation`. This is the most direct counterpart to `popstate` and `hashchange`, so might be easiest to use as part of an initial migration while your app is adapting to a `navigate` event-centric paradigm.
 
@@ -1309,9 +1314,9 @@ We propose adding new `PerformanceEntry` instances for such same-document naviga
 
 - `startTime`: the time at which the navigation was initiated, i.e. when the corresponding API was called (like `location.href` or `navigation.navigate()`), or when the user activated the corresponding `<a>` element, or submitted the corresponding `<form>`.
 
-- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promise passed to `event.transitionWhile()` to settle, for navigations intercepted by a `navigate` event handler.
+- `duration`: the duration of the navigation, which is either `0` for `history.pushState()`/`history.replaceState()`, or is the duration it takes the promises returned by handlers passed to `event.intercept()` to settle, for navigations intercepted by a `navigate` event handler.
 
-- `success`: `false` if the promise passed to `event.transitionWhile()` rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
+- `success`: `false` if any of those promises rejected; `true` otherwise (including for `history.pushState()`/`history.replaceState()`).
 
 To record single-page navigations using [`PerformanceObserver`](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver), web developers could then use code such as the following:
 
@@ -1348,14 +1353,14 @@ And here is an example of how you could use `navigation.transition.redirect()` t
 
 ```js
 navigation.addEventListener("navigate", e => {
-  e.transitionWhile((async () => {
+  e.intercept({ async handler() {
     if (await isLoginGuarded(e.destination)) {
       await navigation.transition.redirect("/login").finished;
       return;
     }
 
     // Render e.destination as normal
-  })());
+  } });
 });
 ```
 
@@ -1433,11 +1438,11 @@ Most navigations are cross-document navigations. Same-document navigations can h
 - Any of the above navigation mechanisms only updating the URL's fragment, e.g. `location.hash = "foo"` or clicking on `<a href="#bar">` or calling `history.back()` after either of those two actions
 - `history.pushState()` and `history.replaceState()`
 - `document.open()`
-- [Intercepting a cross-document navigation](#navigation-monitoring-and-interception) using the `navigation` object's `navigate` event, and calling `event.transitionWhile()`
+- [Intercepting a cross-document navigation](#navigation-monitoring-and-interception) using the `navigation` object's `navigate` event, and calling `event.intercept()`
 
 Here's a summary table:
 
-|Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canTransition`|
+|Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canIntercept`|
 |-------|------------------------|-----------------|-----------------|--------------|--------------|
 |Browser UI (back/forward)|Either|Yes|Yes|No ❖|Yes †*|
 |Browser UI (non-back/forward<br>fragment change only)|Same|Yes|Yes|Yes|Yes|
