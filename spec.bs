@@ -756,6 +756,12 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Set |navigation|'s [=navigation API method navigation/committed-to entry=] to |entry|.
 
+  1. If |navigation|'s [=navigation API method navigation/serialized state=] is not null, then set |entry|'s [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API state=] to |navigation|'s [=navigation API method navigation/serialized state=].
+
+     <p class="note">If it's null, then we're traversing to |entry| via {{Navigation/traverseTo()}}, which does not allow changing the state.
+
+     <p class="note">After this point, |navigation|'s [=navigation API method navigation/serialized state=] is no longer needed. Implementations might want to clear it out to avoid keeping it alive for the lifetime of the [=navigation API method navigation=].
+
   1. [=Resolve=] |navigation|'s [=navigation API method navigation/committed promise=] with |entry|.
 
      <p class="note">After this point, |navigation|'s [=navigation API method navigation/committed promise=] is only needed in cases where it has not yet been returned to author code. Implementations might want to clear it out to avoid keeping it alive for the lifetime of the [=navigation API method navigation=].
@@ -776,9 +782,9 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. If |navigation|'s [=navigation API method navigation/finished promise=] is null, then return.
 
-  1. [=Reject=] |navigation|'s [=navigation API method navigation/finished promise=] with |exception|.
-
   1. If |navigation|'s [=navigation API method navigation/committed promise=] is not null, then [=reject=] |navigation|'s [=navigation API method navigation/committed promise=] with |exception|.
+
+  1. [=Reject=] |navigation|'s [=navigation API method navigation/finished promise=] with |exception|.
 
   1. [=navigation API method navigation/Clean up=] |navigation|.
 </div>
@@ -845,9 +851,9 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
       <p>In the future, we could consider loosening some of these conditions, e.g., allowing explicitly-requested push navigations to the current URL or before the document is completely loaded.
      </div>
 
-  1. Let |serializedState| be null.
+  1. Let |state| be |options|["{{NavigationNavigateOptions/state}}"] if it exists; otherwise, undefined.
 
-  1. If |options|["{{NavigationNavigateOptions/state}}"] [=map/exists=], then set |serializedState| to [$StructuredSerializeForStorage$](|options|["{{NavigationNavigateOptions/state}}"]). If this throws an exception, then return [=an early error result=] for that exception.
+  1. Let |serializedState| be [$StructuredSerializeForStorage$](|state|). If this throws an exception, then return [=an early error result=] for that exception.
 
      <p class="note">It is important to perform this step early, since serialization can invoke web developer code, which in turn might change the state checked in later steps.</p>
 
@@ -875,13 +881,15 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
     1. If |current| is not null, then set |serializedState| to |current|'s [=session history entry/navigation API state=].
 
+    1. Otherwise, set |serializedState| to [$StructuredSerializeForStorage$](undefined).
+
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
   1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and "<a for="history handling behavior">`reload`</a>".
 </div>
 
 <div algorithm>
-  To <dfn>perform a non-traverse navigation API navigation</dfn> given a {{Navigation}} object |navigation|, a [=URL=] |url|, a [=serialized state=]-or-null |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
+  To <dfn>perform a non-traverse navigation API navigation</dfn> given a {{Navigation}} object |navigation|, a [=URL=] |url|, a [=serialized state=] |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
 
   1. If |navigation|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
@@ -904,10 +912,6 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
     1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to null.
 
     1. Return [=an early error result=] for an "{{AbortError}}" {{DOMException}}.
-
-  1. If |ongoingNavigation|'s [=navigation API method navigation/serialized state=] is non-null, then set |browsingContext|'s [=session history=]'s [=session history/current entry=]'s [=session history entry/navigation API state=] to |ongoingNavigation|'s [=navigation API method navigation/serialized state=].
-
-     <p class="note">At this point |ongoingNavigation|'s [=navigation API method navigation/serialized state=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=navigation API method navigation=].
 
   1. Return «[ "{{NavigationResult/committed}}" → |ongoingNavigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |ongoingNavigation|'s [=navigation API method navigation/finished promise=] ]».
 </div>
@@ -1391,10 +1395,9 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
   1. If |navigation| [=Navigation/has entries and events disabled=], then:
     1. If |ongoingNavigation| is not null, then:
-      1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
       1. [=navigation API method navigation/Clean up=] |ongoingNavigation|.
 
-      <p class="note">In this case the [=navigation API method navigation/committed promise=] and [=navigation API method navigation/finished promise=] will never fulfill, since we never create {{NavigationHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with. We also need to prevent any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm from overwriting the [=session history entry/navigation API state=] of the [=session history/current entry=].
+      <p class="note">In this case the [=navigation API method navigation/committed promise=] and [=navigation API method navigation/finished promise=] will never fulfill, since we never create {{NavigationHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with.
     1. Return true.
   1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
   1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canTransition}} to true. Otherwise, initialize it to false.
@@ -1457,10 +1460,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
         1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
         1. [=Potentially reset the focus=] given |navigation| and |event|.
            <p class="note">Although we still [=potentially reset the focus=] for such failed transitions, we do <em>not</em> [=potentially perform scroll restoration=] for them.
-  1. Otherwise, if |ongoingNavigation| is non-null, then:
-    1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
-       <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for cross-document navigations.
-    1. [=navigation API method navigation/Clean up=] |ongoingNavigation|.
+  1. Otherwise, if |ongoingNavigation| is non-null, then [=navigation API method navigation/clean up=] |ongoingNavigation|.
   1. If |hadTransitionWhile| is true and |navigationType| is not "{{NavigationType/traverse}}":
     1. If |navigationType| is not "{{NavigationType/reload}}", then run the [=URL and history update steps=] given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/historyHandling=]</i> set to |navigationType|.
 
@@ -1483,10 +1483,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |navigation|'s [=Navigation/ongoing navigation signal=] to null.
   1. [=Fire an event=] named {{Navigation/navigateerror}} at |navigation| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |error|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |error| and the current JavaScript stack in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
      <p class="note">Thus, for example, if this algorithm is reached because of a call to {{Window/stop()|window.stop()}}, these properties would probably end up initialized based on the line of script that called {{Window/stop()|window.stop()}}. But if it's because the user clicked the stop button, these properties would probably end up with default values like the empty string or 0.
-  1. If |ongoingNavigation| is non-null, then:
-    1. Set |ongoingNavigation|'s [=navigation API method navigation/serialized state=] to null.
-       <p class="note">This ensures that any call to {{Navigation/navigate()|navigation.navigate()}} which triggered this algorithm does not overwrite the [=session history entry/navigation API state=] of the [=session history/current entry=] for aborted navigations.
-    1. [=navigation API method navigation/Reject the finished promise=] for |ongoingNavigation| with |error|.
+  1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/reject the finished promise=] for |ongoingNavigation| with |error|.
   1. If |navigation|'s [=Navigation/transition=] is not null, then:
     1. [=Reject=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with |error|.
     1. Set |navigation|'s [=Navigation/transition=] to null.
