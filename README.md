@@ -72,6 +72,7 @@ backButtonEl.addEventListener("click", () => {
     - [Accessibility technology announcements](#accessibility-technology-announcements)
     - [Loading spinners and stop buttons](#loading-spinners-and-stop-buttons)
     - [Focus management](#focus-management)
+    - [Scrolling to fragments and scroll resetting](#scrolling-to-fragments-and-scroll-resetting)
     - [Scroll position restoration](#scroll-position-restoration)
   - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
     - [Example: handling failed navigations](#example-handling-failed-navigations)
@@ -611,48 +612,71 @@ We can also extend the `focusReset` option with other behaviors in the future. H
 - `focusReset: "immediate"`: immediately resets the focus to the `<body>` element, without waiting for the promise to settle.
 - `focusReset: "two-stage"`: immediately resets the focus to the `<body>` element, and then has the same behavior as `"after-transition"`.
 
+#### Scrolling to fragments and scroll resetting
+
+Current single-page app navigations leave the user's scroll position where it is. This is true even if you try to navigate to a fragment, e.g. by doing `history.pushState("/article#subheading")`. The latter has caused significant pain in client-side router libraries; see e.g. [remix-run/react-router#394](https://github.com/remix-run/react-router/issues/394), or the manual code that is needed to handle this case in [Vue](https://sourcegraph.com/github.com/vuejs/router/-/blob/src/scrollBehavior.ts?L81-140), [Angular](https://github.com/angular/angular/blob/main/packages/router/src/router_scroller.ts#L76-L77), [React Router Hash Link](https://github.com/rafgraph/react-router-hash-link/blob/main/src/HashLink.jsx), and others.
+
+With the navigation API, there is a different default behavior, controllable via another option to `navigateEvent.intercept()`:
+
+- `e.intercept({ handler, scroll: "after-transition" })`: the default behavior. After the promise returned by `handler` fulfills, the browser will attempt to scroll to the fragment given by `e.destination.url`, or if there is no fragment, it will reset the scroll position to the top of the page (like in a cross-document navigation).
+- `e.intercept({ handler, scroll: "manual" })`: the browser will not change the user's scroll position, although you can later perform the same logic manually using `e.scroll()`.
+
+The `navigateEvent.scroll()` method could be useful if you know you have loaded the element referenced by the hash, or if you know you want to reset the scroll position to the top of the document early, before the full transition has finished. For example:
+
+```js
+if (navigateEvent.navigationType === "push" || navigateEvent.navigationType === "replace") {
+  navigateEvent.intercept({
+    scroll: "manual",
+    async handler() {
+      await fetchDataAndSetUpDOM(navigateEvent.url);
+      navigateEvent.scroll();
+
+      // Note: navigateEvent.scroll() will update what :target points to.
+      await fadeInTheScrolledToElement(document.querySelector(":target"));
+    }
+  });
+}
+```
+
+If you want to only perform the scroll-to-a-fragment behavior, and not reset the scroll position to the top if there is no matching fragment, then you can use `"manual"` combined with only calling `navigateEvent.scroll()` when `(new URL(navigateEvent.destination.url)).hash` points to an element that exists.
+
+Note that the discussion in this section applies only to `"push"` and `"replace"` navigations. For the behavior for `"traverse"` and `"reload"` navigations, read on...
+
 #### Scroll position restoration
 
-A common pain point for web developers is scroll restoration during traversal (back/forward) navigations. The essential problem is that scroll restoration happens unpredictably, and often at the wrong times. For example:
+A common pain point for web developers is scroll restoration during `"traverse"` and `"reload"` navigations. The essential problem is that scroll restoration happens unpredictably, and often at the wrong times. For example:
 
 - The browser tries to restore the user's scroll position, but the application logic is still setting up the DOM and the relevant elements aren't ready yet.
 - The browser tries to restore the user's scroll position, but the page's contents have changed and scroll restoration doesn't work that well. (For example, going back to a listing of files in a shared folder, after a different user deleted a bunch of the files.)
 - The application needs to perform some measurements in order to do a proper transition, but the browser does scroll restoration during the transition, which messes up those measurements. ([Demo of this problem](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html): notice how when going back to the grid view, the transition sends the square to the wrong location.)
 
-Currently the browser provides two options: performing scroll restoration automatically, or disabling it entirely with `history.scrollRestoration = "manual"`. The new navigation API gives us an opportunity to provide some intermediate options to developers, at least for the case of same-document transitions. We do this via another option to `intercept()`:
+The same `scroll` option to `navigateEvent.intercept()` that we described above for `"push"` and `"replace"` navigations, similarly controls scroll restoration for `"traverse"` and `"reload"` navigations. And similarly to that case, using `intercept()` opts you into a more sensible default behavior:
 
-- `e.intercept({ handler, scrollRestoration: "after-transition" })`: the default behavior. The browser delays its scroll restoration logic until `promise` fulfills; it will perform no scroll restoration if the promise rejects. If the user has scrolled during the transition then no scroll restoration will be performed ([like for multi-page navs](https://neat-equal-cent.glitch.me/)).
-- `e.intercept({ handler, scrollRestoration: "manual" })`: The browser will perform no automatic scroll restoration. However, the developer can use the below API to get semi-automatic scroll restoration, or can use [`window.scrollTo()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo) or similar APIs to take full control.
+- `e.intercept({ handler, scroll: "after-transition" })`: the default behavior. The browser delays its scroll restoration logic until `promise` fulfills; it will perform no scroll restoration if the promise rejects. If the user has scrolled during the transition then no scroll restoration will be performed ([like for multi-page navs](https://neat-equal-cent.glitch.me/)).
+- `e.intercept({ handler, scroll: "manual" })`: The browser will perform no automatic scroll restoration. However, the developer can use the `e.scroll()` API to get semi-automatic scroll restoration, or can use [`window.scrollTo()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo) or similar APIs to take full control.
 
-When using `scrollRestoration: "manual"`, the `e.restoreScroll()` API is available. This will perform the browser's scroll restoration logic at the specified time. This allows cases that require precise control over scroll restoration timing, such as a non-broken version of the [demo referenced above](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html), to be written like so:
+For `"traverse"` and `"reload"`, the `navigateEvent.scroll()` API performs the browser's scroll restoration logic at the specified time. This allows cases that require precise control over scroll restoration timing, such as a non-broken version of the [demo referenced above](https://nifty-blossom-meadow.glitch.me/legacy-history/transition.html), to be written like so:
 
 ```js
-navigateEvent.intercept({
-  async handler() {
-    await fetchDataAndSetUpDOM();
-    navigateEvent.restoreScroll();
-    await measureLayoutAndDoTransition();
-  },
-  scrollRestoration: "manual"
-});
+if (navigateEvent.navigationType === "traverse" || navigateEvent.navigationType === "reload") {
+  navigateEvent.intercept({
+    scroll: "manual"
+    async handler() {
+      await fetchDataAndSetUpDOM();
+      navigateEvent.scroll();
+      await measureLayoutAndDoTransition();
+    },
+  });
+}
 ```
 
-Some details:
+Some more details on how the navigation API handles scrolling with `"traverse"` and `"reload"` navigations:
 
-- The `scrollRestoration` option will be ignored for non-traversal navigations, i.e. those for which `e.navigationType !== "traverse"`. In such a case `restoreScroll()` will throw.
+- `navigateEvent.scroll()` will silently do nothing if called after the user has started scrolling the document.
 
-- `restoreScroll()` will silently do nothing if called after the user has started scrolling the document.
+- `navigateEvent.scroll()` doesn't actually perform a single update of the scroll position. Rather, it puts the page in scroll-position-restoring mode. The scroll position could update several times as more elements load and [scroll anchoring](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor/Guide_to_scroll_anchoring) kicks in.
 
-- `restoreScroll()` doesn't actually perform a single update of the scroll position. Rather, it puts the page in scroll-position-restoring mode. The scroll position could update several times as more elements load and [scroll anchoring](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor/Guide_to_scroll_anchoring) kicks in.
-
-- By default, any navigations which are intercepted with `e.intercept()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `intercept()` to control individual same-document navigations.
-
-We could also add the following APIs in the future, but we are currently not planning on including them until we hear developer feedback that they'd be helpful:
-
-- `scrollRestoration: "immediate"`: the browser performs its usual scroll restoration logic, but does so immediately instead of waiting for `promise`.
-- `scrollRestoration: "auto"`: the browser performs its usual scroll restoration logic, at its usual indeterminate time.
-- `const { x, y } = e.scrollDestination()` giving the current position the browser would restore to, if `e.restoreScroll()` was called.
-- `e.restoreScroll({ onlyOnce: true })` to avoid scroll anchoring.
+- By default, any navigations which are intercepted with `navigateEvent.intercept()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `intercept()` to control individual same-document navigations.
 
 ### Transitional time after navigation interception
 

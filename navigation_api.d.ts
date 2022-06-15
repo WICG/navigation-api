@@ -113,6 +113,7 @@ declare class NavigateEvent extends Event {
   readonly info: unknown;
 
   intercept(options?: NavigationInterceptOptions): void;
+  scroll(): void;
 }
 
 interface NavigateEventInit extends EventInit {
@@ -130,7 +131,7 @@ interface NavigateEventInit extends EventInit {
 interface NavigationInterceptOptions {
   handler?: () => Promise<undefined>,
   focusReset?: "after-transition"|"manual",
-  scrollRestoration?: "after-transition"|"manual"
+  scroll?: "after-transition"|"manual"
 }
 
 declare class NavigationDestination {
