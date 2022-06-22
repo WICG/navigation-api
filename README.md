@@ -1226,8 +1226,6 @@ Traversal operates on the joint session history, which means that it's possible 
 
 - If code in either the inner frame or the outer frame calls `history.back()`, this will take the joint session history back to C, and thus update the inner frame's current navigation API `NavigationHistoryEntry` from I2 to I1. (There is no impact on the outer frame.)
 
-Note that as currently planned, any such programmatic navigations, including ones originating from other frames, are [interceptable and cancelable](#navigation-monitoring-and-interception) as part of the `navigate` event part of the proposal. However, this will probably be revised; see [#78](https://github.com/WICG/navigation-api/issues/78).
-
 ### Integration with navigation
 
 To understand when navigation interception interacts with the existing navigation spec, see [the navigation types appendix](#appendix-types-of-navigations). In cases where interception is allowed and takes place, it is essentially equivalent to preventing the normal navigation and instead synchronously performing the [URL and history update steps](https://html.spec.whatwg.org/#url-and-history-update-steps).
