@@ -614,7 +614,7 @@ We can also extend the `focusReset` option with other behaviors in the future. H
 
 #### Scrolling to fragments and scroll resetting
 
-Current single-page app navigations leave the user's scroll position where it is. This is true even if you try to navigate to a fragment, e.g. by doing `history.pushState("/article#subheading")`. The latter has caused significant pain in client-side router libraries; see e.g. [remix-run/react-router#394](https://github.com/remix-run/react-router/issues/394), or the manual code that is needed to handle this case in [Vue](https://sourcegraph.com/github.com/vuejs/router/-/blob/src/scrollBehavior.ts?L81-140), [Angular](https://github.com/angular/angular/blob/main/packages/router/src/router_scroller.ts#L76-L77), [React Router Hash Link](https://github.com/rafgraph/react-router-hash-link/blob/main/src/HashLink.jsx), and others.
+When you change the URL with `history.pushState()`/`history.replaceState()`, the user's scroll position stays where it is. This is true even if you try to navigate to a fragment, e.g. by doing `history.pushState("/article#subheading")`. The latter has caused significant pain in client-side router libraries; see e.g. [remix-run/react-router#394](https://github.com/remix-run/react-router/issues/394), or the manual code that is needed to handle this case in [Vue](https://sourcegraph.com/github.com/vuejs/router/-/blob/src/scrollBehavior.ts?L81-140), [Angular](https://github.com/angular/angular/blob/main/packages/router/src/router_scroller.ts#L76-L77), [React Router Hash Link](https://github.com/rafgraph/react-router-hash-link/blob/main/src/HashLink.jsx), and others.
 
 With the navigation API, there is a different default behavior, controllable via another option to `navigateEvent.intercept()`:
 
@@ -624,18 +624,23 @@ With the navigation API, there is a different default behavior, controllable via
 The `navigateEvent.scroll()` method could be useful if you know you have loaded the element referenced by the hash, or if you know you want to reset the scroll position to the top of the document early, before the full transition has finished. For example:
 
 ```js
-if (navigateEvent.navigationType === "push" || navigateEvent.navigationType === "replace") {
-  navigateEvent.intercept({
-    scroll: "manual",
-    async handler() {
-      await fetchDataAndSetUpDOM(navigateEvent.url);
-      navigateEvent.scroll();
+const freshEntry =
+  navigateEvent.navigationType === "push" ||
+  navigateEvent.navigationType === "replace";
 
-      // Note: navigateEvent.scroll() will update what :target points to.
-      await fadeInTheScrolledToElement(document.querySelector(":target"));
+navigateEvent.intercept({
+  scroll: freshEntry ? "manual" : "after-transition",
+  async handler() {
+    await fetchDataAndSetUpDOM(navigateEvent.url);
+
+    if (freshEntry) {
+      navigateEvent.scroll();
     }
-  });
-}
+
+    // Note: navigateEvent.scroll() will update what :target points to.
+    await fadeInTheScrolledToElement(document.querySelector(":target"));
+  },
+});
 ```
 
 If you want to only perform the scroll-to-a-fragment behavior, and not reset the scroll position to the top if there is no matching fragment, then you can use `"manual"` combined with only calling `navigateEvent.scroll()` when `(new URL(navigateEvent.destination.url)).hash` points to an element that exists.
@@ -660,7 +665,7 @@ For `"traverse"` and `"reload"`, the `navigateEvent.scroll()` API performs the b
 ```js
 if (navigateEvent.navigationType === "traverse" || navigateEvent.navigationType === "reload") {
   navigateEvent.intercept({
-    scroll: "manual"
+    scroll: "manual",
     async handler() {
       await fetchDataAndSetUpDOM();
       navigateEvent.scroll();
