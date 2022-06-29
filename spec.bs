@@ -1204,18 +1204,18 @@ enum NavigationType {
 
     <p>By default, using this method will cause focus to reset when any handlers' returned promises settle. Focus will be reset to the first element with the <{html-global/autofocus}> attribute set, or the <{body}> element if the attribute isn't present. The {{NavigationInterceptOptions/focusReset}} option can be set to "{{NavigationFocusReset/manual}}" to avoid this behavior.
 
-    <p>By default, using this method will delay the browser's scroll restoration logic for "{{NavigationType/traverse}}" or "{{NavigationType/reload}}" navigations, or its scroll-reset/scroll-to-a-fragment logic for "{{NavigationType/push}}" and "{{NavigationType/replace}}" navigations, until any handlers' returned promises settle. The {{NavigationInterceptOptions/scroll}} option can be set to "{{NavigationScrollBehavior/manual}}" to turn off any browser-driven scroll behavior entirely for this navigation, or control the timing of it by later calling {{NavigateEvent/scroll()}}.
+    <p>By default, using this method will delay the browser's scroll restoration logic for "{{NavigationType/traverse}}" or "{{NavigationType/reload}}" navigations, or its scroll-reset/scroll-to-a-fragment logic for "{{NavigationType/push}}" and "{{NavigationType/replace}}" navigations, until any handlers' returned promises settle. The {{NavigationInterceptOptions/scroll}} option can be set to "{{NavigationScrollBehavior/manual}}" to turn off any browser-driven scroll behavior entirely for this navigation, or {{NavigateEvent/scroll()|event.scroll()}} can be called before the promise settles to trigger this behavior early.
 
     <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{NavigateEvent/canIntercept}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
   </dd>
 
   <dt><code><var ignore>event</var>.{{NavigateEvent/scroll()|scroll}}()</code>
   <dd>
-    <p>For "{{NavigationType/traverse}}" or "{{NavigationType/reload}}" navigations which have set <code>{{NavigationInterceptOptions/scroll}}: "{{NavigationScrollBehavior/manual}}"</code> as part of their {{NavigateEvent/intercept()}} call, restores the scroll position using the browser's usual scroll restoration logic.
+    <p>For "{{NavigationType/traverse}}" or "{{NavigationType/reload}}" navigations, restores the scroll position using the browser's usual scroll restoration logic.
 
-    <p>For "{{NavigationType/push}}" or "{{NavigationType/replace}}" navigations which have set <code>{{NavigationInterceptOptions/scroll}}: "{{NavigationScrollBehavior/manual}}"</code> as part of their {{NavigateEvent/intercept()}} call, either resets the scroll position to the top of the document or scrolls to the fragment specified by {{NavigationDestination/url|event.destination.url}} if there is one.
+    <p>For "{{NavigationType/push}}" or "{{NavigationType/replace}}" navigations, either resets the scroll position to the top of the document or scrolls to the fragment specified by {{NavigationDestination/url|event.destination.url}} if there is one.
 
-    <p>If used on a navigation that has not had {{NavigationInterceptOptions/scroll}} set appropriately, or if called more than once, this method will throw an "{{InvalidStateError}}" {{DOMException}}.
+    <p>If called more than once, or called after automatic post-transition scroll processing has happened due to the {{NavigationInterceptOptions/scroll}} option being left as "{{NavigationScrollBehavior/after-transition}}", this method will throw an "{{InvalidStateError}}" {{DOMException}}.
   </dd>
 </dl>
 
@@ -1254,7 +1254,6 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation handler list</dfn>
 <div algorithm>
   The <dfn method for="NavigateEvent">scroll()</dfn> method steps are:
 
-  1. If [=this=]'s [=NavigateEvent/scroll behavior=] is not "{{NavigationScrollBehavior/manual}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=NavigateEvent/did process scroll behavior=] is true, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. [=Definitely process scroll behavior=] given [=this=].
@@ -1537,15 +1536,15 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. If |event|'s [=NavigateEvent/scroll behavior=] is "{{NavigationScrollBehavior/manual}}", then return.
      <p class="note">If it was left as null, then we treat that as "{{NavigationScrollBehavior/after-transition}}", and continue onward.
   1. If |event|'s [=NavigateEvent/did process scroll behavior=] is true, then return.
-  1. Set |event|'s [=NavigateEvent/did process scroll behavior=] to true.
   1. [=Definitely process scroll behavior=] given |event|.
 </div>
 
 <div algorithm>
-   To <dfn>definitely process scroll behavior</dfn> given a {{Navigation}} object |navigation| and an {{NavigateEvent}} |event|:
+   To <dfn>definitely process scroll behavior</dfn> given a {{NavigateEvent}} |event|:
 
+  1. Set |event|'s [=NavigateEvent/did process scroll behavior=] to true.
   1. If |event|'s {{NavigateEvent/navigationType}} was initialized to "{{NavigationType/traverse}}" or "{{NavigationType/reload}}", then [=restore scroll position data=] given |event|'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
-  1. Otherwise, [=scroll to the fragment=] given |navigation|'s [=relevant global object=]'s [=associated Document=].
+  1. Otherwise, [=scroll to the fragment=] given |event|'s [=relevant global object=]'s [=associated Document=].
   1. Otherwise,
     1. Let |document| be |event|'s [=relevant global object=]'s [=associated Document=].
     1. If |document|'s [=Document/indicated part=] is null, then [=scroll to the beginning of the document=] given |document|.
