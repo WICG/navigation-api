@@ -1438,6 +1438,12 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
        <p class="note">If |navigationType| is "{{NavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform a navigation API traversal=].
     1. Return false.
   1. Let |endResultIsSameDocument| be true if |event|'s [=NavigateEvent/was intercepted=] is true or |destination|'s [=NavigationDestination/is same document=] is true.
+  1. [=Prepare to run script=] given |event|'s [=relevant settings object=].
+      <div class="note" id="note-suppress-microtasks-during-navigation-events">
+        <p>This is done to avoid the <a spec="HTML">JavaScript execution context stack</a> becoming empty right after any {{Navigation/currententrychange}} event handlers run as a result of the [=URL and history update steps=] that could soon happen. If the stack were to become empty at that time, then it would immediately [=perform a microtask checkpoint=], causing various promise fulfillment handlers to run interleaved with the event handlers and before any handlers passed to {{NavigateEvent/intercept()|navigateEvent.intercept()}}. This is undesirable since it means promise handler ordering vs. {{Navigation/currententrychange}} event handler ordering vs. {{NavigateEvent/intercept()}} handler ordering is dependent on whether the navigation is happening with an empty <a spec="HTML">JavaScript execution context stack</a> (e.g., because the navigation was user-initiated) or with a nonempty one (e.g., because the navigation was caused by a JavaScript API call).
+
+        <p>By inserting an otherwise-unnecessary <a spec="HTML">JavaScript execution context</a> onto the stack in this step, we essentially suppress the [=perform a microtask checkpoint=] algorithm until later, thus ensuring that the sequence is always: {{Navigation/currententrychange}} event handlers, then {{NavigateEvent/intercept()}} handlers, then promise handlers.
+      </div>
   1. If |event|'s [=NavigateEvent/was intercepted=] is true:
     1. Let |fromEntry| be the [=Navigation/current entry=] for |navigation|.
     1. [=Assert=]: |fromEntry| is not null.
@@ -1472,6 +1478,8 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
         1. [=Potentially reset the focus=] given |navigation| and |event|.
            <p class="note">Although we still [=potentially reset the focus=] for such failed transitions, we do <em>not</em> [=potentially process scroll behavior=] for them.
   1. Otherwise, if |ongoingNavigation| is non-null, then [=navigation API method navigation/clean up=] |ongoingNavigation|.
+  1. [=Clean up after running script=].
+     <p class="note">Per the <a href="#note-suppress-microtasks-during-navigation-events">previous note</a>, this stops suppressing any potential promise handler microtasks, causing them to run at this point or later.</p>
   1. If |event|'s [=NavigateEvent/was intercepted=] is true and |navigationType| is "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/reload}}", then return false.
   1. Return true.
 </div>
