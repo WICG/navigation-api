@@ -72,6 +72,7 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: snapshot source snapshot params; url: history.html#snapshotting-target-snapshot-params
     text: traverse the history by a delta; url: browsers.html#traverse-the-history-by-a-delta
     text: top-level traversable; url: history.html#top-level-traversable
+    text: scroll to the fragment; url: browsing-the-web.html#scroll-to-the-fragment-identifier
     for: apply the history step
       text: checkForUserCancellation; url: history.html#apply-history-step-check
       text: unsafeNavigationStartTime; url: history.html#apply-history-step-start-time
@@ -80,6 +81,8 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     for: URL and history update steps
       text: serializedData; url: history.html#uhus-serializeddata
       text: historyHandling; url: history.html#uhus-historyhandling
+    for: Document
+      text: indicated part; url: browsing-the-web.html#the-indicated-part-of-the-document
     for: navigable
       text: active window; url: browsers.html#nav-window
       text: active document; url: history.html#nav-document
@@ -617,7 +620,7 @@ During any given navigation, the {{Navigation}} object needs to keep track of th
     <tr>
       <td>Whether {{NavigateEvent/intercept()}} was called
       <td>Until the [=session history=] is updated (inside that same task)
-      <td>So that we can suppress the normal scroll restoration logic in favor of the chosen {{NavigationInterceptOptions/scrollRestoration}} option value.
+      <td>So that we can suppress the normal scroll restoration logic in favor of the chosen {{NavigationInterceptOptions/scroll}} option value.
 </table>
 
 Furthermore, we need to account for the fact that there might be multiple traversals queued up, e.g. via
@@ -1092,7 +1095,7 @@ interface NavigateEvent : Event {
   readonly attribute any info;
 
   undefined intercept(optional NavigationInterceptOptions options = {});
-  undefined restoreScroll();
+  undefined scroll();
 };
 
 dictionary NavigateEventInit : EventInit {
@@ -1110,7 +1113,7 @@ dictionary NavigateEventInit : EventInit {
 dictionary NavigationInterceptOptions {
   NavigationInterceptHandler handler;
   NavigationFocusReset focusReset;
-  NavigationScrollRestoration scrollRestoration;
+  NavigationScrollBehavior scroll;
 };
 
 enum NavigationFocusReset {
@@ -1118,7 +1121,7 @@ enum NavigationFocusReset {
   "manual"
 };
 
-enum NavigationScrollRestoration {
+enum NavigationScrollBehavior {
   "after-transition",
   "manual"
 };
@@ -1193,7 +1196,7 @@ enum NavigationType {
     <p>An arbitrary JavaScript value passed via {{Window/navigation}} APIs that initiated this navigation, or null if the navigation was initiated by the user or via a non-{{Window/navigation}} API.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{NavigateEvent/intercept()|intercept}}({ {{NavigationInterceptOptions/handler}}, {{NavigationInterceptOptions/focusReset}}, {{NavigationInterceptOptions/scrollRestoration}} })</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/intercept()|intercept}}({ {{NavigationInterceptOptions/handler}}, {{NavigationInterceptOptions/focusReset}}, {{NavigationInterceptOptions/scroll}} })</code>
   <dd>
     <p>Intercepts this navigation, preventing its normally handling and instead converting it into a same-document navigation to the destination URL.
 
@@ -1201,16 +1204,18 @@ enum NavigationType {
 
     <p>By default, using this method will cause focus to reset when any handlers' returned promises settle. Focus will be reset to the first element with the <{html-global/autofocus}> attribute set, or the <{body}> element if the attribute isn't present. The {{NavigationInterceptOptions/focusReset}} option can be set to "{{NavigationFocusReset/manual}}" to avoid this behavior.
 
-    <p>By default, using this method for "{{NavigationType/traverse}}" navigations will cause the browser's scroll restoration logic to be delayed until any handlers' returned promises settle. The {{NavigationInterceptOptions/scrollRestoration}} option can be set to "{{NavigationScrollRestoration/manual}}" to turn off scroll restoration entirely for this navigation, or control the timing of it by later calling {{NavigateEvent/restoreScroll()}}.
+    <p>By default, using this method will delay the browser's scroll restoration logic for "{{NavigationType/traverse}}" or "{{NavigationType/reload}}" navigations, or its scroll-reset/scroll-to-a-fragment logic for "{{NavigationType/push}}" and "{{NavigationType/replace}}" navigations, until any handlers' returned promises settle. The {{NavigationInterceptOptions/scroll}} option can be set to "{{NavigationScrollBehavior/manual}}" to turn off any browser-driven scroll behavior entirely for this navigation, or {{NavigateEvent/scroll()|event.scroll()}} can be called before the promise settles to trigger this behavior early.
 
     <p>This method will throw a "{{SecurityError}}" {{DOMException}} if {{NavigateEvent/canIntercept}} is false, or if {{Event/isTrusted}} is false. It will throw an "{{InvalidStateError}}" {{DOMException}} if not called synchronously, during event dispatch.
   </dd>
 
-  <dt><code><var ignore>event</var>.{{NavigateEvent/restoreScroll()|restoreScroll}}()</code>
+  <dt><code><var ignore>event</var>.{{NavigateEvent/scroll()|scroll}}()</code>
   <dd>
-    <p>For "{{NavigationType/traverse}}" navigations which have set <code>{{NavigationInterceptOptions/scrollRestoration}}: "{{NavigationScrollRestoration/manual}}"</code> as part of their {{NavigateEvent/intercept()}} call, restores the scroll position using the browser's usual scroll restoration logic.
+    <p>For "{{NavigationType/traverse}}" or "{{NavigationType/reload}}" navigations, restores the scroll position using the browser's usual scroll restoration logic.
 
-    <p>If used on a non-"{{NavigationType/traverse}}" navigation, or on one which has not had {{NavigationInterceptOptions/scrollRestoration}} set appropriately, or if called more than once, this method will throw an "{{InvalidStateError}}" {{DOMException}}.
+    <p>For "{{NavigationType/push}}" or "{{NavigationType/replace}}" navigations, either resets the scroll position to the top of the document or scrolls to the fragment specified by {{NavigationDestination/url|event.destination.url}} if there is one.
+
+    <p>If called more than once, or called after automatic post-transition scroll processing has happened due to the {{NavigationInterceptOptions/scroll}} option being left as "{{NavigationScrollBehavior/after-transition}}", this method will throw an "{{InvalidStateError}}" {{DOMException}}.
   </dd>
 </dl>
 
@@ -1220,9 +1225,9 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">classic history API serialize
 
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">focus reset behavior</dfn>, a {{NavigationFocusReset}}-or-null, initially null.
 
-A {{NavigateEvent}} has a <dfn for="NavigateEvent">scroll restoration behavior</dfn>, a {{NavigationScrollRestoration}}-or-null, initially null.
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">scroll behavior</dfn>, a {{NavigationScrollBehavior}}-or-null, initially null.
 
-A {{NavigateEvent}} has a <dfn for="NavigateEvent">did process scroll restoration</dfn>, a boolean, initially false.
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">did process scroll behavior</dfn>, a boolean, initially false.
 
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">was intercepted</dfn>, a boolean, initially false.
 
@@ -1241,18 +1246,18 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation handler list</dfn>
   1. If |options|["{{NavigationInterceptOptions/focusReset}}"] [=map/exists=], then:
     1. If [=this=]'s [=NavigateEvent/focus reset behavior=] is not null, and it is not equal to |options|["{{NavigationInterceptOptions/focusReset}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationInterceptOptions/focusReset}} option for a previous call to {{NavigateEvent/intercept()}} was overridden by this new value, and the previous value will be ignored.
     1. Set [=this=]'s [=NavigateEvent/focus reset behavior=] to |options|["{{NavigationInterceptOptions/focusReset}}"].
-  1. If |options|["{{NavigationInterceptOptions/scrollRestoration}}"] [=map/exists=], and [=this=]'s {{NavigateEvent/navigationType}} attribute was initialized to "{{NavigationType/traverse}}", then:
-    1. If [=this=]'s [=NavigateEvent/scroll restoration behavior=] is not null, and it is not equal to |options|["{{NavigationInterceptOptions/scrollRestoration}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationInterceptOptions/scrollRestoration}} option for a previous call to {{NavigateEvent/intercept()}} was overridden by this new value, and the previous value will be ignored.
-    1. Set [=this=]'s [=NavigateEvent/scroll restoration behavior=] to |options|["{{NavigationInterceptOptions/scrollRestoration}}"].
+  1. If |options|["{{NavigationInterceptOptions/scroll}}"] [=map/exists=], then:
+    1. If [=this=]'s [=NavigateEvent/scroll behavior=] is not null, and it is not equal to |options|["{{NavigationInterceptOptions/scroll}}"], then the user agent may [=report a warning to the console=] indicating that the {{NavigationInterceptOptions/scroll}} option for a previous call to {{NavigateEvent/intercept()}} was overridden by this new value, and the previous value will be ignored.
+    1. Set [=this=]'s [=NavigateEvent/scroll behavior=] to |options|["{{NavigationInterceptOptions/scroll}}"].
 </div>
 
 <div algorithm>
-  The <dfn method for="NavigateEvent">restoreScroll()</dfn> method steps are:
+  The <dfn method for="NavigateEvent">scroll()</dfn> method steps are:
 
-  1. If [=this=]'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationType/traverse}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
-  1. If [=this=]'s [=NavigateEvent/scroll restoration behavior=] is not "{{NavigationScrollRestoration/manual}}", then throw an "{{InvalidStateError}}" {{DOMException}}.
-  1. If [=this=]'s [=NavigateEvent/did process scroll restoration=] is true, then throw an "{{InvalidStateError}}" {{DOMException}}.
-  1. [=Restore scroll position data=] given [=this=]'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
+  1. If [=this=]'s [=NavigateEvent/did process scroll behavior=] is true, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=NavigateEvent/was intercepted=] is false, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. [=Definitely process scroll behavior=] given [=this=].
 </div>
 
 <h3 id="navigate-event-destination">The {{NavigationDestination}} class</h3>
@@ -1440,7 +1445,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. [=Mark as handled=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=].
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
     1. If |navigationType| is "{{NavigationType/traverse}}", then set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to true.
-       <p class="note">If |event|'s [=NavigateEvent/scroll restoration behavior=] was set to "{{NavigationScrollRestoration/after-transition}}", then we will [=potentially perform scroll restoration=] below. Otherwise, there will be no scroll restoration. That is, no navigation which is intercepted by {{NavigateEvent/intercept()}} goes through the normal scroll restoration process; scroll restoration for such navigations is either done manually, by the web developer, or is done after the transition.
+       <p class="note">If |event|'s [=NavigateEvent/scroll behavior=] was set to "{{NavigationScrollBehavior/after-transition}}", then we will [=potentially process scroll behavior|potentially perform scroll restoration=] below. Otherwise, there will be no scroll restoration. That is, no navigation which is intercepted by {{NavigateEvent/intercept()}} goes through the normal scroll restoration process; scroll restoration for such navigations is either done manually, by the web developer, or is done after the transition.
     1. If |navigationType| is "{{NavigationType/push}}" or "{{NavigationType/replace}}", then run the [=URL and history update steps=] given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/historyHandling=]</i> set to |navigationType|.
 
        <p class="note">If |navigationType| is "{{NavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a>.
@@ -1457,7 +1462,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
         1. Set |navigation|'s [=Navigation/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/resolve the finished promise=] for |ongoingNavigation|.
         1. [=Potentially reset the focus=] given |navigation| and |event|.
-        1. [=Potentially perform scroll restoration=] given |navigation| and |event|.
+        1. [=Potentially process scroll behavior=] given |event|.
       and the following failure steps given reason |rejectionReason|:
         1. If |event|'s {{NavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
         1. [=Fire an event=] named {{Navigation/navigateerror}} at |navigation| using {{ErrorEvent}}, with {{ErrorEvent/error}} initialized to |rejectionReason|, and {{ErrorEvent/message}}, {{ErrorEvent/filename}}, {{ErrorEvent/lineno}}, and {{ErrorEvent/colno}} initialized to appropriate values that can be extracted from |rejectionReason| in the same underspecified way the user agent typically does for the <a spec="HTML">report an exception</a> algorithm.
@@ -1465,7 +1470,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
         1. Set |navigation|'s [=Navigation/transition=] to null.
         1. If |ongoingNavigation| is non-null, then [=navigation API method navigation/reject the finished promise=] for |ongoingNavigation| with |rejectionReason|.
         1. [=Potentially reset the focus=] given |navigation| and |event|.
-           <p class="note">Although we still [=potentially reset the focus=] for such failed transitions, we do <em>not</em> [=potentially perform scroll restoration=] for them.
+           <p class="note">Although we still [=potentially reset the focus=] for such failed transitions, we do <em>not</em> [=potentially process scroll behavior=] for them.
   1. Otherwise, if |ongoingNavigation| is non-null, then [=navigation API method navigation/clean up=] |ongoingNavigation|.
   1. If |event|'s [=NavigateEvent/was intercepted=] is true and |navigationType| is "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/reload}}", then return false.
   1. Return true.
@@ -1526,15 +1531,24 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 </div>
 
 <div algorithm>
-  To <dfn>potentially perform scroll restoration</dfn> given a {{Navigation}} object |navigation| and an {{NavigateEvent}} |event|:
+  To <dfn>potentially process scroll behavior</dfn> given a {{NavigateEvent}} |event|:
 
   1. If |event|'s [=NavigateEvent/was intercepted=] is false, then return.
-  1. If |event|'s {{NavigateEvent/navigationType}} was not initialized to "{{NavigationType/traverse}}", then return.
-  1. If |event|'s [=NavigateEvent/scroll restoration behavior=] is "{{NavigationScrollRestoration/manual}}", then return.
-     <p class="note">If it was left as null, then we treat that as "{{NavigationScrollRestoration/after-transition}}", and continue onward.
-  1. If |event|'s [=NavigateEvent/did process scroll restoration=] is true, then return.
-  1. Set |event|'s [=NavigateEvent/did process scroll restoration=] to true.
-  1. [=Restore scroll position data=] given |navigation|'s [=Navigation/current entry=]'s [=NavigationHistoryEntry/session history entry=].
+  1. If |event|'s [=NavigateEvent/scroll behavior=] is "{{NavigationScrollBehavior/manual}}", then return.
+     <p class="note">If it was left as null, then we treat that as "{{NavigationScrollBehavior/after-transition}}", and continue onward.
+  1. If |event|'s [=NavigateEvent/did process scroll behavior=] is true, then return.
+  1. [=Definitely process scroll behavior=] given |event|.
+</div>
+
+<div algorithm>
+   To <dfn>definitely process scroll behavior</dfn> given a {{NavigateEvent}} |event|:
+
+  1. Set |event|'s [=NavigateEvent/did process scroll behavior=] to true.
+  1. If |event|'s {{NavigateEvent/navigationType}} was initialized to "{{NavigationType/traverse}}" or "{{NavigationType/reload}}", then [=restore scroll position data=] given |event|'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
+  1. Otherwise,
+    1. Let |document| be |event|'s [=relevant global object=]'s [=associated Document=].
+    1. If |document|'s [=Document/indicated part=] is null, then [=scroll to the beginning of the document=] given |document|.
+    1. Otherwise, [=scroll to the fragment=] given |document|.
 </div>
 
 <h2 id="NavigationHistoryEntry-class">Navigation API history entries</h2>
@@ -1958,7 +1972,7 @@ Update the <a spec="HTML">focus fixup rule</a> to additionally set the {{Documen
 
 <h3 id="scroll-restoration-patches">Scroll restoration</h3>
 
-To support the {{NavigationInterceptOptions/scrollRestoration}} option, as well as to fix <a href="https://github.com/whatwg/html/issues/7517">whatwg/html#7517</a>, the following patches need to be made:
+To support the {{NavigationInterceptOptions/scroll}} option, as well as to fix <a href="https://github.com/whatwg/html/issues/7517">whatwg/html#7517</a>, the following patches need to be made:
 
 Add a boolean, <dfn for="Document">has been scrolled by the user</dfn>, initially false, to {{Document}} objects. State that if the user scrolls the document, the user agent must set that document's [=Document/has been scrolled by the user=] to true. Modify the <a spec="HTML">unload a document</a> algorithm to set this back to false.
 
@@ -1981,7 +1995,7 @@ Add a boolean, <dfn for="Document">has been scrolled by the user</dfn>, initiall
 
   In addition to the existing note, add the following one:
 
-  <p class="note">If the [=Navigation/suppress normal scroll restoration during ongoing navigation=] boolean is true, then [=restoring scroll position data=] might still happen at a later point, as part of [=potentially perform scroll restoration|potentially performing scroll restoration=] for the relevant {{Navigation}} object, or via a {{NavigateEvent/restoreScroll()|navigateEvent.restoreScroll()}} method call.
+  <p class="note">If the [=Navigation/suppress normal scroll restoration during ongoing navigation=] boolean is true, then [=restoring scroll position data=] might still happen at a later point, as part of [=potentially process scroll behavior|potentially processing scroll behavior=] for the relevant {{Navigation}} object, or via a {{NavigateEvent/scroll()|navigateEvent.scroll()}} method call.
 </div>
 
 <h3 id="cancel-navigation">Canceling navigation and traversals</h3>
