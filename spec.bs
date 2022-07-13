@@ -1255,6 +1255,7 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation handler list</dfn>
   The <dfn method for="NavigateEvent">scroll()</dfn> method steps are:
 
   1. If [=this=]'s [=NavigateEvent/did process scroll behavior=] is true, then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=NavigateEvent/was intercepted=] is false, then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. [=Definitely process scroll behavior=] given [=this=].
 </div>
@@ -1544,7 +1545,6 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 
   1. Set |event|'s [=NavigateEvent/did process scroll behavior=] to true.
   1. If |event|'s {{NavigateEvent/navigationType}} was initialized to "{{NavigationType/traverse}}" or "{{NavigationType/reload}}", then [=restore scroll position data=] given |event|'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
-  1. Otherwise, [=scroll to the fragment=] given |event|'s [=relevant global object=]'s [=associated Document=].
   1. Otherwise,
     1. Let |document| be |event|'s [=relevant global object=]'s [=associated Document=].
     1. If |document|'s [=Document/indicated part=] is null, then [=scroll to the beginning of the document=] given |document|.

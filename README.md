@@ -614,6 +614,8 @@ We can also extend the `focusReset` option with other behaviors in the future. H
 
 #### Scrolling to fragments and scroll resetting
 
+_Note that the discussion in this section applies only to `"push"` and `"replace"` navigations. For the behavior for `"traverse"` and `"reload"` navigations, see the [next section](#scroll-position-restoration)._
+
 When you change the URL with `history.pushState()`/`history.replaceState()`, the user's scroll position stays where it is. This is true even if you try to navigate to a fragment, e.g. by doing `history.pushState("/article#subheading")`. The latter has caused significant pain in client-side router libraries; see e.g. [remix-run/react-router#394](https://github.com/remix-run/react-router/issues/394), or the manual code that is needed to handle this case in [Vue](https://sourcegraph.com/github.com/vuejs/router/-/blob/src/scrollBehavior.ts?L81-140), [Angular](https://github.com/angular/angular/blob/main/packages/router/src/router_scroller.ts#L76-L77), [React Router Hash Link](https://github.com/rafgraph/react-router-hash-link/blob/main/src/HashLink.jsx), and others.
 
 With the navigation API, there is a different default behavior, controllable via another option to `navigateEvent.intercept()`:
@@ -644,8 +646,6 @@ navigateEvent.intercept({
 ```
 
 If you want to only perform the scroll-to-a-fragment behavior, and not reset the scroll position to the top if there is no matching fragment, then you can use `"manual"` combined with only calling `navigateEvent.scroll()` when `(new URL(navigateEvent.destination.url)).hash` points to an element that exists.
-
-Note that the discussion in this section applies only to `"push"` and `"replace"` navigations. For the behavior for `"traverse"` and `"reload"` navigations, read on...
 
 #### Scroll position restoration
 
