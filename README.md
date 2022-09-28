@@ -480,18 +480,19 @@ Similarly, cross-document navigations initiated from other windows are not somet
 
 As for `document.open()`, it is a terrible legacy API with lots of strange side effects, which makes supporting it not worth the implementation cost. Modern sites which use the new navigation API should never be using `document.open()`.
 
-Second, the following navigations **cannot be canceled** using `event.preventDefault()`, and as such will have `event.cancelable` equal to false:
-
+Second, **traversals have special restrictions on cancelling the navigation** via `event.preventDefault()`. Traversals are:
 - User-initiated traversals via the browser's back/forward buttons (either same- or cross-document)
 - Programmatic traversals via `history.back()`/`history.forward()`/`history.go()`
-- Programmatic traversals via `navigation.back()`/`navigation.forward()`/`navigation.go()`
+- Programmatic traversals via `navigation.back()`/`navigation.forward()`/`navigation.traverseTo()`
 
-We would like to make these cancelable in the future. However, we need to take care when doing so:
+Traversals may only be cancelled (and `event.cancelable` will be equal to true) if:
+- The navigate event is firing in the top window
+- The traversal is same-origin
+- The traversal was not user-initiated, or there is a consumbable user activation in the current window.
 
-- Canceling user-initiated traversals can be abused to trap the user by disabling their back button. Note that adding a same-origin restriction would not help here: imagine a user which navigates to `https://evil-in-disguise.example/`, and then clicks a link to `https://evil-in-disguise.example/2`. If `https://evil-in-disguise.example/2` were allowed to cancel same-origin browser back button navigations, they have effectively disabled the user's back button.
-- Both user-initiated and programmatic traversals of this sort are hard to intercept for technical reasons, as doing so can require cross-process communication.
+Allowing cancellation only in the top window is to ensure that there is a single authoritative source for deciding whether or not to cancel the traversal. If all windows were allowed to cancel and a traversal navigated multiple windows, and some cancelled but others proceeded, there would not be a good way to keep all windows in sync with the joint session history. Cross-origin traversals are uncancelable in order to lessen the risk of trapping the user. Similarly, user activation is required for user-initiated traversals in order to minimize the possibility of trapping: `event.preventDefault()` on a traversal consumes the user activation, ensuring that the user can always break out of an application that is cancelling traversals by, e.g., pressing the browser's back button twice in a row.
 
-See discussion in [#32](https://github.com/WICG/navigation-api/issues/32) about how we can make user-initiated traversals cancelable in a safe way, and [#178](https://github.com/WICG/navigation-api/issues/178) for the general discussion of loosening the cancelability restrictions over time.
+In order to enable cancellation, traversals need to fire the `navigate` event at a precise time. Most navigations fire `navigate` at the time of navigation start, but that is not a viable time for traversals, because browser architecture may require an async step to determine which frames must navigate as part of the traversal (and therefore which frames need a `navigate` event). Alternately, we could fire at `unload` time, but that is very late: by then, network requests have already been performed. `beforeunload` time splits the difference: after determining which frames will be navigated, but before any network requests or other side effects have happened. The downside of this timing is that it builds on the rickety foundation of `beforeunload` (which is widely considered to be a regrettable web platform feature). However, we believe we are avoiding the most problematic part of `beforeunload`, which is the modal user-facing dialog it creates. Simply reusing the internal browser and spec architecture for firing `navigate` at the same time as `beforeunload` is more benign.
 
 Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.intercept()`, and as such will have `event.canIntercept` equal to false:
 
@@ -1471,7 +1472,7 @@ Here's a summary table:
 
 |Trigger|Cross- vs. same-document|Fires `navigate`?|`e.userInitiated`|`e.cancelable`|`e.canIntercept`|
 |-------|------------------------|-----------------|-----------------|--------------|--------------|
-|Browser UI (back/forward)|Either|Yes|Yes|No ❖|Yes †*|
+|Browser UI (back/forward)|Either|Yes|Yes|Yes ❖|Yes †*|
 |Browser UI (non-back/forward<br>fragment change only)|Same|Yes|Yes|Yes|Yes|
 |Browser UI (non-back/forward<br>other)|Cross|No|—|—|—|
 |`<a>`/`<area>`/`<form>` (`target="_self"` or no `target=""`)|Either|Yes|Yes ‡|Yes|Yes *|
@@ -1479,9 +1480,9 @@ Here's a summary table:
 |`<meta http-equiv="refresh">`|Either ◊|Yes|No|Yes|Yes *|
 |`Refresh` header|Either ◊|Yes|No|Yes|Yes *|
 |`window.location`|Either|Yes Δ|No|Yes|Yes *|
-|`history.{back,forward,go}()`|Either|Yes|No|No ❖|Yes †*|
+|`history.{back,forward,go}()`|Either|Yes|No|Yes ❖|Yes †*|
 |`history.{pushState,replaceState}()`|Same|Yes|No|Yes|Yes|
-|`navigation.{back,forward,traverseTo}()`|Either|Yes|No|No ❖|Yes †*|
+|`navigation.{back,forward,traverseTo}()`|Either|Yes|No|Yes ❖|Yes †*|
 |`navigation.navigate()`|Either|Yes|No|Yes|Yes *|
 |`navigation.reload()`|Cross|Yes|No|Yes|Yes|
 |`window.open(url, "_self")`|Either|Yes|No|Yes|Yes *|
@@ -1493,7 +1494,7 @@ Here's a summary table:
 - \* = No if the URL differs from the page's current one in components besides path/query/fragment, or is cross-origin from the current page and differs in any component besides fragment.
 - Δ = No if cross-document and initiated from a [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) window, e.g. `frames['cross-origin-frame'].location.href = ...` or `<a target="cross-origin-frame">`
 - ◊ = fragment navigations initiated by `<meta http-equiv="refresh">` or the `Refresh` header are only same-document in some browsers: [whatwg/html#6451](https://github.com/whatwg/html/issues/6451)
-- ❖ = We would like to make these cancelable in the future, after additional implementation and spec work: see [#178](https://github.com/WICG/navigation-api/issues/178) and [#32](https://github.com/WICG/navigation-api/issues/32).
+- ❖ = Only in the top window, if the traversal is same-origin, and either the traversal is not user-initiated, or there is a consumbable user activation in the current window.
 
 See the discussion on [restrictions](#restrictions-on-firing-canceling-and-responding) to understand the reasons why the last few columns are filled out in the way they are.
 
