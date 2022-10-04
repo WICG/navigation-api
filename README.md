@@ -480,26 +480,28 @@ Similarly, cross-document navigations initiated from other windows are not somet
 
 As for `document.open()`, it is a terrible legacy API with lots of strange side effects, which makes supporting it not worth the implementation cost. Modern sites which use the new navigation API should never be using `document.open()`.
 
-Second, **traversals have special restrictions on cancelling the navigation** via `event.preventDefault()`. Traversals are:
+Second, **traversals have special restrictions on canceling the navigation** via `event.preventDefault()`. Traversals are:
 - User-initiated traversals via the browser's back/forward buttons (either same- or cross-document)
 - Programmatic traversals via `history.back()`/`history.forward()`/`history.go()`
 - Programmatic traversals via `navigation.back()`/`navigation.forward()`/`navigation.traverseTo()`
 
-Traversals may only be cancelled (and `event.cancelable` will be equal to true) if:
+Traversals may only be canceled (and `event.cancelable` will be equal to true) if:
 - The navigate event is firing in the top window
 - The traversal is same-origin
-- The traversal was not user-initiated, or there is a consumbable user activation in the current window.
+- The traversal was not user-initiated, or there is a consumable activation in the current window.
 
-Allowing cancellation only in the top window is to ensure that there is a single authoritative source for deciding whether or not to cancel the traversal. If all windows were allowed to cancel and a traversal navigated multiple windows, and some cancelled but others proceeded, there would not be a good way to keep all windows in sync with the joint session history. Cross-origin traversals are uncancelable in order to lessen the risk of trapping the user. Similarly, user activation is required for user-initiated traversals in order to minimize the possibility of trapping: `event.preventDefault()` on a traversal consumes the user activation, ensuring that the user can always break out of an application that is cancelling traversals by, e.g., pressing the browser's back button twice in a row.
+Allowing cancelation only in the top window is to ensure that there is a single authoritative source for deciding whether or not to cancel the traversal. If all windows were allowed to cancel and a traversal navigated multiple windows, and some canceled but others proceeded, there would not be a good way to keep all windows in sync with the joint session history. Cross-origin traversals are uncancelable in order to lessen the risk of trapping the user. Similarly, user activation is required for user-initiated traversals in order to minimize the possibility of trapping: `event.preventDefault()` on a traversal consumes the user activation, ensuring that the user can always break out of an application that is canceling traversals by, e.g., pressing the browser's back button twice in a row.
 
-In order to enable cancellation, traversals need to fire the `navigate` event at a precise time. Most navigations fire `navigate` at the time of navigation start, but that is not a viable time for traversals, because browser architecture may require an async step to determine which frames must navigate as part of the traversal (and therefore which frames need a `navigate` event). Alternately, we could fire at `unload` time, but that is very late: by then, network requests have already been performed. `beforeunload` time splits the difference: after determining which frames will be navigated, but before any network requests or other side effects have happened. The downside of this timing is that it builds on the rickety foundation of `beforeunload` (which is widely considered to be a regrettable web platform feature). However, we believe we are avoiding the most problematic part of `beforeunload`, which is the modal user-facing dialog it creates. Simply reusing the internal browser and spec architecture for firing `navigate` at the same time as `beforeunload` is more benign.
+By _consumable  activation_, we mean a variant of [user activation](https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation) that we wish to add to the HTML spec. _sticky activation_ is obviously not correct for preventing trapping the user, becuase then a single errant click or tap could disable back/forward navigations entirely. However, we are also concerned about using _transient activation_: it meets our requirement that the user activation can be used once before it is consumed, but the possibility of it expiring due to its _transient activation duration_ elapsing means that web applications may suddenly and unexpectedly get an uncancelable traversal if a back or forward button is pressed and the user happens not to have interacted with the page for a modest period of time. We therefore intend to add a third mode of user activation to the HTML spec, _consumable activation_, which can be consumed like _transient activation_, but does not expire based on the _transient activation duration_.
+
+In order to enable cancelation, traversals need to fire the `navigate` event at a precise time. Most navigations fire `navigate` at the time of navigation start, but that is not a viable time for traversals, because browser architecture may require an async step to determine which frames must navigate as part of the traversal (and therefore which frames need a `navigate` event). Alternately, we could fire at `unload` time, but that is very late: by then, network requests have already been performed. `beforeunload` time splits the difference: after determining which frames will be navigated, but before any network requests or other side effects have happened. The downside of this timing is that it builds on the rickety foundation of `beforeunload` (which is widely considered to be a regrettable web platform feature). However, we are avoiding the most problematic part of `beforeunload`, which is the modal user-facing dialog it creates. Simply reusing the internal browser and spec architecture for firing `navigate` at the same time as `beforeunload` is more benign.
 
 Finally, the following navigations **cannot be replaced with same-document navigations** by using `event.intercept()`, and as such will have `event.canIntercept` equal to false:
 
 - Any navigation to a URL which differs in scheme, username, password, host, or port. (I.e., you can only intercept URLs which differ in path, query, or fragment.)
 - Any [cross-document](#appendix-types-of-navigations) back/forward navigations. Transitioning two adjacent history entries from cross-document to same-document has unpleasant ripple effects on web application and browser implementation architecture.
 
-We'll note that these restrictions still allow canceling cross-origin non-back/forward navigations. Although this might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
+We'll note that these restrictions allow canceling cross-origin non-back/forward navigations. Although this might be surprising, in general it doesn't grant additional power. That is, web developers can already intercept `<a>` `click` events, or modify their code that would set `location.href`, even if the destination URL is cross-origin.
 
 #### Measuring standardized single-page navigations
 
@@ -1494,7 +1496,7 @@ Here's a summary table:
 - \* = No if the URL differs from the page's current one in components besides path/query/fragment, or is cross-origin from the current page and differs in any component besides fragment.
 - Δ = No if cross-document and initiated from a [cross origin-domain](https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain) window, e.g. `frames['cross-origin-frame'].location.href = ...` or `<a target="cross-origin-frame">`
 - ◊ = fragment navigations initiated by `<meta http-equiv="refresh">` or the `Refresh` header are only same-document in some browsers: [whatwg/html#6451](https://github.com/whatwg/html/issues/6451)
-- ❖ = Only in the top window, if the traversal is same-origin, and either the traversal is not user-initiated, or there is a consumbable user activation in the current window.
+- ❖ = Only in the top window, if the traversal is same-origin, and either the traversal is not user-initiated, or there is a consumable user activation in the current window.
 
 See the discussion on [restrictions](#restrictions-on-firing-canceling-and-responding) to understand the reasons why the last few columns are filled out in the way they are.
 
