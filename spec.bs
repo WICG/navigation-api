@@ -1232,6 +1232,8 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">did process scroll behavior</
 
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">was intercepted</dfn>, a boolean, initially false.
 
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">needs continue</dfn>, a boolean, initially false.
+
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation handler list</dfn>, which is a [=list=] of {{NavigationInterceptHandler}} callbacks, initially empty.
 
 <div algorithm>
@@ -1434,11 +1436,23 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Set |navigation|'s [=Navigation/focus changed during ongoing navigation=] to false.
   1. Set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to false.
   1. Let |dispatchResult| be the result of [=dispatching=] |event| at |navigation|.
-  1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
   1. If |dispatchResult| is false:
     1. If |navigationType| is not "{{NavigationType/traverse}}" and |event|'s {{NavigateEvent/signal}} is not [=AbortSignal/aborted=], then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
        <p class="note">If |navigationType| is "{{NavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform a navigation API traversal=].
     1. Return false.
+
+  1. If |destination|'s [=NavigationDestination/is same document=] is true and |navigationType| is "{{NavigationType/traverse}}":
+    1. Set |event|'s [=NavigateEvent/needs continue=] to true.
+    1. Return true;
+  1. Return the result of [=react to navigate event result=] given |navigation| and |event|.
+</div>
+
+<div algorithm>
+  The <dfn>react to `navigate` event result</dfn> is the following steps, given a {{Navigation}} |navigation|, {{NavigateEvent}} |event|:
+  1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
+  1. Let |destination| be |event|'s {{NavigateEvent/destination}}.
+  1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
+  1. Let |navigationType| be |event|'s {{NavigateEvent/navigationType}}.
   1. Let |endResultIsSameDocument| be true if |event|'s [=NavigateEvent/was intercepted=] is true or |destination|'s [=NavigationDestination/is same document=] is true.
   1. [=Prepare to run script=] given |event|'s [=relevant settings object=].
       <div class="note" id="note-suppress-microtasks-during-navigation-events">
@@ -1465,6 +1479,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
        <p class="note">There is a subtle timing difference between how [=waiting for all=] schedules its success and failure steps when given zero promises versus &geq;1 promises. For most uses of [=waiting for all=], this does not matter. However, with this API, there are so many events and promise handlers which could fire around the same time that the difference is pretty easily observable: it can cause the event/promise handler sequence to vary. (Some of the events and promises involved include: {{Navigation/navigatesuccess}} / {{Navigation/navigateerror}}, {{Navigation/currententrychange}}, {{NavigationHistoryEntry/dispose}}, |ongoingNavigation|'s promises, and the {{NavigationTransition/finished|navigation.transition.finished}} promise.)
     1. [=Wait for all=] of |promisesList|, with the following success steps:
         1. If |event|'s {{NavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
+        1. If |event| equals |navigation|'s [=Navigation/ongoing navigate event=], set |navigation|'s [=Navigation/ongoing navigate event=] to null.
         1. [=Fire an event=] named {{Navigation/navigatesuccess}} at |navigation|.
         1. If |navigation|'s [=Navigation/transition=] is not null, then [=resolve=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with undefined.
         1. Set |navigation|'s [=Navigation/transition=] to null.
@@ -1484,6 +1499,12 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
      <p class="note">Per the <a href="#note-suppress-microtasks-during-navigation-events">previous note</a>, this stops suppressing any potential promise handler microtasks, causing them to run at this point or later.</p>
   1. If |event|'s [=NavigateEvent/was intercepted=] is true and |navigationType| is "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/reload}}", then return false.
   1. Return true.
+</div>
+
+<div algorithm>
+  The <dfn>maybe continue the `navigate` event</dfn> is the following steps, given a {{Navigation}} |navigation|:
+  1. If |navigation|'s [=Navigation/ongoing navigate event=] is null, or |navigation|'s [=Navigation/ongoing navigate event=]'s [=NavigateEvent/needs continue=] is false, return true.
+  1. Return the result of [=react to navigate event result=] given |navigation| and |navigation|'s [=Navigation/ongoing navigate event=].
 </div>
 
 <div algorithm>
@@ -1846,18 +1867,26 @@ Expand the section of the navigation/traversal response handling which deals wit
 <h3 id="navigate-event-traversal-patches">History traversal updates</h3>
 
 <div algorithm="apply the history step">
-  Modify the [=apply the history step=] algorithm as follows. Near the start of the algorithm, before checking if unloading is user-canceled (currently step 5), add the following step:
+  Modify the [=apply the history step=] algorithm as follows. Near the start of the algorithm, before checking if unloading is user-canceled (currently step 5), add the following steps:
   1. Let <i>targetEntry</i> be the result of [=getting the target history entry=] given <i>traversable</i> and <i>targetStep.</i>
   1. If <i>targetEntry</i> does not equal <i>traversable</i>'s [=navigable/current session history entry=], then:
     1. Let <i>continue</i> be the result of [=Firing a traversal navigate event=] at <i>traversable</i>'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to <i>targetEntry</i> and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
     1. If <i>continue</i> is false, abort these steps.
 
-  After settings navigable's ongoing navigation to "traversal" (currently step 8.3), add the following step:
+  After setting navigable's ongoing navigation to "traversal" (currently step 8.3), add the following step:
   1. If <i>navigable</i> does not equal <i>traversable</i>, then:
     1. Let <i>continue</i> be the result of [=Firing a traversal navigate event=] at <i>navigable</i>'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to <i>targetEntry</i> and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
     1. [=Assert=]: <i>continue</i> is true.
 
 (Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
+
+  Before the update document for history step application (currently step 14.10.3), add the following step:
+  1. If <i>targetEntry</i>'s [=document=] is equal to <i>displayedDocument</i>:
+    1. Let <i>updateDocument</i> be the result of [=maybe continue the navigate event=] given <i>displayedDocument</i>'s [=relevant global object=]'s [=Window/navigation API=].
+    1. If <i>updateDocument</i> is false:
+      1. Increment <i>completedChangeJobs</i>.
+      1. Abort these steps.
+
 </div>
 
 <h3 id="navigate-event-download-patches">Download a hyperlink updates</h3>
