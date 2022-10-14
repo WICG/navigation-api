@@ -59,6 +59,7 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: get all history steps; for: traversable navigable; url: history.html#getting-all-history-steps
     text: step; for: session history entry; url: history.html#she-step
     text: apply the history step; url: history.html#apply-the-history-step
+    text: check if unloading is user-canceled; url: history.html#checking-if-unloading-is-user-canceled
     text: getting the target history entry; url: history.html#getting-the-target-history-entry
     text: containing navigable; for: browsing context; url: browsers.html#bc-navigable
     text: navigable; url: history.html#navigable
@@ -1873,16 +1874,34 @@ Expand the section of the navigation/traversal response handling which deals wit
 <h3 id="navigate-event-traversal-patches">History traversal updates</h3>
 
 <div algorithm="apply the history step">
-  Modify the [=apply the history step=] algorithm as follows. Near the start of the algorithm, before checking if unloading is user-canceled (currently step 5), add the following steps:
-  1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and <var ignore>targetStep</var>.
-  1. If |targetEntry| does not equal |traversable|'s [=navigable/current session history entry=], then:
-    1. Let |continue| be the result of [=Firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
-    1. If |continue| is false, abort these steps.
+  Modify the [=check if unloading is user-canceled=] algorithm as follows:
 
-  After setting navigable's ongoing navigation to "traversal" (currently step 8.3), add the following step:
-  1. If |navigable| does not equal |traversable|, then:
-    1. Let |continue| be the result of [=Firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
-    1. [=Assert=]: |continue| is true.
+  Take an optional named argument <var ignore>targetStep</var>, default null.
+
+  Take an optional named argument <var ignore>userInvolvement</var>, (default "<code>[=user navigation involvement/none=]</code>").
+
+  Change step 4 from "Let totalTasks be the size of <var ignore>documents.</var>" to "Let totalTasks be the size of <var ignore>navigables</var>".
+
+  Wrap step 6 with "For each |navigable| of <var ignore>navigables</var>:"
+
+  Before the current step 6, add the following step:
+  1. Let |targetEntry| be the result of [=getting the target history entry=] given |navigable| and <var ignore>targetStep</var>.
+
+  Before the current step 6.1, add the following steps:
+  1. If |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |navigable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]:
+    1. If the result of [=firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var> is false:
+      1. Set <var ignore>unloadPromptCanceled</var> to true.
+      1. Increment <var ignore>completedTasks</var>.
+      1. Return.
+  1. If |targetEntry|'s [=session history entry/document=] is equal to |navigable|'s [=navigable/current session history entry=]'s [=session history entry/document=]:
+      1. Increment <var ignore>completedTasks</var>.
+      1. Return.
+
+  Modify the [=apply the history step=] algorithm as follows:
+  Remove step 4 (declaring <var ignore>navigablesCrossingDocuments</var>) and move step 6 (declaring <var ignore>changingNavigables</var> to step 4).
+  Change step 5 (which invokes [=check if unloading is user-canceled=]) to:
+  1. If <var ignore>checkForUserCancelation</var> is true:
+    1. If the result of [=checking if unloading is user-canceled=] given <var ignore>changingNavigables</var>, <var ignore>targetStep</var> and <var ignore>userInvolvement</var> is "refuse", then return.
 
 (Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
 
