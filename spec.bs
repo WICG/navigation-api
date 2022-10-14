@@ -62,6 +62,7 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: getting the target history entry; url: history.html#getting-the-target-history-entry
     text: containing navigable; for: browsing context; url: browsers.html#bc-navigable
     text: navigable; url: history.html#navigable
+    text: update-only; url: browsing-the-web.html#changing-nav-continuation-update-only
     text: URL and history update steps; url: browsers.html#url-and-history-update-steps
     text: shared history push/replace state steps; url: browsers.html#shared-history-push/replace-state-steps
     text: update document for history step application; url: history.html#update-document-for-history-step-application
@@ -1411,8 +1412,13 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=browsing context=].
   1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
   1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canIntercept}} to true. Otherwise, initialize it to false.
-  1. If |navigationType| is not "{{NavigationType/traverse}}", or if |browsingContext| is a top-level browsing context and |userInvolvement| is <code>[=user navigation involvement/browser UI=]</code> or |navigation|'s [=relevant global object=] has consumable user activation, then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
-     <p class="note">We are exploring the possibility of introducing the concept of a "consumable user activation" (i.e., a user activation that can be consumed like a transient user activation, but does not have the timeout of a transient user activation). This does not have a spec yet.
+  1. Let |traverseCanBeCanceled| be true if |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or |navigation|'s [=relevant global object=] has [=transient activation=]; otherwise, false.
+     <p class="note">We are exploring the possibility of introducing the concept of a "consumable user activation" (i.e., a user activation that can be consumed like a transient user activation, but does not have the timeout of a transient user activation) instead of using transient activation here. This does not have a spec yet.
+  1. If all of the following are true:
+    * |navigationType| is not "{{NavigationType/traverse}}";
+    * |browsingContext| is a top-level browsing context and |traverseCanBeCanceled| is true;
+
+    then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
   1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
   1. Initialize |event|'s {{NavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{NavigateEvent/destination}} to |destination|.
@@ -1443,12 +1449,12 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 
   1. If |destination|'s [=NavigationDestination/is same document=] is true and |navigationType| is "{{NavigationType/traverse}}":
     1. Set |event|'s [=NavigateEvent/needs continue=] to true.
-    1. Return true;
-  1. Return the result of [=react to navigate event result=] given |navigation| and |event|.
+    1. Return true.
+  1. Return the result of [=reacting to navigate event result=] given |navigation| and |event|.
 </div>
 
 <div algorithm>
-  The <dfn>react to `navigate` event result</dfn> is the following steps, given a {{Navigation}} |navigation|, {{NavigateEvent}} |event|:
+  To <dfn>react to `navigate` event result</dfn>, given a {{Navigation}} |navigation| and a {{NavigateEvent}} |event|:
   1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
   1. Let |destination| be |event|'s {{NavigateEvent/destination}}.
   1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
@@ -1497,14 +1503,14 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Otherwise, if |ongoingNavigation| is non-null, then [=navigation API method navigation/clean up=] |ongoingNavigation|.
   1. [=Clean up after running script=].
      <p class="note">Per the <a href="#note-suppress-microtasks-during-navigation-events">previous note</a>, this stops suppressing any potential promise handler microtasks, causing them to run at this point or later.</p>
-  1. If |event|'s [=NavigateEvent/was intercepted=] is true and |navigationType| is "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/reload}}", then return false.
+  1. If |event|'s [=NavigateEvent/was intercepted=] is true, return false.
   1. Return true.
 </div>
 
 <div algorithm>
-  The <dfn>maybe continue the `navigate` event</dfn> is the following steps, given a {{Navigation}} |navigation|:
+  To <dfn>maybe continue the `navigate` event</dfn>, given a {{Navigation}} |navigation|:
   1. If |navigation|'s [=Navigation/ongoing navigate event=] is null, or |navigation|'s [=Navigation/ongoing navigate event=]'s [=NavigateEvent/needs continue=] is false, return true.
-  1. Return the result of [=react to navigate event result=] given |navigation| and |navigation|'s [=Navigation/ongoing navigate event=].
+  1. Return the result of [=reacting to navigate event result=] given |navigation| and |navigation|'s [=Navigation/ongoing navigate event=].
 </div>
 
 <div algorithm>
@@ -1868,23 +1874,23 @@ Expand the section of the navigation/traversal response handling which deals wit
 
 <div algorithm="apply the history step">
   Modify the [=apply the history step=] algorithm as follows. Near the start of the algorithm, before checking if unloading is user-canceled (currently step 5), add the following steps:
-  1. Let <i>targetEntry</i> be the result of [=getting the target history entry=] given <i>traversable</i> and <i>targetStep.</i>
-  1. If <i>targetEntry</i> does not equal <i>traversable</i>'s [=navigable/current session history entry=], then:
-    1. Let <i>continue</i> be the result of [=Firing a traversal navigate event=] at <i>traversable</i>'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to <i>targetEntry</i> and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
-    1. If <i>continue</i> is false, abort these steps.
+  1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and <var ignore>targetStep</var>.
+  1. If |targetEntry| does not equal |traversable|'s [=navigable/current session history entry=], then:
+    1. Let |continue| be the result of [=Firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
+    1. If |continue| is false, abort these steps.
 
   After setting navigable's ongoing navigation to "traversal" (currently step 8.3), add the following step:
-  1. If <i>navigable</i> does not equal <i>traversable</i>, then:
-    1. Let <i>continue</i> be the result of [=Firing a traversal navigate event=] at <i>navigable</i>'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to <i>targetEntry</i> and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
-    1. [=Assert=]: <i>continue</i> is true.
+  1. If |navigable| does not equal |traversable|, then:
+    1. Let |continue| be the result of [=Firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>
+    1. [=Assert=]: |continue| is true.
 
 (Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
 
   Before the update document for history step application (currently step 14.10.3), add the following step:
-  1. If <i>targetEntry</i>'s [=document=] is equal to <i>displayedDocument</i>:
-    1. Let <i>updateDocument</i> be the result of [=maybe continue the navigate event=] given <i>displayedDocument</i>'s [=relevant global object=]'s [=Window/navigation API=].
-    1. If <i>updateDocument</i> is false:
-      1. Increment <i>completedChangeJobs</i>.
+  1. If <var ignore>changingNavigableContinuation</var>'s [=update-only=] is true:
+    1. Let |updateDocument| be the result of [=maybe continue the navigate event=] given <var ignore>displayedDocument</var>'s [=relevant global object=]'s [=Window/navigation API=].
+    1. If |updateDocument| is false:
+      1. Increment <var ignore>completedChangeJobs</var>.
       1. Abort these steps.
 
 </div>
