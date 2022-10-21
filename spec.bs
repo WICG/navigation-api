@@ -50,8 +50,6 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
       text: discard; url: window-object.html#a-browsing-context-is-discarded
   type: method
     for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
-  type: http-header
-    text: Cross-Origin-Opener-Policy; url: multipage/iana.html#cross-origin-opener-policy-2
 spec: html; urlPrefix: https://whatpr.org/html/6315/
   type: dfn
     text: session history traversal queue; for: traversable navigable; url: history.html#tn-session-history-traversal-queue
@@ -267,7 +265,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
   1. Let |sessionHistory| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=].
 
      <div class="note">
-      <p>It is expected that this include session history entries in the entire [=browsing session=], including those in different <a spec="HTML">browsing context groups</a> due to \`<a http-header>`Cross-Origin-Opener-Policy`</a>\`-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept.
+      <p>It is expected that this include session history entries in the entire [=browsing session=], including those in different <a spec="HTML">browsing context groups</a> due to [:Cross-Origin-Opener-Policy:]-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept.
 
       <p>Note that it is OK to expose the data in these entries to the current page through {{NavigationHistoryEntry}} instances, since any [=session history entry/navigation API state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{NavigationHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
     </div>
@@ -1760,7 +1758,7 @@ Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argum
   A user agent may provide various ways for the user to explicitly cause a browsing context to <a spec="HTML">navigate</a>, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins>
 </blockquote>
 
-<p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the \`<a http-header><code>Sec-Fetch-Site</code></a>\` spec at the same time.</p>
+<p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the [:Sec-Fetch-Site:] spec at the same time.</p>
 
 Modify the [=navigate to a fragment=] algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
 
