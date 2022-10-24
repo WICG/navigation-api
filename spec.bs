@@ -98,6 +98,8 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: navigable; for: Window; url: browsers.html#window-navigable
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
   text: generate a random UUID; url: #dfn-generate-a-random-uuid
+spec: infra; type: dfn; urlPrefix: https://infra.spec.whatwg.org/
+  text: continue; url: #iteration-continue
 </pre>
 
 <style>
@@ -1878,7 +1880,7 @@ Expand the section of the navigation/traversal response handling which deals wit
 <div algorithm="check if unloading is user-canceled">
   Modify the [=check if unloading is user-canceled=] algorithm as follows:
 
-  To [=check if unloading is user-canceled=] given a [=list=] of [=navigables=] |navigablesCrossingDocuments|, an optional integer |targetStep| (default null), and an optional [=user navigation involvement=] |userInvolvement| (default "<code>[=user navigation involvement/none=]</code>"):
+  To [=check if unloading is user-canceled=] given a [=list=] of [=navigables=] |navigablesCrossingDocuments|, an optional [=navigable=] |traversable|, an optional integer |targetStep| (default null), and an optional [=user navigation involvement=] |userInvolvement| (default "<code>[=user navigation involvement/none=]</code>"):
   1. Let |unloadPromptShown| be false.
   1. Let |unloadPromptCanceled| be false.
   1. Let |changingNavigables| be a [=list=] of [=navigables=], initially empty.
@@ -1889,29 +1891,29 @@ Expand the section of the navigation/traversal response handling which deals wit
   1. If |traversable| is not null and |changingNavigables| [=list/contains=] |traversable|:
     1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
     1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |traversable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
-    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |traversable|'s [=navigable/active document=]'s [=relevant global object=] to run the following steps:
+    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |traversable|'s [=navigable/active window=] to run the following steps:
       1. If |isSameOrigin| is true:
-        1. If the result of [=firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement| is false:
-        1. Set |unloadPromptCanceled| to true.
+        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
+        1. If |navigateEventResult| is false, then set |unloadPromptCanceled| to true.
       1. If |unloadPromptCanceled| is false and |navigablesCrossingDocuments| [=list/contains=] |traversable|:
         1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
       1. Increment |completedTasks|.
     1. Wait for |completedTasks| to be 1.
     1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>";
   1. For each |navigable| of |changingNavigables|:
-    1. If |navigable| equals |traversable|, then continue.
+    1. If |navigable| equals |traversable|, then [=continue=].
     1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
     1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |navigable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
-    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigable|'s [=navigable/active document=]'s [=relevant global object=] to run the following steps:
+    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigable|'s [=navigable/active window=] to run the following steps:
       1. If |isSameOrigin| is true:
-        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|:
+        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
         1. [=Assert=]: |navigateEventResult| is true.
       1. If |navigablesCrossingDocuments| [=list/contains=] |navigable|:
         1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
       1. Increment |completedTasks|.
   1. Wait for |completedTasks| to be |totalTasks|.
-  1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>";
-  1. If |unloadPromptShown| is true, then return "<code>confirm</code>";
+  1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>".
+  1. If |unloadPromptShown| is true, then return "<code>confirm</code>".
   1. Return "<code>no-prompt</code>".
 </div>
 
@@ -1919,7 +1921,7 @@ Expand the section of the navigation/traversal response handling which deals wit
   Modify the [=apply the history step=] algorithm as follows:
 
   Change step 5 (which runs the [=check if unloading is user-canceled=] steps) to:
-  1. If <var ignore>checkForUserCancelation</var> is true, and the result of [=checking if unloading is user-canceled=] given <var ignore>navigablesCrossingDocuments</var>, <var ignore>targetStep</var> and <var ignore>userInvolvement</var> is "<code>refuse</code>", then return.
+  1. If <var ignore>checkForUserCancelation</var> is true, and the result of [=checking if unloading is user-canceled=] given <var ignore>navigablesCrossingDocuments</var>, <var ignore>traversable</var>, <var ignore>targetStep</var> and <var ignore>userInvolvement</var> is "<code>refuse</code>", then return.
 
 (Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
 
