@@ -58,9 +58,13 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: current session history step; for: traversable navigable; url: history.html#tn-current-session-history-step
     text: get all history steps; for: traversable navigable; url: history.html#getting-all-history-steps
     text: step; for: session history entry; url: history.html#she-step
-    text: apply the history step; url: history.html#apply-the-history-step
+    text: apply the history step; url: browsing-the-web.html#apply-the-history-step
+    text: check if unloading is user-canceled; url: browsing-the-web.html#checking-if-unloading-is-user-canceled
+    text: getting the target history entry; url: browsing-the-web.html#getting-the-target-history-entry
+    text: get all navigables whose current session history entry will change or reload; url: browsing-the-web.html#get-all-navigables-whose-current-session-history-entry-will-change-or-reload
     text: containing navigable; for: browsing context; url: browsers.html#bc-navigable
-    text: navigable; url: history.html#navigable
+    text: navigable; url: document-sequences.html#navigable
+    text: update-only; url: browsing-the-web.html#changing-nav-continuation-update-only
     text: URL and history update steps; url: browsers.html#url-and-history-update-steps
     text: shared history push/replace state steps; url: browsers.html#shared-history-push/replace-state-steps
     text: update document for history step application; url: history.html#update-document-for-history-step-application
@@ -84,12 +88,13 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     for: Document
       text: indicated part; url: browsing-the-web.html#the-indicated-part-of-the-document
     for: navigable
-      text: active window; url: browsers.html#nav-window
-      text: active document; url: history.html#nav-document
-      text: traversable navigable; url: history.html#nav-traversable
-      text: current session history entry; url: history.html#nav-current-history-entry
-      text: active session history entry; url: history.html#nav-active-history-entry
-      text: get the session history entries; url: history.html#getting-session-history-entries
+      text: active window; url: document-sequences.html#nav-window
+      text: active document; url: document-sequences.html#nav-document
+      text: traversable navigable; url: document-sequences.html#nav-traversable
+      text: parent; url: document-sequences.html#nav-parent
+      text: current session history entry; url: document-sequences.html#nav-current-history-entry
+      text: active session history entry; url: document-sequences.html#nav-active-history-entry
+      text: get the session history entries; url: document-sequences.html#getting-session-history-entries
     text: navigable; for: Window; url: browsers.html#window-navigable
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
   text: generate a random UUID; url: #dfn-generate-a-random-uuid
@@ -1231,6 +1236,8 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">did process scroll behavior</
 
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">was intercepted</dfn>, a boolean, initially false.
 
+A {{NavigateEvent}} has a <dfn for="NavigateEvent">needs continue</dfn>, a boolean, initially false.
+
 A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation handler list</dfn>, which is a [=list=] of {{NavigationInterceptHandler}} callbacks, initially empty.
 
 <div algorithm>
@@ -1362,8 +1369,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
     1. Set |destination|'s [=NavigationDestination/index=] to &minus;1.
     1. Set |destination|'s [=NavigationDestination/state=] to null.
   1. Set |destination|'s [=NavigationDestination/is same document=] to true if |destinationEntry|'s [=session history entry/document=] is equal to |navigation|'s [=relevant global object=]'s [=associated Document=]; otherwise false.
-  1. Let |result| be the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationType/traverse}}", |event|, |destination|, |userInvolvement|, null, and null.
-  1. [=Assert=]: |result| is true (traversals are never cancelable).
+  1. Return the result of performing the [=inner navigate event firing algorithm=] given |navigation|, "{{NavigationType/traverse}}", |event|, |destination|, |userInvolvement|, null, and null.
 </div>
 
 <div algorithm="fire a non-traversal navigate event">
@@ -1406,9 +1412,16 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 
        <p class="note">In this case the [=navigation API method navigation/committed promise=] and [=navigation API method navigation/finished promise=] will never fulfill, since we never create {{NavigationHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with.
     1. Return true.
+  1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=browsing context=].
   1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
   1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canIntercept}} to true. Otherwise, initialize it to false.
-  1. If |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
+  1. Let |traverseCanBeCanceled| be true if |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or |navigation|'s [=relevant global object=] has [=transient activation=]; otherwise, false.
+     <p class="note">We are exploring the possibility of introducing the concept of a "consumable user activation" (i.e., a user activation that can be consumed like a transient user activation, but does not have the timeout of a transient user activation) instead of using transient activation here. This does not have a spec yet.
+  1. If any of the following are true:
+    * |navigationType| is not "{{NavigationType/traverse}}"; or
+    * |browsingContext| is a [=top-level browsing context=] and |traverseCanBeCanceled| is true
+
+    then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
   1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
   1. Initialize |event|'s {{NavigateEvent/navigationType}} to |navigationType|.
   1. Initialize |event|'s {{NavigateEvent/destination}} to |destination|.
@@ -1432,11 +1445,23 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Set |navigation|'s [=Navigation/focus changed during ongoing navigation=] to false.
   1. Set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to false.
   1. Let |dispatchResult| be the result of [=dispatching=] |event| at |navigation|.
-  1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
   1. If |dispatchResult| is false:
     1. If |navigationType| is not "{{NavigationType/traverse}}" and |event|'s {{NavigateEvent/signal}} is not [=AbortSignal/aborted=], then [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
        <p class="note">If |navigationType| is "{{NavigationType/traverse}}", then we will [=finalize with an aborted navigation error=] in [=perform a navigation API traversal=].
     1. Return false.
+
+  1. If |destination|'s [=NavigationDestination/is same document=] is true and |navigationType| is "{{NavigationType/traverse}}":
+    1. Set |event|'s [=NavigateEvent/needs continue=] to true.
+    1. Return true.
+  1. Return the result of [=reacting to navigate event result=] given |navigation| and |event|.
+</div>
+
+<div algorithm>
+  To <dfn>react to `navigate` event result</dfn>, given a {{Navigation}} |navigation| and a {{NavigateEvent}} |event|:
+  1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
+  1. Let |destination| be |event|'s {{NavigateEvent/destination}}.
+  1. Let |ongoingNavigation| be |navigation|'s [=Navigation/ongoing navigation=].
+  1. Let |navigationType| be |event|'s {{NavigateEvent/navigationType}}.
   1. Let |endResultIsSameDocument| be true if |event|'s [=NavigateEvent/was intercepted=] is true or |destination|'s [=NavigationDestination/is same document=] is true.
   1. [=Prepare to run script=] given |event|'s [=relevant settings object=].
       <div class="note" id="note-suppress-microtasks-during-navigation-events">
@@ -1463,6 +1488,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
        <p class="note">There is a subtle timing difference between how [=waiting for all=] schedules its success and failure steps when given zero promises versus &geq;1 promises. For most uses of [=waiting for all=], this does not matter. However, with this API, there are so many events and promise handlers which could fire around the same time that the difference is pretty easily observable: it can cause the event/promise handler sequence to vary. (Some of the events and promises involved include: {{Navigation/navigatesuccess}} / {{Navigation/navigateerror}}, {{Navigation/currententrychange}}, {{NavigationHistoryEntry/dispose}}, |ongoingNavigation|'s promises, and the {{NavigationTransition/finished|navigation.transition.finished}} promise.)
     1. [=Wait for all=] of |promisesList|, with the following success steps:
         1. If |event|'s {{NavigateEvent/signal}} is [=AbortSignal/aborted=], then abort these steps.
+        1. If |event| equals |navigation|'s [=Navigation/ongoing navigate event=], set |navigation|'s [=Navigation/ongoing navigate event=] to null.
         1. [=Fire an event=] named {{Navigation/navigatesuccess}} at |navigation|.
         1. If |navigation|'s [=Navigation/transition=] is not null, then [=resolve=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=] with undefined.
         1. Set |navigation|'s [=Navigation/transition=] to null.
@@ -1480,8 +1506,14 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Otherwise, if |ongoingNavigation| is non-null, then [=navigation API method navigation/clean up=] |ongoingNavigation|.
   1. [=Clean up after running script=].
      <p class="note">Per the <a href="#note-suppress-microtasks-during-navigation-events">previous note</a>, this stops suppressing any potential promise handler microtasks, causing them to run at this point or later.</p>
-  1. If |event|'s [=NavigateEvent/was intercepted=] is true and |navigationType| is "{{NavigationType/push}}", "{{NavigationType/replace}}", or "{{NavigationType/reload}}", then return false.
+  1. If |event|'s [=NavigateEvent/was intercepted=] is true, then return false.
   1. Return true.
+</div>
+
+<div algorithm>
+  To <dfn>maybe continue the `navigate` event</dfn>, given a {{Navigation}} |navigation|:
+  1. If |navigation|'s [=Navigation/ongoing navigate event=] is null, or |navigation|'s [=Navigation/ongoing navigate event=]'s [=NavigateEvent/needs continue=] is false, then return.
+  1. [=React to navigate event result=] given |navigation| and |navigation|'s [=Navigation/ongoing navigate event=].
 </div>
 
 <div algorithm>
@@ -1843,12 +1875,57 @@ Expand the section of the navigation/traversal response handling which deals wit
 
 <h3 id="navigate-event-traversal-patches">History traversal updates</h3>
 
-<div algorithm="apply the history step">
-  Modify the [=apply the history step=] algorithm as follows. Near the end of the algorithm, inside the queued task over each global (currently step 14.10), before potentially unloading or activating the history entry, add the following step:
+<div algorithm="check if unloading is user-canceled">
+  Modify the [=check if unloading is user-canceled=] algorithm as follows:
 
-  1. [=Fire a traversal navigate event=] at <var ignore>displayedDocument</var>'s [=relevant global object=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to <var ignore>targetEntry</var> and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to <var ignore>userInvolvement</var>.
+  To [=check if unloading is user-canceled=] given a [=list=] of [=navigables=] |navigablesCrossingDocuments|, an optional [=navigable=] |traversable|, an optional integer |targetStep| (default null), and an optional [=user navigation involvement=] |userInvolvement| (default "<code>[=user navigation involvement/none=]</code>"):
+  1. Let |unloadPromptShown| be false.
+  1. Let |unloadPromptCanceled| be false.
+  1. Let |changingNavigables| be a [=list=] of [=navigables=], initially empty.
+  1. If |traversable| is not null and |targetStep| is not null, append the result of [=get all navigables whose current session history entry will change or reload=] given |traversable| and |targetStep| to |changingNavigables|.
+  1. Otherwise, append |navigablesCrossingDocuments| to |changingNavigables|.
+  1. Let |totalTasks| be the size of |changingNavigables|.
+  1. Let |completedTasks| be 0.
+  1. If |traversable| is not null and |changingNavigables| [=list/contains=] |traversable|:
+    1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
+    1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |traversable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
+    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |traversable|'s [=navigable/active window=] to run the following steps:
+      1. If |isSameOrigin| is true:
+        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
+        1. If |navigateEventResult| is false, then set |unloadPromptCanceled| to true.
+      1. If |unloadPromptCanceled| is false and |navigablesCrossingDocuments| [=list/contains=] |traversable|:
+        1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
+      1. Increment |completedTasks|.
+    1. Wait for |completedTasks| to be 1.
+    1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>";
+  1. For each |navigable| of |changingNavigables|:
+    1. If |navigable| equals |traversable|, then [=iteration/continue=].
+    1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
+    1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |navigable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
+    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigable|'s [=navigable/active window=] to run the following steps:
+      1. If |isSameOrigin| is true:
+        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
+        1. [=Assert=]: |navigateEventResult| is true.
+      1. If |navigablesCrossingDocuments| [=list/contains=] |navigable|:
+        1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
+      1. Increment |completedTasks|.
+  1. Wait for |completedTasks| to be |totalTasks|.
+  1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>".
+  1. If |unloadPromptShown| is true, then return "<code>confirm</code>".
+  1. Return "<code>no-prompt</code>".
+</div>
+
+<div algorithm="apply the history step">
+  Modify the [=apply the history step=] algorithm as follows:
+
+  Change step 5 (which runs the [=check if unloading is user-canceled=] steps) to:
+  1. If <var ignore>checkForUserCancelation</var> is true, and the result of [=checking if unloading is user-canceled=] given <var ignore>navigablesCrossingDocuments</var>, <var ignore>traversable</var>, <var ignore>targetStep</var> and <var ignore>userInvolvement</var> is "<code>refuse</code>", then return.
 
 (Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
+
+  Before the update document for history step application (currently step 14.10.3), add the following step:
+  1. If <var ignore>changingNavigableContinuation</var>'s [=update-only=] is true, [=maybe continue the navigate event=] given <var ignore>displayedDocument</var>'s [=relevant global object=]'s [=Window/navigation API=].
+
 </div>
 
 <h3 id="navigate-event-download-patches">Download a hyperlink updates</h3>
