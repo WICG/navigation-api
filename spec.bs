@@ -98,8 +98,6 @@ spec: html; urlPrefix: https://whatpr.org/html/6315/
     text: navigable; for: Window; url: browsers.html#window-navigable
 spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
   text: generate a random UUID; url: #dfn-generate-a-random-uuid
-spec: infra; type: dfn; urlPrefix: https://infra.spec.whatwg.org/
-  text: continue; url: #iteration-continue
 </pre>
 
 <style>
@@ -1901,7 +1899,7 @@ Expand the section of the navigation/traversal response handling which deals wit
     1. Wait for |completedTasks| to be 1.
     1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>";
   1. For each |navigable| of |changingNavigables|:
-    1. If |navigable| equals |traversable|, then [=continue=].
+    1. If |navigable| equals |traversable|, then [=iteration/continue=].
     1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
     1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |navigable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
     1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigable|'s [=navigable/active window=] to run the following steps:
