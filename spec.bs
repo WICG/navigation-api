@@ -26,76 +26,67 @@ spec: html; type: element-attr; for: a; text: download
 <pre class="anchors">
 spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
   type: dfn
-    text: serialized state; url: history.html#serialized-state
-    text: session history; url: history.html#session-history
-    text: session history entry; url: history.html#session-history-entry
-    for: session history
-      text: current entry; url: history.html#current-entry
-    for: session history entry
-      text: document; url: history.html#she-document
-      text: policy container; url: history.html#she-policy-container
-      text: URL; url: history.html#she-url
-      text: scroll position data; url: history.html#she-scroll-position
-      text: scroll restoration mode; url: history.html#she-scroll-restoration-mode
-    for: history handling behavior
-      text: default; url: browsing-the-web.html#hh-default
-      text: reload; url: browsing-the-web.html#hh-reload
-      text: replace; url: browsing-the-web.html#hh-replace
-      text: entry update; url: browsing-the-web.html#hh-entry-update
-    for: navigate
-      text: historyHandling; url: browsing-the-web.html#navigation-hh
-      text: navigationType; url: browsing-the-web.html#navigation-navigationtype
-      text: exceptionsEnabled; url: browsing-the-web.html#exceptions-enabled
-    for: browsing context
-      text: discard; url: window-object.html#a-browsing-context-is-discarded
-  type: method
-    for: Document; text: open(unused1, unused2); url: multipage/dynamic-markup-insertion.html#dom-document-open
-spec: html; urlPrefix: https://whatpr.org/html/6315/
-  type: dfn
-    text: session history traversal queue; for: traversable navigable; url: history.html#tn-session-history-traversal-queue
-    text: current session history step; for: traversable navigable; url: history.html#tn-current-session-history-step
-    text: get all history steps; for: traversable navigable; url: history.html#getting-all-history-steps
-    text: step; for: session history entry; url: history.html#she-step
+    text: append the following session history traversal steps; url: browsing-the-web.html#tn-append-session-history-traversal-steps
     text: apply the history step; url: browsing-the-web.html#apply-the-history-step
     text: check if unloading is user-canceled; url: browsing-the-web.html#checking-if-unloading-is-user-canceled
-    text: getting the target history entry; url: browsing-the-web.html#getting-the-target-history-entry
+    text: finalize a cross-document navigation; url: browsing-the-web.html#finalize-a-cross-document-navigation
     text: get all navigables whose current session history entry will change or reload; url: browsing-the-web.html#get-all-navigables-whose-current-session-history-entry-will-change-or-reload
-    text: containing navigable; for: browsing context; url: browsers.html#bc-navigable
-    text: navigable; url: document-sequences.html#navigable
-    text: update-only; url: browsing-the-web.html#changing-nav-continuation-update-only
-    text: URL and history update steps; url: browsers.html#url-and-history-update-steps
-    text: shared history push/replace state steps; url: browsers.html#shared-history-push/replace-state-steps
-    text: update document for history step application; url: history.html#update-document-for-history-step-application
-    text: reactivate; url: history.html#reactivate-a-document
-    text: navigate to a fragment; url: history.html#navigate-fragid
+    text: get the target history entry; url: browsing-the-web.html#getting-the-target-history-entry
+    text: navigate to a fragment; url: browsing-the-web.html#navigate-fragid
     text: navigation and traversal task source; url: webappapis.html#navigation-and-traversal-task-source
-    text: node navigable; url: browsers.html#node-navigable
-    text: append the following session history traversal steps; url: history.html#tn-append-session-history-traversal-steps
-    text: snapshot source snapshot params; url: history.html#snapshotting-target-snapshot-params
-    text: traverse the history by a delta; url: browsers.html#traverse-the-history-by-a-delta
-    text: top-level traversable; url: history.html#top-level-traversable
+    text: navigation ID; url: browsing-the-web.html#navigation-id
+    text: node navigable; url: document-sequences.html#node-navigable
     text: scroll to the fragment; url: browsing-the-web.html#scroll-to-the-fragment-identifier
+    text: serialized state; url: browsing-the-web.html#serialized-state
+    text: session history entry; url: browsing-the-web.html#session-history-entry
+    text: shared history push/replace state steps; url: nav-history-apis.html#shared-history-push/replace-state-steps
+    text: snapshot source snapshot params; url: browsing-the-web.html#snapshotting-source-snapshot-params
+    text: top-level traversable; url: document-sequences.html#top-level-traversable
+    text: traverse the history by a delta; url: browsing-the-web.html#traverse-the-history-by-a-delta
+    text: update document for history step application; url: browsing-the-web.html#update-document-for-history-step-application
+    text: update-only; url: browsing-the-web.html#changing-nav-continuation-update-only
+    text: URL and history update steps; url: browsing-the-web.html#url-and-history-update-steps
     for: apply the history step
-      text: checkForUserCancellation; url: history.html#apply-history-step-check
-      text: unsafeNavigationStartTime; url: history.html#apply-history-step-start-time
-      text: sourceSnapshotParams; url: history.html#apply-history-step-source-snapshot
-      text: initiatorToCheck; url: history.html#apply-history-step-initiator
-    for: URL and history update steps
-      text: serializedData; url: history.html#uhus-serializeddata
-      text: historyHandling; url: history.html#uhus-historyhandling
+      text: checkForUserCancellation; url: browsing-the-web.html#apply-history-step-check
+      text: initiatorToCheck; url: browsing-the-web.html#apply-history-step-initiator
+      text: sourceSnapshotParams; url: browsing-the-web.html#apply-history-step-source-snapshot
     for: Document
       text: indicated part; url: browsing-the-web.html#the-indicated-part-of-the-document
+      text: reactivate; url: browsing-the-web.html#reactivate-a-document
+      text: unload; url: document-lifecycle.html#unload-a-document
+    for: document state
+      text: origin; url: browsing-the-web.html#document-state-origin
+      text: request referrer policy; url: browsing-the-web.html#document-state-request-referrer-policy
+    for: history handling behavior
+      text: push; url: browsing-the-web.html#hh-push
+      text: replace; url: browsing-the-web.html#hh-replace
     for: navigable
-      text: active window; url: document-sequences.html#nav-window
       text: active document; url: document-sequences.html#nav-document
-      text: traversable navigable; url: document-sequences.html#nav-traversable
-      text: parent; url: document-sequences.html#nav-parent
-      text: current session history entry; url: document-sequences.html#nav-current-history-entry
       text: active session history entry; url: document-sequences.html#nav-active-history-entry
-      text: get the session history entries; url: document-sequences.html#getting-session-history-entries
-    text: navigable; for: Window; url: browsers.html#window-navigable
-spec: uuid; type: dfn; urlPrefix: https://wicg.github.io/uuid/
-  text: generate a random UUID; url: #dfn-generate-a-random-uuid
+      text: active window; url: document-sequences.html#nav-window
+      text: current session history entry; url: document-sequences.html#nav-current-history-entry
+      text: get session history entries; url: browsing-the-web.html#getting-session-history-entries
+      text: ongoing navigation; url: browsing-the-web.html#ongoing-navigation
+      text: top-level traversable; url: document-sequences.html#nav-top
+      text: traversable; url: document-sequences.html#nav-traversable
+    for: navigate
+      text: exceptionsEnabled; url: browsing-the-web.html#exceptions-enabled
+      text: historyHandling; url: browsing-the-web.html#navigation-hh
+    for: session history entry
+      text: document state; url: browsing-the-web.html#she-document-state
+      text: document; url: browsing-the-web.html#she-document
+      text: scroll position data; url: browsing-the-web.html#she-scroll-position
+      text: scroll restoration mode; url: browsing-the-web.html#she-scroll-restoration-mode
+      text: step; url: browsing-the-web.html#she-step
+      text: URL; url: browsing-the-web.html#she-url
+    for: traversable navigable
+      text: session history entries; url: document-sequences.html#tn-session-history-entries
+      text: session history traversal queue; url: document-sequences.html#tn-session-history-traversal-queue
+    for: URL and history update steps
+      text: historyHandling; url: browsing-the-web.html#uhus-historyhandling
+      text: serializedData; url: browsing-the-web.html#uhus-serializeddata
+    for: Window
+      text: navigable; url: nav-history-apis.html#window-navigable
 </pre>
 
 <style>
@@ -242,13 +233,13 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 <div algorithm>
   A {{Navigation}} |navigation| <dfn for="Navigation">has entries and events disabled</dfn> if the following steps return true:
 
-  1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
+  1. If |navigation|'s [=relevant global object=]'s [=Window/browsing context=] is null, then return true.
 
-  1. If |browsingContext| is null, then return true.
+  1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated Document=].
 
-  1. If |browsingContext| is <a spec="HTML">still on its initial `about:blank` `Document`</a>, then return true.
+  1. If |document|'s <a spec="HTML">is initial about:blank</a> is true, then return true.
 
-  1. If |navigation|'s [=relevant global object=]'s [=associated Document=]'s [=Document/origin=] is [=opaque origin|opaque=], then return true.
+  1. If |document|'s [=Document/origin=] is [=opaque origin|opaque=], then return true.
 
   1. Return false.
 </div>
@@ -262,47 +253,46 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
     1. Return.
 
-  1. Let |sessionHistory| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=]'s [=session history=].
+  <!-- Reaching up to the traversable like this is not 100% kosher. We should consider plumbing the information in a more detailed fashion. -->
+  1. Let |sessionHistory| be the result of [=navigable/getting session history entries=] given |navigation|'s [=relevant global object=]'s [=Window/navigable=].
 
-     <div class="note">
-      <p>It is expected that this include session history entries in the entire [=browsing session=], including those in different <a spec="HTML">browsing context groups</a> due to [:Cross-Origin-Opener-Policy:]-induced switches. This will be better-defined when <a href="https://github.com/whatwg/html/pull/6315">whatwg/html#6315</a> is finalized; see also <a href="https://github.com/whatwg/html/issues/6356">whatwg/html#6356</a> for some discussion of the impact of manual navigation on this "session" concept.
+     <p class="XXX">This is not OK to call here. We can only call [=navigable/get session history entries=] from within the [=traversable navigable/session history traversal queue=]. See <a href="https://github.com/WICG/navigation-api/issues/221#issuecomment-1082260105">this discussion</a>.
 
-      <p>Note that it is OK to expose the data in these entries to the current page through {{NavigationHistoryEntry}} instances, since any [=session history entry/navigation API state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{NavigationHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
-    </div>
+     <p class="note">It is OK to expose the data in these entries to the current page through {{NavigationHistoryEntry}} instances, since any [=session history entry/navigation API state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{NavigationHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
 
   1. Let |navigationAPISHEs| be a new empty list.
 
   1. Let |oldCurrentNHE| be the [=Navigation/current entry=] of |navigation|.
 
-  1. Let |currentSHE| be |sessionHistory|'s [=session history/current entry=].
+  1. Let |activeSHE| be |navigation|'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
 
-  1. Let |backwardIndex| be the index of |currentSHE| within |sessionHistory|, minus 1.
+  1. Let |backwardIndex| be the index of |activeSHE| within |sessionHistory|, minus 1.
 
   1. While |backwardIndex| > 0:
 
     1. Let |she| be |sessionHistory|[|backwardIndex|].
 
-    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/prepend=] |she| to |navigationAPISHEs|.
+    1. If |she|'s [=session history entry/document state=]'s [=document state/origin=] is [=same origin=] with |activeSHE|'s [=session history entry/document state=]'s [=document state/origin=], then [=list/prepend=] |she| to |navigationAPISHEs|.
 
     1. Otherwise, [=iteration/break=].
 
     1. Set |backwardIndex| to |backwardIndex| &minus; 1.
 
-  1. [=list/Append=] |currentSHE| to |navigationAPISHEs|.
+  1. [=list/Append=] |activeSHE| to |navigationAPISHEs|.
 
-  1. Let |forwardIndex| be the index of |currentSHE| within |sessionHistory|, plus 1.
+  1. Let |forwardIndex| be the index of |activeSHE| within |sessionHistory|, plus 1.
 
   1. While |forwardIndex| &lt; |sessionHistory|'s [=list/size=]:
 
     1. Let |she| be |sessionHistory|[|forwardIndex|].
 
-    1. If |she|'s [=session history entry/origin=] is [=same origin=] with |currentSHE|'s [=session history entry/origin=], then [=list/append=] |she| to |navigationAPISHEs|.
+    1. If |she|'s [=session history entry/document state=]'s [=document state/origin=] is [=same origin=] with |activeSHE|'s [=session history entry/document state=]'s [=document state/origin=], then [=list/append=] |she| to |navigationAPISHEs|.
 
     1. Otherwise, [=iteration/break=].
 
     1. Set |forwardIndex| to |forwardIndex| + 1.
 
-  1. Let |newCurrentIndex| be the index of |currentSHE| within |navigationAPISHEs|.
+  1. Let |newCurrentIndex| be the index of |activeSHE| within |navigationAPISHEs|.
 
   1. Let |newEntryList| be an empty list.
 
@@ -350,7 +340,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
     1. [=Fire an event=] named {{Navigation/currententrychange}} at |navigation| using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to |navigationTypeForCurrententrychange| and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |oldCurrentNHE|.
 
-    <p class="note">|oldCurrentNHE| is null the first time [=Navigation/update the entries=] is run for a {{Navigation}} object, i.e. on new {{Document}} creation. |oldCurrentNHE| and |navigation|'s [=Navigation/current entry=] are equal if we are [=reactivating=] a page in the back/forward cache. In both cases, {{Navigation/currententrychange}} does not fire.
+    <p class="note">|oldCurrentNHE| is null the first time [=Navigation/update the entries=] is run for a {{Navigation}} object, i.e. on new {{Document}} creation. |oldCurrentNHE| and |navigation|'s [=Navigation/current entry=] are equal if we are [=Document/reactivating=] a page in the back/forward cache. In both cases, {{Navigation/currententrychange}} does not fire.
 
   1. [=list/For each=] |disposedAHE| of |disposedNHEs|:
 
@@ -618,11 +608,11 @@ During any given navigation, the {{Navigation}} object needs to keep track of th
       <td>So that we can use it to fire the {{Navigation/navigate}} event after the the trip through the [=traversable navigable/session history traversal queue=].
     <tr>
       <td>Any {{NavigationResult/committed}} {{Promise}} that was returned
-      <td>Until the [=session history=] is updated (inside that same task)
+      <td>Until the session history is updated (inside that same task)
       <td>So that we can [=resolve=] or [=reject=] it appropriately.
     <tr>
       <td>Whether {{NavigateEvent/intercept()}} was called
-      <td>Until the [=session history=] is updated (inside that same task)
+      <td>Until the session history is updated (inside that same task)
       <td>So that we can suppress the normal scroll restoration logic in favor of the chosen {{NavigationInterceptOptions/scroll}} option value.
 </table>
 
@@ -678,7 +668,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 <div algorithm>
   To <dfn for="Navigation">set the upcoming non-traverse navigation</dfn> given a {{Navigation}} |navigation|, a JavaScript value |info|, and a [=serialized state=]-or-null |serializedState|:
 
-  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant Realm=].
+  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant realm=].
 
   1. [=Mark as handled=] |finishedPromise|.
 
@@ -706,7 +696,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 <div algorithm>
   To <dfn for="Navigation">set an upcoming traverse navigation</dfn> given a {{Navigation}} |navigation|, a string |key|, and a JavaScript value |info|:
 
-  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant Realm=].
+  1. Let |committedPromise| and |finishedPromise| be [=a new promise|new promises=] created in |navigation|'s [=relevant realm=].
 
   1. [=Mark as handled=] |finishedPromise|.
 
@@ -838,9 +828,13 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 <div algorithm>
   The <dfn method for="Navigation">navigate(|url|, |options|)</dfn> method steps are:
 
-  1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=an early error result=] for a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
-
   1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated document=].
+
+  1. Let |navigable| be |navigation|'s [=relevant global object=]'s [=Window/navigable=].
+
+  1. [=Assert=]: |navigable| is not null.
+
+  1. <a spec="HTML" lt="parse a URL">Parse</a> |url| relative to [=this=]'s [=relevant settings object=]. If that returns failure, then return [=an early error result=] for a "{{SyntaxError}}" {{DOMException}}. Otherwise, let |urlRecord| be the <a spec="HTML">resulting URL record</a>.
 
   1. If |options|["{{NavigationNavigateOptions/history}}"] is "{{NavigationHistoryBehavior/push}}", and any of the following are true:
 
@@ -865,15 +859,37 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
-  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{NavigationNavigateOptions/history}}"] is "{{NavigationHistoryBehavior/replace}}" or if |document| is not <a spec="HTML">completely loaded</a>; otherwise, "<a for="history handling behavior">`default`</a>".
+  1. Let |historyHandling| be "<a for="history handling behavior">`replace`</a>" if |options|["{{NavigationNavigateOptions/history}}"] is "{{NavigationHistoryBehavior/replace}}" or if |document| is not <a spec="HTML">completely loaded</a>; otherwise, "<a for="history handling behavior">`push`</a>".
 
-  1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and |historyHandling|.
+  1. If |document| is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. If |document|'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
+
+  1. Let |ongoingNavigation| be the result of [=Navigation/setting the upcoming non-traverse navigation=] for |navigation| given |info|.
+
+  1. <a spec="HTML">Navigate</a> |navigable| to |urlRecord| using |document|, with <i>[=navigate/historyHandling=]</i> set to |historyHandling| and <i>[=navigate/navigationAPIState=]</i> set to |serializedState|.
+
+     <p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{Navigation/navigate()|navigation.navigate()}} can only be accessed by code with direct synchronous access to the {{Window/navigation}} property. Thus, we avoid the complications around tracking the source document, and we don't need to deal with the <a spec="HTML">allowed by sandboxing to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{Navigation}} object itself.
+
+  1. If |navigation|'s [=Navigation/upcoming non-traverse navigation=] is |ongoingNavigation|, then:
+
+    <p class="note">This means the <a spec="HTML">navigate</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=Navigation/promote the upcoming navigation to ongoing=].
+
+    1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to null.
+
+    1. Return [=an early error result=] for an "{{AbortError}}" {{DOMException}}.
+
+  1. Return «[ "{{NavigationResult/committed}}" → |ongoingNavigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |ongoingNavigation|'s [=navigation API method navigation/finished promise=] ]».
 </div>
 
 <div algorithm>
   The <dfn method for="Navigation">reload(|options|)</dfn> method steps are:
 
-  1. Let |urlRecord| be [=this=]'s [=relevant global object=]'s [=active document=]'s [=Document/URL=].
+  1. Let |document| be [=this=]'s [=relevant global object=]'s [=associated document=].
+
+  1. Let |navigable| be |navigation|'s [=relevant global object=]'s [=Window/navigable=].
+
+  1. [=Assert=]: |navigable| is not null.
 
   1. Let |serializedState| be null.
 
@@ -891,29 +907,17 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |info| be |options|["{{NavigationOptions/info}}"] if it exists; otherwise, undefined.
 
-  1. Return the result of [=performing a non-traverse navigation API navigation=] given [=this=], |urlRecord|, |serializedState|, |info|, and "<a for="history handling behavior">`reload`</a>".
-</div>
+  1. If |document| is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
-<div algorithm>
-  To <dfn>perform a non-traverse navigation API navigation</dfn> given a {{Navigation}} object |navigation|, a [=URL=] |url|, a [=serialized state=] |serializedState|, a JavaScript value |info|, and a <a spec="HTML">history handling behavior</a> |historyHandling|:
-
-  1. If |navigation|'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. If |navigation|'s [=relevant global object=]'s [=associated Document=]'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
-
-  1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=Window/browsing context=].
-
-  1. [=Assert=]: |browsingContext| is not null.
-
-  1. [=Assert=]: |historyHandling| is either "<a for="history handling behavior">`replace`</a>", "<a for="history handling behavior">`reload`</a>", or "<a for="history handling behavior">`default`</a>".
+  1. If |document|'s <a spec="HTML">unload counter</a> is greater than 0, then return [=an early error result=] for an "{{InvalidStateError}}" {{DOMException}}.
 
   1. Let |ongoingNavigation| be the result of [=Navigation/setting the upcoming non-traverse navigation=] for |navigation| given |info|.
 
-  1. <a spec="HTML">Navigate</a> |browsingContext| to |url| with <i>[=navigate/historyHandling=]</i> set to |historyHandling|, <i>[=navigate/navigationAPIState=]</i> set to |serializedState|, and the <a spec="HTML">source browsing context</a> set to |browsingContext|.
+  1. <a spec="HTML">Reload</a> |navigable| with <i>[=reload/navigationAPIState=]</i> set to |serializedState|.
 
   1. If |navigation|'s [=Navigation/upcoming non-traverse navigation=] is |ongoingNavigation|, then:
 
-    <p class="note">This means the <a spec="HTML">navigate</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=Navigation/promote the upcoming navigation to ongoing=].
+    <p class="note">This means the <a spec="HTML">reload</a> algorithm bailed out before ever getting to the [=inner navigate event firing algorithm=] which would [=Navigation/promote the upcoming navigation to ongoing=].
 
     1. Set |navigation|'s [=Navigation/upcoming non-traverse navigation=] to null.
 
@@ -921,8 +925,6 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Return «[ "{{NavigationResult/committed}}" → |ongoingNavigation|'s [=navigation API method navigation/committed promise=], "{{NavigationResult/finished}}" → |ongoingNavigation|'s [=navigation API method navigation/finished promise=] ]».
 </div>
-
-<p class="note">Unlike {{Location/assign()|location.assign()}} and friends, which are exposed across [=same origin-domain|origin-domain=] boundaries, {{Navigation/navigate()|navigation.navigate()}} and {{Navigation/reload()|navigation.reload()}} can only be accessed by code with direct synchronous access to the {{Window/navigation}} property. Thus, we avoid the complications around tracking <a spec="HTML">source browsing contexts</a>, and we don't need to deal with the <a spec="HTML">allowed to navigate</a> check and its accompanying <i>[=navigate/exceptionsEnabled=]</i> flag. We just treat all navigations as being initiated by the {{Navigation}} object itself.
 
 <p algorithm>
   An <dfn>an early error result</dfn> for an exception |e| is a dictionary instance given by  «[ "{{NavigationResult/committed}}" → [=a promise rejected with=] |e|, "{{NavigationResult/finished}}" → [=a promise rejected with=] |e| ]».
@@ -934,9 +936,9 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/traverseTo(key)|traverseTo}}(<var ignore>key</var>)</code>
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/traverseTo(key, options)|traverseTo}}(<var ignore>key</var>, { {{NavigationOptions/info}} })</code>
   <dd>
-    <p>Traverses the <a spec=HTML>joint session history</a> to the closest joint session history entry that matches the {{NavigationHistoryEntry}} with the given key. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
+    <p>Traverses the session history to the closest [=session history entry=] that matches the {{NavigationHistoryEntry}} with the given key. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
+    <p>If a traversal to that [=session history entry=] is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
 
     <p>The returned promises will behave as follows:
 
@@ -949,9 +951,9 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/back()|back}}()</code>
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/back(options)|back}}({ {{NavigationOptions/info}} })</code>
   <dd>
-    <p>Traverse the <a spec=HTML>joint session history</a> to the closest previous joint session history entry which results in this frame navigating, i.e. results in {{Navigation/currentEntry|navigation.currentEntry}} updating. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
+    <p>Traverse the session history to the closest previous [=session history entry=] which results in this [=navigable=] navigating, i.e. results in {{Navigation/currentEntry|navigation.currentEntry}} updating. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
+    <p>If a traversal to that [=session history entry=] is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
 
     <p>The returned promises behave equivalently to those returned by {{Navigation/traverseTo()}}.
   </dd>
@@ -959,9 +961,9 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/forward()|forward}}()</code>
   <dt><code>{ {{NavigationResult/committed}}, {{NavigationResult/finished}} } =  {{Window/navigation}}.{{Navigation/forward(options)|forward}}({ {{NavigationOptions/info}} })</code>
   <dd>
-    <p>Traverse the <a spec=HTML>joint session history</a> to the closest forward joint session history entry which results in this frame navigating, i.e. results in {{Navigation/currentEntry|navigation.currentEntry}} updating. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
+    <p>Traverse the session history to the closest forward [=session history entry=] which results in this frame navigating, i.e. results in {{Navigation/currentEntry|navigation.currentEntry}} updating. {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
 
-    <p>If a traversal to that <a spec=HTML>joint session history</a> is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
+    <p>If a traversal to that [=session history entry=] is already in progress, then this will return the promises for that original traversal, and {{NavigationOptions/info}} will be ignored.
 
     <p>The returned promises behave equivalently to those returned by {{Navigation/traverseTo()}}.
   </dd>
@@ -998,8 +1000,6 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 </div>
 
 <div algorithm>
-  <p class="advisement">The following algorithm is specified in terms of the <a href="https://github.com/whatwg/html/pull/6315">session history rewrite pull request</a> against the HTML Standard, because the existing session history traversal infrastructure is broken enough that it's hard to build on. It is expected to track that work as it continues.</p>
-
   To <dfn>perform a navigation API traversal</dfn> given a {{Navigation}} object |navigation|, a string |key|, and a {{NavigationOptions}} |options|:
 
   1. Let |sourceDocument| be |navigation|'s [=relevant global object=]'s [=associated Document=].
@@ -1024,13 +1024,11 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
   1. Let |traversable| be |navigable|'s [=navigable/traversable navigable=].
 
-  1. Let |unsafeNavigationStartTime| be the [=unsafe shared current time=].
-
   1. Let |sourceSnapshotParams| be the result of [=snapshotting source snapshot params=] given |sourceDocument|.
 
   1. [=Append the following session history traversal steps=] to |traversable|:
 
-    1. Let |navigableEntries| be the result of [=navigable/getting the session history entries=] given |navigable|.
+    1. Let |navigableEntries| be the result of [=navigable/getting session history entries=] given |navigable|.
 
     1. Let |targetEntry| be the [=session history entry=] in |navigableEntries| whose [=session history entry/navigation API key=] equals |key|. If no such entry exists, then:
 
@@ -1044,11 +1042,11 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
        <p class="note">This can occur if a previously-queued-up traversal already took us to this session history entry. In that case that previous traversal will have dealt with |ongoingNavigation| already.
 
-    1. [=Apply the history step=] given by |targetEntry|'s [=session history entry/step=] to |traversable|, with <i>[=apply the history step/checkForUserCancellation=]</i> set to true, <i>[=apply the history step/unsafeNavigationStartTime=]</i> set to |unsafeNavigationStartTime|, <i>[=apply the history step/sourceSnapshotParams=]</i> set to |sourceSnapshotParams|, and <i>[=apply the history step/initiatorToCheck=]</i> set to |navigable|.
+    1. [=Apply the history step=] given by |targetEntry|'s [=session history entry/step=] to |traversable|, with <i>[=apply the history step/checkForUserCancellation=]</i> set to true, <i>[=apply the history step/sourceSnapshotParams=]</i> set to |sourceSnapshotParams|, and <i>[=apply the history step/initiatorToCheck=]</i> set to |navigable|.
 
-      - If this aborts due to user-canceled unloading <!-- or, in the future if we allow it to be cancelable, due to the {{Navigation/navigate}} event being canceled, --> then [=queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
+      - If this aborts due to user-canceled unloading or due to the {{Navigation/navigate}} event being canceled, then [=queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=finalize with an aborted navigation error=] given |navigation| and |ongoingNavigation|.
 
-      - If this aborts due to the initiator allowed-to-navigate check, then [=queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=finalize with an aborted navigation error=] given |navigation|, |ongoingNavigation|, and a [=new=] "{{SecurityError}}" {{DOMException}} created in |navigation|'s [=relevant Realm=].
+      - If this aborts due to the initiator allowed-to-navigate check, then [=queue a global task=] on the [=navigation and traversal task source=] given |sourceDocument|'s [=relevant global object=] to [=finalize with an aborted navigation error=] given |navigation|, |ongoingNavigation|, and a [=new=] "{{SecurityError}}" {{DOMException}} created in |navigation|'s [=relevant realm=].
 
       <p class="advisement">As part of merging this spec into HTML, we would modify [=apply the history step=] to have well-specified hooks for communicating these conditions back to its caller.</p>
 
@@ -1352,11 +1350,11 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 <div algorithm="fire a traversal navigate event">
   To <dfn>fire a traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a [=session history entry=] <dfn for="fire a traversal navigate event">|destinationEntry|</dfn>, and an optional [=user navigation involvement=] <dfn for="fire a traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"):
 
-  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant realm=].
   1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to null.
-  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
+  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant realm=].
   1. Set |destination|'s [=NavigationDestination/URL=] to |destinationEntry|'s [=session history entry/URL=].
-  1. If |destinationEntry|'s [=session history entry/origin=] is [=same origin=] with |navigation|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
+  1. If |destinationEntry|'s [=session history entry/document state=]'s [=document state/origin=] is [=same origin=] with |navigation|'s [=relevant settings object=]'s [=environment settings object/origin=], then:
     1. Set |destination|'s [=NavigationDestination/key=] to |destinationEntry|'s [=session history entry/navigation API key=].
     1. Set |destination|'s [=NavigationDestination/id=] to |destinationEntry|'s [=session history entry/navigation API ID=].
     1. Set |destination|'s [=NavigationDestination/index=] to the result of [=getting the navigation API history index=] of |destinationEntry| within |navigation|.
@@ -1373,9 +1371,9 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 <div algorithm="fire a non-traversal navigate event">
   To <dfn>fire a non-traversal `navigate` event</dfn> at a {{Navigation}} |navigation| given a {{NavigationType}} <dfn for="fire a non-traversal navigate event">|navigationType|</dfn>, a [=URL=] <dfn for="fire a non-traversal navigate event">|destinationURL|</dfn>, a boolean <dfn for="fire a non-traversal navigate event">|isSameDocument|</dfn>, an optional [=user navigation involvement=] <dfn for="fire a non-traversal navigate event">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"), an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|state|</dfn> (default null), an optional [=entry list=] or null <dfn for="fire a non-traversal navigate event">|formDataEntryList|</dfn> (default null), and an optional [=serialized state=]-or-null <dfn for="fire a non-traversal navigate event">|classicHistoryAPISerializedData|</dfn> (default null):
 
-  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant realm=].
   1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to |classicHistoryAPISerializedData|.
-  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
+  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant realm=].
   1. Set |destination|'s [=NavigationDestination/URL=] to |destinationURL|.
   1. Set |destination|'s [=NavigationDestination/key=] to null.
   1. Set |destination|'s [=NavigationDestination/id=] to null.
@@ -1388,9 +1386,9 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 <div algorithm="fire a download-requested navigate event">
   To <dfn>fire a download-requested `navigate` event</dfn> at a {{Navigation}} |navigation| given a [=URL=] <dfn for="fire a download-requested navigate event">|destinationURL|</dfn>, a [=user navigation involvement=] <dfn for="fire a download-requested navigate event">|userInvolvement|</dfn>, and a string <dfn for="fire a download-requested navigate event">|filename|</dfn>:
 
-  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant Realm=].
+  1. Let |event| be the result of [=creating an event=] given {{NavigateEvent}}, in |navigation|'s [=relevant realm=].
   1. Set |event|'s [=NavigateEvent/classic history API serialized data=] to null.
-  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant Realm=].
+  1. Let |destination| be a [=new=] {{NavigationDestination}} created in |navigation|'s [=relevant realm=].
   1. Set |destination|'s [=NavigationDestination/URL=] to |destinationURL|.
   1. Set |destination|'s [=NavigationDestination/key=] to null.
   1. Set |destination|'s [=NavigationDestination/id=] to null.
@@ -1410,14 +1408,14 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 
        <p class="note">In this case the [=navigation API method navigation/committed promise=] and [=navigation API method navigation/finished promise=] will never fulfill, since we never create {{NavigationHistoryEntry}}s for the initial `about:blank` {{Document}} so we have nothing to [=resolve=] them with.
     1. Return true.
-  1. Let |browsingContext| be |navigation|'s [=relevant global object=]'s [=browsing context=].
+  1. Let |navigable| be |navigation|'s [=relevant global object=]'s [=Window/navigable=].
   1. Let |document| be |navigation|'s [=relevant global object=]'s [=associated document=].
   1. If |document| <a spec="HTML">can have its URL rewritten</a> to |destination|'s [=NavigationDestination/URL=], and either |destination|'s [=NavigationDestination/is same document=] is true or |navigationType| is not "{{NavigationType/traverse}}", then initialize |event|'s {{NavigateEvent/canIntercept}} to true. Otherwise, initialize it to false.
   1. Let |traverseCanBeCanceled| be true if |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>" or |navigation|'s [=relevant global object=] has [=transient activation=]; otherwise, false.
      <p class="note">We are exploring the possibility of introducing the concept of a "consumable user activation" (i.e., a user activation that can be consumed like a transient user activation, but does not have the timeout of a transient user activation) instead of using transient activation here. This does not have a spec yet.
   1. If any of the following are true:
     * |navigationType| is not "{{NavigationType/traverse}}"; or
-    * |browsingContext| is a [=top-level browsing context=] and |traverseCanBeCanceled| is true
+    * |navigable| is a [=top-level traversable=] and |traverseCanBeCanceled| is true
 
     then initialize |event|'s {{Event/cancelable}} to true. Otherwise, initialize it to false.
   1. Initialize |event|'s {{Event/type}} to "{{Navigation/navigate}}".
@@ -1426,7 +1424,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Initialize |event|'s {{NavigateEvent/downloadRequest}} to |downloadRequestFilename|.
   1. If |ongoingNavigation| is not null, then initialize |event|'s {{NavigateEvent/info}} to |ongoingNavigation|'s [=navigation API method navigation/info=]. Otherwise, initialize it to undefined.
      <p class="note">At this point |ongoingNavigation|'s [=navigation API method navigation/info=] is no longer needed and can be nulled out instead of keeping it alive for the lifetime of the [=navigation API method navigation=].
-  1. Initialize |event|'s {{NavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |navigation|'s [=relevant Realm=].
+  1. Initialize |event|'s {{NavigateEvent/signal}} to a [=new=] {{AbortSignal}} created in |navigation|'s [=relevant realm=].
   1. Let |currentURL| be |document|'s [=Document/URL=].
   1. If all of the following are true:
     * |destination|'s [=NavigationDestination/is same document=] is true;
@@ -1435,7 +1433,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 
     then initialize |event|'s {{NavigateEvent/hashChange}} to true. Otherwise, initialize it to false.
   1. If |userInvolvement| is not "<code>[=user navigation involvement/none=]</code>", then initialize |event|'s {{NavigateEvent/userInitiated}} to true. Otherwise, initialize it to false.
-  1. If |formDataEntryList| is not null, then initialize |event|'s {{NavigateEvent/formData}} to a [=new=] {{FormData}} created in |navigation|'s [=relevant Realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
+  1. If |formDataEntryList| is not null, then initialize |event|'s {{NavigateEvent/formData}} to a [=new=] {{FormData}} created in |navigation|'s [=relevant realm=], associated to |formDataEntryList|. Otherwise, initialize it to null.
   1. [=Assert=]: |navigation|'s [=Navigation/ongoing navigate event=] is null.
   1. Set |navigation|'s [=Navigation/ongoing navigate event=] to |event|.
   1. [=Assert=]: |navigation|'s [=Navigation/ongoing navigation signal=] is null.
@@ -1470,14 +1468,14 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. If |event|'s [=NavigateEvent/was intercepted=] is true:
     1. Let |fromEntry| be the [=Navigation/current entry=] for |navigation|.
     1. [=Assert=]: |fromEntry| is not null.
-    1. Set |navigation|'s [=Navigation/transition=] to a [=new=] {{NavigationTransition}} created in |navigation|'s [=relevant Realm=], whose [=NavigationTransition/navigation type=] is |navigationType|, [=NavigationTransition/from entry=] is |fromEntry|, and whose [=NavigationTransition/finished promise=] is [=a new promise=] created in |navigation|'s [=relevant Realm=].
+    1. Set |navigation|'s [=Navigation/transition=] to a [=new=] {{NavigationTransition}} created in |navigation|'s [=relevant realm=], whose [=NavigationTransition/navigation type=] is |navigationType|, [=NavigationTransition/from entry=] is |fromEntry|, and whose [=NavigationTransition/finished promise=] is [=a new promise=] created in |navigation|'s [=relevant realm=].
     1. [=Mark as handled=] |navigation|'s [=Navigation/transition=]'s [=NavigationTransition/finished promise=].
       <p class="note">See <a href="#note-finished-promise-mark-as-handled">the discussion about other finished promises</a> as to why this is done.</p>
     1. If |navigationType| is "{{NavigationType/traverse}}", then set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to true.
        <p class="note">If |event|'s [=NavigateEvent/scroll behavior=] was set to "{{NavigationScrollBehavior/after-transition}}", then we will [=potentially process scroll behavior|potentially perform scroll restoration=] below. Otherwise, there will be no scroll restoration. That is, no navigation which is intercepted by {{NavigateEvent/intercept()}} goes through the normal scroll restoration process; scroll restoration for such navigations is either done manually, by the web developer, or is done after the transition.
     1. If |navigationType| is "{{NavigationType/push}}" or "{{NavigationType/replace}}", then run the [=URL and history update steps=] given |document| and |event|'s {{NavigateEvent/destination}}'s [=NavigationDestination/URL=], with <i>[=URL and history update steps/serializedData=]</i> set to |event|'s [=NavigateEvent/classic history API serialized data=] and <i>[=URL and history update steps/historyHandling=]</i> set to |navigationType|.
 
-       <p class="note">If |navigationType| is "{{NavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=session history/current entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a>.
+       <p class="note">If |navigationType| is "{{NavigationType/reload}}", then we are converting a reload into a "same-document reload", for which the <a spec="HTML">URL and history update steps</a> are not appropriate. Navigation API-related stuff still happens, such as updating the [=navigable/active session history entry=]'s [=session history entry/navigation API state=] if this was caused by a call to {{Navigation/reload()|navigation.reload()}}, and all the <a href="#ongoing-state">ongoing navigation tracking</a>.
   1. If |endResultIsSameDocument| is true:
     1. Let |promisesList| be an empty [=list=].
     1. [=list/For each=] |handler| of |event|'s [=NavigateEvent/navigation handler list=]:
@@ -1519,7 +1517,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 
   1. Set |navigation|'s [=Navigation/focus changed during ongoing navigation=] to false.
   1. Set |navigation|'s [=Navigation/suppress normal scroll restoration during ongoing navigation=] to false.
-  1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |navigation|'s [=relevant Realm=].
+  1. If |error| was not given, then set |error| to a [=new=] "{{AbortError}}" {{DOMException}}, created in |navigation|'s [=relevant realm=].
   1. If |navigation|'s [=Navigation/ongoing navigate event=] is non-null, then:
     1. Set |navigation|'s [=Navigation/ongoing navigate event=]'s [=Event/canceled flag=] to true.
     1. Set |navigation|'s [=Navigation/ongoing navigate event=] to null.
@@ -1535,18 +1533,18 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
 </div>
 
 <div algorithm>
-  To <dfn>inform the navigation API about canceling navigation</dfn> in a [=browsing context=] |bc|:
+  To <dfn>inform the navigation API about canceling navigation</dfn> in a [=navigable=] |navigable|:
 
-  1. Let |navigation| be |bc|'s [=browsing context/active window=]'s [=Window/navigation API=].
+  1. Let |navigation| be |navigable|'s [=navigable/active window=]'s [=Window/navigation API=].
   1. If |navigation|'s [=Navigation/ongoing navigation signal=] is null, then return.
   1. [=Finalize with an aborted navigation error=] given |navigation| and |navigation|'s [=Navigation/ongoing navigation=].
 </div>
 
 <div algorithm>
-  To <dfn>inform the navigation API about browsing context discarding</dfn> given a [=browsing context=] |bc|:
+  To <dfn>inform the navigation API about nested navigable destruction</dfn> given a [=navigable=] |navigable|:
 
-  1. [=Inform the navigation API about canceling navigation=] in |bc|.
-  1. Let |navigation| be |bc|'s [=browsing context/active window=]'s [=Window/navigation API=].
+  1. [=Inform the navigation API about canceling navigation=] in |navigable|.
+  1. Let |navigation| be |navigable|'s [=navigable/active window=]'s [=Window/navigation API=].
   1. Let |traversals| be a [=list/clone=] of |navigation|'s [=Navigation/upcoming traverse navigations=].
   1. For each |traversal| of |traversals|: [=finalize with an aborted navigation error=] given |navigation| and |traversal|.
 </div>
@@ -1671,7 +1669,7 @@ Each {{NavigationHistoryEntry}} has an associated <dfn for="NavigationHistoryEnt
 
   1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then return null.
   1. Let |she| be [=this=]'s [=NavigationHistoryEntry/session history entry=].
-  1. If |she|'s [=session history entry/document=] does not equal [=this=]'s [=relevant global object=]'s [=associated Document=], and |she|'s [=session history entry/policy container=]'s [=policy container/referrer policy=] is <a>"`no-referrer`"</a> or <a>"`origin`"</a>, then return null.
+  1. If |she|'s [=session history entry/document=] does not equal [=this=]'s [=relevant global object=]'s [=associated Document=], and |she|'s [=session history entry/document state=]'s [=document state/request referrer policy=] is <a>"`no-referrer`"</a> or <a>"`origin`"</a>, then return null.
   1. Return |she|'s [=session history entry/URL=], [=URL serializer|serialized=].
 </div>
 
@@ -1713,33 +1711,213 @@ The following are the [=event handlers=] (and their corresponding [=event handle
       <td><dfn event for="NavigationHistoryEntry">dispose</dfn>
 </table>
 
-<h2 id="navigate-patches">Patches to fire the {{Navigation/navigate}} event</h2>
+<h2 id="patches">HTML Standard monkeypatches</h2>
 
-The following section details monkeypatches to [[!HTML]] that cause the {{Navigation/navigate}} event to be fired appropriately, and for canceling the event to cancel the navigation. The first few sections detail slight tweaks to existing algorithms to pass through useful information into the navigation and history traversal algorithms. Then, [[#navigate-algorithm-patches]] contains the actual firing of the event.
+<h3 id="session-history-new-she-fields">New [=session history entry=] items</h3>
 
-<h3 id="form-patches">Form submission patches</h3>
+Each [=session history entry=] gains the following new [=struct/items=]:
 
-To properly thread the form entry list from its creation through to {{NavigateEvent}}'s {{NavigateEvent/formData}} property, we need the following modifications:
+* <dfn for="session history entry">navigation API key</dfn>, a string, initially set to the result of [=generating a random UUID=]
 
-<div algorithm="form navigate">
-  Modify the <a spec="HTML">navigate</a> algorithm to take an [=entry list=] or null <dfn for="navigate">|entryList|</dfn> (default null), replacing its |navigationType| parameter. Then insert a step somewhere early in the algorithm to convert this back into the |navigationType| variable used by the [=in parallel=] section that is ultimately passed to [[CSP]]:
+* <dfn for="session history entry">navigation API ID</dfn>, a string, initially set to the result of [=generating a random UUID=]
 
-  1. Let |navigationType| be "`form-submission`" if |entryList| is non-null; otherwise, "`other`".
+* <dfn for="session history entry">navigation API state</dfn>, which is [=serialized state=] or null, initially null
+
+<h3 id="navigate-patch">Navigate</h3>
+
+<div algorithm="navigate" id="navigate-modifications">
+  Modify the <a spec="HTML">navigate</a> algorithms parameter list as follows:
+
+  * Add an optional [=entry list=] or null <dfn for="navigate">|entryList|</dfn> (default null)
+  * Add an optional [=user navigation involvement=] <dfn for="navigate">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>")
+  * Add an optional [=serialized state=] or null <dfn for="navigate">|navigationAPIState|</dfn> (default null)
+  * Remove |cspNavigationType|
+
+  Add the following step early in the algorithm:
+
+  1. Let |cspNavigationType| be "`form-submission`" if |entryList| is non-null; otherwise, "`other`".
+
+  Add the following steps right before we go [=in parallel=]:
+
+  1. Let |navigation| be |navigable|'s [=navigable/active window=]'s [=Window/navigation API=].
+  1. If all of the following are false:
+    * |userInvolvement| is "<code>[=user navigation involvement/browser UI=]</code>"
+    * |navigable|'s [=navigable/active document=]'s [=Document/origin=] is not [=same origin-domain=] with <var ignore>sourceDocument</var>'s [=Document/origin=]
+    * |navigable|'s [=navigable/active document=]'s <a spec="HTML">is initial about:blank</a> is true
+    * |url|'s [=url/scheme=] is not a [=fetch scheme=]
+
+    then:
+
+      1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to false, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a non-traversal navigate event/formDataEntryList=]</i> set to |entryList|, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to |url|, and <i>[=fire a non-traversal navigate event/state=]</i> set to |navigationAPIState|.
+      1. If |continue| is false, return.
+
+    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause [=navigate to a fragment|fragment navigations=] <em>do</em> fire the {{Navigation/navigate}} event; those are handled as part of the [=navigate to a fragment=] algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
 </div>
 
-<div algorithm="plan to navigate">
-  Modify the <a spec="HTML">plan to navigate</a> algorithm to take an additional optional argument |entryList| (default null). Then, modify the step which calls <a spec="HTML">navigate</a> to pass it along:
+<h3 id="fragment-patch">Navigate to a fragment</h3>
 
-  1. <a spec="HTML">Navigate</a> <var ignore>target browsing context</var> to <var ignore>destination</var>, with <i>[=navigate/historyHandling=]</i> set to <var ignore>historyHandling</var> <del>and <i>[=navigate/navigationType=]</i> set to "`form-submission`"</del><ins><i>[=navigate/entryList=]</i> set to |entryList|</ins>.
+<div algorithm="navigate to a fragment">
+  Modify the [=navigate to a fragment=] algorithm to take a new |userInvolvement| argument. Then prepend the following steps:
+
+  1. Let |navigation| be <var ignore>navigable</var>'s [=navigable/active window=]'s [=Window/navigation API=].
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
+  1. If |continue| is false, then return.
+
+  Modify the step which creates the new <var ignore>historyEntry</var> to also copy over the [=session history entry/navigation API state=] from the [=navigable/active session history entry=].
 </div>
 
-<div algorithm="submit as entity body">
-  Modify the <a spec="HTML">submit as entity body</a> algorithm to pass <var ignore>entry list</var> along to <a spec="HTML">plan to navigate</a> as a second argument.
 </div>
 
-<h3 id="user-initiated-patches">Browser UI/user-initiated patches</h3>
+<h3 id="push-replace-state-patch">Shared history push/replace state steps</h3>
 
-To more rigorously specify when a navigation is initiated from browser UI or by the user interacting with <{a}>, <{area}>, and <{form}> elements, both for the purposes of the {{NavigateEvent}}'s {{NavigateEvent/userInitiated}} property and for prohibiting interception of certain types of browser-UI-initiated navigations, we need the following modifications:
+<div algorithm="shared history push/replace steps">
+  Modify the <a>shared history push/replace state steps</a> by inserting the following steps right before the step that runs the [=URL and history update steps=].
+
+  1. Let |navigation| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/navigation API=].
+  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
+  1. If |continue| is false, then return.
+</div>
+
+<h3 id="finalize-patch">Finalize a cross-document navigation</h3>
+
+<div algorithm="finalize a cross-document navigation">
+  Insert the following step into [=finalize a cross-document navigation=]'s "Otherwise" branch (where |entryToReplace| is non-null):
+
+  1. If |historyEntry|'s [=session history entry/document state=]'s [=document state/origin=] is the [=same origin|same=] as |entryToReplace|'s [=session history entry/document state=]'s [=document state/origin=], then set |historyEntry|'s [=session history entry/navigation API key=] to |entryToReplace|'s [=session history entry/navigation API key=].
+</div>
+
+<h3 id="reload-patch">Reload</h3>
+
+<div algorithm="reload" id="reload-modifications">
+  Modify the <a spec="HTML">reload</a> algorithm to take an optional <dfn for="reload">|navigationAPIState|</dfn> (default null) and an optional <dfn for="reload">|userInvolvement|</dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, prepend the following steps:
+
+  1. Let |navigation| be |navigable|'s [=navigable/active window=]'s [=Window/navigation API=].
+  1. If both of the following are true:
+    * |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>"
+    * |navigable|'s [=navigable/active document=]'s <a spec="HTML">is initial about:blank</a> is false
+
+    then:
+
+      1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to "{{NavigationType/reload}}", <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to false, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to |navigable|'s [=navigable/active document=]'s [=Document/URL=], and <i>[=fire a non-traversal navigate event/state=]</i> set to |navigationAPIState|.
+      1. If |continue| is false, return.
+</div>
+
+<h3 id="traverse-patch">Traversal</h3>
+
+Modify the [=traverse the history by a delta=] algorithm to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Pass it along when calling [=apply the history step=], which also needs to be modified to take such a argument.
+
+<h3 id="navigate-event-download-patches">Download a hyperlink</h3>
+
+The current specification for <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> has several known issues, most notably <a href="https://github.com/whatwg/html/issues/5548">whatwg/html#5548</a> which indicates that the specification should probably be merged into the general <a spec="HTML" lt="navigate">navigation</a> algorithm.
+
+For the purposes of the navigation API, we need to fire the appropriate {{Navigation/navigate}} event, with {{NavigateEvent/downloadRequest}} set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.
+
+<div algorithm="download the hyperlink">
+<ul>
+  <li><p>Ensure that the algorithm gets an appropriate [=user navigation involvement=] value, |userInvolvement|, passed to it. This is similar to the modifications for the <a spec="HTML">follow the hyperlink</a> algorithm described in [[#call-site-patch-userinvolvement]]. One key difference is that, for the case where the user indicates a preference for downloading, |userInvolvement| must be "<code>[=user navigation involvement/browser UI=]</code>", even if it is triggered as part of [=EventTarget/activation behavior=].
+
+  <li><p>Separate out the sandboxing checks in <a spec="HTML">allowed to download</a> from the user-safeguarding checks. If the sandboxing checks fail, then the user agent must not fire a {{Navigation/navigate}} event. Whereas, the user-safeguarding checks generally happen later, probably [=in parallel=].
+
+  <li>
+    <p>Before we reach the point at which it's time to actually go in parallel and fetch content from the server, and after the <a spec="HTML">cannot navigate</a> check, the synchronously-possible part of the <a spec="HTML">allowed to download</a> check, the URL parsing step, and the hyperlink suffix appending step, run the equivalent of the following:
+
+    1. If |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
+      1. Let |navigation| be |subject|'s [=relevant global object=]'s [=Window/navigation API=].
+      1. Let |filename| be the value of |subject|'s <{a/download}> attribute.
+      1. Let |continue| be the result of [=firing a download-requested navigate event=] at |navigation| with <i>[=fire a download-requested navigate event/destinationURL=]</i> set to |URL|, <i>[=fire a download-requested navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a download-requested navigate event/filename=]</i> set to |filename|.
+      1. If |continue| is false, then return.
+
+    <p>Here the variables |subject| and |URL| refer to the same things they currently do in the <a spec="HTML">download the hyperlink</a> algorithm, i.e. the <{a}> or <{area}> element in question, and the parsed [=URL=].
+
+    <p>If we end up triggering the <a spec="HTML">navigate</a> algorithm from the <a spec="HTML">download the hyperlink</a> algorithm, then these steps won't be directly incorporated into the <a spec="HTML">download the hyperlink</a> algorithm. Instead, the modifications in [[#navigate-patch]] will get a bit more complicated, so as to use [=fire a download-requested navigate event=] with the above arguments, instead of [=fire a non-traversal navigate event=], for downloads.
+</ul>
+</div>
+
+<h3 id="cancel-navigation">Canceling navigations</h3>
+
+The navigation API introduces a new complication into canceling navigations, which is that a navigation might have been fully committed, but still be "ongoing", in the sense of [[#ongoing-state]]. That is, consider a case such as:
+
+<xmp highlight="js">
+navigation.addEventListener("navigate", e => {
+  e.intercept({
+    handler() {
+      return new Promise(r => setTimeout(r, 1_000));
+    }
+  });
+  e.signal.addEventListener("abort", () => { ... });
+});
+
+const p = navigation.navigate("#1");
+
+setTimeout(() => window.stop(), 500);
+</xmp>
+
+Without the {{Navigation/navigate}} event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the {{Window/stop()}} call does nothing. But because we have used the {{Navigation/navigate}} handler to indicate that the navigation is still ongoing, we want the {{Window/stop()}} call to [=finalize with an aborted navigation error|finalize that navigation with an aborted navigation error=], in particular causing `p` to reject and the {{AbortSignal/abort}} event to fire on `e.signal`.
+
+We thus need to add the following integrations:
+
+* Wherever the spec currently modifies a [=navigable=] |navigable|'s [=navigable/ongoing navigation=], and thus cancels not-yet-committed navigations, we also [=inform the navigation API about canceling navigation=] in |navigable|. (Regardless of whether or not the [=navigable/ongoing navigation=] is set to a [=navigation ID=] or not.) This likely involves introducing a small abstraction around modifying the ongoing navigation.
+
+* When <a spec="HTML">destroy the nested navigable</a> algortihm runs given a [=navigable=] |navigable|, we also [=inform the navigation API about nested navigable destruction=] given |navigable|.
+
+It would probably be a good idea to rename [=navigable=]'s [=navigable/ongoing navigation=] concept and/or {{Navigation}} objects' [=Navigation/ongoing navigation=], to avoid the naming overlap, since they mean slightly different things.
+
+<h3 id="navigate-event-traversal-patches">Check if unloading is user-canceled</h3>
+
+<div algorithm="check if unloading is user-canceled">
+  Modify the [=check if unloading is user-canceled=] algorithm as follows:
+
+  To [=check if unloading is user-canceled=] given a [=list=] of [=navigables=] |navigablesCrossingDocuments|, an optional [=navigable=] |traversable|, an optional integer |targetStep| (default null), and an optional [=user navigation involvement=] |userInvolvement| (default "<code>[=user navigation involvement/none=]</code>"):
+  1. Let <var ignore>unloadPromptShown</var> be false.
+  1. Let |unloadPromptCanceled| be false.
+  1. Let |changingNavigables| be a [=list=] of [=navigables=], initially empty.
+  1. If |traversable| is not null and |targetStep| is not null, append the result of [=get all navigables whose current session history entry will change or reload=] given |traversable| and |targetStep| to |changingNavigables|.
+  1. Otherwise, append |navigablesCrossingDocuments| to |changingNavigables|.
+  1. Let |totalTasks| be the size of |changingNavigables|.
+  1. Let |completedTasks| be 0.
+  1. If |traversable| is not null and |changingNavigables| [=list/contains=] |traversable|:
+    1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
+    1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/document state=]'s [=document state/origin=] is the [=same origin|same=] as |traversable|'s [=navigable/current session history entry=]'s [=session history entry/document state=]'s [=document state/origin=]; otherwise, false.
+    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |traversable|'s [=navigable/active window=] to run the following steps:
+      1. If |isSameOrigin| is true:
+        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
+        1. If |navigateEventResult| is false, then set |unloadPromptCanceled| to true.
+      1. If |unloadPromptCanceled| is false and |navigablesCrossingDocuments| [=list/contains=] |traversable|:
+        1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
+      1. Increment |completedTasks|.
+    1. Wait for |completedTasks| to be 1.
+    1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>";
+  1. For each |navigable| of |changingNavigables|:
+    1. If |navigable| equals |traversable|, then [=iteration/continue=].
+    1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
+    1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/document state=]'s [=document state/origin=] is the [=same origin|same=] as |navigable|'s [=navigable/current session history entry=]'s [=session history entry/document state=]'s [=document state/origin=]; otherwise, false.
+    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigable|'s [=navigable/active window=] to run the following steps:
+      1. If |isSameOrigin| is true:
+        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
+        1. [=Assert=]: |navigateEventResult| is true.
+      1. If |navigablesCrossingDocuments| [=list/contains=] |navigable|:
+        1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
+      1. Increment |completedTasks|.
+  1. Wait for |completedTasks| to be |totalTasks|.
+  1. Return |unloadPromptCanceled|.
+</div>
+
+<div algorithm="apply the history step">
+  Modify the [=apply the history step=] algorithm as follows:
+
+  Change step 5 (which runs the [=check if unloading is user-canceled=] steps) to:
+  1. If <var ignore>checkForUserCancelation</var> is true, and the result of [=checking if unloading is user-canceled=] given <var ignore>navigablesCrossingDocuments</var>, <var ignore>traversable</var>, <var ignore>targetStep</var> and <var ignore>userInvolvement</var> is "<code>refuse</code>", then return.
+
+(Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#traverse-patch]].)
+
+  Before the update document for history step application (currently step 14.10.3), add the following step:
+  1. If <var ignore>changingNavigableContinuation</var>'s [=update-only=] is true, [=maybe continue the navigate event=] given <var ignore>displayedDocument</var>'s [=relevant global object=]'s [=Window/navigation API=].
+
+</div>
+
+Potentially rename [=check if unloading is user-canceled=] to something like "check for unloading cancelation" to reflect that we are now allowing programmatic cancelation, not just user cancelation.
+
+<h3 id="new-user-navigation-involvement">User navigation involvement</h3>
 
 Introduce (right before the definition of the <a spec="HTML">navigate</a> algorithm) the concept of a <dfn>user navigation involvement</dfn>, which is one of the following:
 
@@ -1750,23 +1928,15 @@ Introduce (right before the definition of the <a spec="HTML">navigate</a> algori
 : "<dfn for="user navigation involvement"><code>none</code></dfn>"
 :: The navigation was not initiated by the user
 
-Define the <dfn for="Event">user navigation involvement</dfn> for an {{Event}} |event| as "<code>[=user navigation involvement/activation=]</code>" if |event|'s {{Event/isTrusted}} attribute is initialized to true, and "<code>[=user navigation involvement/none=]</code>" otherwise.
-
-Modify the <a spec="HTML">navigate</a> algorithm to take an optional named argument <dfn for="navigate"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Then, update the paragraph talking about browser-UI initiated navigation as follows:
-
-<blockquote>
-  A user agent may provide various ways for the user to explicitly cause a browsing context to <a spec="HTML">navigate</a>, in addition to those defined in this specification.<ins> Such cases must set the <i>[=navigate/userInvolvement=]</i> argument to "<code>[=user navigation involvement/browser UI=]</code>".</ins>
-</blockquote>
-
 <p class="note">This infrastructure partially solves <a href="https://github.com/whatwg/html/issues/5381">whatwg/html#5381</a>, and it'd be ideal to update the [:Sec-Fetch-Site:] spec at the same time.</p>
 
-Modify the [=navigate to a fragment=] algorithm to take a new <var ignore>userInvolvement</var> argument. Then, update the call to it from <a spec="HTML">navigate</a> to set <i>[=navigate/userInvolvement=]</i> to this <var ignore>userInvolvement</var> value.
+Define the <dfn for="Event">user navigation involvement</dfn> for an {{Event}} |event| as "<code>[=user navigation involvement/activation=]</code>" if |event|'s {{Event/isTrusted}} attribute is initialized to true, and "<code>[=user navigation involvement/none=]</code>" otherwise.
 
-Modify the [=traverse the history by a delta=] algorithm to take an optional named argument <dfn for="traverse the history by a delta"><var ignore>userInvolvement</var></dfn> (default "<code>[=user navigation involvement/none=]</code>"). Pass it along when calling [=apply the history step=], which also needs to be modified to take such a argument. Then, update the paragraph talking about user-initiated navigation as follows:
+<h3 id="call-site-patch">Various call site patches</h3>
 
-<blockquote>
-  When the user navigates through a [=browsing context=], e.g. using a browser's back and forward buttons, the user agent must <a spec="HTML">traverse the history by a delta</a> with the [=top-level traversable=] being operated on, a delta equivalent to the action specified by the user<ins>, and <i>[=traverse the history by a delta/userInvolvement=]</i> set to "<code>[=user navigation involvement/browser UI=]</code>"</ins>.
-</blockquote>
+<h4 id="call-site-patch-userinvolvement">User navigation involvement</h4>
+
+Modify the <a href="https://html.spec.whatwg.org/multipage/document-lifecycle.html#nav-traversal-ui">Browser user interface considerations</a> section to require setting [=navigate=]'s <i>[=navigate/userInvolvement=]</i>, <a spec="HTML">reload</a>'s <i>[=reload/userInvolvement=]</i>, and [=traverse the history by a delta=]'s <i>[=traverse the history by a delta/userInvolvement=]</i> all to "<code>[=user navigation involvement/browser UI=]</code>" for all operations in that section.
 
 <hr>
 
@@ -1806,200 +1976,17 @@ Modify the no-<a spec="HTML">submit button</a> case for <a href="https://html.sp
 
 <p class="note">The case of implicit submission when a submit button is present is automatically taken care of because it fires a (trusted) click event at the submit button.</p>
 
-<h3 id="navigate-algorithm-patches">Navigation algorithm updates</h3>
+<hr>
 
-With the above infrastructure in place, we can actually fire and handle the {{Navigation/navigate}} event in the following locations:
+Update the call to from [=navigate=] into [=navigate to a fragment=] pass along <var ignore>userInvolvement</var>.
 
-<div algorithm="shared history push/replace steps">
-  Modify the <a>shared history push/replace state steps</a> by inserting the following steps right before the step that runs the [=URL and history update steps=].
+<h4 id="call-site-patch-entrylist">Form entry list</h4>
 
-  1. Let |navigation| be <var ignore>history</var>'s [=relevant global object=]'s [=Window/navigation API=].
-  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>newURL</var>, and <i>[=fire a non-traversal navigate event/classicHistoryAPISerializedData=]</i> set to <var ignore>serializedData</var>.
-  1. If |continue| is false, then return.
-</div>
+Modify the <a spec="HTML">plan to navigate</a> algorithm to take an additional optional argument <var ignore>entryList</var ignore> (default null). Then, modify the step which calls <a spec="HTML">navigate</a> to pass it along as <i>[=navigate/entryList=]</i>, in place of <var ignore>cspNavigationType</var>.
 
-<div algorithm="navigate to a fragment">
-  Modify the [=navigate to a fragment=] algorithm by prepending the following steps. Recall that per [[#user-initiated-patches]] we have introduced a |userInvolvement| argument.
+Modify the <a spec="HTML">submit as entity body</a> algorithm to pass <var ignore>entry list</var> along to <a spec="HTML">plan to navigate</a> as a second argument.
 
-  1. Let |navigation| be <var ignore>navigable</var>'s [=navigable/active window=]'s [=Window/navigation API=].
-  1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| given with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to <var ignore>historyHandling</var>, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to true, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>.
-  1. If |continue| is false, return.
-</div>
-
-<div algorithm="navigate" id="navigate-modifications">
-  Modify the <a spec="HTML">navigate</a> algorithm to take an optional <dfn for="navigate">|navigationAPIState|</dfn> argument (default null). Then, insert the following steps right before the step which goes [=in parallel=]. (Recall that per [[#user-initiated-patches]] we have introduced |userInvolvement| argument, and per [[#form-patches]] we have introduced an |entryList| argument.)
-
-  1. Let |navigation| be <var ignore>browsingContext</var>'s [=browsing context/active window=]'s [=Window/navigation API=].
-  1. If all of the following are false:
-    * <var ignore>historyHandling</var> is "<a for="history handling behavior">`entry update`</a>"
-    * <var ignore>userInvolvement</var> is "<code>[=user navigation involvement/browser UI=]</code>"
-    * <var ignore>browsingContext</var>'s [=active document=]'s [=Document/origin=] is not [=same origin-domain=] with the [=source browsing context=]'s [=active document=]'s [=Document/origin=]
-    * <var ignore>browsingContext</var> is <a spec="HTML">still on its initial `about:blank` `Document`</a>
-    * <var ignore>resource</var> is a [=request=], and <var ignore>resource</var>'s [=request/URL=]'s [=url/scheme=] is not a [=fetch scheme=]
-
-    then:
-
-      1. Let |navigationType| be the result of [=converting a history handling behavior to a navigation type=] given <var ignore>historyHandling</var>.
-      1. Let |continue| be the result of [=firing a non-traversal navigate event=] at |navigation| with <i>[=fire a non-traversal navigate event/navigationType=]</i> set to |navigationType|, <i>[=fire a non-traversal navigate event/isSameDocument=]</i> set to false, <i>[=fire a non-traversal navigate event/userInvolvement=]</i> set to |userInvolvement|, <i>[=fire a non-traversal navigate event/formDataEntryList=]</i> set to |entryList|, <i>[=fire a non-traversal navigate event/destinationURL=]</i> set to <var ignore>url</var>, and <i>[=fire a non-traversal navigate event/state=]</i> set to |navigationAPIState|.
-      1. If |continue| is false, return.
-
-    <p class="note">"<a for="history handling behavior">`entry update`</a>" is excluded since {{Navigation/navigate}} would have fired earlier as part of <a spec="HTML">traversing the history by a delta</a>.
-
-    <p class="note">"<code>[=user navigation involvement/browser UI=]</code>" or [=same origin-domain|cross origin-domain=] navigations that cause [=navigate to a fragment|fragment navigations=] <em>do</em> fire the {{Navigation/navigate}} event; those are handled as part of the [=navigate to a fragment=] algorithm called earlier in <a spec="HTML">navigate</a>, which is not guarded by this condition.
-</div>
-
-Expand the section of the navigation/traversal response handling which deals with 204s, 205s, and `Content-Disposition: attachment` responses with the following note:
-
-<div class="note">
-  These kinds of failed navigations or traversals will not be signaled to the navigation API (e.g., through the promises of any [=Navigation/ongoing navigation=], or the {{NavigationTransition/finished|navigation.transition.finished}} promise, or the {{Navigation/navigateerror}} event). Doing so would leak information about the timing of responses from other origins, in the cross-origin case, and providing different results in the cross-origin versus same-origin cases was deemed too confusing.
-
-  However, implementations could use this opportunity to clear any promise handlers for the {{NavigationTransition/finished|navigation.transition.finished}} promise, as they are guaranteed at this point to never run. And, they might wish to [=report a warning to the console=] if any part of the navigation API initiated these navigations, to make it clear to the web developer the reason why their promises will never settle and events will never fire.
-</div>
-
-<div algorithm>
-  To <dfn>convert a history handling behavior to a navigation type</dfn> given a <a spec="HTML">history handling behavior</a> |historyHandling|:
-
-  1. [=Assert=]: |historyHandling| is not "<a spec="HTML" for="history handling behavior">`entry update`</a>".
-  1. Return the result of switching on |historyHandling|:
-
-    <dl class="switch">
-    : "<a spec="HTML" for="history handling behavior">`reload`</a>"
-    :: "{{NavigationType/reload}}"
-    : "<a spec="HTML" for="history handling behavior">`replace`</a>"
-    :: "{{NavigationType/replace}}"
-    : "<a spec="HTML" for="history handling behavior">`default`</a>"
-    :: "{{NavigationType/push}}"
-</div>
-
-<h3 id="navigate-event-traversal-patches">History traversal updates</h3>
-
-<div algorithm="check if unloading is user-canceled">
-  Modify the [=check if unloading is user-canceled=] algorithm as follows:
-
-  To [=check if unloading is user-canceled=] given a [=list=] of [=navigables=] |navigablesCrossingDocuments|, an optional [=navigable=] |traversable|, an optional integer |targetStep| (default null), and an optional [=user navigation involvement=] |userInvolvement| (default "<code>[=user navigation involvement/none=]</code>"):
-  1. Let |unloadPromptShown| be false.
-  1. Let |unloadPromptCanceled| be false.
-  1. Let |changingNavigables| be a [=list=] of [=navigables=], initially empty.
-  1. If |traversable| is not null and |targetStep| is not null, append the result of [=get all navigables whose current session history entry will change or reload=] given |traversable| and |targetStep| to |changingNavigables|.
-  1. Otherwise, append |navigablesCrossingDocuments| to |changingNavigables|.
-  1. Let |totalTasks| be the size of |changingNavigables|.
-  1. Let |completedTasks| be 0.
-  1. If |traversable| is not null and |changingNavigables| [=list/contains=] |traversable|:
-    1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
-    1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |traversable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
-    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |traversable|'s [=navigable/active window=] to run the following steps:
-      1. If |isSameOrigin| is true:
-        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |traversable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
-        1. If |navigateEventResult| is false, then set |unloadPromptCanceled| to true.
-      1. If |unloadPromptCanceled| is false and |navigablesCrossingDocuments| [=list/contains=] |traversable|:
-        1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
-      1. Increment |completedTasks|.
-    1. Wait for |completedTasks| to be 1.
-    1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>";
-  1. For each |navigable| of |changingNavigables|:
-    1. If |navigable| equals |traversable|, then [=iteration/continue=].
-    1. Let |targetEntry| be the result of [=getting the target history entry=] given |traversable| and |targetStep|.
-    1. Let |isSameOrigin| be true if |targetEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |navigable|'s [=navigable/current session history entry=]'s [=session history entry/origin=]; otherwise, false.
-    1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigable|'s [=navigable/active window=] to run the following steps:
-      1. If |isSameOrigin| is true:
-        1. Let |navigateEventResult| be the result of [=firing a traversal navigate event=] at |navigable|'s [=navigable/active window=]'s [=Window/navigation API=] with <i>[=fire a traversal navigate event/destinationEntry=]</i> set to |targetEntry| and <i>[=fire a traversal navigate event/userInvolvement=]</i> set to |userInvolvement|.
-        1. [=Assert=]: |navigateEventResult| is true.
-      1. If |navigablesCrossingDocuments| [=list/contains=] |navigable|:
-        1. Run the steps to fire a beforeunload event (currently steps 6.1 thru 6.8 in the [=check if unloading is user-canceled=] steps).
-      1. Increment |completedTasks|.
-  1. Wait for |completedTasks| to be |totalTasks|.
-  1. If |unloadPromptCanceled| is true, then return "<code>refuse</code>".
-  1. If |unloadPromptShown| is true, then return "<code>confirm</code>".
-  1. Return "<code>no-prompt</code>".
-</div>
-
-<div algorithm="apply the history step">
-  Modify the [=apply the history step=] algorithm as follows:
-
-  Change step 5 (which runs the [=check if unloading is user-canceled=] steps) to:
-  1. If <var ignore>checkForUserCancelation</var> is true, and the result of [=checking if unloading is user-canceled=] given <var ignore>navigablesCrossingDocuments</var>, <var ignore>traversable</var>, <var ignore>targetStep</var> and <var ignore>userInvolvement</var> is "<code>refuse</code>", then return.
-
-(Recall that we introduced the <var ignore>userInvolvement</var> parameter as part of [[#user-initiated-patches]].)
-
-  Before the update document for history step application (currently step 14.10.3), add the following step:
-  1. If <var ignore>changingNavigableContinuation</var>'s [=update-only=] is true, [=maybe continue the navigate event=] given <var ignore>displayedDocument</var>'s [=relevant global object=]'s [=Window/navigation API=].
-
-</div>
-
-<h3 id="navigate-event-download-patches">Download a hyperlink updates</h3>
-
-The current specification for <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> has several known issues, most notably <a href="https://github.com/whatwg/html/issues/5548">whatwg/html#5548</a> which indicates that the specification should probably be merged into the general <a spec="HTML" lt="navigate">navigation</a> algorithm.
-
-For the purposes of the navigation API, we need to fire the appropriate {{Navigation/navigate}} event, with {{NavigateEvent/downloadRequest}} set to the correct value. We could rigorously detail the ways to modify the current spec to accomplish this. But, given that the current spec will be rewritten anyway, this is probably not very useful. So until such a time as we can properly investigate and rewrite the <a spec="HTML" lt="download the hyperlink">downloading a hyperlink</a> algorithm, we describe here the expected behavior in a less-formal fashion. We believe this is still enough to get interoperability.
-
-<div algorithm="download the hyperlink">
-<ul>
-  <li><p>Ensure that the algorithm gets an appropriate [=user navigation involvement=] value, |userInvolvement|, passed to it. This is similar to the modifications for the <a spec="HTML">follow the hyperlink</a> algorithm described in [[#user-initiated-patches]]. One key difference is that, for the case where the user indicates a preference for downloading, |userInvolvement| must be "<code>[=user navigation involvement/browser UI=]</code>", even if it is triggered as part of [=EventTarget/activation behavior=].
-
-  <li><p>Separate out the sandboxing checks in <a spec="HTML">allowed to download</a> from the user-safeguarding checks. If the sandboxing checks fail, then the user agent must not fire a {{Navigation/navigate}} event. Whereas, the user-safeguarding checks generally happen later, probably [=in parallel=].
-
-  <li>
-    <p>Before we reach the point at which it's time to actually go in parallel and fetch content from the server, and after the <a spec="HTML">cannot navigate</a> check, the synchronously-possible part of the <a spec="HTML">allowed to download</a> check, the URL parsing step, and the hyperlink suffix appending step, run the equivalent of the following:
-
-    1. If |userInvolvement| is not "<code>[=user navigation involvement/browser UI=]</code>", then:
-      1. Let |navigation| be |subject|'s [=relevant global object=]'s [=Window/navigation API=].
-      1. Let |filename| be the value of |subject|'s <{a/download}> attribute.
-      1. Let |continue| be the result of [=firing a download-requested navigate event=] at |navigation| with <i>[=fire a download-requested navigate event/destinationURL=]</i> set to |URL|, <i>[=fire a download-requested navigate event/userInvolvement=]</i> set to |userInvolvement|, and <i>[=fire a download-requested navigate event/filename=]</i> set to |filename|.
-      1. If |continue| is false, then return.
-
-    <p>Here the variables |subject| and |URL| refer to the same things they currently do in the <a spec="HTML">download the hyperlink</a> algorithm, i.e. the <{a}> or <{area}> element in question, and the parsed [=URL=].
-
-    <p>If we end up triggering the <a spec="HTML">navigate</a> algorithm from the <a spec="HTML">download the hyperlink</a> algorithm, then these steps won't be directly incorporated into the <a spec="HTML">download the hyperlink</a> algorithm. Instead, the modifications in [[#navigate-algorithm-patches]] will get a bit more complicated, so as to use [=fire a download-requested navigate event=] with the above arguments, instead of [=fire a non-traversal navigate event=], for downloads.
-</ul>
-</div>
-
-<h2 id="session-history-patches">Patches to session history</h2>
-
-This section details monkeypatches to [[!HTML]] to track appropriate data for associating a {{Navigation}} with a [=session history entry=].
-
-<h3 id="session-history-new-she-fields">New [=session history entry=] items</h3>
-
-Each [=session history entry=] gains the following new [=struct/items=]:
-
-* <dfn for="session history entry">origin</dfn>, an [=origin=]
-
-* <dfn for="session history entry">navigation API key</dfn>, a string, initially set to the result of [=generating a random UUID=]
-
-* <dfn for="session history entry">navigation API ID</dfn>, a string, initially set to the result of [=generating a random UUID=]
-
-* <dfn for="session history entry">navigation API state</dfn>, which is [=serialized state=] or null, initially null
-
-<h3 id="session-history-patches-key">Carrying over the navigation API key</h3>
-
-<div algorithm="update the session history with the new page key patch">
-  Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" case by adding the following step after the construction of |newEntry|:
-
-  1. If |newEntry|'s [=session history entry/origin=] is the [=same origin|same=] as |sessionHistory|'s [=session history/current entry=]'s [=session history entry/origin=], then set |newEntry|'s [=session history entry/navigation API key=] to |sessionHistory|'s [=session history/current entry=]'s [=session history entry/navigation API key=].
-</div>
-
-<h3 id="session-history-patches-state">Carrying over the navigation API state</h3>
-
-<div algorithm="navigate to a fragment state patch">
-  Update the [=navigate to a fragment=] algorithm by updating the step which creates a new [=session history entry=] to carry over the [=session history entry/navigation API state=] from the [=navigable/active session history entry=] as well.
-</div>
-
-<h3 id="session-history-patches-origin">Tracking the [=session history entry/origin=] member</h3>
-
-Update the <a spec="HTML">update the session history with the new page</a> algorithm's "<a for="history handling behavior">`replace`</a>" and "<a for="history handling behavior">`default`</a>" cases to set <var ignore>newEntry</var>'s [=session history entry/origin=] to <var ignore>newDocument</var>'s [=Document/origin=] as part of its creation.
-
-Update the <a spec="HTML">navigate to a fragment</a> algorithm to set the new [=session history entry=]'s [=session history entry/origin=] to the [=session history/current entry=]'s [=session history entry/document=]'s [=Document/origin=].
-
-Update the <a spec="HTML">URL and history update steps</a> algorithm to set the new [=session history entry=]'s [=session history entry/origin=] to <var ignore>document</var>'s [=Document/origin=].
-
-Potentially update the <a spec="HTML">traverse the history</a> algorithm to consult the new [=session history entry/origin=] field, instead of checking the [=session history entry/document=]'s [=Document/origin=], since the [=session history entry/document=] can disappear?? Needs further investigation.
-
-<h3 id="session-history-patches-policy-container">Tracking the [=session history entry/policy container=] member more often</h3>
-
-The [=session history entry/policy container=] field of the [=session history entry=] is null, except when we <a spec="HTML">require storing the policy container in history</a>. The specification for {{NavigationHistoryEntry/url|NavigationHistoryEntry.url}} requires the relevant [=/referrer policy=] to be accessible for all entries, not just some.
-
-So, update the HTML Standard to always store the policy container on the [=session history entry=], and then only use it in the <a spec="HTML">determine navigation params policy container</a> algorithm in the cases currently covered by the <a spec="HTML">require storing the policy container in history</a> algorithm.
-
-<h3 id="session-history-patches-update">Updating the {{Navigation}} object</h3>
+<h4 id="session-history-patches-update">Updating the {{Navigation}} object</h4>
 
 <div algorithm="update document for history step application patch">
   Update the [=update document for history step application=] algorithm by adding the following step nested inside the <var ignore>documentsEntryChanged</var> check, after restoring the history object state but before firing {{Window/popstate}}:
@@ -2011,17 +1998,13 @@ So, update the HTML Standard to always store the policy container on the [=sessi
      <p class="note">This means any {{Navigation/currententrychange}} event and {{NavigationHistoryEntry/dispose}} events will fire before the {{Window/popstate}} and {{Window/hashchange}} events.
 </div>
 
-<hr>
-
 <div algorithm="reactivate patch">
-  Update the [=reactivate=] algorithm by adding the following step before the final one which checks the current document readiness:
+  Update the [=Document/reactivate=] algorithm by adding the following step before the final one which checks the current document readiness:
 
   1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given null and true.
 
      <p class="note">Passing true means that any {{NavigationHistoryEntry/dispose}} events will fire after the {{Window/pageshow}} event, but this step being before the one below means that during the {{Window/pageshow}} event {{Navigation/entries()|navigation.entries()}} and {{Navigation/currentEntry|navigation.currentEntry}} will have correctly-updated values. This split is motivated by a desire to have {{Window/pageshow}} be the first event a page receives upon reactivation.
 </div>
-
-<hr>
 
 <div algorithm="URL and history update steps update patch">
   Update the [=URL and history update steps=] by appending the following step right after setting the [=navigable/active session history entry=]:
@@ -2029,19 +2012,7 @@ So, update the HTML Standard to always store the policy container on the [=sessi
   1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given <var ignore>historyHandling</var>.
 </div>
 
-<hr>
-
-<div algorithm="navigate to a fragment update the entries patch">
-  Update [=navigate to a fragment=] by appending the following step right after setting the [=navigable/active session history entry=]:
-
-  1. [=Navigation/Update the entries=] of <var ignore>navigable</var>'s [=navigable/active window=]'s [=Window/navigation API=] given <var ignore>historyHandling</var>.
-</div>
-
-<hr>
-
-We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
-
-<h2 id="other-patches">Other patches</h2>
+We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context and document</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
 
 <h3 id="focus-patches">Focus tracking</h3>
 
@@ -2057,7 +2028,7 @@ Update the <a spec="HTML">focus fixup rule</a> to additionally set the {{Documen
 
 To support the {{NavigationInterceptOptions/scroll}} option, as well as to fix <a href="https://github.com/whatwg/html/issues/7517">whatwg/html#7517</a>, the following patches need to be made:
 
-Add a boolean, <dfn for="Document">has been scrolled by the user</dfn>, initially false, to {{Document}} objects. State that if the user scrolls the document, the user agent must set that document's [=Document/has been scrolled by the user=] to true. Modify the <a spec="HTML">unload a document</a> algorithm to set this back to false.
+Add a boolean, <dfn for="Document">has been scrolled by the user</dfn>, initially false, to {{Document}} objects. State that if the user scrolls the document, the user agent must set that document's [=Document/has been scrolled by the user=] to true. Modify the [=Document/unload|unload a document=] algorithm to set this back to false.
 
 <div algorithm>
   Define the process of <dfn>restoring scroll position data</dfn> given a [=session history entry=] |entry| as follows:
@@ -2081,50 +2052,21 @@ Add a boolean, <dfn for="Document">has been scrolled by the user</dfn>, initiall
   <p class="note">If the [=Navigation/suppress normal scroll restoration during ongoing navigation=] boolean is true, then [=restoring scroll position data=] might still happen at a later point, as part of [=potentially process scroll behavior|potentially processing scroll behavior=] for the relevant {{Navigation}} object, or via a {{NavigateEvent/scroll()|navigateEvent.scroll()}} method call.
 </div>
 
-<h3 id="cancel-navigation">Canceling navigation and traversals</h3>
+<h3 id="new-failed-populate-note">Helpful note: failed attempt to populate</h3>
 
-The existing HTML specification discusses canceling a navigation and traverals in a few places. However, the process is not very well-defined, and per <a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a>, is not very interoperable. We plan to make it more rigorous, after the <a href="https://github.com/whatwg/html/issues/5767">session history rewrite</a> lands.
+Inside [=apply the history step=], expand the note which currently says
 
-Specifically, the spec uses a few phrases:
+<blockquote>
+  <p>This means we tried to populate the document, but were unable to do so, e.g. because of the server returning a 204.
+</blockquote>
 
-* "Cancel any existing but not-yet-mature attempts to navigate a [=browsing context=]", in the <a spec="HTML">navigate</a> algorithm and the <a spec="HTML">traverse the history by a delta</a> algorithm. This cancels any ongoing navigations, including history traversal navigations which have made their way back into the main event loop to perform an "<a for="history handling behavior">`entry update`</a>" navigation.
+<div class="note">
+  <p>This means we tried to populate the document, but were unable to do so, e.g. because of the server returning a 204.
 
-* "Cancel that navigation", in the <a spec="HTML">stop document loading</a> algorithm. This is likely supposed to work the same as the above?
+  <p>These kinds of failed navigations or traversals will not be signaled to the navigation API (e.g., through the promises of any [=Navigation/ongoing navigation=], or the {{NavigationTransition/finished|navigation.transition.finished}} promise, or the {{Navigation/navigateerror}} event). Doing so would leak information about the timing of responses from other origins, in the cross-origin case, and providing different results in the cross-origin versus same-origin cases was deemed too confusing.
 
-* "Remove any tasks queued by the history traversal task source that are associated with any Document objects in the top-level browsing context's document family." This cancels queued-up traversals that have not yet made their way back to the main event loop. This is currently called from any same-document navigations, i.e. the <a spec="HTML">URL and history update steps</a> and <a spec="HTML">navigating to a fragment</a>, as well as as part of <a spec="HTML">traverse the history</a> for cross-document traversals.
-
-<a href="https://github.com/whatwg/html/issues/6927">whatwg/html#6927</a> reveals that implementations don't really follow this breakdown. In particular, modulo one case in Firefox, traversals are only canceled as part of [=browsing context/discarding=] a browsing context.
-
-That leaves us with two main operations: canceling not-yet-mature navigations, and dealing with browsing context discarding.
-
-<hr>
-
-The navigation API introduces a new complication here, which is that a navigation might have <a spec="HTML">matured</a> but still be "ongoing", in the sense of [[#ongoing-state]]. That is, consider a case such as:
-
-<xmp highlight="js">
-navigation.addEventListener("navigate", e => {
-  e.intercept({
-    handler() {
-      return new Promise(r => setTimeout(r, 1_000));
-    }
-  });
-  e.signal.addEventListener("abort", () => { ... });
-});
-
-const p = navigation.navigate("#1");
-
-setTimeout(() => window.stop(), 500);
-</xmp>
-
-Without the {{Navigation/navigate}} event handler, this kind of synchronous fragment navigation would be straightforward: it matures synchronously, and the {{Window/stop()}} call does nothing. But because we have used the {{Navigation/navigate}} handler to indicate that the navigation is still ongoing, we want the {{Window/stop()}} call to [=finalize with an aborted navigation error|finalize that navigation with an aborted navigation error=], in particular causing `p` to reject and the {{AbortSignal/abort}} event to fire on `e.signal`.
-
-<hr>
-
-The integration is then as follows:
-
-* Wherever the spec ends up canceling not-yet-mature navigations for a [=browsing context=] |bc|, we also [=inform the navigation API about canceling navigation=] in |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight.)
-
-* When the spec [=browsing context/discards=] a [=browsing context=] |bc|, we also [=inform the navigation API about browsing context discarding=] given |bc|. (Regardless of whether or not there are any not-yet-mature navigations still in flight, or any traversals queued up.)
+  <p>However, implementations could use this opportunity to clear any promise handlers for the {{NavigationTransition/finished|navigation.transition.finished}} promise, as they are guaranteed at this point to never run. And, they might wish to [=report a warning to the console=] if any part of the navigation API initiated these navigations, to make it clear to the web developer the reason why their promises will never settle and events will never fire.
+</div>
 
 <h2 id="security-privacy">Security and privacy considerations</h2>
 
@@ -2157,7 +2099,7 @@ We also have a few more restrictions worth noting, which don't directly address 
 
 * Navigations initiated on the initial `about:blank` document do not fire {{Navigation/navigate}} events.
 
-* Navigations initiated by {{Document/open()|document.open()}} do not fire {{Navigation/navigate}} events.
+* Navigations initiated by {{Document/open(unused1, unused2)|document.open()}} do not fire {{Navigation/navigate}} events.
 
 * Cross-document traversals cannot be intercepted and converted into same-document traversals.
 
