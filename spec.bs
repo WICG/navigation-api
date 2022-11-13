@@ -36,6 +36,7 @@ spec: html; urlPrefix: https://html.spec.whatwg.org/multipage/
     text: navigation and traversal task source; url: webappapis.html#navigation-and-traversal-task-source
     text: navigation ID; url: browsing-the-web.html#navigation-id
     text: node navigable; url: document-sequences.html#node-navigable
+    text: restore the history state object; url: browsing-the-web.html#restore-the-history-object-state
     text: scroll to the fragment; url: browsing-the-web.html#scroll-to-the-fragment-identifier
     text: serialized state; url: browsing-the-web.html#serialized-state
     text: session history entry; url: browsing-the-web.html#session-history-entry
@@ -245,7 +246,7 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 </div>
 
 <div algorithm>
-  To <dfn for="Navigation">update the entries</dfn> for a {{Navigation}} instance |navigation| given a {{NavigationType}}-or-null |navigationTypeForCurrententrychange| and a boolean |deferNotification| (default false):
+  To <dfn for="Navigation">update the entries for a same-document navigation</dfn> given a {{Navigation}} instance |navigation|, a [=session history entry=] |destinationSHE|, and a {{NavigationType}} |navigationType|:
 
   1. If |navigation| [=Navigation/has entries and events disabled=], then:
 
@@ -253,98 +254,121 @@ Each {{Navigation}} object has an associated <dfn for="Navigation">current entry
 
     1. Return.
 
-  <!-- Reaching up to the traversable like this is not 100% kosher. We should consider plumbing the information in a more detailed fashion. -->
-  1. Let |sessionHistory| be the result of [=navigable/getting session history entries=] given |navigation|'s [=relevant global object=]'s [=Window/navigable=].
-
-     <p class="XXX">This is not OK to call here. We can only call [=navigable/get session history entries=] from within the [=traversable navigable/session history traversal queue=]. See <a href="https://github.com/WICG/navigation-api/issues/221#issuecomment-1082260105">this discussion</a>.
-
-     <p class="note">It is OK to expose the data in these entries to the current page through {{NavigationHistoryEntry}} instances, since any [=session history entry/navigation API state=] will have been put there affirmatively, and the [=session history entry/URL=] is hidden appropriately by the {{NavigationHistoryEntry/url|url}} getter when the [=session history entry/document=] indicates that its URL is sensitive through the <a>"`no-referrer`"</a> or <a>"`origin`"</a> [=referrer policies=].
-
-  1. Let |navigationAPISHEs| be a new empty list.
-
   1. Let |oldCurrentNHE| be the [=Navigation/current entry=] of |navigation|.
 
-  1. Let |activeSHE| be |navigation|'s [=relevant global object=]'s [=Window/navigable=]'s [=navigable/active session history entry=].
+  1. Let |disposedNHEs| be a new empty [=list=].
 
-  1. Let |backwardIndex| be the index of |activeSHE| within |sessionHistory|, minus 1.
+  1. If |navigationType| is "{{NavigationType/traverse}}":
 
-  1. While |backwardIndex| > 0:
+    1. Set |navigation|'s [=Navigation/current entry index=] to the index of the {{NavigationHistoryEntry}} within |navigation|'s [=Navigation/entry list=] whose [=NavigationHistoryEntry/session history entry=]'s [=session history entry/navigation API key=] equals |destinationSHE|'s [=session history entry/navigation API key=].
 
-    1. Let |she| be |sessionHistory|[|backwardIndex|].
+    1. [=Assert=]: such a {{NavigationHistoryEntry}} must exist, because this algorithm is only called for same-document traversals. (Cross-document traversals will instead call either [=Navigation/update the entries for reactivation=] or [=Navigation/initialize the entries for a new Navigation=].)
 
-    1. If |she|'s [=session history entry/document state=]'s [=document state/origin=] is [=same origin=] with |activeSHE|'s [=session history entry/document state=]'s [=document state/origin=], then [=list/prepend=] |she| to |navigationAPISHEs|.
+  1. Otherwise, if |navigationType| is "{{NavigationType/push}}":
 
-    1. Otherwise, [=iteration/break=].
+    1. Set |navigation|'s [=Navigation/current entry index=] to |navigation|'s [=Navigation/current entry index=] + 1.
 
-    1. Set |backwardIndex| to |backwardIndex| &minus; 1.
+    1. Let |i| be |navigation|'s [=Navigation/current entry index=].
 
-  1. [=list/Append=] |activeSHE| to |navigationAPISHEs|.
+    1. [=iteration/While=] |i| < |navigation|'s [=Navigation/entry list=]'s [=list/size=]:
 
-  1. Let |forwardIndex| be the index of |activeSHE| within |sessionHistory|, plus 1.
+      1. [=list/Append=] |navigation|'s [=Navigation/entry list=][|i|] to |disposedNHEs|.
 
-  1. While |forwardIndex| &lt; |sessionHistory|'s [=list/size=]:
+      1. Set |i| to |i| + 1.
 
-    1. Let |she| be |sessionHistory|[|forwardIndex|].
+    1. [=list/Remove=] all [=list/items=] in |disposedNHEs| from |navigation|'s [=Navigation/entry list=].
 
-    1. If |she|'s [=session history entry/document state=]'s [=document state/origin=] is [=same origin=] with |activeSHE|'s [=session history entry/document state=]'s [=document state/origin=], then [=list/append=] |she| to |navigationAPISHEs|.
+  1. Otherwise, if |navigationType| is "{{NavigationType/replace}}":
 
-    1. Otherwise, [=iteration/break=].
+    1. [=list/Append=] |oldCurrentNHE| to |disposedNHEs|.
 
-    1. Set |forwardIndex| to |forwardIndex| + 1.
+  1. If |navigationType| is "{{NavigationType/push}}" or "{{NavigationType/replace}}":
 
-  1. Let |newCurrentIndex| be the index of |activeSHE| within |navigationAPISHEs|.
+    1. Let |newNHE| be a [=new=] {{NavigationHistoryEntry}} created in the [=relevant realm=] of |navigation|.
 
-  1. Let |newEntryList| be an empty list.
+    1. Set |newNHE|'s [=NavigationHistoryEntry/session history entry=] to |destinationSHE|.
 
-  1. [=list/For each=] |oldNHE| of |navigation|'s [=Navigation/entry list=]:
+    1. Set |navigation|'s [=Navigation/entry list=][|navigation|'s [=Navigation/current entry index=]] to |newNHE|.
 
-    1. Set |oldNHE|'s [=NavigationHistoryEntry/index=] to &minus;1.
-
-  1. Let |index| be 0.
-
-  1. Let |disposedNHEs| be a [=list/clone=] of |navigation|'s [=Navigation/entry list=].
-
-  1. [=list/For each=] |she| of |navigationAPISHEs|:
-
-    1. If |navigation|'s [=Navigation/entry list=] [=list/contains=] a {{NavigationHistoryEntry}} |existingNHE| whose [=NavigationHistoryEntry/session history entry=] is |she|, then:
-
-      1. [=list/Append=] |existingNHE| to |newEntryList|.
-
-      1. [=list/Remove=] |existingNHE| from |disposedNHEs|.
-
-    1. Otherwise:
-
-      1. Let |newAHE| be a [=new=] {{NavigationHistoryEntry}} created in the [=relevant realm=] of |navigation|.
-
-      1. Set |newAHE|'s [=NavigationHistoryEntry/session history entry=] to |she|.
-
-      1. [=list/Append=] |newAHE| to |newEntryList|.
-
-    1. Set |newEntryList|[|index|]'s [=NavigationHistoryEntry/index=] to |index|.
-
-    1. Set |index| to |index| + 1.
-
-  1. Set |navigation|'s [=Navigation/entry list=] to |newEntryList|.
-
-  1. Set |navigation|'s [=Navigation/current entry index=] to |newCurrentIndex|.
-
-  1. If |deferNotification| is true, then [=queue a global task=] on the [=navigation and traversal task source=] given |navigation|'s [=relevant global object=] to run the following steps. Otherwise, proceed onward to run these steps within the current task.
+  1. [=Assert=]: by this point, the [=Navigation/current entry=] of |navigation| is different from |oldCurrentNHE|.
 
   1. If |navigation|'s [=Navigation/ongoing navigation=] is non-null, then [=navigation API method navigation/notify about the committed-to entry=] given |navigation|'s [=Navigation/ongoing navigation=] and the [=Navigation/current entry=] of |navigation|.
 
      <p class="note">It is important to do this before firing the {{NavigationHistoryEntry/dispose}} or {{Navigation/currententrychange}} events, since event handlers could start another navigation, or otherwise change the value of |navigation|'s [=Navigation/ongoing navigation=].
 
-  1. If |oldCurrentNHE| is not null, and |oldCurrentNHE| does not equal |navigation|'s [=Navigation/current entry=], then:
+  1. [=Prepare to run script=] given |navigation|'s [=relevant settings object=].
 
-    1. Assert: |navigationTypeForCurrententrychange| is not null.
+      <p class="note">See <a href="#note-suppress-microtasks-during-navigation-events">a similar note elsewhere for other navigation API events</a> to understand why we do this.
 
-    1. [=Fire an event=] named {{Navigation/currententrychange}} at |navigation| using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to |navigationTypeForCurrententrychange| and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |oldCurrentNHE|.
+  1. [=Fire an event=] named {{Navigation/currententrychange}} at |navigation| using {{NavigationCurrentEntryChangeEvent}}, with its {{NavigationCurrentEntryChangeEvent/navigationType}} attribute initialized to |navigationType| and its {{NavigationCurrentEntryChangeEvent/from}} initialized to |oldCurrentNHE|.
 
-    <p class="note">|oldCurrentNHE| is null the first time [=Navigation/update the entries=] is run for a {{Navigation}} object, i.e. on new {{Document}} creation. |oldCurrentNHE| and |navigation|'s [=Navigation/current entry=] are equal if we are [=Document/reactivating=] a page in the back/forward cache. In both cases, {{Navigation/currententrychange}} does not fire.
+  1. [=list/For each=] |disposedNHE| of |disposedNHEs|:
 
-  1. [=list/For each=] |disposedAHE| of |disposedNHEs|:
+    1. [=Fire an event=] named {{NavigationHistoryEntry/dispose}} at |disposedNHE|.
 
-    1. [=Fire an event=] named {{NavigationHistoryEntry/dispose}} at |disposedAHE|.
+  1. [=Clean up after running script=] given |navigation|'s [=relevant settings object=].
+</div>
+
+<div algorithm>
+  To <dfn for="Navigation">update the entries for reactivation</dfn> given a {{Navigation}} instance |navigation|, a [=list=] of [=session history entries=] |newSHEs|, and a [=session history entry=] |reactivatedSHE|:
+
+  1. Let |newNHEs| be an empty list.
+
+  1. Let |oldNHEs| be a [=list/clone=] of |navigation|'s [=Navigation/entry list=].
+
+  1. [=list/For each=] |newSHE| of |newSHEs|:
+
+    1. Let |newNHE| be null.
+
+    1. If |oldNHEs| [=list/contains=] a {{NavigationHistoryEntry}} |matchingOldNHE| whose [=NavigationHistoryEntry/session history entry=] is |newSHE|, then:
+
+      1. Set |newNHE| to |matchingOldNHE|.
+
+      1. [=list/Remove=] |matchingOldNHE| from |oldNHEs|.
+
+    1. Otherwise:
+
+      1. Set |newNHE| to a [=new=] {{NavigationHistoryEntry}} created in the [=relevant realm=] of |navigation|.
+
+      1. Set |newNHE|'s [=NavigationHistoryEntry/session history entry=] to |newSHE|.
+
+    1. [=list/Append=] |newNHE| to |newNHEs|.
+
+  1. [=list/For each=] |disposedNHE| of |oldNHEs|:
+
+    1. Set |disposedNHE|'s [=NavigationHistoryEntry/index=] to &minus;1.
+
+  1. Set |navigation|'s [=Navigation/entry list=] to |newNHEs|.
+
+  1. Set |navigation|'s [=Navigation/current entry index=] to the result of [=getting the navigation API history index=] of |reactivatedSHE| within |navigation|.
+
+  1. [=Queue a global task=] on the [=navigation and traversal task source=] given |navigation|'s [=relevant global object=] to run the following steps:
+
+    1. [=list/For each=] |disposedNHE| of |oldNHEs|:
+
+      1. [=Fire an event=] named {{NavigationHistoryEntry/dispose}} at |disposedNHE|.
+
+    <p class="note">We delay these events by a task to ensure that {{NavigationHistoryEntry/dispose}} events will fire after the {{Window/pageshow}} event. (However, the rest of this algorithm runs before the {{Window/pageshow}} event fires, to ensure that {{Navigation/entries()|navigation.entries()}} and {{Navigation/currentEntry|navigation.currentEntry}} will have correctly-updated values during any {{Window/pageshow}} event handlers.) This is motivated by a desire to have {{Window/pageshow}} be the first event a page receives upon reactivation.
+</div>
+
+<div algorithm>
+  To <dfn for="Navigation">initialize the entries for a new {{Navigation}}</dfn> given a {{Navigation}} instance |navigation|, a [=list=] of [=session history entries=] |newSHEs|, and a [=session history entry=] |initialSHE|:
+
+  1. [=Assert=]: |navigation|'s [=Navigation/entry list=] [=list/is empty=].
+
+  1. [=Assert=]: |navigation|'s [=Navigation/current entry index=] is &minus;1.
+
+  1. If |navigation| [=Navigation/has entries and events disabled=], then return.
+
+  1. [=list/For each=] |newSHE| of |newSHEs|:
+
+      1. Let |newNHE| be a [=new=] {{NavigationHistoryEntry}} created in the [=relevant realm=] of |navigation|.
+
+      1. Set |newNHE|'s [=NavigationHistoryEntry/session history entry=] to |newSHE|.
+
+      1. [=list/Append=] |newNHE| to |navigation|'s [=Navigation/entry list=].
+
+  1. Set |navigation|'s [=Navigation/current entry index=] to the result of [=getting the navigation API history index=] of |initialSHE| within |navigation|.
 </div>
 
 <div algorithm>
@@ -1239,7 +1263,7 @@ A {{NavigateEvent}} has a <dfn for="NavigateEvent">navigation handler list</dfn>
 <div algorithm>
   The <dfn method for="NavigateEvent">intercept(|options|)</dfn> method steps are:
 
-  1. If [=this=]'s [=relevant global object=]'s [=active Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
+  1. If [=this=]'s [=relevant global object=]'s [=associated Document=] is not [=Document/fully active=], then throw an "{{InvalidStateError}}" {{DOMException}}.
   1. If [=this=]'s {{Event/isTrusted}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s {{NavigateEvent/canIntercept}} attribute was initialized to false, then throw a "{{SecurityError}}" {{DOMException}}.
   1. If [=this=]'s [=Event/dispatch flag=] is unset, then throw an "{{InvalidStateError}}" {{DOMException}}.
@@ -1500,7 +1524,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
         1. [=Potentially reset the focus=] given |navigation| and |event|.
            <p class="note">Although we still [=potentially reset the focus=] for such failed transitions, we do <em>not</em> [=potentially process scroll behavior=] for them.
   1. Otherwise, if |ongoingNavigation| is non-null, then [=navigation API method navigation/clean up=] |ongoingNavigation|.
-  1. [=Clean up after running script=].
+  1. [=Clean up after running script=] given |event|'s [=relevant settings object=].
      <p class="note">Per the <a href="#note-suppress-microtasks-during-navigation-events">previous note</a>, this stops suppressing any potential promise handler microtasks, causing them to run at this point or later.</p>
   1. If |event|'s [=NavigateEvent/was intercepted=] is true, then return false.
   1. Return true.
@@ -1764,6 +1788,10 @@ Each [=session history entry=] gains the following new [=struct/items=]:
   1. If |continue| is false, then return.
 
   Modify the step which creates the new <var ignore>historyEntry</var> to also copy over the [=session history entry/navigation API state=] from the [=navigable/active session history entry=].
+
+  Insert the following step after the call to [=update document for history step application=]:
+
+  1. [=Navigation/Update the entries for a same-document navigation=] given <var ignore>navigable</var>'s [=navigable/active window=]'s [=Window/navigation API=], <var ignore>navigable</var>'s [=navigable/active session history entry=], and <var ignore>historyHandling</var>.
 </div>
 
 </div>
@@ -1778,12 +1806,46 @@ Each [=session history entry=] gains the following new [=struct/items=]:
   1. If |continue| is false, then return.
 </div>
 
+<h3 id="uhus-patch">URL and history update steps</h3>
+
+<div algorithm="URL and history update steps update patch">
+  Update the [=URL and history update steps=] by appending the following step right after setting the [=navigable/active session history entry=]:
+
+  1. [=Navigation/Update the entries for a same-document navigation=] given <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=], <var ignore>navigable</var>'s [=navigable/active session history entry=], and <var ignore>historyHandling</var>.
+</div>
+
+<h3 id="update-for-history-step-patch">Update document for history state application</h3>
+
+<div algorithm="update document for history step application patch">
+  Update the [=update document for history step application=] algorithm as follows:
+
+  Prepend the following step:
+
+  1. Let |navigation| be <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=].
+
+  Inside the "<var ignore>documentsEntryChanged</var> is true" block, after [=restore the history state object=]:
+
+  1. If <var ignore>documentIsNew</var> is false, then [=Navigation/update the entries for a same-document navigation=] given |navigation|, |entry|, and "{{NavigationType/traverse}}".
+
+  1. Otherwise, [=Navigation/initialize the entries for a new Navigation=] given |navigation|, <var ignore>sessionHistoryEntries</var> TODO pass this in, and |entry|.
+
+  <p class="note">This means any {{Navigation/currententrychange}} event and {{NavigationHistoryEntry/dispose}} events will fire before the {{Window/popstate}} and {{Window/hashchange}} events, and those event handlers will see an updated {{Navigation}} object.
+</div>
+
 <h3 id="finalize-patch">Finalize a cross-document navigation</h3>
 
 <div algorithm="finalize a cross-document navigation">
   Insert the following step into [=finalize a cross-document navigation=]'s "Otherwise" branch (where |entryToReplace| is non-null):
 
   1. If |historyEntry|'s [=session history entry/document state=]'s [=document state/origin=] is the [=same origin|same=] as |entryToReplace|'s [=session history entry/document state=]'s [=document state/origin=], then set |historyEntry|'s [=session history entry/navigation API key=] to |entryToReplace|'s [=session history entry/navigation API key=].
+</div>
+
+<h3 id="reactivate-patch">Reactivate</h3>
+
+<div algorithm="reactivate patch">
+  Update the [=Document/reactivate=] algorithm by adding the following step before the final top-level step which checks the current document readiness:
+
+  1. [=Navigation/Update the entries for reactivation=] given <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=], <var ignore>sessionHistoryEntries</var> TODO pass this in (harder), and <var ignore>entry</var> TODO pass this in (easier).
 </div>
 
 <h3 id="reload-patch">Reload</h3>
@@ -1978,41 +2040,13 @@ Modify the no-<a spec="HTML">submit button</a> case for <a href="https://html.sp
 
 <hr>
 
-Update the call to from [=navigate=] into [=navigate to a fragment=] pass along <var ignore>userInvolvement</var>.
+Update the call to from [=navigate=] into [=navigate to a fragment=] to pass along <var ignore>userInvolvement</var>.
 
 <h4 id="call-site-patch-entrylist">Form entry list</h4>
 
 Modify the <a spec="HTML">plan to navigate</a> algorithm to take an additional optional argument <var ignore>entryList</var ignore> (default null). Then, modify the step which calls <a spec="HTML">navigate</a> to pass it along as <i>[=navigate/entryList=]</i>, in place of <var ignore>cspNavigationType</var>.
 
 Modify the <a spec="HTML">submit as entity body</a> algorithm to pass <var ignore>entry list</var> along to <a spec="HTML">plan to navigate</a> as a second argument.
-
-<h4 id="session-history-patches-update">Updating the {{Navigation}} object</h4>
-
-<div algorithm="update document for history step application patch">
-  Update the [=update document for history step application=] algorithm by adding the following step nested inside the <var ignore>documentsEntryChanged</var> check, after restoring the history object state but before firing {{Window/popstate}}:
-
-  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given "{{NavigationType/traverse}}".
-
-     <p class="note">We can always pass "{{NavigationType/traverse}}" here because this call will result in {{Navigation/currententrychange}} firing only for traversals; new document creation will not fire {{Navigation/currententrychange}}, and same-document non-traversal navigations will have already updated {{Navigation/currentEntry|navigation.currentEntry}}.
-
-     <p class="note">This means any {{Navigation/currententrychange}} event and {{NavigationHistoryEntry/dispose}} events will fire before the {{Window/popstate}} and {{Window/hashchange}} events.
-</div>
-
-<div algorithm="reactivate patch">
-  Update the [=Document/reactivate=] algorithm by adding the following step before the final one which checks the current document readiness:
-
-  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given null and true.
-
-     <p class="note">Passing true means that any {{NavigationHistoryEntry/dispose}} events will fire after the {{Window/pageshow}} event, but this step being before the one below means that during the {{Window/pageshow}} event {{Navigation/entries()|navigation.entries()}} and {{Navigation/currentEntry|navigation.currentEntry}} will have correctly-updated values. This split is motivated by a desire to have {{Window/pageshow}} be the first event a page receives upon reactivation.
-</div>
-
-<div algorithm="URL and history update steps update patch">
-  Update the [=URL and history update steps=] by appending the following step right after setting the [=navigable/active session history entry=]:
-
-  1. [=Navigation/Update the entries=] of <var ignore>document</var>'s [=relevant global object=]'s [=Window/navigation API=] given <var ignore>historyHandling</var>.
-</div>
-
-We do not [=Navigation/update the entries=] when initially <a spec="HTML">creating a new browsing context and document</a>, as we intentionally don't want to include the initial `about:blank` {{Document}} in any navigation history entry list.
 
 <h3 id="focus-patches">Focus tracking</h3>
 
@@ -2059,6 +2093,8 @@ Inside [=apply the history step=], expand the note which currently says
 <blockquote>
   <p>This means we tried to populate the document, but were unable to do so, e.g. because of the server returning a 204.
 </blockquote>
+
+to instead say:
 
 <div class="note">
   <p>This means we tried to populate the document, but were unable to do so, e.g. because of the server returning a 204.
