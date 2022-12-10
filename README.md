@@ -863,7 +863,7 @@ previous.onclick = () => {
   }
 };
 
-navigation.addEventListener("navigate", event => {
+navigation.addEventListener("navigate", e => {
   const photoNumber = photoNumberFromURL(e.destination.url);
 
   if (photoNumber && e.canIntercept) {
