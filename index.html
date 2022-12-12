@@ -4,7 +4,7 @@
   <title>Navigation API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 63e66730b, updated Tue Oct 25 12:35:05 2022 -0700" name="generator">
+  <meta content="Bikeshed version 26e85e599, updated Thu Dec 8 15:29:31 2022 -0800" name="generator">
   <link href="https://wicg.github.io/navigation-api/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -664,7 +664,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Navigation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-11-13">13 November 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-12-11">11 December 2022</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -2811,7 +2811,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li data-md>
       <p>The user agent should attempt to use <var>entry</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#she-scroll-position" id="ref-for-she-scroll-position">scroll position data</a> to restore the scroll positions of <var>document</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#restorable-scrollable-regions" id="ref-for-restorable-scrollable-regions">restorable scrollable regions</a>. The user agent may continue to attempt to do so periodically, until <var>document</var>’s <a data-link-type="dfn" href="#document-has-been-scrolled-by-the-user" id="ref-for-document-has-been-scrolled-by-the-user②">has been scrolled by the user</a> becomes true.</p>
       <p class="note" role="note">This is formulated as an <em>attempt</em>, which is potentially repeated until success or until the user scrolls, due to the fact that relevant content indicated by the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#she-scroll-position" id="ref-for-she-scroll-position①">scroll position data</a> might take some time to load from the network. </p>
-      <p class="note" role="note">Scroll restoration might be affected by scroll anchoring. <a data-link-type="biblio" href="#biblio-css-scroll-anchoring-1">[CSS-SCROLL-ANCHORING-1]</a> </p>
+      <p class="note" role="note">Scroll restoration might be affected by scroll anchoring. <a data-link-type="biblio" href="#biblio-css-scroll-anchoring-1" title="CSS Scroll Anchoring Module Level 1">[CSS-SCROLL-ANCHORING-1]</a> </p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="restore persisted state">
@@ -6608,12 +6608,13 @@ document.body.addEventListener("click", function(e) {
 </script>
 <script>/* script-var-click-highlighting */
 
-    document.addEventListener("click", e=>{
-        if(e.target.nodeName == "VAR") {
-            highlightSameAlgoVars(e.target);
-        }
-    });
+    "use strict";
     {
+        document.addEventListener("click", e=>{
+            if(e.target.nodeName == "VAR") {
+                highlightSameAlgoVars(e.target);
+            }
+        });
         const indexCounts = new Map();
         const indexNames = new Map();
         function highlightSameAlgoVars(v) {
