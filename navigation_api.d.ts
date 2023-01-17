@@ -129,7 +129,7 @@ interface NavigateEventInit extends EventInit {
 }
 
 interface NavigationInterceptOptions {
-  handler?: () => Promise<undefined>,
+  handler?: () => Promise<void>,
   focusReset?: "after-transition"|"manual",
   scroll?: "after-transition"|"manual"
 }
