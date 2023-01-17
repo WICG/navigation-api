@@ -110,7 +110,7 @@ declare class NavigateEvent extends Event {
   readonly signal: AbortSignal;
   readonly formData: FormData|null;
   readonly downloadRequest: string|null;
-  readonly info: unknown;
+  readonly info?: unknown;
 
   intercept(options?: NavigationInterceptOptions): void;
   scroll(): void;
