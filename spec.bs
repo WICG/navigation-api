@@ -819,7 +819,7 @@ An <dfn>navigation API method navigation</dfn> is a [=struct=] with the followin
 
     * {{NavigationNavigateOptions/history}} can be set to "{{NavigationHistoryBehavior/replace}}" to replace the current session history entry, instead of pushing a new one.
     * {{NavigationOptions/info}} can be set to any value; it will populate the {{NavigateEvent/info}} property of the corresponding {{Navigation/navigate}} event.
-    * {{NavigationNavigateOptions/state}} can be set to any [=serializable object|serializable=] value; it will populate the state retrieved by {{NavigationHistoryEntry/getState()|navigation.currentEntry.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
+    * {{NavigationNavigateOptions/state}} can be set to any <a spec="HTML" lt="serializable object">serializable</a> value; it will populate the state retrieved by {{NavigationHistoryEntry/getState()|navigation.currentEntry.getState()}} once the navigation completes, for same-document navigations. (It will be ignored for navigations that end up cross-document.)
 
     <p>By default this will perform a full navigation (i.e., a cross-document navigation, unless the given URL differs only in a fragment from the current one). The {{Navigation/navigate}} event's {{NavigateEvent/intercept()}} method can be used to convert it into a same-document navigation.
 
@@ -1485,9 +1485,9 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |endResultIsSameDocument| be true if |event|'s [=NavigateEvent/was intercepted=] is true or |destination|'s [=NavigationDestination/is same document=] is true.
   1. [=Prepare to run script=] given |event|'s [=relevant settings object=].
       <div class="note" id="note-suppress-microtasks-during-navigation-events">
-        <p>This is done to avoid the <a spec="HTML">JavaScript execution context stack</a> becoming empty right after any {{Navigation/currententrychange}} event handlers run as a result of the [=URL and history update steps=] that could soon happen. If the stack were to become empty at that time, then it would immediately [=perform a microtask checkpoint=], causing various promise fulfillment handlers to run interleaved with the event handlers and before any handlers passed to {{NavigateEvent/intercept()|navigateEvent.intercept()}}. This is undesirable since it means promise handler ordering vs. {{Navigation/currententrychange}} event handler ordering vs. {{NavigateEvent/intercept()}} handler ordering is dependent on whether the navigation is happening with an empty <a spec="HTML">JavaScript execution context stack</a> (e.g., because the navigation was user-initiated) or with a nonempty one (e.g., because the navigation was caused by a JavaScript API call).
+        <p>This is done to avoid the [=ECMAScript/execution context stack|JavaScript execution context stack=] becoming empty right after any {{Navigation/currententrychange}} event handlers run as a result of the [=URL and history update steps=] that could soon happen. If the stack were to become empty at that time, then it would immediately [=perform a microtask checkpoint=], causing various promise fulfillment handlers to run interleaved with the event handlers and before any handlers passed to {{NavigateEvent/intercept()|navigateEvent.intercept()}}. This is undesirable since it means promise handler ordering vs. {{Navigation/currententrychange}} event handler ordering vs. {{NavigateEvent/intercept()}} handler ordering is dependent on whether the navigation is happening with an empty [=ECMAScript/execution context stack|JavaScript execution context stack=] (e.g., because the navigation was user-initiated) or with a nonempty one (e.g., because the navigation was caused by a JavaScript API call).
 
-        <p>By inserting an otherwise-unnecessary <a spec="HTML">JavaScript execution context</a> onto the stack in this step, we essentially suppress the [=perform a microtask checkpoint=] algorithm until later, thus ensuring that the sequence is always: {{Navigation/currententrychange}} event handlers, then {{NavigateEvent/intercept()}} handlers, then promise handlers.
+        <p>By inserting an otherwise-unnecessary [=ECMAScript/execution context|JavaScript execution context=] onto the stack in this step, we essentially suppress the [=perform a microtask checkpoint=] algorithm until later, thus ensuring that the sequence is always: {{Navigation/currententrychange}} event handlers, then {{NavigateEvent/intercept()}} handlers, then promise handlers.
       </div>
   1. If |event|'s [=NavigateEvent/was intercepted=] is true:
     1. Let |fromEntry| be the [=Navigation/current entry=] for |navigation|.
@@ -1586,7 +1586,7 @@ The <dfn attribute for="NavigationDestination">sameDocument</dfn> getter steps a
   1. Let |focusTarget| be the <a spec="HTML">autofocus delegate</a> for |document|.
   1. If |focusTarget| is null, then set |focusTarget| to |document|'s <a spec="HTML" lt="the body element">body element</a>.
   1. If |focusTarget| is null, then set |focusTarget| to |document|'s [=document element=].
-  1. Run the <a spec="HTML">focusing steps</a> for |focusTarget|, with |document|'s <a spec="CSS2">viewport</a> as the fallback target.
+  1. Run the <a spec="HTML">focusing steps</a> for |focusTarget|, with |document|'s [=viewport=] as the fallback target.
   1. Move the <a spec="HTML">sequential focus navigation starting point</a> to |focusTarget|.
 </div>
 
