@@ -4,7 +4,7 @@
   <title>Navigation API</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 26e85e599, updated Thu Dec 8 15:29:31 2022 -0800" name="generator">
+  <meta content="Bikeshed version d6f2d6445, updated Tue Jan 17 11:25:25 2023 -0800" name="generator">
   <link href="https://wicg.github.io/navigation-api/" rel="canonical">
 <style>
 .selected-text-file-an-issue {
@@ -664,7 +664,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Navigation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2022-12-11">11 December 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-01-17">17 January 2023</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -678,7 +678,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     </dl>
    </div>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2022 the Contributors to the Navigation API Specification, published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>.
+   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 the Contributors to the Navigation API Specification, published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>.
 A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available. </p>
    <hr title="Separator for header">
   </div>
@@ -2103,8 +2103,8 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
       <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#prepare-to-run-script" id="ref-for-prepare-to-run-script①">Prepare to run script</a> given <var>event</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object④">relevant settings object</a>.</p>
       <div class="note" id="note-suppress-microtasks-during-navigation-events" role="note">
        <a class="self-link" href="#note-suppress-microtasks-during-navigation-events"></a> 
-       <p>This is done to avoid the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context-stack" id="ref-for-javascript-execution-context-stack">JavaScript execution context stack</a> becoming empty right after any <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-currententrychange" id="ref-for-eventdef-navigation-currententrychange③">currententrychange</a></code> event handlers run as a result of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps">URL and history update steps</a> that could soon happen. If the stack were to become empty at that time, then it would immediately <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint" id="ref-for-perform-a-microtask-checkpoint">perform a microtask checkpoint</a>, causing various promise fulfillment handlers to run interleaved with the event handlers and before any handlers passed to <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-intercept" id="ref-for-dom-navigateevent-intercept②⓪">navigateEvent.intercept()</a></code>. This is undesirable since it means promise handler ordering vs. <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-currententrychange" id="ref-for-eventdef-navigation-currententrychange④">currententrychange</a></code> event handler ordering vs. <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-intercept" id="ref-for-dom-navigateevent-intercept②①">intercept()</a></code> handler ordering is dependent on whether the navigation is happening with an empty <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context-stack" id="ref-for-javascript-execution-context-stack①">JavaScript execution context stack</a> (e.g., because the navigation was user-initiated) or with a nonempty one (e.g., because the navigation was caused by a JavaScript API call). </p>
-       <p>By inserting an otherwise-unnecessary <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context" id="ref-for-javascript-execution-context">JavaScript execution context</a> onto the stack in this step, we essentially suppress the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint" id="ref-for-perform-a-microtask-checkpoint①">perform a microtask checkpoint</a> algorithm until later, thus ensuring that the sequence is always: <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-currententrychange" id="ref-for-eventdef-navigation-currententrychange⑤">currententrychange</a></code> event handlers, then <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-intercept" id="ref-for-dom-navigateevent-intercept②②">intercept()</a></code> handlers, then promise handlers. </p>
+       <p>This is done to avoid the <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#execution-context-stack" id="ref-for-execution-context-stack">JavaScript execution context stack</a> becoming empty right after any <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-currententrychange" id="ref-for-eventdef-navigation-currententrychange③">currententrychange</a></code> event handlers run as a result of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#url-and-history-update-steps" id="ref-for-url-and-history-update-steps">URL and history update steps</a> that could soon happen. If the stack were to become empty at that time, then it would immediately <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint" id="ref-for-perform-a-microtask-checkpoint">perform a microtask checkpoint</a>, causing various promise fulfillment handlers to run interleaved with the event handlers and before any handlers passed to <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-intercept" id="ref-for-dom-navigateevent-intercept②⓪">navigateEvent.intercept()</a></code>. This is undesirable since it means promise handler ordering vs. <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-currententrychange" id="ref-for-eventdef-navigation-currententrychange④">currententrychange</a></code> event handler ordering vs. <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-intercept" id="ref-for-dom-navigateevent-intercept②①">intercept()</a></code> handler ordering is dependent on whether the navigation is happening with an empty <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#execution-context-stack" id="ref-for-execution-context-stack①">JavaScript execution context stack</a> (e.g., because the navigation was user-initiated) or with a nonempty one (e.g., because the navigation was caused by a JavaScript API call). </p>
+       <p>By inserting an otherwise-unnecessary <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts" id="ref-for-sec-execution-contexts">JavaScript execution context</a> onto the stack in this step, we essentially suppress the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#perform-a-microtask-checkpoint" id="ref-for-perform-a-microtask-checkpoint①">perform a microtask checkpoint</a> algorithm until later, thus ensuring that the sequence is always: <code class="idl"><a data-link-type="idl" href="#eventdef-navigation-currententrychange" id="ref-for-eventdef-navigation-currententrychange⑤">currententrychange</a></code> event handlers, then <code class="idl"><a data-link-type="idl" href="#dom-navigateevent-intercept" id="ref-for-dom-navigateevent-intercept②②">intercept()</a></code> handlers, then promise handlers. </p>
       </div>
      <li data-md>
       <p>If <var>event</var>’s <a data-link-type="dfn" href="#navigateevent-was-intercepted" id="ref-for-navigateevent-was-intercepted③">was intercepted</a> is true:</p>
@@ -2283,7 +2283,7 @@ navigation<c- p>.</c->traverseTo<c- p>(</c->key2<c- p>);</c->
      <li data-md>
       <p>If <var>focusTarget</var> is null, then set <var>focusTarget</var> to <var>document</var>’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#document-element" id="ref-for-document-element">document element</a>.</p>
      <li data-md>
-      <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/interaction.html#focusing-steps" id="ref-for-focusing-steps①">focusing steps</a> for <var>focusTarget</var>, with <var>document</var>’s <a data-link-type="dfn" href="https://drafts.csswg.org/css2/#viewport①" id="ref-for-viewport①">viewport</a> as the fallback target.</p>
+      <p>Run the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/interaction.html#focusing-steps" id="ref-for-focusing-steps①">focusing steps</a> for <var>focusTarget</var>, with <var>document</var>’s <a data-link-type="dfn" href="https://w3c.github.io/epub-specs/epub33/core/#dfn-viewport" id="ref-for-dfn-viewport">viewport</a> as the fallback target.</p>
      <li data-md>
       <p>Move the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation-starting-point" id="ref-for-sequential-focus-navigation-starting-point">sequential focus navigation starting point</a> to <var>focusTarget</var>.</p>
     </ol>
@@ -2786,7 +2786,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <p>Modify the Submit Button state’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/input.html#input-activation-behavior" id="ref-for-input-activation-behavior①">input activation behavior</a> by having it take an <var>event<var> argument and pass along the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement②">user navigation involvement</a> for <var>event</var> as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit③">submit</a>.</var></var></p>
    <p>Modify the Image Button state’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/input.html#input-activation-behavior" id="ref-for-input-activation-behavior②">input activation behavior</a> by having it take an <var>event<var> argument and pass along the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement③">user navigation involvement</a> for <var>event</var> as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit④">submit</a>.</var></var></p>
    <p>Modify the <code><a data-link-type="element" href="https://html.spec.whatwg.org/multipage/form-elements.html#the-button-element" id="ref-for-the-button-element">button</a></code> element’s <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#eventtarget-activation-behavior" id="ref-for-eventtarget-activation-behavior⑤">activation behavior</a> by having it take an <var>event</var> argument and, in the Submit Button case, to pass along the <a data-link-type="dfn" href="#event-user-navigation-involvement" id="ref-for-event-user-navigation-involvement④">user navigation involvement</a> for <var>event</var> as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit⑤">submit</a>.</p>
-   <p>Modify the no-<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/forms.html#concept-submit-button" id="ref-for-concept-submit-button">submit button</a> case for <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission">implicit form submission</a> to pass along "<code><a data-link-type="dfn" href="#user-navigation-involvement-activation" id="ref-for-user-navigation-involvement-activation①">activation</a></code>" as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit⑥">submit</a>.</p>
+   <p>Modify the no-<a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type-submit-state" id="ref-for-attr-button-type-submit-state">submit button</a> case for <a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission">implicit form submission</a> to pass along "<code><a data-link-type="dfn" href="#user-navigation-involvement-activation" id="ref-for-user-navigation-involvement-activation①">activation</a></code>" as the final argument when it calls <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-form-submit" id="ref-for-concept-form-submit⑥">submit</a>.</p>
    <p class="note" role="note">The case of implicit submission when a submit button is present is automatically taken care of because it fires a (trusted) click event at the submit button.</p>
    <hr>
    <p>Update the call to from <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate" id="ref-for-navigate①①">navigate</a> into <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid" id="ref-for-navigate-fragid⑤">navigate to a fragment</a> to pass along <var>userInvolvement</var>.</p>
@@ -3207,12 +3207,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-report-a-warning-to-the-console②">4.18. Helpful note: failed attempt to populate</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-viewport①">
-   <a href="https://drafts.csswg.org/css2/#viewport①">https://drafts.csswg.org/css2/#viewport①</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-viewport①">2.3. Firing the event</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-scroll-to-the-beginning-of-the-document">
    <a href="https://drafts.csswg.org/cssom-view-1/#scroll-to-the-beginning-of-the-document">https://drafts.csswg.org/cssom-view-1/#scroll-to-the-beginning-of-the-document</a><b>Referenced in:</b>
    <ul>
@@ -3361,6 +3355,24 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-document-url②">4.9. Reload</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="term-for-sec-execution-contexts">
+   <a href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts">https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-sec-execution-contexts">2.3. Firing the event</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-execution-context-stack">
+   <a href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#execution-context-stack">https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#execution-context-stack</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-execution-context-stack">2.3. Firing the event</a> <a href="#ref-for-execution-context-stack①">(2)</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-dfn-viewport">
+   <a href="https://w3c.github.io/epub-specs/epub33/core/#dfn-viewport">https://w3c.github.io/epub-specs/epub33/core/#dfn-viewport</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dfn-viewport">2.3. Firing the event</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="term-for-fetch-scheme">
    <a href="https://fetch.spec.whatwg.org/#fetch-scheme">https://fetch.spec.whatwg.org/#fetch-scheme</a><b>Referenced in:</b>
    <ul>
@@ -3379,6 +3391,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
    <ul>
     <li><a href="#ref-for-concept-response-status">1.4. Navigating</a>
     <li><a href="#ref-for-concept-response-status①">1.5. Traversing</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="term-for-http-headerdef-sec-fetch-site">
+   <a href="https://w3c.github.io/webappsec-fetch-metadata/#http-headerdef-sec-fetch-site">https://w3c.github.io/webappsec-fetch-metadata/#http-headerdef-sec-fetch-site</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-http-headerdef-sec-fetch-site">4.14. User navigation involvement</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-errorevent">
@@ -3808,18 +3826,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-is-initial-about:blank③">4.9. Reload</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-javascript-execution-context">
-   <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context">https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-javascript-execution-context">2.3. Firing the event</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="term-for-javascript-execution-context-stack">
-   <a href="https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context-stack">https://html.spec.whatwg.org/multipage/infrastructure.html#javascript-execution-context-stack</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-javascript-execution-context-stack">2.3. Firing the event</a> <a href="#ref-for-javascript-execution-context-stack①">(2)</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-dom-errorevent-lineno">
    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno">https://html.spec.whatwg.org/multipage/webappapis.html#dom-errorevent-lineno</a><b>Referenced in:</b>
    <ul>
@@ -4213,10 +4219,10 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-submit-body">4.15.2. Form entry list</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-concept-submit-button">
-   <a href="https://html.spec.whatwg.org/multipage/forms.html#concept-submit-button">https://html.spec.whatwg.org/multipage/forms.html#concept-submit-button</a><b>Referenced in:</b>
+  <aside class="dfn-panel" data-for="term-for-attr-button-type-submit-state">
+   <a href="https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type-submit-state">https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type-submit-state</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-concept-submit-button">4.15.1. User navigation involvement</a>
+    <li><a href="#ref-for-attr-button-type-submit-state">4.15.1. User navigation involvement</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-concept-form-submit">
@@ -4497,12 +4503,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
     <li><a href="#ref-for-concept-url-serializer①">3. Navigation API history entries</a>
    </ul>
   </aside>
-  <aside class="dfn-panel" data-for="term-for-http-headerdef-sec-fetch-site">
-   <a href="https://w3c.github.io/webappsec-fetch-metadata/#http-headerdef-sec-fetch-site">https://w3c.github.io/webappsec-fetch-metadata/#http-headerdef-sec-fetch-site</a><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-http-headerdef-sec-fetch-site">4.14. User navigation involvement</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="term-for-dfn-generate-a-random-uuid">
    <a href="https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid">https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid</a><b>Referenced in:</b>
    <ul>
@@ -4739,11 +4739,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-report-a-warning-to-the-console">report a warning to the console</span>
     </ul>
    <li>
-    <a data-link-type="biblio">[CSS21]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-viewport①">viewport</span>
-    </ul>
-   <li>
     <a data-link-type="biblio">[CSSOM-VIEW-1]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-scroll-to-the-beginning-of-the-document">scroll to the beginning of the document</span>
@@ -4773,11 +4768,27 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-concept-document-url">url</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[ECMASCRIPT]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-sec-execution-contexts">execution context</span>
+     <li><span class="dfn-paneled" id="term-for-execution-context-stack">execution context stack</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[EPUB-33]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-dfn-viewport">viewport</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[FETCH]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-fetch-scheme">fetch scheme</span>
      <li><span class="dfn-paneled" id="term-for-dom-global-fetch">fetch(input)</span>
      <li><span class="dfn-paneled" id="term-for-concept-response-status">status</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[FETCH-METADATA]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-http-headerdef-sec-fetch-site">sec-fetch-site</span>
     </ul>
    <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
@@ -4845,8 +4856,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-the-input-element">input</span>
      <li><span class="dfn-paneled" id="term-for-input-activation-behavior">input activation behavior</span>
      <li><span class="dfn-paneled" id="term-for-is-initial-about:blank">is initial about:blank</span>
-     <li><span class="dfn-paneled" id="term-for-javascript-execution-context">javascript execution context</span>
-     <li><span class="dfn-paneled" id="term-for-javascript-execution-context-stack">javascript execution context stack</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-lineno">lineno</span>
      <li><span class="dfn-paneled" id="term-for-dom-errorevent-message">message</span>
      <li><span class="dfn-paneled" id="term-for-navigable">navigable</span>
@@ -4868,7 +4877,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-event-popstate">popstate</span>
      <li><span class="dfn-paneled" id="term-for-prepare-to-run-script">prepare to run script</span>
      <li><span class="dfn-paneled" id="term-for-hh-push">push</span>
-     <li><span class="dfn-paneled" id="term-for-dom-history-pushstate">pushState(data, unused)</span>
+     <li><span class="dfn-paneled" id="term-for-dom-history-pushstate">pushState(data, unused, url)</span>
      <li><span class="dfn-paneled" id="term-for-queue-a-global-task">queue a global task</span>
      <li><span class="dfn-paneled" id="term-for-reactivate-a-document">reactivate</span>
      <li><span class="dfn-paneled" id="term-for-policy-container-referrer-policy">referrer policy</span>
@@ -4877,7 +4886,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-relevant-settings-object">relevant settings object</span>
      <li><span class="dfn-paneled" id="term-for-reload">reload</span>
      <li><span class="dfn-paneled" id="term-for-hh-replace">replace</span>
-     <li><span class="dfn-paneled" id="term-for-dom-history-replacestate">replaceState(data, unused)</span>
+     <li><span class="dfn-paneled" id="term-for-dom-history-replacestate">replaceState(data, unused, url)</span>
      <li><span class="dfn-paneled" id="term-for-report-the-exception">report an exception</span>
      <li><span class="dfn-paneled" id="term-for-document-state-request-referrer-policy">request referrer policy</span>
      <li><span class="dfn-paneled" id="term-for-restorable-scrollable-regions">restorable scrollable regions</span>
@@ -4903,7 +4912,7 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-she-step">step</span>
      <li><span class="dfn-paneled" id="term-for-dom-window-stop">stop()</span>
      <li><span class="dfn-paneled" id="term-for-submit-body">submit as entity body</span>
-     <li><span class="dfn-paneled" id="term-for-concept-submit-button">submit buttons</span>
+     <li><span class="dfn-paneled" id="term-for-attr-button-type-submit-state">submit button</span>
      <li><span class="dfn-paneled" id="term-for-concept-form-submit">submitted</span>
      <li><span class="dfn-paneled" id="term-for-the-body-element-2">the body element</span>
      <li><span class="dfn-paneled" id="term-for-top-level-traversable">top-level traversable</span>
@@ -4959,11 +4968,6 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
      <li><span class="dfn-paneled" id="term-for-concept-url-serializer">url serializer</span>
     </ul>
    <li>
-    <a data-link-type="biblio">[WEBAPPSEC-FETCH-METADATA-1]</a> defines the following terms:
-    <ul>
-     <li><span class="dfn-paneled" id="term-for-http-headerdef-sec-fetch-site">sec-fetch-site</span>
-    </ul>
-   <li>
     <a data-link-type="biblio">[WebCryptoAPI]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="term-for-dfn-generate-a-random-uuid">generate a random uuid</span>
@@ -5011,12 +5015,12 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <dl>
    <dt id="biblio-console">[CONSOLE]
    <dd>Dominic Farolino; Robert Kowalski; Terin Stock. <a href="https://console.spec.whatwg.org/"><cite>Console Standard</cite></a>. Living Standard. URL: <a href="https://console.spec.whatwg.org/">https://console.spec.whatwg.org/</a>
-   <dt id="biblio-css21">[CSS21]
-   <dd>Bert Bos; et al. <a href="https://drafts.csswg.org/css2/"><cite>Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification</cite></a>. URL: <a href="https://drafts.csswg.org/css2/">https://drafts.csswg.org/css2/</a>
    <dt id="biblio-cssom-view-1">[CSSOM-VIEW-1]
    <dd>Simon Pieters. <a href="https://drafts.csswg.org/cssom-view/"><cite>CSSOM View Module</cite></a>. URL: <a href="https://drafts.csswg.org/cssom-view/">https://drafts.csswg.org/cssom-view/</a>
    <dt id="biblio-dom">[DOM]
    <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/"><cite>DOM Standard</cite></a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
+   <dt id="biblio-epub-33">[EPUB-33]
+   <dd>Matt Garrish; Ivan Herman; Dave Cramer. <a href="https://w3c.github.io/epub-specs/epub33/core/"><cite>EPUB 3.3</cite></a>. URL: <a href="https://w3c.github.io/epub-specs/epub33/core/">https://w3c.github.io/epub-specs/epub33/core/</a>
    <dt id="biblio-fetch">[FETCH]
    <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/"><cite>Fetch Standard</cite></a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
    <dt id="biblio-html">[HTML]
@@ -5038,8 +5042,10 @@ setTimeout<c- p>(()</c-> <c- p>=></c-> window<c- p>.</c->stop<c- p>(),</c-> <c- 
   <dl>
    <dt id="biblio-css-scroll-anchoring-1">[CSS-SCROLL-ANCHORING-1]
    <dd>Tab Atkins Jr.. <a href="https://drafts.csswg.org/css-scroll-anchoring/"><cite>CSS Scroll Anchoring Module Level 1</cite></a>. URL: <a href="https://drafts.csswg.org/css-scroll-anchoring/">https://drafts.csswg.org/css-scroll-anchoring/</a>
-   <dt id="biblio-webappsec-fetch-metadata-1">[WEBAPPSEC-FETCH-METADATA-1]
-   <dd>Fetch Metadata Request Headers URL: <a href="https://w3c.github.io/webappsec-fetch-metadata/">https://w3c.github.io/webappsec-fetch-metadata/</a>
+   <dt id="biblio-ecmascript">[ECMASCRIPT]
+   <dd><a href="https://tc39.es/ecma262/multipage/"><cite>ECMAScript Language Specification</cite></a>. URL: <a href="https://tc39.es/ecma262/multipage/">https://tc39.es/ecma262/multipage/</a>
+   <dt id="biblio-fetch-metadata">[FETCH-METADATA]
+   <dd>Mike West. <a href="https://w3c.github.io/webappsec-fetch-metadata/"><cite>Fetch Metadata Request Headers</cite></a>. URL: <a href="https://w3c.github.io/webappsec-fetch-metadata/">https://w3c.github.io/webappsec-fetch-metadata/</a>
   </dl>
   <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#window"><c- g>Window</c-></a> {
