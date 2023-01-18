@@ -110,7 +110,7 @@ declare class NavigateEvent extends Event {
   readonly signal: AbortSignal;
   readonly formData: FormData|null;
   readonly downloadRequest: string|null;
-  readonly info: unknown;
+  readonly info?: unknown;
 
   intercept(options?: NavigationInterceptOptions): void;
   scroll(): void;
@@ -129,7 +129,7 @@ interface NavigateEventInit extends EventInit {
 }
 
 interface NavigationInterceptOptions {
-  handler?: () => Promise<undefined>,
+  handler?: () => Promise<void>,
   focusReset?: "after-transition"|"manual",
   scroll?: "after-transition"|"manual"
 }
