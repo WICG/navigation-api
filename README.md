@@ -74,6 +74,7 @@ backButtonEl.addEventListener("click", () => {
     - [Focus management](#focus-management)
     - [Scrolling to fragments and scroll resetting](#scrolling-to-fragments-and-scroll-resetting)
     - [Scroll position restoration](#scroll-position-restoration)
+    - [Manual commit](#manual-commit)
   - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
     - [Example: handling failed navigations](#example-handling-failed-navigations)
   - [The `navigate()` and `reload()` methods](#the-navigate-and-reload-methods)
@@ -275,6 +276,8 @@ All of these methods return `{ committed, finished }` pairs, where both values a
 
 - The `navigate` event responds to the navigation using `event.intercept()`. In this case the `committed` promise immediately fulfills, while the `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. (However, even if the `finished` promise rejects, `location.href` and `navigation.currentEntry` will change.)
 
+- The `navigate` event responds to the navigation using `event.intercept()` with a `commit` option of `manual`. In this case the `committed` promise fulfills and `location.href` and `navigation.currentEntry` change when `event.commit()` is called. The `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. If a promise returned by a handler rejects before `event.commit()` is called, then both the `committed` and `finished` promises reject and `location.href` and `navigation.currentEntry` do not update. If all promise(s) returned by handlers fulfill, but the `committed` promise has not yet fufilled, the `committed` promise will be fulfilled and and `location.href` and `navigation.currentEntry` will be updated first, then `finished` will fulfill.
+
 - The navigation succeeds, and was a same-document navigation (but not intercepted using `event.intercept()`). Then both promises immediately fulfill,  and `location.href` and `navigation.currentEntry` will have been set to their new value.
 
 - The navigation succeeds, and it was a different-document navigation. Then the promise will never settle, because the entire document and all its promises will disappear.
@@ -330,7 +333,7 @@ Note that you can check if the navigation will be [same-document or cross-docume
 The event object has a special method `event.intercept(options)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
 - Cancel any fragment navigation or cross-document navigation.
-- Immediately update the URL bar, `location.href`, and `navigation.currentEntry`.
+- Immediately update the URL bar, `location.href`, and `navigation.currentEntry` unless the `event.intercept()` was called with a `commit` option of `manual`.
 - Create the [`navigation.transition`](#transitional-time-after-navigation-interception) object.
 - If `options.handler` is given, it can be a function that returns a promise. That function will be then be called, and the browser will wait for the returned promise to settle. Once it does, the browser will:
   - If the promise rejects, fire `navigateerror` on `navigation` and reject `navigation.transition.finished`.
@@ -338,7 +341,7 @@ The event object has a special method `event.intercept(options)`. This works onl
   - Set `navigation.transition` to null.
 - For the duration of any such promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
-Note that the browser does not wait for any returned promises to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `navigation.currentEntry`.
+Note that the browser does not wait for any returned promises to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `navigation.currentEntry`, unless a `commit` option of `manual` is provided to `event.intercept()`. [See below](#manual-commit) for more details.
 
 If `intercept()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the promises returned by any handlers will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
 
@@ -686,6 +689,18 @@ Some more details on how the navigation API handles scrolling with `"traverse"` 
 
 - By default, any navigations which are intercepted with `navigateEvent.intercept()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `intercept()` to control individual same-document navigations.
 
+#### Manual commit
+The default behavior of immediately "committing" (i.e., updating `location.href` and `navigation.currentEntry`) works well for most situations, but some developers may find they do not want to immediately update the url, and may want to retain the option of aborting the navigation without needing to rollback a url update or cancel-and-restart. This behavior can be customized using `intercept()`'s `commit` option:
+
+- `e.intercept({ handler, commit: "immediate" })`: the default behavior, immediately commit the navigation and update `location.href` and `navigation.currentEntry`.
+- `e.intercept({ handler, commit: "manual" })`: start the navigation (e.g., show a loading spinner if the UI has one), but do not immediately commit.
+
+When manual commit is used, the navigation will commit (and a `committed` promise will resolve if present) when `e.commit()` is called. If any handler(s) passed to `intercept()` fulfill, and `e.commit()` has not yet been called, we will fallback to committing just before any `finish` promise resolves and `navigatesuccess` is fired.
+
+If a handler passed to `intercept()` rejects before `e.commit()` is called, then the navigation will be treated as canceled (both `committed` and `finished` promises will reject, and no url update will occur). If a handler passed to `intercept()` rejects after `e.commit()` is called, the behavior will match a rejected promise in immediate commit mode (i.e., the `committed` promise will fulfill, the `finished` promise will reject, and the url will update).
+
+Because manual commit can be used to cancel the navigation before the url updates, it is only available when `e.cancelable` is true.
+
 ### Transitional time after navigation interception
 
 Although calling `event.intercept()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `navigation.currentEntry`, and the URL bar, the handlers passed to `intercept()` can return promises that might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `navigation.transition`. It has the following properties:
@@ -982,13 +997,12 @@ Between the `dispose` events, the `window.navigation` events, and various promis
 1. If the event is canceled using `event.preventDefault()`, then:
     1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with an `"AbortError"` `DOMException`.
 1. Otherwise:
-    1. `location.href` updates.
-    1. `navigation.currentEntry` updates. `navigation.transition` is created.
-    1. `currententrychange` is fired on `navigation`.
-    1. Any now-unreachable `NavigationHistoryEntry` instances fire `dispose`.
-    1. The URL bar updates.
+    1. `navigation.transition` is created.
+    1. If `event.intercept()` was not called, or `event.intercept()` was called with no `commit` option, or `event.intercept()` was called with a `commit` option of `immediate`, run the commit steps (see below).
     1. Any loading spinner UI starts, if `event.intercept()` was called.
+    1. When `event.commit()` is called, if `event.intercept()` was called with a `commit` option of `manual`, run the commit steps (see below).
     1. After all the promises returned by handlers passed to `event.intercept()` fulfill, or after one microtask if `event.intercept()` was not called:
+        1. If the commit steps (see below) have not run yet, run them now.
         1. `navigatesuccess` is fired on `navigation`.
         1. Any loading spinner UI stops.
         1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets fulfilled.
@@ -1007,6 +1021,13 @@ Between the `dispose` events, the `window.navigation` events, and various promis
         1. `navigation.transition.finished` rejects with the same `"AbortError"` `DOMException`.
         1. `navigation.transition` becomes null.
     1. One task after firing `currententrychange`, `hashchange` and/or `popstate` fire on `window`, if applicable. (Note: this can happen _before_ steps (ix)–(xi) if the promises take longer than a single task to settle.)
+
+The commit steps are:
+1. `location.href` updates.
+1. `navigation.currentEntry` updates.
+1. `currententrychange` is fired on `navigation`.
+1. Any now-unreachable `NavigationHistoryEntry` instances fire `dispose`.
+1. The URL bar updates.
 
 ## Guide for migrating from the existing history API
 
