@@ -11,9 +11,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Build
-      run: make ci
+    - uses: actions/checkout@v3
+    - name: Assemble out/ directory
+      run: |
+        mkdir out
+        mv spec.html out/index.html
     - name: Deploy
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       uses: peaceiris/actions-gh-pages@v3

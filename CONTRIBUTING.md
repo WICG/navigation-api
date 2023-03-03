@@ -4,15 +4,6 @@
 
 This repository is being used for work in the W3C [Web Platform Incubator Community Group](https://www.w3.org/community/wicg/) (WICG), governed by the [W3C Community License Agreement (CLA)](http://www.w3.org/community/about/agreements/cla/). To make substantive contributions, you must join the Community Group, thus signing the CLA.
 
-## Editing the specification
-
-Edits to the specification are done in the `spec.bs` file, which is then compiled with the [Bikeshed](https://tabatkins.github.io/bikeshed/) spec pre-processor.
-
-To build the specification, you can use one of:
-
-- `make local`: uses a locally-installed copy of Bikeshed
-- `make remote`: uses a Bikeshed web service, so you don't have to install anything locally
-
 ## For maintainers: identifying contributors to a pull request
 
 If the author is not the sole contributor to a pull request, please identify all contributors in the pull request comment.
