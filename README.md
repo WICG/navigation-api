@@ -326,6 +326,8 @@ The event object has several useful properties:
 
 - `info`: any value passed by `navigation.navigate(url, { state, info })`, `navigation.back({ info })`, or similar, if the navigation was initiated by one of those methods and the `info` option was supplied. Otherwise, undefined. See [the example below](#example-using-info) for more.
 
+- `triggeringElement`: an `HTMLElement` or null, indicating what element (if any) initiated this navigation. If the navigation was triggered by a link click, the `triggeringElement` will be the `<a href="...">`. If the navigation was triggered by a form submission, the `triggeringElement` will be the [the element that sent the `submit` event to the form](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent/submitter), or if that is null, the `<form>` being submitted.
+
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
 
 Note that you can check if the navigation will be [same-document or cross-document](#appendix-types-of-navigations) via `event.destination.sameDocument`, and you can check whether the navigation is to an already-existing history entry (i.e. is a back/forward navigation) via `event.navigationType`.
