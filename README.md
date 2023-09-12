@@ -368,7 +368,7 @@ navigation.addEventListener("navigate", e => {
   e.intercept({
     handler() {
       if (e.formData) {
-        processFormDataAndUpdateUI(e.formData, e.signal);
+        processFormDataAndUpdateUI(e.formData, e.sourceElement, e.signal);
       } else {
         doSinglePageAppNav(e.destination, e.signal);
       }
