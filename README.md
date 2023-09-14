@@ -326,7 +326,7 @@ The event object has several useful properties:
 
 - `info`: any value passed by `navigation.navigate(url, { state, info })`, `navigation.back({ info })`, or similar, if the navigation was initiated by one of those methods and the `info` option was supplied. Otherwise, undefined. See [the example below](#example-using-info) for more.
 
-- `sourceElement`: an `HTMLElement` or null, indicating what element (if any) initiated this navigation. If the navigation was triggered by a link click, the `sourceElement` will be the `<a href="...">`. If the navigation was triggered by a form submission, the `sourceElement` will be the [the element that sent the `submit` event to the form](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent/submitter), or if that is null, the `<form>` being submitted. The `sourceElement` will also be null when a targeting a different `window` (e.g., `<a href="..." target="otherWindow">`).
+- `sourceElement`: an `Element` or null, indicating what element (if any) initiated this navigation. If the navigation was triggered by a link click, the `sourceElement` will be the `<a href="...">`. If the navigation was triggered by a form submission, the `sourceElement` will be the [the element that sent the `submit` event to the form](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent/submitter), or if that is null, the `<form>` being submitted. The `sourceElement` will also be null when a targeting a different `window` (e.g., `<a href="..." target="otherWindow">`).
 
 - `signal`: an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) which can be monitored for when the navigation gets aborted.
 
