@@ -84,6 +84,7 @@ backButtonEl.addEventListener("click", () => {
   - [Notifications on entry disposal](#notifications-on-entry-disposal)
   - [Current entry change monitoring](#current-entry-change-monitoring)
   - [Complete event sequence](#complete-event-sequence)
+  - [Extensions to the Anchor Element](#extensions-to-the-anchor-element)
 - [Guide for migrating from the existing history API](#guide-for-migrating-from-the-existing-history-api)
   - [Performing navigations](#performing-navigations)
   - [Warning: back/forward are not always opposites](#warning-backforward-are-not-always-opposites)
@@ -1032,6 +1033,19 @@ The commit steps are:
 1. `currententrychange` is fired on `navigation`.
 1. Any now-unreachable `NavigationHistoryEntry` instances fire `dispose`.
 1. The URL bar updates.
+
+### Extensions to the Anchor element
+Currently an `<a>` only supports push navigations, which leaves a lot to be desired. This proposal aims to extend its existing behaviour with a few new and existing attributes.
+Namely:
+- `replace="", reload=""` and `traverse=""` as boolean attributes.
+- `navigateinfo=""` and `navigatestate=""` as string attributes.
+- `href="..."` and `rel="next/prev"` with the addition of the string attribute `key="..."` as traversal hints.
+
+The default navigation type of a `<a>` is always a push navigation. The new boolean attributes `replace="", reload=""` and `traverse=""` serve as the default navigation type modifier.
+When using the `traverse=""` navigation type modifier the `rel="next/prev"`, `key="..."` and `href="..."` attributes, become optional hints.
+
+#### Default navigation type
+The `replace=""` attribute in addition to the `href="..."` attribute will replace the current entry with a new history entry with the resolved href as the URL.
 
 ## Guide for migrating from the existing history API
 
