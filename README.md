@@ -1118,8 +1118,8 @@ Tabbed navigation could be implemented without JavaScript. By using `traverse=""
 ```html
 <nav class="tabs">
   <a class="tab" href="tab-1" traverse>Tab 1</a>
-  <a class="tab" href="tab-1" traverse>Tab 2</a>
-  <a class="tab" href="tab-1" traverse>Tab 3</a>
+  <a class="tab" href="tab-2" traverse>Tab 2</a>
+  <a class="tab" href="tab-3" traverse>Tab 3</a>
 </nav>
 ```
 
