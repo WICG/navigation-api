@@ -75,6 +75,7 @@ backButtonEl.addEventListener("click", () => {
     - [Scrolling to fragments and scroll resetting](#scrolling-to-fragments-and-scroll-resetting)
     - [Scroll position restoration](#scroll-position-restoration)
     - [Deferred commit](#deferred-commit)
+    - [Redirects during deferred commit](#redirects-during-deferred-commit)
   - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
     - [Example: handling failed navigations](#example-handling-failed-navigations)
   - [The `navigate()` and `reload()` methods](#the-navigate-and-reload-methods)
@@ -100,7 +101,6 @@ backButtonEl.addEventListener("click", () => {
 - [Future extensions](#future-extensions)
   - [More per-entry events](#more-per-entry-events)
   - [Performance timeline API integration](#performance-timeline-api-integration)
-  - [Navigation transition rollbacks and redirects](#navigation-transition-rollbacks-and-redirects)
   - [More](#more)
 - [Stakeholder feedback](#stakeholder-feedback)
 - [Acknowledgments](#acknowledgments)
@@ -704,9 +704,29 @@ If a handler passed to `intercept()` rejects before `e.commit()` is called, then
 
 Because deferred commit can be used to cancel the navigation before the URL updates, it is only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus deferred commit is not available.
 
+#### Redirects during deferred commit
+
+If the `{ commit: "after-transition" }` option is passed to `navigateEvent.intercept()`, then an additional method is available on the `NavigateEvent`: `redirect(url)`. This updates the eventual destination of the `"push"` or `"replace"` navigation. An example usage is as follows:
+
+```js
+navigation.addEventListener("navigate", e => {
+  e.intercept({ async handler() {
+    if (await isLoginGuarded(e.destination)) {
+      e.redirect("/login");
+    }
+
+    // Render e.destination, keeping in mind e.destination might be updated.
+  } });
+});
+```
+
+This is simpler than the alternative of canceling the original navigation and starting a new one to the redirect location, because it avoids exposing the intermediate state. For example, only one `navigatesuccess` or `navigateerror` event fires, and if the navigation was triggered by a call to `navigation.navigate()`, the promise only fulfills once the redirect destination is reached.
+
+It's possible in the future we could contemplate allowing something similar for `{ commit: "immediate" }` navigations as well. There, we would not be able to hide the intermediate state perfectly, as code would still be able to observe the intermediate `location.href` values and such. But we could treat such post-commit redirects as special types of replace navigations, which "take over" any promises returned from `navigation.navigate()`, delay `navigatesuccess`/`navigateerror` events, etc.
+
 ### Transitional time after navigation interception
 
-Although calling `event.intercept()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation immediately and synchronously updates `location.href`, `navigation.currentEntry`, and the URL bar, the handlers passed to `intercept()` can return promises that might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `navigation.transition`. It has the following properties:
+As part of calling `event.intercept()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation, the handlers passed to `intercept()` can return promises that might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `navigation.transition`. It has the following properties:
 
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `NavigationHistoryEntry` that was the current one before the transition
@@ -1383,43 +1403,6 @@ const observer = new PerformanceObserver(list => {
 });
 observer.observe({ type: "same-document-navigation" });
 ```
-
-### Navigation transition rollbacks and redirects
-
-During the [transitional time after navigation interception](#transitional-time-after-navigation-interception), there are several higher-level operations that we believe would be useful for developers:
-
-- `navigation.transition.rollback()`: a method which allows easy rollback to the `navigation.transition.from` entry.
-- `navigation.transition.redirect()`: a method which allows changing the destination of the current transition to a new URL.
-
-Note that `navigation.transition.rollback()` is not the same as `navigation.back()`: for example, if the user navigates two steps back, then `navigation.rollback()` will actually go forward two steps. Similarly, it handles rolling back replace navigations by reverting back to the previous URL and navigation API state. And it rolls back push navigations by actually removing the entry that was previously pushed, instead of leaving it there for the user to reach by pressing their forward button.
-
-Here is an example of how you could use `navigation.transition.rollback()` to give a different sort of experience for [handling failed navigations](#example-handling-failed-navigations):
-
-```js
-navigation.addEventListener("navigateerror", async e => {
-  const attemptedURL = location.href;
-
-  await navigation.transition.rollback().committed;
-  showErrorToast(`Could not load ${attemptedURL}: ${e.message}`);
-});
-```
-
-And here is an example of how you could use `navigation.transition.redirect()` to implement a "redirect" to a login page:
-
-```js
-navigation.addEventListener("navigate", e => {
-  e.intercept({ async handler() {
-    if (await isLoginGuarded(e.destination)) {
-      await navigation.transition.redirect("/login").finished;
-      return;
-    }
-
-    // Render e.destination as normal
-  } });
-});
-```
-
-In more detail, such a "redirect" would consist of either doing a replacement navigation (if we're past navigation commit time), or canceling the current not-yet-committed navigation and starting a new one. In both cases, the main value add is to avoid extra intermediate events such as `navigateerror` or `navigatesuccess`; it would seem to the rest of the code as if the navigation just took longer to finish.
 
 ### More
 
