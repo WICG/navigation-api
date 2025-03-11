@@ -74,7 +74,7 @@ backButtonEl.addEventListener("click", () => {
     - [Focus management](#focus-management)
     - [Scrolling to fragments and scroll resetting](#scrolling-to-fragments-and-scroll-resetting)
     - [Scroll position restoration](#scroll-position-restoration)
-    - [Deferred commit](#deferred-commit)
+    - [Precommit handlers](#precommit-handlers)
     - [Redirects during deferred commit](#redirects-during-deferred-commit)
   - [Transitional time after navigation interception](#transitional-time-after-navigation-interception)
     - [Example: handling failed navigations](#example-handling-failed-navigations)
@@ -691,28 +691,29 @@ Some more details on how the navigation API handles scrolling with `"traverse"` 
 
 - By default, any navigations which are intercepted with `navigateEvent.intercept()` will _ignore_ the value of `history.scrollRestoration` from the classic history API. This allows developers to use `history.scrollRestoration` for controlling cross-document scroll restoration, while using the more-granular option to `intercept()` to control individual same-document navigations.
 
-#### Deferred commit
+#### Precommit handlers
 
-The default behavior of immediately "committing" (i.e., updating `location.href` and `navigation.currentEntry`) works well for most situations, but some developers may find they do not want to immediately update the URL, and may want to retain the option of aborting the navigation without needing to rollback a URL update or cancel-and-restart. This behavior can be customized using `intercept()`'s `commit` option:
+The default behavior of immediately "committing" (i.e., updating `location.href` and `navigation.currentEntry`) works well for most situations, but some developers may find they do not want to immediately update the URL, and may want to retain the option of aborting the navigation without needing to rollback a URL update or cancel-and-restart. This behavior can be customized passing a `precommitHandler` callback alongside or instead of the `handler` callback:
 
-- `e.intercept({ handler, commit: "immediate" })`: the default behavior, immediately commit the navigation and update `location.href` and `navigation.currentEntry`.
-- `e.intercept({ handler, commit: "after-transition" })`: start the navigation (e.g., show a loading spinner if the UI has one), but do not immediately commit.
+- `e.intercept({ handler })`: the default behavior, immediately commit the navigation and update `location.href` and `navigation.currentEntry`.
+- `e.intercept({ precommitHandler })`: start the navigation (e.g., show a loading spinner if the UI has one), but do not immediately commit.
 
-When deferred commit is used, the navigation will commit (and a `committed` promise will resolve if present) when `e.commit()` is called. If any handler(s) passed to `intercept()` fulfill, and `e.commit()` has not yet been called, we will fallback to committing just before any `finish` promise resolves and `navigatesuccess` is fired.
+When precommit handlers are used, the navigation will commit (and a `committed` promise will resolve if present) once all those handlers are fulfilled. Unlike the ordinary `handler`, the `precommitHandler` callbacks are called in sequence - the next `precommit` handler is invoked only when the previous one is fulfilled. That is due to the fact that a precommit handler can asynchronously abort the navigation altogether or redirect the URL, and the next precommit handler should respond to the new state.
 
-If a handler passed to `intercept()` rejects before `e.commit()` is called, then the navigation will be treated as canceled (both `committed` and `finished` promises will reject, and no URL update will occur). If a handler passed to `intercept()` rejects after `e.commit()` is called, the behavior will match a rejected promise in immediate commit mode (i.e., the `committed` promise will fulfill, the `finished` promise will reject, and the URL will update).
+If a `precommitHandler` passed to `intercept()` rejects, then the navigation will be treated as canceled (both `committed` and `finished` promises will reject, and no URL update will occur).
 
-Because deferred commit can be used to cancel the navigation before the URL updates, it is only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus deferred commit is not available.
+Because deferred commit can be used to cancel the navigation before the URL updates, they are only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus precommit handlers are not available.
 
 #### Redirects during deferred commit
 
-If the `{ commit: "after-transition" }` option is passed to `navigateEvent.intercept()`, then an additional method is available on the `NavigateEvent`: `redirect(url)`. This updates the eventual destination of the `"push"` or `"replace"` navigation. An example usage is as follows:
+The `precommitHandler` callback accepts an argument, which is a `controller` that can perform certain actions on the precommitted navigation, in particular redirecting. This updates the eventual destination of the `"push"` or `"replace"` navigation, and restarts the sequence of calling the precommit handlers. An example usage is as follows
 
 ```js
 navigation.addEventListener("navigate", e => {
-  e.intercept({ async handler() {
+  e.intercept({ async precommitHandler(controller) {
     if (await isLoginGuarded(e.destination)) {
-      e.redirect("/login");
+      controller.redirect("/login");
+      return;
     }
 
     // Render e.destination, keeping in mind e.destination might be updated.
