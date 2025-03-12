@@ -712,14 +712,17 @@ The `precommitHandler` callback accepts an argument, which is a `controller` tha
 
 ```js
 navigation.addEventListener("navigate", e => {
-  e.intercept({ async precommitHandler(controller) {
-    if (await isLoginGuarded(e.destination)) {
-      controller.redirect("/login");
-      return;
+  e.intercept({
+    async precommitHandler(controller) {
+      if (await isLoginGuarded(e.destination)) {
+        controller.redirect("/login");
+      }
     }
 
-    // Render e.destination, keeping in mind e.destination might be updated.
-  } });
+    async handler() {
+      // apply committed navigation state to document
+    } 
+});
 });
 ```
 
