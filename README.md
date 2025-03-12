@@ -698,11 +698,13 @@ The default behavior of immediately "committing" (i.e., updating `location.href`
 - `e.intercept({ handler })`: the default behavior, immediately commit the navigation and update `location.href` and `navigation.currentEntry`.
 - `e.intercept({ precommitHandler })`: start the navigation (e.g., show a loading spinner if the UI has one), but do not immediately commit.
 
+The object passed to intercept can include both a `handler` and a `precommitHandler`. If both are included, they are called individually at the appropriate phase.
+
 When precommit handlers are used, the navigation will commit (and a `committed` promise will resolve if present) once all those handlers are fulfilled. Unlike the ordinary `handler`, the `precommitHandler` callbacks are called in sequence—the next `precommit` handler is invoked only when the previous one is fulfilled. That is due to the fact that a precommit handler can asynchronously abort the navigation altogether or redirect the URL, and the next precommit handler should respond to the new state.
 
 If a `precommitHandler` passed to `intercept()` rejects, then the navigation will be treated as canceled (both `committed` and `finished` promises will reject, and no URL update will occur).
 
-Because precommit handlers can be used to cancel the navigation before the URL updates, they are only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus precommit handlers are not available.
+Because precommit handlers can be used to cancel the navigation before the URL updates, they are only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus precommit handlers are not available. calling `intercept()` with a `precommitHandler` on a non-cancelable event would throw a `SecurityError`.
 
 #### Redirects during deferred commit
 
