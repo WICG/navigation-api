@@ -704,7 +704,7 @@ When precommit handlers are used, the navigation will commit (and a `committed` 
 
 If a `precommitHandler` passed to `intercept()` rejects, then the navigation will be treated as canceled (both `committed` and `finished` promises will reject, and no URL update will occur).
 
-Because precommit handlers can be used to cancel the navigation before the URL updates, they are only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus precommit handlers are not available. calling `intercept()` with a `precommitHandler` on a non-cancelable event would throw a `SecurityError`.
+Because precommit handlers can be used to cancel the navigation before the URL updates, they are only available when `e.cancelable` is true. See [above](#restrictions-on-firing-canceling-and-responding) for details on when `e.cancelable` is set to false, and thus precommit handlers are not available. Calling `intercept()` with a `precommitHandler` on a non-cancelable event would throw a `"SecurityError"` `DOMException`.
 
 #### Redirects during deferred commit
 
@@ -721,7 +721,7 @@ navigation.addEventListener("navigate", e => {
 
     async handler() {
       // apply committed navigation state to document
-    } 
+    }
 });
 });
 ```
