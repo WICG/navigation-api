@@ -700,7 +700,7 @@ The default behavior of immediately "committing" (i.e., updating `location.href`
 
 The object passed to intercept can include both a `handler` and a `precommitHandler`. If both are included, they are called individually at the appropriate phase.
 
-When precommit handlers are used, the navigation will commit (and a `committed` promise will resolve if present) once all those handlers are fulfilled. Unlike the ordinary `handler`, the `precommitHandler` callbacks are called in sequence—the next `precommit` handler is invoked only when the previous one is fulfilled. That is due to the fact that a precommit handler can asynchronously abort the navigation altogether or redirect the URL, and the next precommit handler should respond to the new state.
+When precommit handlers are used, the navigation will commit (and a `committed` promise will resolve if present) once all those handlers are fulfilled.
 
 If a `precommitHandler` passed to `intercept()` rejects, then the navigation will be treated as canceled (both `committed` and `finished` promises will reject, and no URL update will occur).
 
@@ -708,7 +708,7 @@ Because precommit handlers can be used to cancel the navigation before the URL u
 
 #### Redirects during deferred commit
 
-The `precommitHandler` callback accepts an argument, which is a `controller` that can perform certain actions on the precommitted navigation, in particular redirecting. This updates the eventual destination of the `"push"` or `"replace"` navigation, and restarts the sequence of calling the precommit handlers. An example usage is as follows
+The `precommitHandler` callback accepts an argument, which is a `controller` that can perform certain actions on the precommitted navigation, in particular redirecting. This updates the eventual destination of the `"push"` or `"replace"` navigation. An example usage is as follows
 
 ```js
 navigation.addEventListener("navigate", e => {
