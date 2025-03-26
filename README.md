@@ -950,7 +950,7 @@ Let's look at our scenarios again:
 
 ### Setting the current entry's state without navigating
 
-We believe that in the majority of cases, single-page apps will be best served by updating their state via `navigation.navigate({ state: newState })`, which goes through the `navigate` event. That is, coupling state updates with navigations, which are handled by centralized router code. This is generally superior to the classic history API's model, where state (and URL) updates are done in a way disconnected from navigation, using `navigation.replaceState()`.
+We believe that in the majority of cases, single-page apps will be best served by updating their state via `navigation.navigate({ state: newState })`, which goes through the `navigate` event. That is, coupling state updates with navigations, which are handled by centralized router code. This is generally superior to the classic history API's model, where state (and URL) updates are done in a way disconnected from navigation, using `history.replaceState()`.
 
 However, there is one type of case where the navigation-centric model doesn't work well. This is when you need to update the current entry's state in response to an external event, often caused by user interaction.
 
