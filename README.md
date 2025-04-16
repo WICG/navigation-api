@@ -708,14 +708,15 @@ Because precommit handlers can be used to cancel the navigation before the URL u
 
 #### Redirects during deferred commit
 
-The `precommitHandler` callback accepts an argument, which is a `controller` that can perform certain actions on the precommitted navigation, in particular redirecting. This updates the eventual destination of the `"push"` or `"replace"` navigation. An example usage is as follows
+The `precommitHandler` callback accepts an argument, which is a `controller` that can perform certain actions on the precommitted navigation, in particular redirecting. This updates the eventual destination, and potentially the state/info, of the `"push"` or `"replace"` navigation.
+An example usage is as follows:
 
 ```js
 navigation.addEventListener("navigate", e => {
   e.intercept({
     async precommitHandler(controller) {
       if (await isLoginGuarded(e.destination)) {
-        controller.redirect("/login");
+        controller.redirect("/login", {state: "login-redirect", info: "some-info"});
       }
     }
 
