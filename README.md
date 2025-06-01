@@ -1,4 +1,8 @@
-# Navigation API
+# Navigation API (Archived)
+
+🚫 **This project is no longer maintained.**
+
+The navigation API has moved to [the HTML Standard](https://html.spec.whatwg.org/multipage/nav-history-apis.html#navigation-api).
 
 _[Formerly known as](https://github.com/WICG/navigation-api/issues/83) the app history API_
 
