@@ -1,5 +1,7 @@
 # Navigation API
 
+⚠️⚠️ **Status**: This is now developed under https://github.com/whatwg/html/ ⚠️⚠️
+
 _[Formerly known as](https://github.com/WICG/navigation-api/issues/83) the app history API_
 
 The web's existing [history API](https://developer.mozilla.org/en-US/docs/Web/API/History) is problematic for a number of reasons, which makes it hard to use for web applications. This proposal introduces a new API encompassing navigation and history traversal, which is more directly usable by web application developers. Its scope is: initiating navigations, intercepting navigations, and history introspection and mutation.
