@@ -737,6 +737,7 @@ As part of calling `event.intercept()` to [intercept a navigation](#navigation-m
 
 - `navigationType`: either `"reload"`, `"push"`, `"replace"`, or `"traverse"` indicating what type of navigation this is
 - `from`: the `NavigationHistoryEntry` that was the current one before the transition
+- `to`: the `NavigationDestination` of the transition (this would differ from the currenet URL if a `precommitHandler` was given).
 - `finished`: a promise which fulfills with undefined when the `navigatesuccess` event fires on `navigation`, or rejects with the corresponding error when the `navigateerror` event fires on `navigation`
 
 #### Example: handling failed navigations
