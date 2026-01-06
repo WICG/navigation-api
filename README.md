@@ -731,6 +731,24 @@ This is simpler than the alternative of canceling the original navigation and st
 
 It's possible in the future we could contemplate allowing something similar for `{ commit: "immediate" }` navigations as well. There, we would not be able to hide the intermediate state perfectly, as code would still be able to observe the intermediate `location.href` values and such. But we could treat such post-commit redirects as special types of replace navigations, which "take over" any promises returned from `navigation.navigate()`, delay `navigatesuccess`/`navigateerror` events, etc.
 
+The controller can also be used to add a post-commit handler from the precommit handler:
+
+```js
+navigation.addEventListener("navigate", e => {
+  e.intercept({
+    async precommitHandler(controller) {
+      if (await some_original_operation_that_can_fail()) {
+         controller.addHandler(async () => {
+            do_some_post_processing();
+         });
+      }
+    }
+});
+});
+```
+
+This allows a more dynamic control flow between precommit operations and post-commit operations.
+
 ### Transitional time after navigation interception
 
 As part of calling `event.intercept()` to [intercept a navigation](#navigation-monitoring-and-interception) and convert it into a single-page navigation, the handlers passed to `intercept()` can return promises that might not settle for a while. During this transitional time, before the promise settles and the `navigatesuccess` or `navigateerror` events fire, an additional API is available, `navigation.transition`. It has the following properties:
