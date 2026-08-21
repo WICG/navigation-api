@@ -1,6 +1,6 @@
 # Navigation API
 
-⚠️⚠️ **Status**: This is now developed under https://github.com/whatwg/html/ ⚠️⚠️
+⚠️⚠️ **Status**: **Archived!** This is now developed under https://github.com/whatwg/html/ ⚠️⚠️
 
 _[Formerly known as](https://github.com/WICG/navigation-api/issues/83) the app history API_
 
