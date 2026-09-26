@@ -276,9 +276,9 @@ All of these methods return `{ committed, finished }` pairs, where both values a
 
 - It's not possible to navigate to the given entry, e.g. `navigation.traverseTo(key)` was given a non-existant `key`, or `navigation.back()` was called when there's no previous entries in the list of accessible history entries. In this case, both promises reject with an `"InvalidStateError"` `DOMException`, and `location.href` and `navigation.currentEntry` stay on their original value.
 
-- The `navigate` event responds to the navigation using `event.intercept()` with a `commit` option of `"immediate"` (the default). In this case the `committed` promise immediately fulfills, while the `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. (However, even if the `finished` promise rejects, `location.href` and `navigation.currentEntry` will change.)
+- The `navigate` event responds to the navigation using `event.intercept()` without a `precommitHandler`. In this case the `committed` promise immediately fulfills, while the `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. (However, even if the `finished` promise rejects, `location.href` and `navigation.currentEntry` will change.)
 
-- The `navigate` event listener responds to the navigation using `event.intercept()` with a `commit` option of `"after-transition"`. In this case the `committed` promise fulfills and `location.href` and `navigation.currentEntry` change when `event.commit()` is called. The `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. If a promise returned by a handler rejects before `event.commit()` is called, then both the `committed` and `finished` promises reject and `location.href` and `navigation.currentEntry` do not update. If all promise(s) returned by handlers fulfill, but the `committed` promise has not yet fulfilled, the `committed` promise will be fulfilled and and `location.href` and `navigation.currentEntry` will be updated first, then `finished` will fulfill.
+- The `navigate` event listener responds to the navigation using `event.intercept()` with a `precommitHandler`. In this case the `committed` promise fulfills and `location.href` and `navigation.currentEntry` change once all `precommitHandler` promises fulfill. The `finished` promise fulfills or rejects according to any promise(s) returned by handlers passed to `intercept()`. If a `precommitHandler` rejects before commit, then both the `committed` and `finished` promises reject and `location.href` and `navigation.currentEntry` do not update. If all promise(s) returned by handlers fulfill, but the `committed` promise has not yet fulfilled, the `committed` promise will be fulfilled and and `location.href` and `navigation.currentEntry` will be updated first, then `finished` will fulfill.
 
 - The navigation succeeds, and was a same-document navigation (but not intercepted using `event.intercept()`). Then both promises immediately fulfill,  and `location.href` and `navigation.currentEntry` will have been set to their new value.
 
@@ -337,7 +337,7 @@ Note that you can check if the navigation will be [same-document or cross-docume
 The event object has a special method `event.intercept(options)`. This works only under certain circumstances, e.g. it cannot be used on cross-origin navigations. ([See below](#restrictions-on-firing-canceling-and-responding) for full details.) It will:
 
 - Cancel any fragment navigation or cross-document navigation.
-- Immediately update the URL bar, `location.href`, and `navigation.currentEntry` unless the `event.intercept()` was called with a `commit` option of `"after-transition"`.
+- Immediately update the URL bar, `location.href`, and `navigation.currentEntry` unless `event.intercept()` was called with a `precommitHandler`.
 - Create the [`navigation.transition`](#transitional-time-after-navigation-interception) object.
 - If `options.handler` is given, it can be a function that returns a promise. That function will be then be called, and the browser will wait for the returned promise to settle. Once it does, the browser will:
   - If the promise rejects, fire `navigateerror` on `navigation` and reject `navigation.transition.finished`.
@@ -345,7 +345,7 @@ The event object has a special method `event.intercept(options)`. This works onl
   - Set `navigation.transition` to null.
 - For the duration of any such promise settling, any browser loading UI such as a spinner will behave as if it were doing a cross-document navigation.
 
-Note that the browser does not wait for any returned promises to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `navigation.currentEntry`, unless a `commit` option of `"after-transition"` is provided to `event.intercept()`. [See below](#deferred-commit) for more details.
+Note that the browser does not wait for any returned promises to settle in order to update its URL/history-displaying UI (such as URL bar or back button), or to update `location.href` and `navigation.currentEntry`, unless a `precommitHandler` is provided to `event.intercept()`. [See below](#precommit-handlers) for more details.
 
 If `intercept()` is called multiple times (e.g., by multiple different listeners to the `navigate` event), then all of the promises returned by any handlers will be combined together using the equivalent of `Promise.all()`, so that the navigation only counts as a success once they have all fulfilled, or the navigation counts as an error at the point where any of them reject.
 
@@ -731,7 +731,7 @@ navigation.addEventListener("navigate", e => {
 
 This is simpler than the alternative of canceling the original navigation and starting a new one to the redirect location, because it avoids exposing the intermediate state. For example, only one `navigatesuccess` or `navigateerror` event fires, and if the navigation was triggered by a call to `navigation.navigate()`, the promise only fulfills once the redirect destination is reached.
 
-It's possible in the future we could contemplate allowing something similar for `{ commit: "immediate" }` navigations as well. There, we would not be able to hide the intermediate state perfectly, as code would still be able to observe the intermediate `location.href` values and such. But we could treat such post-commit redirects as special types of replace navigations, which "take over" any promises returned from `navigation.navigate()`, delay `navigatesuccess`/`navigateerror` events, etc.
+It's possible in the future we could contemplate allowing something similar for navigations without a `precommitHandler` as well. There, we would not be able to hide the intermediate state perfectly, as code would still be able to observe the intermediate `location.href` values and such. But we could treat such post-commit redirects as special types of replace navigations, which "take over" any promises returned from `navigation.navigate()`, delay `navigatesuccess`/`navigateerror` events, etc.
 
 The controller can also be used to add a post-commit handler from the precommit handler:
 
@@ -1049,9 +1049,9 @@ Between the `dispose` events, the `window.navigation` events, and various promis
     1. If the process was initiated by a call to a `navigation` API that returns a promise, then that promise gets rejected with an `"AbortError"` `DOMException`.
 1. Otherwise:
     1. `navigation.transition` is created.
-    1. If `event.intercept()` was not called, or `event.intercept()` was called with no `commit` option, or `event.intercept()` was called with a `commit` option of `immediate`, run the commit steps (see below).
+    1. If `event.intercept()` was not called, or `event.intercept()` was called without a `precommitHandler`, run the commit steps (see below).
     1. Any loading spinner UI starts, if `event.intercept()` was called.
-    1. When `event.commit()` is called, if `event.intercept()` was called with a `commit` option of `"after-transition"`, run the commit steps (see below).
+    1. If `event.intercept()` was called with a `precommitHandler`, run the commit steps once all `precommitHandler` promises fulfill.
     1. After all the promises returned by handlers passed to `event.intercept()` fulfill, or after one microtask if `event.intercept()` was not called:
         1. If the commit steps (see below) have not run yet, run them now.
         1. `navigatesuccess` is fired on `navigation`.
