@@ -87,6 +87,10 @@ backButtonEl.addEventListener("click", () => {
   - [Notifications on entry disposal](#notifications-on-entry-disposal)
   - [Current entry change monitoring](#current-entry-change-monitoring)
   - [Complete event sequence](#complete-event-sequence)
+  - [Extensions to the Anchor element](#extensions-to-the-anchor-element)
+    - [Default navigation type](#default-navigation-type)
+    - [The navigateinfo="..." and navigatestate="..." attributes](#the-navigateinfo-and-navigatestate-attributes)
+    - [Additional example](#additional-example)
 - [Guide for migrating from the existing history API](#guide-for-migrating-from-the-existing-history-api)
   - [Performing navigations](#performing-navigations)
   - [Warning: back/forward are not always opposites](#warning-backforward-are-not-always-opposites)
@@ -1080,6 +1084,92 @@ The commit steps are:
 1. `currententrychange` is fired on `navigation`.
 1. Any now-unreachable `NavigationHistoryEntry` instances fire `dispose`.
 1. The URL bar updates.
+
+### Extensions to the Anchor element
+Currently an `<a>` only supports push navigations. This proposal aims to extend its existing behaviour with a few new and existing attributes.
+Namely:
+- `reload=""`, `replace=""` and `traverse=""` as boolean attributes.
+- `navigateinfo=""` and `navigatestate=""` as string attributes.
+- `href="..."` and `rel="next/prev"` with the addition of the string attribute `key="..."` as traversal hints.
+
+#### Default navigation type
+The default navigation type of a `<a>` is always a push navigation. The new boolean attributes `replace=""`, `reload=""` and `traverse=""` serve as the default navigation type modifier.
+
+The default navigation type will still be a push navigation.
+```html
+<a href="posts">Posts</a>
+```
+
+The `reload=""` attribute will reload the current entry. Note: the `href=""` attribute is ignored.
+```html
+<a reload>Refresh results</a>
+```
+
+The `replace=""` attribute in addition to the `href="..."` attribute will replace the current entry with a new history entry.
+```html
+<a href="/login" replace>Logout</a>
+```
+The `traverse=""` attibute allows `<a>`s to link to existing entries. When using the `traverse=""` navigation type modifier the `rel="next/prev"`, `key="..."` and `href="..."` attributes, become optional hints.
+The `rel="..."` is an existing attribute that hints at the relationship of the linked URL to the current document. When used with `traverse=""` it serves as a directional hint.
+```html
+<a rel="prev" traverse>Go back</a>
+<a rel="next" traverse>Go forward</a>
+```
+The `href="..."` is an existing attribute that specifies the URL the `<a>` points to. When used with the `traverse=""` attribute the anchor will point to the closest entry with a matching URL. The `rel="next/prev"` attribute can be used to specify the search direction.
+```html
+<a href=".." traverse>Tab 1</a> <!-- Given the current URL pathname is /parent/child this anchor navigates to an entry with /parent as the pathname. -->
+<a href="/" rel="prev" traverse>Go home</a>
+<a href="/posts" rel="next" traverse>Posts</a>
+```
+The `key="..."` is a new attribute that allows you to specify a history entry key the `<a>` points to. This attribute only works with the `traverse=""` attribute and is ignored otherwise. If no matching entry is found the behaviour is the same as `<a>Dead link</a>`.
+```html
+<a key="7c6a6481-c4bc-40f5-9617-0287441a3418" traverse>Go to 7c6a6481-c4bc-40f5-9617-0287441a3418</a>
+```
+The `key="..."` attribute takes precedence over `href=""` meaning if an entry with a matching key isn't found, the anchor will fallback to traversal with the `href="..."` hint.
+```html
+<a href="/" key="7c6a6481-c4bc-40f5-9617-0287441a3418" traverse>Go home</a>
+```
+
+The `traverse=""` boolean attribute will always take precedence over push, replace and reload navigation types. Meaning if no matching entry is found the `<a>` will fallback to the next navigation type.
+```html
+<a href="/" rel="prev" traverse replace>Go home</a> <!-- / Will replace the current entry if no matching entry is found -->
+```
+
+#### The `navigateinfo="..."` and `navigatestate="..."` attributes
+Finally two string attributes have been added for passing state and info via an `<a>`.
+```html
+<a id="home" href="/" navigateinfo="push" navigatestate="newuser">Home</a>
+```
+The new attributes will have corresponding DOM properties for passing non-string data types to entries.
+```js
+const a = document.getElementById("home");
+a.navigatestate = {
+  user: {
+    name: "John Doe",
+  },
+};
+a.navigateinfo = {
+  type: "push",
+};
+```
+
+Note: `navigatestate=""` is ignored for traverse navigations.
+```html
+<a href="/posts" navigateinfo="push" navigatestate="newstate">Home</a>
+<a navigateinfo="reload" navigatestate="newstate" reload>Refresh</a>
+<a href="/login" navigateinfo="replace" navigatestate="newstate" replace>Logout</a>
+<a rel="prev" navigateinfo="traverse" navigatestate="newstate" traverse>Back</a> <!-- navigatestate="newstate" is ignored -->
+```
+
+#### Additional Example
+Tabbed navigation could be implemented without JavaScript. By using `traverse=""` anchors will point to existing entries if they exist but fallback to a push navigation if a matching entry doesn't already exist.
+```html
+<nav class="tabs">
+  <a class="tab" href="tab-1" traverse>Tab 1</a>
+  <a class="tab" href="tab-2" traverse>Tab 2</a>
+  <a class="tab" href="tab-3" traverse>Tab 3</a>
+</nav>
+```
 
 ## Guide for migrating from the existing history API
 
